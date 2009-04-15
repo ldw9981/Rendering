@@ -409,6 +409,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Resource\RscMaterialEx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Resource\RscMaterialEx.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Resource\RscTexture.cpp"
 				>
 			</File>
@@ -537,19 +545,19 @@
 			Name="OutDoor"
 			>
 			<File
-				RelativePath=".\OutDoor\ZQuadTree.cpp"
+				RelativePath=".\OutDoor\QuadTreeNode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\OutDoor\ZQuadTree.h"
+				RelativePath=".\OutDoor\QuadTreeNode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\OutDoor\ZTerrain.cpp"
+				RelativePath=".\OutDoor\TerrainNode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\OutDoor\ZTerrain.h"
+				RelativePath=".\OutDoor\TerrainNode.h"
 				>
 			</File>
 		</Filter>
@@ -564,7 +572,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -572,7 +580,7 @@
 					>
 					<Tool
 						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="2"
+						UsePrecompiledHeader="0"
 					/>
 				</FileConfiguration>
 			</File>

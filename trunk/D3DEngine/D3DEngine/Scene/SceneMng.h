@@ -4,9 +4,9 @@
 class cScene;
 class cSceneMng:
 	public IUnknownObject,
-	public cIRenderable,
-	public cIUpdatable,
-	public cIControlable
+	public IRenderable,
+	public IUpdatable,
+	public IControlable
 {
 public:
 	cSceneMng(void);
@@ -17,9 +17,9 @@ private:
 	cScene*			m_pCurrTopScene;
 	cScene*			m_pNewTopScene;
 
-	cIUpdatable* m_pIProgressable;
-	cIRenderable*	m_pIRednerable;
-	cIControlable*	m_pIControlable;
+	IUpdatable* m_pIProgressable;
+	IRenderable*	m_pIRednerable;
+	IControlable*	m_pIControlable;
 	
 public:
 	void	ChangeTopScene(cScene* pScene) { m_pNewTopScene=pScene; }

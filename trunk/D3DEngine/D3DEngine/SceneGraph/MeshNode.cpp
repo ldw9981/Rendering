@@ -103,7 +103,7 @@ void cMeshNode::Render()
 			{			
 				//IndexBuffer,VertexBuffer셋팅
 				m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldTM );	
-				m_pD3DDevice->SetFVF(FVF_NORMALVERTEX);
+				m_pD3DDevice->SetFVF(NORMALVERTEX::FVF);
 				m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 				m_pRscIndexBuffer->SetIndices();			
 
@@ -122,7 +122,7 @@ void cMeshNode::Render()
 					}
 					
 					//텍스쳐 적용
-					pRscTexture=pMaterial->GetRscTexture();
+					pRscTexture=pMaterial->GetDiffuseRscTexture();
 					if (pRscTexture!=NULL)	
 						m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
 					else
@@ -169,7 +169,7 @@ void cMeshNode::Render()
 				}		
 
 				//IndexBuffer,VertexBuffer셋팅			
-				m_pD3DDevice->SetFVF(FVF_BLENDVERTEX);				
+				m_pD3DDevice->SetFVF(BLENDVERTEX::FVF);				
 				m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 				m_pRscIndexBuffer->SetIndices();			
 
@@ -188,7 +188,7 @@ void cMeshNode::Render()
 					}
 
 					//텍스쳐 적용
-					pRscTexture=pMaterial->GetRscTexture();
+					pRscTexture=pMaterial->GetDiffuseRscTexture();
 					if (pRscTexture!=NULL)	
 						m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());
 					else

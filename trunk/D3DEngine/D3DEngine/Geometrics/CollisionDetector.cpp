@@ -32,7 +32,7 @@ BOOL cCollision::IntersectLineSphere( cLine& Line,cSphere& TargetSphere,float* p
 			return TRUE;
 	}
 	
-	// 라인의 방향벡터를 기준으로 90~270 도 즉 뒤쪽에 있는지 검사 
+	// 라인의 방향벡터를 기준으로 90~270 도 즉 뒤쪽으로 향하는지 검사
 	projection_length=D3DXVec3Dot(&vecLineStartToSphereCenter,&Line.GetDirection());
 	if( projection_length< 0 ) 
 		return FALSE;	
@@ -64,19 +64,70 @@ BOOL cCollision::IntersectLineSphere( cLine& Line,cSphere& TargetSphere,float* p
 	return TRUE;
 }
 
-BOOL cCollision::IntersectLinePlane( cLine& Line,cPlane& TargetPlane,D3DXVECTOR3* pCrossPos/*=NULL*/ ,D3DXVECTOR3* pReflectionVec/*=NULL*/)
-{	
-	D3DXVECTOR3 posCross;
+BOOL cCollision::IntersectLineSphereLoose( cLine& Line,cSphere& TargetSphere,float Loose/*=0.0f*/,float* pT/*=NULL*/,float* pPiercedDist/*=NULL*/,D3DXVECTOR3* pReflectionVec/*=NULL*/ )
+{
+	D3DXVECTOR3 vecLineStartToSphereCenter;	
+	D3DXVECTOR3 NearPiercedPos,FarPiercedPos;
+	float		CrossToCenter_LengthSQ;	//구의중점에서 직선에 내린 수선의길이SQ
+	float		CrossToPierced_Legnth;		//라인과수선교점에서부터 관통점까지의 길이
+	float		projection_length;	//직선시작점과 구의 중점의 내적에의한 투영길이
+	float		LooseSQ=Loose*Loose;
+
+	vecLineStartToSphereCenter= TargetSphere.GetCenterPos() - Line.GetStart();
+
+	//	 구의중점과 라인의시작점 거리검사로 원안에 라인의 시작점이 있는지 검사한다. (충돌여부만 검사할때 필요)
+	if ((pT==NULL)&&(pPiercedDist==NULL)&&(pReflectionVec==NULL))
+	{
+		if (D3DXVec3LengthSq(&vecLineStartToSphereCenter) < TargetSphere.GetRadiusSQ()+LooseSQ)		
+			return TRUE;
+	}
+
+	// 라인의 방향벡터를 기준으로 90~270 도 즉 뒤쪽으로 향하는지 검사
+	projection_length=D3DXVec3Dot(&vecLineStartToSphereCenter,&Line.GetDirection());
+	if( projection_length< 0 ) 
+		return FALSE;	
+
+	// 수선교점과 구중점사이의 거리검사
+	CrossToCenter_LengthSQ = D3DXVec3LengthSq(&vecLineStartToSphereCenter) -  projection_length*projection_length;
+	if (CrossToCenter_LengthSQ >= TargetSphere.GetRadiusSQ()+LooseSQ)
+		return FALSE;
+
+	// 이제 완전 충돌
+	// 직선의 시작점에서부터의 거리
+	if (pT!=NULL)	*pT=projection_length;
+
+	//수선교점과 관통점 사이의 거리를 구한다.
+	if (pPiercedDist!=NULL)
+	{		
+		CrossToPierced_Legnth = sqrt(TargetSphere.GetRadiusSQ()+LooseSQ - CrossToCenter_LengthSQ);
+		*pPiercedDist=CrossToPierced_Legnth;
+	}
+
+	// 반사벡터를 구한다.
+	if (pReflectionVec!=NULL)
+	{
+		D3DXVECTOR3 CrossPos,CrossNormal;
+		CrossPos= Line.GetDirection()*projection_length;
+		CrossNormal = TargetSphere.GetCenterPos() - CrossPos;
+		*pReflectionVec =  (2.0f * CrossNormal) + vecLineStartToSphereCenter;
+	}
+	return TRUE;
+}
+
+
+BOOL cCollision::IntersectLinePlane( cLine& Line,cPlane& TargetPlane,D3DXVECTOR3* pIntersectPos/*=NULL*/ ,D3DXVECTOR3* pReflectionVec/*=NULL*/)
+{		
 	D3DXPLANE tempPlane(TargetPlane.GetNormal().x,TargetPlane.GetNormal().y,TargetPlane.GetNormal().z,TargetPlane.GetDistance());
 	//평면 교점 구하기
-	if ( NULL ==  D3DXPlaneIntersectLine(&posCross,&tempPlane,&Line.GetStart(),&D3DXVECTOR3(Line.GetDirection()+Line.GetStart())) )
+	if ( NULL ==  D3DXPlaneIntersectLine(pIntersectPos,&tempPlane,&Line.GetStart(),&D3DXVECTOR3(Line.GetDirection()+Line.GetStart())) )
 		return FALSE;
 	
 	//반사벡터 구하기
 	if (pReflectionVec!=NULL)
 	{
+		assert(pIntersectPos!=NULL);
 		D3DXVECTOR3 CrossNormal,vecLineStartToCross;	
-		vecLineStartToCross = posCross - Line.GetStart();
+		vecLineStartToCross = *pIntersectPos - Line.GetStart();
 		*pReflectionVec =  (2.0f * TargetPlane.GetNormal()) + vecLineStartToCross;
 	}
 
@@ -211,3 +262,4 @@ int cCollision::IntersectAABBSphere( cAABB& AABB,cSphere& Sphere )
 	}
 	return INTERSECT;
 }
+

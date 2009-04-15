@@ -88,7 +88,6 @@ WorldTM이
 */
 void cCameraNode::Update(DWORD elapseTime)
 {
-
 	if(UpdateWorldTM())	
 	{
 		m_bViewModified=TRUE;	// 카메라가 월드변환이 바뀟었다. 뷰도 업데이트해야한다.
@@ -99,38 +98,10 @@ void cCameraNode::Update(DWORD elapseTime)
 
 void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp )
 {
-	D3DXMATRIX temp;
-//	D3DXMatrixLookAtLH(&temp,pEye,pAt,pUp);
-	D3DXVECTOR3 xaxis,yaxis,zaxis,tVector3;
-
-	tVector3=*pAt-*pEye;
-	D3DXVec3Normalize(&zaxis,&tVector3);
-
-	D3DXVec3Cross(&tVector3,pUp,&zaxis);
-	D3DXVec3Normalize(&xaxis,&tVector3);
-	D3DXVec3Cross(&yaxis,&zaxis,&xaxis);
-
-	D3DXMatrixIdentity(&temp);
-	// X axis 
-	temp._11 = xaxis.x; 
-	temp._21 = xaxis.y;
-	temp._31 = xaxis.z;
-
-	// Y axis
-	temp._12 = yaxis.x;
-	temp._22 = yaxis.y;
-	temp._32 = yaxis.z;
-
-	// Z axis
-	temp._13 = zaxis.x;
-	temp._23 = zaxis.y;
-	temp._33 = zaxis.z;	
-
-	temp._41 = pEye->x;
-	temp._42 = pEye->y;
-	temp._43 = pEye->z;
-
-	SetLocalTM(temp);
+	D3DXMATRIX temp,ViewInv;
+	D3DXMatrixLookAtLH(&temp,pEye,pAt,pUp);		// ViewMatrix	
+	D3DXMatrixInverse(&ViewInv,NULL,&temp);		// Camera World Matrix
+	SetLocalTM(ViewInv);
 	m_bViewModified=TRUE;
 }
 

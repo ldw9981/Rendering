@@ -7,7 +7,7 @@ cLine::cLine(void)
 	m_Direction=D3DXVECTOR3(0.0f,0.0f,0.0f);
 }
 
-cLine::cLine( D3DXVECTOR3& start,D3DXVECTOR3& end )
+cLine::cLine( const D3DXVECTOR3& start,const D3DXVECTOR3& end )
 {
 	Make(start,end);
 }
@@ -16,7 +16,7 @@ cLine::~cLine(void)
 {
 }
 
-void cLine::Make( D3DXVECTOR3& start,D3DXVECTOR3& end )
+void cLine::Make(const D3DXVECTOR3& start,const D3DXVECTOR3& end )
 {
 	m_Start=start;
 	D3DXVECTOR3 temp;
@@ -26,6 +26,6 @@ void cLine::Make( D3DXVECTOR3& start,D3DXVECTOR3& end )
 
 void cLine::GetPosition( const float t,D3DXVECTOR3& posOut ) 
 {
-	posOut = t * GetDirection();
+	posOut = t* GetDirection();
 	posOut += m_Start;
 }

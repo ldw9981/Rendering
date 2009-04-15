@@ -46,6 +46,8 @@ cD3DFramework::~cD3DFramework(void)
 
 void cD3DFramework::InitApplication()
 {
+	GetCurrentDirectory(1024,m_CurrDirectory);
+/*	MessageBox(NULL,m_CurrDirectory,MB_OK,0);*/
 //	m_wndclass.cbSize = sizeof(WNDCLASSEX);
 	m_wndclass.style		= CS_HREDRAW | CS_VREDRAW;
 	m_wndclass.lpfnWndProc	= WndProc;
@@ -116,7 +118,7 @@ void cD3DFramework::Run()
 
 void cD3DFramework::ProcessControlableList()
 {
-	list<cIControlable*>::iterator it_control=m_listControlable.begin();
+	list<IControlable*>::iterator it_control=m_listControlable.begin();
 	for ( ;it_control!=m_listControlable.end() ; ++it_control )
 	{
 		(*it_control)->Control();
@@ -127,7 +129,7 @@ void cD3DFramework::ProcessControlableList()
 
 void cD3DFramework::ProcessProgressableList(DWORD elapseTime)
 {	
-	list<cIUpdatable*>::iterator it=m_listProgressable.begin();
+	list<IUpdatable*>::iterator it=m_listProgressable.begin();
 
 	m_pDebugInfoScene->Update(elapseTime);
 
@@ -144,7 +146,7 @@ void cD3DFramework::ProcessRenderableList()
 	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pD3DDevice->BeginScene();
 
-	list<cIRenderable*>::iterator it=m_listRenderable.begin();
+	list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
 	{
 		(*it)->ProcessRender();
@@ -195,21 +197,21 @@ BOOL cD3DFramework::OnWM_General( MSG& msg )
 
 void cD3DFramework::AttachObject( IUnknownObject* pIUnknownObject )
 {
-	cIRenderable* pIR = dynamic_cast<cIRenderable*>(pIUnknownObject);
+	IRenderable* pIR = dynamic_cast<IRenderable*>(pIUnknownObject);
 	if(pIR != NULL)
 	{
 		m_listRenderable.push_back(pIR);
 		pIR->m_ItRenderable = --m_listRenderable.end();	
 	}
 
-	cIUpdatable* pIP = dynamic_cast< cIUpdatable *>(pIUnknownObject);
+	IUpdatable* pIP = dynamic_cast< IUpdatable *>(pIUnknownObject);
 	if(pIP != NULL)
 	{
 		m_listProgressable.push_back(pIP);
 		pIP->m_ItProgressable = --m_listProgressable.end();	
 	}
 
-	cIControlable* pIC = dynamic_cast< cIControlable *>(pIUnknownObject);
+	IControlable* pIC = dynamic_cast< IControlable *>(pIUnknownObject);
 	if(pIC != NULL)
 	{
 		m_listControlable.push_back(pIC);
@@ -219,19 +221,19 @@ void cD3DFramework::AttachObject( IUnknownObject* pIUnknownObject )
 
 void cD3DFramework::DettachObject( IUnknownObject* pIUnknownObject )
 {
-	cIRenderable* pIR = dynamic_cast<cIRenderable*>(pIUnknownObject);
+	IRenderable* pIR = dynamic_cast<IRenderable*>(pIUnknownObject);
 	if(pIR != NULL)
 	{
 		m_listRenderable.erase(pIR->m_ItRenderable);
 	}
 
-	cIUpdatable* pIP = dynamic_cast< cIUpdatable *>(pIUnknownObject);
+	IUpdatable* pIP = dynamic_cast< IUpdatable *>(pIUnknownObject);
 	if(pIP != NULL)
 	{
 		m_listProgressable.erase(pIP->m_ItProgressable);
 	}
 
-	cIControlable* pIC = dynamic_cast< cIControlable *>(pIUnknownObject);
+	IControlable* pIC = dynamic_cast< IControlable *>(pIUnknownObject);
 	if(pIC != NULL)
 	{
 		m_listControlable.erase(pIC->m_ItControlable);

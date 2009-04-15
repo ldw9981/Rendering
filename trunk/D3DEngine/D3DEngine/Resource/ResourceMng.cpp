@@ -34,10 +34,10 @@ BOOL cResourceMng::InsertResource(cResource* in )
 
 void cResourceMng::RestoreAll()
 {
-	list<cIRestore*>::iterator it=m_listRestore.begin();	
+	list<IRestore*>::iterator it=m_listRestore.begin();	
 	for ( ;it!=m_listRestore.end();++it)
 	{
-		cIRestore* pItem=*it;
+		IRestore* pItem=*it;
 		pItem->Restore();
 	}	
 }

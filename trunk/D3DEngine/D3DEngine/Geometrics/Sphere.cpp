@@ -37,21 +37,46 @@ void cSphere::Make(const D3DXVECTOR3& min,const D3DXVECTOR3& max )
 	m_Radius = sqrt(m_RadiusSQ); 
 }
 
-void cSphere::Merge(cSphere& other)
-{
-	
-	D3DXVECTOR3 temp;	
-	temp = (other.GetCenterPos() - m_CenterPos)/2.0f ;
-	m_CenterPos = m_CenterPos + temp;
+/*
+	알고리즘이 이상함
 
-	float addRadius=0.0f,addRadiusSQ=0.0f;
-	addRadius = max (m_Radius, other.GetRadius());
-	addRadiusSQ = max (m_RadiusSQ, other.GetRadiusSQ());
-	m_RadiusSQ = D3DXVec3LengthSq(&temp) + addRadiusSQ;
-	m_Radius = sqrt(m_RadiusSQ);	
+	포함관계일때 처리가 필요함
+*/
+
+void cSphere::Merge(const cSphere& other)
+{	
+	float lengthInter;
+	D3DXVECTOR3 vecInter;
+	vecInter = other.m_CenterPos - m_CenterPos;
+	lengthInter=D3DXVec3Length(&vecInter);
+	
+	if (m_Radius > lengthInter+other.m_Radius)
+	{
+		//other가 이미 포함되어있다.
+	}
+ 	else if (other.m_Radius > lengthInter+m_Radius)
+ 	{
+		//other가 this를 포함하고 있다.
+		*this=other;
+ 	}
+	else
+	{	// 포함관계가 아니다.
+		D3DXVECTOR3 temp;
+		temp = vecInter/2.0f ;
+		m_CenterPos = m_CenterPos + temp;
+
+		float addRadius=0.0f,addRadiusSQ=0.0f;
+		addRadius = max (m_Radius, other.GetRadius());
+		addRadiusSQ = max (m_RadiusSQ, other.GetRadiusSQ());
+		m_RadiusSQ = D3DXVec3LengthSq(&temp) + addRadiusSQ;
+		m_Radius = sqrt(m_RadiusSQ);	
+	}
+
+
 }
 
-cSphere& cSphere::operator =(cSphere &rhs)
+
+cSphere& cSphere::operator =(const cSphere &rhs)
 {
 	m_RadiusSQ = rhs.m_RadiusSQ;
 	m_Radius = rhs.m_Radius;

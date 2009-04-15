@@ -31,9 +31,9 @@ void cSceneMng::Update( DWORD elapseTime )
 		m_pCurrTopScene	= m_pNewTopScene;
 		m_pNewTopScene	= NULL;
  
-		m_pIRednerable = dynamic_cast<cIRenderable*>(m_pCurrTopScene);
-		m_pIProgressable = dynamic_cast<cIUpdatable*>(m_pCurrTopScene);
-		m_pIControlable = dynamic_cast<cIControlable*>(m_pCurrTopScene);
+		m_pIRednerable = dynamic_cast<IRenderable*>(m_pCurrTopScene);
+		m_pIProgressable = dynamic_cast<IUpdatable*>(m_pCurrTopScene);
+		m_pIControlable = dynamic_cast<IControlable*>(m_pCurrTopScene);
 
 		// Execute Open
 		m_pCurrTopScene->Open(NULL);

@@ -20,6 +20,7 @@ public:
 	// Sphere - Line
 	static BOOL CollisionSphereSphere( cSphere& SphereA,D3DXVECTOR3& vecA,cSphere& SphereB,D3DXVECTOR3& vecB );
 	static BOOL IntersectLineSphere(cLine& Line,cSphere& TargetSphere,float* pT=NULL,float* pPiercedDist=NULL,D3DXVECTOR3* pReflectionVec=NULL);
+	static BOOL	IntersectLineSphereLoose(cLine& Line,cSphere& TargetSphere,float Loose=0.0f,float* pT=NULL,float* pPiercedDist=NULL,D3DXVECTOR3* pReflectionVec=NULL);
 	// Sphere - Sphere
 	static BOOL IntersectSphereSphere(cSphere& SphereA,cSphere& SphereB);
 
@@ -27,7 +28,7 @@ public:
 	static int	IntersectSpherePlane(cSphere& Sphere,cPlane& TargetPlane,float *pDist=NULL,float Loose=0.0f);
 
 	// Line - Plane
-	static BOOL IntersectLinePlane(cLine& Line, cPlane& TargetPlane,D3DXVECTOR3* pCrossPos=NULL ,D3DXVECTOR3* pReflectionVec=NULL);
+	static BOOL IntersectLinePlane(cLine& Line, cPlane& TargetPlane,D3DXVECTOR3* pIntersectPos=NULL ,D3DXVECTOR3* pReflectionVec=NULL);
 
 	// Sphere - AABB
 

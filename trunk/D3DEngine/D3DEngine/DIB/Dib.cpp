@@ -1,5 +1,5 @@
 // DIB module
-#include "StdAfx.h"
+
 #include <windows.h>
 #include <stdio.h>
 #include <math.h>
@@ -21,7 +21,9 @@ LPBYTE	DibLoadHandle( LPSTR lpFileName )
 	LPBYTE				lpDib;
 	int					nSize;
 
-	if ( !(fp = fopen( lpFileName, "rb" )) ) return NULL;
+	fopen_s(&fp,lpFileName, "rb");
+	if ( !fp ) 
+		return NULL;
 
 	fread( &bmfh, sizeof(BITMAPFILEHEADER), 1, fp );
 	nSize = bmfh.bfSize - sizeof(BITMAPFILEHEADER);
@@ -44,7 +46,10 @@ bool	DibSave( LPBYTE lpDib, LPSTR lpFileName )
 	BITMAPFILEHEADER	bmfh;
 
 	if ( !lpDib || !lpFileName ) return false;
-	if ( !(fp = fopen( lpFileName, "wb" )) ) return false;
+
+	fopen_s(&fp,lpFileName,"wb");
+	if ( !fp ) 
+		return false;
 	
 	bmfh.bfType = 0x4d42;
 	bmfh.bfSize = sizeof(BITMAPFILEHEADER) + DIB_SIZE( lpDib );

@@ -28,7 +28,7 @@ struct INDEX_FACE_SUBMATERIAL
 
 class cRscIndexBuffer:
 	public cResource,
-	public cIRestore,
+	public IRestore,
 	public cStaticD3DDEVICE9
 {
 public:
@@ -45,7 +45,7 @@ public:
 	virtual	BOOL			Create();
 	virtual	void			Free();
 
-	// cIRestore
+	// IRestore
 	virtual void			Restore();
 
 	LPDIRECT3DINDEXBUFFER9	GetD3DIndexBuffer() const { return m_pD3DIndexBuffer; }

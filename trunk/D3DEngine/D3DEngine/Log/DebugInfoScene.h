@@ -24,6 +24,6 @@ public:
 
 	void				AddDebugString(LPCTSTR format, ...);
 	
-	// cINotifiable
+	// INotifiable
 	virtual void		Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

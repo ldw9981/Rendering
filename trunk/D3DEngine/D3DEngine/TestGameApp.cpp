@@ -29,6 +29,9 @@ void cTestGameApp::OnInitApplication()
 	m_pGlobalScene = new cGlobalScene;
 	GetSceneMng()->ChangeTopScene((cScene*)m_pMenuScene);
 	AttachObject(m_pGlobalScene);
+	
+
+	
 }
 
 void cTestGameApp::OnCloseApplication()
@@ -76,7 +79,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
-	cTestGameApp TestGameApp(L"TestGameApp",FALSE,1024,768);
+	cTestGameApp TestGameApp(L"spatial partitioning",FALSE,1024,768);
 	TestGameApp.Run();
 	return 0;
 }

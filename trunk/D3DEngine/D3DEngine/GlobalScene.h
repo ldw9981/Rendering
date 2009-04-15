@@ -21,6 +21,6 @@ public:
 
 	virtual void ProcessRender();
 
-	// cINotifiable
+	// INotifiable
 	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

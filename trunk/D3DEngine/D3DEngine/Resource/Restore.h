@@ -1,24 +1,24 @@
 #pragma once
 
-class cIRestore;
+class IRestore;
 class cStaticRestoreList
 {
 public:
 	cStaticRestoreList(){};
 	~cStaticRestoreList(){};
 protected:
-	static list<cIRestore*>			m_listRestore;
+	static list<IRestore*>			m_listRestore;
 };
 
-class cIRestore:
+class IRestore:
 	public cStaticRestoreList
 {
 public:
-	cIRestore(void);
-	virtual ~cIRestore(void);
-	
+	IRestore(void);
+	virtual ~IRestore(void);
 
-	list<cIRestore*>::iterator		m_ItRestore;	//자기자신을 가리키는 이터레이터의 보관
+
+	list<IRestore*>::iterator		m_ItRestore;	//자기자신을 가리키는 이터레이터의 보관
 public:
 	virtual void Restore()=0;
 };

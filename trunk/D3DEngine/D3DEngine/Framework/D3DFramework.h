@@ -7,9 +7,9 @@
 class cD3DFramework;
 
 class		IUnknownObject;
-class		cIRenderable;
-class		cIUpdatable;
-class		cIControlable;
+class		IRenderable;
+class		IUpdatable;
+class		IControlable;
 
 
 class cResourceMng;
@@ -36,13 +36,14 @@ private:
 	RECT					m_RequestRect;
 	RECT					m_AdjustRect;
 	
+	TCHAR					m_CurrDirectory[1024];
 
 	BOOL					m_bFullScreen;
 	BOOL					m_bQuitLoop;
 
-	list<cIRenderable*>		m_listRenderable;
-	list<cIUpdatable*>		m_listProgressable;
-	list<cIControlable*>	m_listControlable;
+	list<IRenderable*>		m_listRenderable;
+	list<IUpdatable*>		m_listProgressable;
+	list<IControlable*>	m_listControlable;
 
 	DWORD					m_CurrFrameTime;	// Milli Sec	
 	DWORD					m_PrevFrameTime;	// Milli Sec	

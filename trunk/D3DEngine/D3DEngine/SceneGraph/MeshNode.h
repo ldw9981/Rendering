@@ -13,7 +13,6 @@ struct BONEREFINFO
 	cMeshNode* pBoneRef;		//본은 무조건 메쉬이다	
 	D3DXMATRIX	BoneOffSetTM_INV;
 };
-
 struct BONEWEIGHT
 {
 	BYTE	bone_index;
@@ -22,41 +21,30 @@ struct BONEWEIGHT
 	{
 		if ( a->bone_weight > b->bone_weight)
 			return TRUE;
-
 		return FALSE;
 	}
 };
 
 class cMeshNode:
 	public cSceneGraphNode,
-	public cIRenderer,
+	public IRenderer,
 	private cStaticD3DDEVICE9
 {
 public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
-
 private:	
-			
-
-	vector<BONEREFINFO>		m_arrayBoneRef;				//메쉬가 참조하는 본 정보	
-	map<SUBMATINDEX,WORD>	m_mapSubIndexCount;
-	UINT					m_TotalBoneRef;
-
-	D3DXMATRIX				m_BoneOffsetTM;
-	D3DXMATRIX				m_BoneOffsetTMInv;
-
-	BOOL					m_bIsBone;
-
-	D3DXVECTOR3				m_vecVelocity;		// 속도	
-	D3DXVECTOR3				m_WorldPosOld;		// 이전 위치
-
-	UINT					m_TotalVertex;
-
-	cMaterialEx				m_Matrial;
-	cRscIndexBuffer*		m_pRscIndexBuffer;	
-	cRscVertexBuffer*		m_pRscVetextBuffer;	
+	vector<BONEREFINFO>		m_arrayBoneRef;			// fixed 메쉬가 참조하는 본 정보 
+	map<SUBMATINDEX,WORD>	m_mapSubIndexCount;		// fixed
+	UINT					m_TotalBoneRef;			// fixed
+	BOOL					m_bIsBone;				// fixed
+	UINT					m_TotalVertex;			// fixed 
+	cMaterialEx				m_Matrial;				// fixed
+	cRscIndexBuffer*		m_pRscIndexBuffer;		// fixed 
+	cRscVertexBuffer*		m_pRscVetextBuffer;		// fixed 
 	
+	D3DXVECTOR3				m_vecVelocity;			// dynamic 속도			
+	D3DXVECTOR3				m_WorldPosOld;			// dynamic 이전 위치 
 public:
 
 	UINT 					GetTotalBoneRef() const { return m_TotalBoneRef; }

@@ -3,7 +3,7 @@
 #include "Restore.h"
 
 class cResource;
-class cIRestore;
+class IRestore;
 class cRscTexture;
 class cRscVertexBuffer;
 class cRscIndexBuffer;

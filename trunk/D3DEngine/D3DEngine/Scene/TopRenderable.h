@@ -6,7 +6,7 @@
 
 class cTopRenderable:
 	public cSceneGraphNode,
-	public cIRenderable	
+	public IRenderable	
 {
 public:
 	cTopRenderable();

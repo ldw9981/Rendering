@@ -9,14 +9,14 @@
 
 cGlobalScene::cGlobalScene(void)
 {
-	SetViewPortInfo(0,0,128,128);
+	SetViewPortInfo(0,128,128,128+128);
 
-	m_pBtNextScene = new cGUIButton((cINotifiable*)this);
+	m_pBtNextScene = new cGUIButton(this);
 	m_pBtNextScene->Create(L"ButtonNextScene.bmp");
 	m_pBtNextScene->SetPos(0,0);
 	AttachObject(m_pBtNextScene);
 
-	m_pBtExit = new cGUIButton((cINotifiable*)this);
+	m_pBtExit = new cGUIButton(this);
 	m_pBtExit->Create(L"ButtonExit.bmp");
 	m_pBtExit->SetPos(0,0+64);
 	AttachObject(m_pBtExit);

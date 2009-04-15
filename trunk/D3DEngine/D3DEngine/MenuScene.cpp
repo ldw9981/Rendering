@@ -2,23 +2,28 @@
 #include "MenuScene.h"
 #include "./ASEParser/ASEParser.h"
 #include "./Framework/D3DFramework.h"
-#include "TestGameApp.h"
 #include "./Scene/SceneMng.h"
-#include "ObjTank.h"
 #include "./GUI/GUIButton.h"
 #include "./Log/DebugInfoScene.h"
+#include "TestGameApp.h"
+#include "ObjTank.h"
+
 cMenuScene::cMenuScene(void)
-:m_pTank(NULL)
+:m_pTank(NULL),m_pcTerrainNode(NULL)
 {
 	SetViewPortInfo(0,0,1024,768);
 	m_bControlCamera=FALSE;
 
 
+	LPCTSTR test=_T("DDDD");
+	TCHAR sss[100]={0,};
+	wcscat_s(sss,100,test);
  
- 	m_pZTerrain = new ZTerrain;
- 	LPCTSTR	tex[4] = { _T("ground.bmp"), _T(""), _T(""), _T("" )};
- 	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),_T("map129.bmp"),tex);
- 	AttachObject(m_pZTerrain);
+ 	m_pcTerrainNode = new cTerrainNode;
+	
+	D3DXVECTOR3 scale(20.0f,0.8f,20.0f);
+ 	m_pcTerrainNode->Create(&scale,_T("map129.bmp"),_T("ground.bmp"));
+ 	AttachObject(m_pcTerrainNode);
 
 
  	m_pTank = new cObjTank;
@@ -31,8 +36,8 @@ cMenuScene::cMenuScene(void)
 
 cMenuScene::~cMenuScene(void)
 {
- 	DettachObject(m_pZTerrain);
- 	SAFE_DELETE(m_pZTerrain);
+ 	DettachObject(m_pcTerrainNode);
+ 	SAFE_DELETE(m_pcTerrainNode);
 
 	DettachObject(m_pTank);
 	SAFE_DELETE(m_pTank);	
@@ -45,8 +50,8 @@ void cMenuScene::Open( void* arg )
 	m_Camera.SetActive();
 	m_Camera.SetPerspective(D3DXToRadian(45),1.0f,10000.0f,
 		(float)g_pD3DFramework->GetRequestRectWidth(),(float)g_pD3DFramework->GetRequestRectHeight());
-	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 100.0f, -950.0f),
-		&D3DXVECTOR3(0.0f, -1.0f, 0.0f),
+	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -2000.0f),
+		&D3DXVECTOR3(0.0f, 200.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
 }
@@ -68,20 +73,16 @@ void cMenuScene::Update( DWORD elapseTime )
 
  	D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
  	pos=m_pTank->GetWorldPos();
- 	if(!m_pZTerrain->GetHeight(pos.x,pos.z,pos.y))
+ 	if(m_pcTerrainNode->GetHeight(pos.x,pos.z,pos.y))
  	{
- 		printf("d");
- 	}
+		pos.y+=50.0f;
+		if (pos.y > 150.0f)
+		{
+			printf("d");
+		}
 
-	pos.y+=50.0f;
-	if (pos.y > 150.0f)
-	{
-		printf("d");
-	}
-
-	m_pTank->SetLocalPos(pos);
-
-	
+		m_pTank->SetLocalPos(pos);
+ 	}	
 }
 
 void cMenuScene::ProcessRender()
@@ -89,7 +90,9 @@ void cMenuScene::ProcessRender()
 	cCameraNode* pActiveCamera=cCameraNode::GetActiveCamera();
 	pActiveCamera->Render();
 
-	cScene::ProcessRender();	
+	cScene::ProcessRender();
+
+	g_pD3DFramework->GetDebugInfoScene()->AddDebugString(L"이동 wasd qe rf  카메라<->탱크 tab");
 }
 
 void cMenuScene::Control()

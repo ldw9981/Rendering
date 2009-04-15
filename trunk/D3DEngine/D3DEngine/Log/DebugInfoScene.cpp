@@ -7,7 +7,7 @@
 cDebugInfoScene::cDebugInfoScene()
 {
 	m_pFont = new cGUIFont;
-	m_bRender = FALSE;
+	m_bRender = TRUE;
 	SetViewPortInfo(0,0,
 		g_pD3DFramework->GetRequestRectWidth(),
 		g_pD3DFramework->GetRequestRectHeight());

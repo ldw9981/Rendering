@@ -1,5 +1,5 @@
 #pragma once
-#include "./GameObject.h"
+
 #include "./SceneGraph/SceneGraphNode.h"
 #include "./Common/Interface.h"
 #include "./Input/WinInput.h"
@@ -8,7 +8,7 @@
 class cObjTank:
 	public cSceneGraphNode,
 	public cStaticWinInput,
-	public cIControlable
+	public IControlable
 {
 public:
 	cObjTank(void);

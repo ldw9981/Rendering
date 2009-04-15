@@ -1,17 +1,17 @@
 #pragma once
 #include "../Common/Interface.h"
 
-class cIRenderer;
+class IRenderer;
 class cRendererQueue:
-	public cIRenderer
+	public IRenderer
 {
 public:
 	cRendererQueue();
 	~cRendererQueue();
 
 private:
-	list<cIRenderer*> m_listNode;
+	list<IRenderer*> m_listNode;
 public:
-	void	Insert(cIRenderer* pItem);
+	void	Insert(IRenderer* pItem);
 	void	Render();
 };

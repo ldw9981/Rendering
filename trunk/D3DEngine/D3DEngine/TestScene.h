@@ -21,12 +21,12 @@ public:
 	// cScene
 	virtual void Open(void* arg);
 	virtual void Close();
-	// cIControlable
+	// IControlable
 	virtual void Control();
 	
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender();
 
-	// cINotifiable
+	// INotifiable
 	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

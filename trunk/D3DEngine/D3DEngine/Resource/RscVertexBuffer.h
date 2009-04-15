@@ -17,6 +17,7 @@ struct TEXCOORD:public pair<float,float>
 
 struct NORMALVERTEX
 {	
+	enum { FVF=(D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1)   };
 	D3DXVECTOR3	vertex;		//x,y,z
 	D3DXVECTOR3 normal;		//normal
 	TEXCOORD	tex;
@@ -25,6 +26,7 @@ struct NORMALVERTEX
 
 struct BLENDVERTEX
 {
+	enum { FVF=(D3DFVF_XYZB4 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL|D3DFVF_TEX1) };
 	//x,y,z
 	D3DXVECTOR3	vertex;
 	// weight
@@ -41,14 +43,11 @@ struct BLENDVERTEX
 	TEXCOORD	tex;
 };
 
-#define FVF_NORMALVERTEX (D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1)  
-#define FVF_BLENDVERTEX (D3DFVF_XYZB4 | D3DFVF_LASTBETA_UBYTE4 | D3DFVF_NORMAL|D3DFVF_TEX1)
-
 
 // 블렌드 버텍스랑 나뉠스도있지만 일단 때려박는다.
 class cRscVertexBuffer:
 		public cResource,
-		public cIRestore,
+		public IRestore,
 		private cStaticD3DDEVICE9
 {
 public:
@@ -66,7 +65,7 @@ public:
 	virtual	BOOL			Create();	
 	virtual	void			Free();
 
-	// cIRestore
+	// IRestore
 	virtual void			Restore();
 
 	LPDIRECT3DVERTEXBUFFER9 GetD3DVertexBuffer() const { return m_pD3DVertexBuffer; }

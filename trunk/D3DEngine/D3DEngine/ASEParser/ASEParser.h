@@ -81,70 +81,68 @@ private:
 	SCENETIME			m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
 	vector<cMaterialEx>	m_arrMatrial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
 
-	cSceneGraphNode*			m_pSceneRoot;
+	cSceneGraphNode*	m_pSceneRoot;
 	LONG				m_Token;
 	CHAR				m_TokenString[MAX_PARSER_BUFFERSIZE];
-	cSceneGraphNode*			m_pLastObject;
+	cSceneGraphNode*	m_pLastObject;
 	int					m_CNTOBJECT;
 public:	
-		BOOL			SkipBlock();
-		BOOL			FindToken(LONG token);
-		LONG			GetNextASEToken();
-		float			GetFloat();	
-		int				GetInt();
-		long			GetLong();
-		BOOL			GetVector3(D3DXVECTOR3* output);
-		D3DXMATRIX&		GetMatrix();
+	BOOL				SkipBlock();
+	BOOL				FindToken(LONG token);
+	LONG				GetNextASEToken();
+	float				GetFloat();	
+	int					GetInt();
+	long				GetLong();
+	BOOL				GetVector3(D3DXVECTOR3* output);
+	D3DXMATRIX&			GetMatrix();
 
 
 	string&				GetString(); 
 	wstring&			GetWString();
-		BOOL			GetString(LPSTR pOutput);
-		BOOL			GetWString(LPWSTR pOutput);
-		BOOL			GetIdentifier(LPSTR pOutput);
+	BOOL				GetString(LPSTR pOutput);
+	BOOL				GetWString(LPWSTR pOutput);
+	BOOL				GetIdentifier(LPSTR pOutput);
 	cRscTransformAnm*	GetRscTransformAnm(const D3DXMATRIX& localTM);
 		
-		D3DXMATRIX&		GetNodeTM();
+	D3DXMATRIX&			GetNodeTM();
 
-		cSceneGraphNode*		GetRootNode() const { return m_pSceneRoot; }
-		void			SetRootNode(cSceneGraphNode* val) { m_pSceneRoot = val; }	
+	cSceneGraphNode*	GetRootNode() const { return m_pSceneRoot; }
+	void				SetRootNode(cSceneGraphNode* val) { m_pSceneRoot = val; }	
 
-		BOOL			Load(LPCTSTR strFileName,cSceneGraphNode* pOutput);
-
-
-		BOOL			Parsing_HelperObject();
-		BOOL			Parsing_GeoObject();
-		BOOL			Parsing_MaterialList();
-		BOOL			Parsing_ShapeObject();
-		BOOL			Parsing_LightObject();
-		BOOL			Parsing_CameraObject();
-		BOOL			Parsing_Group();
-		BOOL			Parsing_Scene();
+	BOOL				Load(LPCTSTR strFileName,cSceneGraphNode* pOutput);
 
 
-		template <typename T>
-		void			MergeNormalListIntoVertexList(vector<T>& arrVertex,
-			vector<INDEX_FACE_SUBMATERIAL>& arrFaceIndex,
-			const vector<VNORMAL>& arrVNormal);
-
-		void			OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
-			const vector<TEXCOORD>& arrTexCoordIn,
-			vector<FACEINDEX16>& arrTFaceIndexInOut);
-
-		template <typename T>
-		void			MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
-			vector<INDEX_FACE_SUBMATERIAL>& arrVFaceIndexInOut,
-			const vector<TEXCOORD>& arrTexCoordIn,
-			const vector<FACEINDEX16>& arrTFaceIndexIn);
+	BOOL				Parsing_HelperObject();
+	BOOL				Parsing_GeoObject();
+	BOOL				Parsing_MaterialList();
+	BOOL				Parsing_ShapeObject();
+	BOOL				Parsing_LightObject();
+	BOOL				Parsing_CameraObject();
+	BOOL				Parsing_Group();
+	BOOL				Parsing_Scene();
 
 
-		void InterpolateTransformAnm(vector<TRANSFORMANM*>& refArrayTRANSFORMANM,
-			const vector<SCLKEY*>& arraySCLKEY,			
-			const vector<ROTKEY*>& arrayROTKEY,
-			const vector<POSKEY*>& arrayPOSKEY,		
-			const D3DXMATRIX& localTM,
-			const DWORD interpolateTime
-			);
+	template <typename T>
+	void				MergeNormalListIntoVertexList(vector<T>& arrVertex,
+	vector<INDEX_FACE_SUBMATERIAL>& arrFaceIndex,
+	const vector<VNORMAL>& arrVNormal);
 
-		float GetInterpolateValue( int start_time,int end_time,int inter_time );
+	void				OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
+	const vector<TEXCOORD>& arrTexCoordIn,
+		vector<FACEINDEX16>& arrTFaceIndexInOut);
+
+	template <typename T>
+	void				MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
+		vector<INDEX_FACE_SUBMATERIAL>& arrVFaceIndexInOut,
+		const vector<TEXCOORD>& arrTexCoordIn,
+		const vector<FACEINDEX16>& arrTFaceIndexIn);
+
+	void				InterpolateTransformAnm(vector<TRANSFORMANM*>& refArrayTRANSFORMANM,
+		const vector<SCLKEY*>& arraySCLKEY,			
+		const vector<ROTKEY*>& arrayROTKEY,
+		const vector<POSKEY*>& arrayPOSKEY,		
+		const D3DXMATRIX& localTM,
+		const DWORD interpolateTime);
+
+	float GetInterpolateValue( int start_time,int end_time,int inter_time );
 };

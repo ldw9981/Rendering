@@ -7,6 +7,7 @@
 
 struct GUIVERTEX
 {
+	enum { FVF=(D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1) };
 	//x,y,z
 	D3DXVECTOR4	vertex;
 	D3DCOLOR	color;	
@@ -18,18 +19,19 @@ struct BUTTONFAN
 	GUIVERTEX vertices[4];
 };
 
-#define FVF_GUIVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)  
 
+class cScene;
 class cRscTexture;
-class cINotifiable;
+class INotifiable;
 class cGUIButton:
 	public cGUIBase
 {
 public:
-	cGUIButton(cINotifiable* pMediator);
+	cGUIButton(cScene* pMediator);
 	virtual ~cGUIButton(void);
 
 private:
+	
 	BUTTONFAN*		    m_pButtonFan;	
 	UINT 				m_ImageNumber;
 	UINT 				m_ImageIndex;

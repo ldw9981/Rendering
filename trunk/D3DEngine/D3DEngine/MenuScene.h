@@ -2,11 +2,12 @@
 #include "./Scene/Scene.h"
 #include "./SceneGraph/CameraNode.h"
 #include "./OutDoor/TerrainNode.h"
-#include "./OutDoor/ZTerrain.h"
+
+
 
 class cGUIButton;
 class cObjTank;
-class cTerrainNode;
+class cTerrainNodeNode;
 class cMenuScene :
 	public cScene	
 {
@@ -15,10 +16,10 @@ public:
 	virtual ~cMenuScene(void);
 private:
 	cCameraNode	m_Camera;
-	cTerrainNode* m_pTerrain;
+	cTerrainNodeNode* m_pTerrain;
 	
 	cObjTank*	m_pTank;
-	ZTerrain*	m_pZTerrain;
+	cTerrainNode*	m_pcTerrainNode;
 	BOOL		m_bControlCamera;
 public:	
 	virtual void Open(void* arg);
@@ -28,6 +29,6 @@ public:
 	virtual void ProcessRender();
 	virtual void Control();
 
-	// cINotifiable
+	// INotifiable
 	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

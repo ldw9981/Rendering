@@ -12,7 +12,7 @@ class cCameraNode;
 
 class cSceneGraphNode:
 	public IUnknownObject,
-	public cIUpdatable,	
+	public IUpdatable,	
 	public cTransformable
 {
 public:

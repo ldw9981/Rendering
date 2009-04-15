@@ -343,6 +343,9 @@ BOOL cASEParser::Load( LPCTSTR strFileName ,cSceneGraphNode* pOutput)
 	return	TRUE;
 }
 
+/*
+	Bone,SkinedMesh,Mesh 어느게 될지모르니 정보만 준비한후 나중에 생성하자
+*/
 BOOL cASEParser::Parsing_GeoObject()
 {	
 	UINT totalVertices=0,totalFaces=0,totalBoneRef=0,totalTVertices=0;
@@ -365,7 +368,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	//cRscIndexBuffer에 복사할 내용
 	vector<INDEX_FACE_SUBMATERIAL>		tempArrayFaceIndex;
 		
-	// 버텍스 가공을 위한 일시적인 정보
+	// cRscVertexBuffer의 버텍스 가공을 위한 일시적인 정보
 	vector<TEXCOORD>	  tempArrayTVertex;
 	vector<TEXCOORD>	  tempArrayTVertexOut;
 	vector<FACEINDEX16>	  tempArrayTFaceIndex;	
@@ -411,6 +414,13 @@ BOOL cASEParser::Parsing_GeoObject()
 					case TOKENR_TIMEVALUE:	
 						GetInt();
 						break;
+					case TOKENR_MESH_NUMBONE:
+						totalBoneRef=GetInt();
+						pNewSceneNode->SetTotalBoneRef(totalBoneRef);
+						break;
+					case TOKENR_MESH_NUMSKINWEIGHT:
+						GetInt();
+						break;	
 					case TOKENR_MESH_NUMVERTEX:
 						totalVertices=GetInt();			
 						break;
@@ -603,13 +613,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								return FALSE;				
 						}
 						break;	
-					case TOKENR_MESH_NUMBONE:
-						totalBoneRef=GetInt();
-						pNewSceneNode->SetTotalBoneRef(totalBoneRef);
-						break;
-					case TOKENR_MESH_NUMSKINWEIGHT:
-						GetInt();
-						break;	
+
 					case TOKENR_SKIN_INITTM:
 						SkipBlock();
 						break;
@@ -847,6 +851,7 @@ BOOL cASEParser::Parsing_MaterialList()
 	int nNUMMaterial,iMaterial;
 	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;	
 	if (GetToken(m_TokenString) != TOKENR_MATERIAL_COUNT)	return FALSE;	// *MATERIAL_COUNT
+
 	nNUMMaterial=GetInt();
 	for (int i=0;i<nNUMMaterial;i++)
 	{
@@ -877,13 +882,13 @@ BOOL cASEParser::Parsing_MaterialList()
 				Matrial.Specular.b=GetFloat();			
 				break;
 			case TOKENR_MATERIAL_SHINE:
-				Matrial.Multiply =GetFloat();
+				Matrial.SpecularMultiplier =GetFloat();
 				break;
 			case TOKENR_MATERIAL_SHINESTRENGTH:
 				Matrial.Power=GetFloat();
 				break;
 			case TOKENR_MATERIAL_TRANSPARENCY:
-				Matrial.Transparency=GetFloat();
+				Matrial.Alpha=GetFloat();
 				break;
 			case TOKENR_MAP_OPACITY:
 				FindToken(TOKEND_BLOCK_START);
@@ -891,10 +896,13 @@ BOOL cASEParser::Parsing_MaterialList()
 				break;
 			
 			case TOKENR_MAP_REFLECT:
-			case TOKENR_MAP_BUMP:
 			case TOKENR_MAP_REFRACT:
-				FindToken(TOKEND_BLOCK_START);
-				FindToken(TOKEND_BLOCK_END);
+				SkipBlock();
+				break;
+			case TOKENR_MAP_BUMP:
+				{
+					SkipBlock();
+				}				
 				break;
 			case TOKENR_MAP_DIFFUSE:
 				{
@@ -910,7 +918,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							cRscTexture* pRscTexture= g_pD3DFramework->GetResourceMng()->CreateRscTexture(strFileName.c_str());
 							if(pRscTexture==NULL)
 								TRACE1(L"MAP_DIFFUSE: %s 파일이없습니다.\n",strFileName.c_str());
-							Matrial.SetRscTexture(pRscTexture);
+							Matrial.SetDiffuseRscTexture(pRscTexture);
 							break;
 						}		
 					}
@@ -945,11 +953,24 @@ BOOL cASEParser::Parsing_MaterialList()
 								SubMatrial.Specular.g=GetFloat();
 								SubMatrial.Specular.b=GetFloat();			
 								break;
+							case TOKENR_MATERIAL_SHINE:
+								SubMatrial.SpecularMultiplier=GetFloat();
+								break;
+							case TOKENR_MATERIAL_SHINESTRENGTH:
+								SubMatrial.Power=GetFloat();
+								break;
+							case TOKENR_MATERIAL_TRANSPARENCY:
+								SubMatrial.Alpha=GetFloat();
+								break;
+							case TOKENR_MAP_OPACITY:
 							case TOKENR_MAP_REFLECT:
-							case TOKENR_MAP_BUMP:
 							case TOKENR_MAP_REFRACT:	
-								FindToken(TOKEND_BLOCK_START);
-								FindToken(TOKEND_BLOCK_END);
+								SkipBlock();
+								break;
+							case TOKENR_MAP_BUMP:
+								{
+									SkipBlock();
+								}								
 								break;
 							case TOKENR_MAP_DIFFUSE:
 								{
@@ -964,16 +985,12 @@ BOOL cASEParser::Parsing_MaterialList()
 											cRscTexture* pRscTexture= g_pD3DFramework->GetResourceMng()->CreateRscTexture(strFileName.c_str());
 											if(pRscTexture==NULL)
 												TRACE1(L"MAP_DIFFUSE: %s 파일이없습니다.\n",strFileName.c_str());
-											SubMatrial.SetRscTexture(pRscTexture);
+											SubMatrial.SetDiffuseRscTexture(pRscTexture);
 										break;
 										}
 									}									
 								}
 								break;							
-							case TOKENR_MAP_OPACITY:
-								if(!FindToken(TOKEND_BLOCK_START)) return FALSE;	
-								if(!FindToken(TOKEND_BLOCK_END)) return FALSE;	
-								break;
 							case TOKENR_NUMSUBMTLS:
 								{
 									ASSERT(0&&L"Matrial의 SubMatrial에서 SubMatrial을 또다시 사용하고있음");

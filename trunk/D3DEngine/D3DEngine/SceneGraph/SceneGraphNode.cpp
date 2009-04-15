@@ -10,7 +10,9 @@
 #include "../SceneGraph/MeshNode.h"
 #include "../SceneGraph/CameraNode.h"
 #include "../Geometrics/CollisionDetector.h"
-#include "../OutDoor/ZQuadTree.h"
+#include "../OutDoor/QuadTreeNode.h"
+
+
 
 // 모든 노드 이름은 초기에 루트가 되며 부모는 없다.
 cSceneGraphNode::cSceneGraphNode(void)
@@ -311,7 +313,7 @@ cSphere* cSceneGraphNode::CreateBoundingSphere()
 
 void cSceneGraphNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
 {
-	cIRenderer* pIRenderer=dynamic_cast<cIRenderer*>(this);
+	IRenderer* pIRenderer=dynamic_cast<IRenderer*>(this);
 	if (pIRenderer!=NULL)
 	{		
 		if (m_pCullingSphere!=NULL)
@@ -320,30 +322,12 @@ void cSceneGraphNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCam
 			int ret=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
 			if( ret == cCollision::OUTSIDE)
 			{	//  밖에 있는것이면 노드순회 없음
-#ifdef _DEBUG
-				wstring temp=GetNodeName();
-				temp += L" CullingSphere OUTSIDE\n";
-				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 				return;
 			}
 			else if (ret == cCollision::INSIDE)
 			{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-#ifdef _DEBUG
-				wstring temp=GetNodeName();
-				temp += L" CullingSphere INSIDE\n";
-				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 				InsertToRendererQueueTraversal(pRendererQueue,pActiveCamera);
 				return;
-			}
-			else
-			{
-#ifdef _DEBUG
-				wstring temp=GetNodeName();
-				temp += L" CullingSphere INTERSECTION\n";
-				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 			}
 		}
 		
@@ -353,20 +337,7 @@ void cSceneGraphNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCam
 			int ret=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
 			if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
 			{	
-#ifdef _DEBUG
-				wstring temp=GetNodeName();
-				temp += L" BoundingSphere INSIDE or INTERSECTION\n";
-				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 				pRendererQueue->Insert(pIRenderer);						
-			}
-			else
-			{
-#ifdef _DEBUG
-				wstring temp=GetNodeName();
-				temp += L" BoundingSphere OUTSIDE\n";
-				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 			}
 		}
 	}	
@@ -384,7 +355,7 @@ void cSceneGraphNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCam
 */
 void cSceneGraphNode::InsertToRendererQueueTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera,WORD testPlane/*=0*/ )
 {
-	cIRenderer* pIRenderer=dynamic_cast<cIRenderer*>(this);
+	IRenderer* pIRenderer=dynamic_cast<IRenderer*>(this);
 	if (pIRenderer!=NULL)
 	{
 		if (testPlane!=0 && m_pBoundingSphere!=NULL)

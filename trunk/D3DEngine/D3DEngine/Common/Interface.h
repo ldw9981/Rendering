@@ -6,35 +6,35 @@ public:
 	virtual ~IUnknownObject(){};
 };
 
-class cIRenderer
+class IRenderer
 {
 public:
 	virtual void Render()=0;
 };
 
-class cIRenderable
+class IRenderable
 {
 public:
-	list<cIRenderable*>::iterator m_ItRenderable;
+	list<IRenderable*>::iterator m_ItRenderable;
 	virtual void ProcessRender()=0;
 };
 
-class cIControlable
+class IControlable
 {
 public:
-	list<cIControlable*>::iterator m_ItControlable;
+	list<IControlable*>::iterator m_ItControlable;
 	virtual void Control()=0;
 };
 
-class cIUpdatable
+class IUpdatable
 {
 public:
-	list<cIUpdatable*>::iterator m_ItProgressable;
+	list<IUpdatable*>::iterator m_ItProgressable;
 	virtual void Update(DWORD elapseTime)=0;
 };
 
 class cGUIBase;
-class cINotifiable
+class INotifiable
 {
 public:
 	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam)=0;

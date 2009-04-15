@@ -3,8 +3,9 @@
 #include "GUIBase.h"
 #include "../Resource/RscTexture.h"
 #include "../Framework/D3DFramework.h"
+#include "../Scene/Scene.h"
 
-cGUIButton::cGUIButton(cINotifiable* pMediator)
+cGUIButton::cGUIButton(cScene* pMediator)
 {
 	SetMediator(pMediator);
 	m_pImage=NULL;
@@ -43,7 +44,7 @@ void cGUIButton::Control()
 void cGUIButton::Render()
 {
 	m_pD3DDevice->SetTexture (0, m_pImage->GetD3DTexture() );
-	m_pD3DDevice->SetFVF(FVF_GUIVERTEX);
+	m_pD3DDevice->SetFVF(GUIVERTEX::FVF);
 	m_pD3DDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &m_pButtonFan[m_ImageIndex], sizeof(GUIVERTEX));
 }
 
@@ -72,9 +73,8 @@ void cGUIButton::Create( LPCTSTR strImageFile)
 void cGUIButton::SetPos( UINT x,UINT y )
 {
 	// ViewPort영역에서 시작
- 	D3DVIEWPORT9 ViewPort;
- 	m_pD3DDevice->GetViewport(&ViewPort);
- 	m_Rect.left = ViewPort.X;
+ 	D3DVIEWPORT9 ViewPort=GetMediator()->GetViewPortInfo();
+  	m_Rect.left = ViewPort.X;
  	m_Rect.top = ViewPort.Y;
  	m_Rect.right = ViewPort.X;
  	m_Rect.bottom = ViewPort.Y;

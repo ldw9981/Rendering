@@ -10,11 +10,11 @@ cMaterialEx::cMaterialEx(void)
 	Specular	= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
 
 	Power		= 0.0f;
-	Multiply	= 0.0f;
-	Transparency = 0.0f;
+	Alpha		= 0.0f;
 
 	// 텍스쳐의 생성은 리소스매니져를 통해 생성한다.
-	m_pTexture = NULL;
+	m_pDiffuseRscTexture = NULL;
+	m_pBumpRscTexture = NULL;
 }
 
 cMaterialEx::cMaterialEx( const cMaterialEx &Other )
@@ -24,20 +24,27 @@ cMaterialEx::cMaterialEx( const cMaterialEx &Other )
 	Emissive	= Other.Emissive;
 	Power		= Other.Power;
 	Specular	= Other.Specular;
-	Multiply	= Other.Multiply;
-	Transparency = Other.Transparency;	
+	SpecularMultiplier = Other.SpecularMultiplier;
+
+	Alpha		= Other.Alpha;	
 	
 	m_arrSubMaterial = Other.m_arrSubMaterial;
 	
-	m_pTexture = Other.m_pTexture;	
-	if (m_pTexture!=NULL)
+	m_pDiffuseRscTexture = Other.m_pDiffuseRscTexture;	
+	if (m_pDiffuseRscTexture!=NULL)
 	{
-		m_pTexture->AddRef();					
-	}	
+		m_pDiffuseRscTexture->AddRef();					
+	}
+
+	m_pBumpRscTexture = Other.m_pBumpRscTexture;
+	if (m_pBumpRscTexture!=NULL)
+	{
+		m_pBumpRscTexture->AddRef();					
+	}
 }
 cMaterialEx::~cMaterialEx(void)
 {
-	SAFE_RELEASE(m_pTexture);		
+	SAFE_RELEASE(m_pDiffuseRscTexture);		
 }
 
 cMaterialEx& cMaterialEx::operator =(const cMaterialEx &Other)
@@ -47,15 +54,24 @@ cMaterialEx& cMaterialEx::operator =(const cMaterialEx &Other)
 	Emissive	= Other.Emissive;
 	Power		= Other.Power;
 	Specular	= Other.Specular;
-	Multiply	= Other.Multiply;
-	Transparency = Other.Transparency;
+	SpecularMultiplier = Other.SpecularMultiplier;
+	Alpha		= Other.Alpha;
 	
 	m_arrSubMaterial = Other.m_arrSubMaterial;
-	m_pTexture = Other.m_pTexture;	
-	if (m_pTexture!=NULL)
+
+	m_pDiffuseRscTexture = Other.m_pDiffuseRscTexture;	
+	if (m_pDiffuseRscTexture!=NULL)
 	{
-		m_pTexture->AddRef();					
+		m_pDiffuseRscTexture->AddRef();					
 	}	
+
+	m_pBumpRscTexture = Other.m_pBumpRscTexture;
+	if (m_pBumpRscTexture!=NULL)
+	{
+		m_pBumpRscTexture->AddRef();					
+	}	
+
+	
 	return *this;
 }
 
@@ -67,6 +83,52 @@ void cMaterialEx::InsertSubMaterial( cMaterialEx& SubMatrial )
 
 
 cMaterialEx* cMaterialEx::GetSubMaterial( UINT index )
+{
+	if (!m_arrSubMaterial.empty())
+	{
+		if( index >= m_arrSubMaterial.size())
+		{
+			return NULL;
+		}
+		return &m_arrSubMaterial[index];
+	}
+	return NULL;
+}
+
+
+cMaterialEx2::cMaterialEx2(void)
+{
+	Ambient		= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
+	Diffuse		= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
+	Emissive	= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);	
+	Specular	= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
+
+	Power		= 0.0f;
+	Alpha		= 0.0f;
+
+	// 텍스쳐의 생성은 리소스매니져를 통해 생성한다.
+	m_pDiffuseRscTexture = NULL;
+	m_pBumpRscTexture = NULL;
+	m_pOpacityRscTexture = NULL;
+}
+
+
+cMaterialEx2::~cMaterialEx2(void)
+{
+	SAFE_RELEASE(m_pDiffuseRscTexture);		
+	SAFE_RELEASE(m_pBumpRscTexture);		
+	SAFE_RELEASE(m_pOpacityRscTexture);		
+}
+
+
+void cMaterialEx2::InsertSubMaterial( cMaterialEx2* SubMatrial )
+{
+	m_arrSubMaterial.push_back(SubMatrial);
+}
+
+
+
+cMaterialEx2* cMaterialEx2::GetSubMaterial( UINT index )
 {
 	if (!m_arrSubMaterial.empty())
 	{

@@ -26,7 +26,7 @@ protected:
 
 class cWinInput :
 	private cStaticWinInput,
-	public cIUpdatable,
+	public IUpdatable,
 	public IUnknownObject,
 	public cStaticHWND
 {

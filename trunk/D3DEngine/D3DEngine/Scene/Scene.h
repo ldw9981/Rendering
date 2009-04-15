@@ -8,11 +8,11 @@
 class cCameraNode;
 class cScene:
 	public IUnknownObject,
-	public cIUpdatable,
-	public cIRenderable,
-	public cIControlable,
-	public cINotifiable,
-	private cStaticD3DDEVICE9,
+	public IUpdatable,
+	public IRenderable,
+	public IControlable,
+	public INotifiable,
+	public cStaticD3DDEVICE9,
 	public cStaticWinInput
 {
 public:
@@ -20,9 +20,9 @@ public:
 	cScene(cScene* pParent);
 	virtual ~cScene(void);
 private:
-	list<cIRenderable*>		m_RenderableList;
-	list<cIUpdatable*>		m_ProgressableList;
-	list<cIControlable*>	m_ControlableList;
+	list<IRenderable*>		m_RenderableList;
+	list<IUpdatable*>		m_ProgressableList;
+	list<IControlable*>		m_ControlableList;
 
 	cScene*					m_pParentScene;				// ºÎ¸ð ¾À
 	cTopRenderable			m_TopRenderable;
@@ -51,9 +51,9 @@ public:
 	virtual void			Open(void* arg)=0;
 	virtual void			Close()=0;
 
-	// cIRenderable
+	// IRenderable
 	virtual void			ProcessRender();
-	// cIUpdatable
+	// IUpdatable
 	virtual void			Update(DWORD elapseTime);
 
 	virtual void			Control();

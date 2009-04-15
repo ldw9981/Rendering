@@ -7,7 +7,7 @@
 
 class cRscTexture:
 	public cResource,
-	public cIRestore,
+	public IRestore,
 	private cStaticD3DDEVICE9
 {
 public:	
@@ -21,7 +21,7 @@ public:
 	virtual	BOOL			Create();	
 	virtual	void			Free();
 
-	// cIRestore
+	// IRestore
 	virtual void			Restore();
 
 	LPDIRECT3DTEXTURE9		GetD3DTexture() const { return m_pD3DTexture; }

@@ -9,7 +9,7 @@
 #include "Ground.h"
 #include "ObjDragon.h"
 #include "Ground.h"
-#include "BackWall.h"
+
 #include "TestScene.h"
 #include "MenuScene.h"
 #include "GlobalScene.h"

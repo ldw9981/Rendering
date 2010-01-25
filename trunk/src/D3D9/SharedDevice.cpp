@@ -1,0 +1,4 @@
+#include "SharedDevice.h"
+
+
+IMPLEMENT_SHAREDCLASS(LPDIRECT3DDEVICE9);

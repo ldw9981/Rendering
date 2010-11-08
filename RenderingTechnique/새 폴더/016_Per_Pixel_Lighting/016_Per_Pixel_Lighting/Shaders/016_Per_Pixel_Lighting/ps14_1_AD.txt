@@ -1,0 +1,10 @@
+ps.1.4
+; c0 - ambient color
+; c1 - diffuse color
+texld   r0, t0              ; base
+texld   r1, t1              ; normal map
+texcrd  r2.xyz, t2          ; L
+
+dp3_sat r5, r1_bx2, r2      ;    N.L
+mad     r5, r5, c1, c0      ;  D*N.L + A
+mul     r0, r5, r0          ; (D*N.L + A)*Base

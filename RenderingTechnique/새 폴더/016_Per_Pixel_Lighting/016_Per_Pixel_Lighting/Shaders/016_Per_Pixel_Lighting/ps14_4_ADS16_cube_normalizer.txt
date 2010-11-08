@@ -1,0 +1,23 @@
+ps.1.4
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+texld   r0, t0              ; base
+texld   r1, t1              ; normal map
+texld   r2, t2              ; Cubic Normalized L
+texld   r3, t3              ; Cubic Normalized H
+
+dp3_sat  r3, r1_bx2, r3_bx2     ; N.H
+
+dp3_sat  r3.rgb, r1_bx2, r2_bx2 ; N.L
++mul     r3.a, r3.a, r3.a       ; N.H^2
+
+mad      r3.rgb, r3, c1, c0     ; D*N.L + A
++mul     r3.a, r3.a, r3.a       ; N.H^4
+
+mul      r3.rgb, r3, r0         ; (D*N.L + A)*Base
++mul     r3.a, r3.a, r3.a       ; N.H^8
+
+mul      r3.a, r3.a, r3.a       ; N.H^16
+mad      r0, r3.a, c2, r3       ; S*N.H^16 + (D*N.L + A)*Base

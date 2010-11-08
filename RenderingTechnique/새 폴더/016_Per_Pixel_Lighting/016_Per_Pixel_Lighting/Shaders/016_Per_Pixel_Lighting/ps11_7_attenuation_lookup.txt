@@ -1,0 +1,16 @@
+ps.1.1
+
+//texcoord    t0              ; don't work, :-(
+tex         t0                ; I use 3D texture for transfer texture coordination to t0
+texm3x2pad  t1, t0_bx2
+texm3x2tex  t2, t0_bx2        ; t2 = Texture_2( u, v)
+mov         r0, t2
+
+
+/*
+ps.1.3
+//texcoord    t0              ; don't work, :-(
+tex         t0                ; I use 3D texture for transfer texture coordination to t0
+texdp3tex   t2, t0_bx2
+mov         r0, t2
+*/

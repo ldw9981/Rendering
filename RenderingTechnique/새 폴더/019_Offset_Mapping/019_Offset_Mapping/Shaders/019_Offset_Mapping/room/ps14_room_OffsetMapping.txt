@@ -1,0 +1,52 @@
+ps.1.4
+; att*( Dif*N.L*BASE + Spec*(N.H)^16 )
+
+; r0 - base
+; r1 - normal map
+; r2 - height map
+; r3 - normalization cube map
+; r4 - normalization cube map
+
+; t0 - base & normal & height
+; t2 - L for attenuation
+; t3 - L
+; t4 - H
+; t5 - eye
+
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+; c7 - 0.02, 0.02, 0.02, 1
+
+texcrd   r0.xyz, t0             ; base texture coordination
+texld    r2, t0                 ; height
+texld    r5, t5                 ; eye
+
+mul     r2.rgb, r2_bx2, c7      ; scale
+mad     r2.rgb, r2, r5_bx2, r0  ; newtexcoord = height * eye + newtexcoord
+
+phase
+
+texld    r0, r2                 ; base
+texld    r1, r2                 ; normal map
+texcrd   r2.rgb, t2             ; L for attenuation
+texld    r3, t3                 ; Cubic Normalized L vector
+texld    r4, t4                 ; Cubic Normalized H vector
+
+dp3_sat  r4, r1_bx2, r4_bx2     ; N.H
+
+dp3_sat  r1.rgb, r1_bx2, r3_bx2 ; N.L
++mul     r1.a, r4.a, r4.a       ; N.H^2
+
+mul      r1.rgb, c1, r1         ; D*N.L
++mul     r1.a, r1.a, r1.a       ; N.H^4
+
+mul      r1.rgb, r1, r0         ; D*N.L*Base
++mul     r1.a, r1.a, r1.a       ; N.H^8
+
+dp3_sat  r2.rgb, r2, r2         ; (Light Space Distance)^2
++mul     r1.a, r1.a, r1.a       ; N.H^16
+
+mad      r0.rgb, c2, r1.a, r1   ; S*N.H^16 + D*N.L*Base
+
+mul      r0.rgb, 1-r2, r0       ; att*(D*N.L*Base + S*N.H^16)

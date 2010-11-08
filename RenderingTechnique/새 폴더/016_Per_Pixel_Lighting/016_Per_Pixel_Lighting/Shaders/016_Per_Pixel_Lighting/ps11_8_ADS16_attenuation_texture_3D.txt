@@ -1,0 +1,29 @@
+ps.1.1
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+tex       t0             ; base
+tex       t1             ; normal map
+; v0                     ; L
+; v1                     ; H
+tex       t2             ; attenuation from 3D texture
+
+dp3_sat  r0, t1_bx2, v1_bx2     ; N.H
+
+dp3_sat  r1.rgb, t1_bx2, v0_bx2 ; N.L
++mul     r0.a, r0.a, r0.a       ; N.H^2
+
+mul      r0.rgb, c1, r1         ; D*N.L
++mul     r0.a, r0.a, r0.a       ; N.H^4
+
+mul      r0.rgb, r0, t0         ; D*N.L*Base
++mul     r0.a, r0.a, r0.a       ; N.H^8
+
+mul      r1.rgb, t0, c0         ; A*Base
++mul     r0.a, r0.a, r0.a       ; N.H^16
+
+mad      r0.rgb, c2, r0.a, r0   ; S*N.H^16 + D*N.L*Base
+
+mad      r0.rgb, t2, r0, r1     ; att*(D*N.L*Base + S*N.H^16) + A*Base
+

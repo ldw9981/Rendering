@@ -1,0 +1,32 @@
+ps.1.4
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+texld   r0, t0              ; base
+texld   r1, t1              ; normal map
+texld   r2, t2              ; Cubic Normalized L
+texld   r3, t3              ; Cubic Normalized H
+texcrd  r4.rgb, t4          ; Object Space Light Direction. Unit length is the light's range.
+
+dp3_sat  r3, r1_bx2, r3_bx2     ; N.H
+
+dp3_sat  r3.rgb, r1_bx2, r2_bx2 ; N.L
++mul     r3.a, r3.a, r3.a       ; N.H^2
+
+mul      r3.rgb, r3, c1         ; D*N.L
++mul     r3.a, r3.a, r3.a       ; N.H^4
+
+mul      r3.rgb, r3, r0         ; D*N.L*Base
++mul     r3.a, r3.a, r3.a       ; N.H^8
+
+dp3_sat  r4.rgb, r4, r4         ; (Light Space Distance)^2 
++mul     r3.a, r3.a, r3.a       ; N.H^16
+
+mad      r3, r3.a, c2, r3       ; S*N.H^16 + D*N.L*Base
+
+phase
+texld    r4, r4                 ; attenuation from 1D texture
+mul      r3.rgb, r4, r3         ; att*(D*N.L*Base + S*N.H^16)
+mad      r0.rgb, r0, c0, r3     ; A*Base + att*(D*N.L*Base + S*N.H^16)
++mov     r0.a, r0.r

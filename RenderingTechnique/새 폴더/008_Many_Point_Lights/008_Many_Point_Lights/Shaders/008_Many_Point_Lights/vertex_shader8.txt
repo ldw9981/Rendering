@@ -1,0 +1,94 @@
+vs.1.0              // version instruction
+
+m4x4 oPos, v0, c0   // transform vertices by view/projection matrix
+
+// v0 - pozicia vrchola
+// v1 - normalovy vektor
+
+// c0-c3 contains composite transform matrix
+// c10-c26   contains the eye-space light 0-16 position
+// c40-c56   contains the material color 0-16
+
+
+// light 0
+
+// c10 light position, v0 vertex position
+add  r0, c10, -v0		// lpos - vertex pos
+
+// normalize L vector in r0
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+
+
+// compute diffuse light, L in r0, N in v1
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0,0
+
+// apply diffuse material color
+mul  r1, r0, c40
+
+
+// light 1
+add  r0, c11, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c41, r1
+
+// light 2
+add  r0, c12, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c42, r1
+
+// light 3
+add  r0, c13, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c43, r1
+
+// light 4
+add  r0, c14, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c44, r1
+
+// light 5
+add  r0, c15, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c45, r1
+
+// light 6
+add  r0, c16, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  r1, r0, c46, r1
+
+// light 7
+add  r0, c17, -v0		// light position - vertex position
+dp3  r0.w, r0, r0		// r0.w = |r0|^2
+rsq  r0.w, r0.w			// r0.w = 1/sqrt(r0.w) = 1/|r0|
+mul  r0.xyz, r0, r0.w	// r0 - normalized L vector
+dp3  r0, r0, v1			// L.N
+max  r0, r0, c5			// max r0, (0,0,0,0)
+mad  oD0, r0, c47, r1	// oD0 output color
+

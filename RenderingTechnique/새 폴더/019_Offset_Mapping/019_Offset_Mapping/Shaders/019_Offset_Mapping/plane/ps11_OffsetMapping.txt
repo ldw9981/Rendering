@@ -1,0 +1,35 @@
+ps.1.1
+
+; textures & texture coordinations:
+; t0 - texture = (height, 1, 1), (u, v)
+; t1 - no texture, (scale*Ex, bias*Ex, u)
+; t2 - base map,   (scale*Ey, bias*Ey, v)
+
+tex         t0        ; (height, 1, 1)
+texm3x2pad  t1,  t0   ; (scale*Ex, bias*Ex, u)
+texm3x2tex  t2,  t0   ; (scale*Ey, bias*Ey, v)
+                      ; u' = (height*scale + bias)*Ex + u
+                      ; v' = (height*scale + bias)*Ey + v
+                      ; t2 = Texture_2(u', v') = base map
+mov     r0, t2
+
+
+
+
+
+/*
+ps.1.4
+
+texld  r0, t0
+texcrd r1.xyz, t1
+texcrd r2.xyz, t2
+
+dp3    r3.x, r0, r1
+dp3    r3.y, r0, r2
+mov    r3.z, r0.z
+
+phase
+
+texld r2, r3
+mov r0, r2
+*/

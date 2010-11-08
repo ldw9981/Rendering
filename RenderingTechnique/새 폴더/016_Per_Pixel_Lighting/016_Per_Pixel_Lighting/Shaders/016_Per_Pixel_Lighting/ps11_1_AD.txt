@@ -1,0 +1,11 @@
+ps.1.1
+; c0 - ambient color
+; c1 - diffuse color
+
+tex      t0      ; base texture
+tex      t1      ; normal map
+texcoord t2      ; L vector
+
+dp3_sat  r0, t1_bx2, t2_bx2     ;               max(N.L,0)
+mad      r0, r0, c1, c0         ;  DiffuseColor*max(N.L,0) + Ambient
+mul      r0, r0, t0             ; (DiffuseColor*max(N.L,0) + Ambient)*Base

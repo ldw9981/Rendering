@@ -1,0 +1,29 @@
+ps.1.1
+
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+; textures & texture coordinations:
+; t0 - texture = (height, 1, 1), (u, v)
+; t1 - no texture, (scale*Ex, bias*Ex, u)
+; t2 - base map,   (scale*Ey, bias*Ey, v)
+; t3 - cube normalizer, vector H
+
+tex         t0        ; (height, 1, 1)
+texm3x2pad  t1,  t0   ; (scale*Ex, bias*Ex, u)
+texm3x2tex  t2,  t0   ; (scale*Ey, bias*Ey, v)
+                      ; u' = (height*scale + bias)*Ex + u
+                      ; v' = (height*scale + bias)*Ey + v
+                      ; t2 = Texture_2(u', v') = normal map
+tex         t3        ; Cubic Normalized H vector
+
+dp3_sat  r1, t2_bx2, t3_bx2     ; N.H
+
+mul      r0.a, r1.a, r1.a       ; N.H^2
+mul      r0.a, r0.a, r0.a       ; N.H^4
+mul      r0.a, r0.a, r0.a       ; N.H^8
+mul      r0.a, r0.a, r0.a       ; N.H^16
+mul      r0.a, r0.a, r0.a       ; N.H^32
+mul      r0, r0.a, c2           ; S*N.H^32
+

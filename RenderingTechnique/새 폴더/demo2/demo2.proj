@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<varlist name="ProjectData">
+	<varlist name="MapInfo">
+		<varlist name="Terrain">
+			<int name="nx">1024</int>
+			<int name="ny">512</int>
+			<float name="HorizScale">10.000000</float>
+		</varlist>
+		<varlist name="Texture">
+			<int name="nx">2048</int>
+			<int name="ny">1024</int>
+		</varlist>
+		<bool name="WrapFlag">false</bool>
+	</varlist>
+	<varlist name="Files">
+		<varlist name="Maps">
+			<string name="DM">demo2_DM.dmf</string>
+			<string name="HF">demo2_HF.hf2.gz</string>
+			<string name="WM">demo2_WM.wmf</string>
+			<string name="WS">demo2_WS.hfz</string>
+			<string name="AM">demo2_AM.png</string>
+			<string name="TN">demo2_TN.jpg</string>
+			<string name="LM">demo2_LM.jpg</string>
+			<string name="TX">TX\demo2_TX.mmf</string>
+		</varlist>
+		<varlist name="Climates">
+			<string name="Temperate">C:\Program Files\Bundysoft\L3DT Standard 2.5\Resources\Climates\temperate24\Temperate24.cli.xml</string>
+		</varlist>
+	</varlist>
+</varlist>

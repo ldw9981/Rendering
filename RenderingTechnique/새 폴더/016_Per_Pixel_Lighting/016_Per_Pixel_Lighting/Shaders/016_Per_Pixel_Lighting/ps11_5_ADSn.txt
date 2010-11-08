@@ -1,0 +1,16 @@
+ps.1.1
+
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+tex         t0                ; base texture
+tex         t1                ; normal map
+texm3x2pad  t2, t1_bx2        ; u = L.N
+texm3x2tex  t3, t1_bx2        ; v = H.N, t3 = Texture_3( u, v)
+                              ; texture 3: RGB = v, A = u^exp
+
+mad      r0, t3, c1, c0       ; D*N.L + A
+mul      r1, t3.a, c2         ; S*N.H^exp
+mad      r0, r0, t0, r1       ; (D*N.L + A)*Base + S*N.H^exp
+

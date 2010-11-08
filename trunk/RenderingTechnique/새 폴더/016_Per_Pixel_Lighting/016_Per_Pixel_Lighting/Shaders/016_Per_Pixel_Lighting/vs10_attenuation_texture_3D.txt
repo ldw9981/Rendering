@@ -1,0 +1,12 @@
+vs.1.0                  // version instruction
+
+// c0-c3 contains composite transform matrix
+m4x4 oPos, v0, c0       // transform vertices by view/projection matrix
+
+// c4 lpos  Light position in Object Space
+
+//attenuation
+add  r0, c4, -v0        // L = lpos - vertex, L in object space
+mul  r0, r0, c7.x       // L/light_range
+max  r1, r0, -r0        // r1.x = abs(r0.x), ...
+mov  oT0.xyz, r1

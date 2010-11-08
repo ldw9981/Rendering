@@ -1,0 +1,6 @@
+ps.1.4
+
+texcrd  r0.rgb, t1         ; Object Space Light Direction. Unit length is the light's range.
+dp3_sat  r0, r0, r0        ; (Light Space Distance)^2
+phase
+texld   r0, r0             ; depended read, r0 = Texture_0(r0.x, r0.y, r0.z)

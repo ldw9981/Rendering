@@ -1,0 +1,18 @@
+ps.1.1
+
+; c0 - ambient color
+; c1 - diffuse color
+; c2 - specular color
+
+; textures & texture coordinations:
+; t0 - texture = (height, 1, 1), (u, v)
+; t1 - no texture, (scale*Ex, bias*Ex, u)
+; t2 - base map,   (scale*Ey, bias*Ey, v)
+
+tex         t0        ; (height, 1, 1)
+texm3x2pad  t1,  t0   ; (scale*Ex, bias*Ex, u)
+texm3x2tex  t2,  t0   ; (scale*Ey, bias*Ey, v)
+                      ; u' = (height*scale + bias)*Ex + u
+                      ; v' = (height*scale + bias)*Ey + v
+                      ; t2 = Texture_2(u', v') = base map
+mov      r0, t2

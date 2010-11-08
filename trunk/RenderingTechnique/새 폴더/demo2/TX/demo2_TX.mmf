@@ -1,0 +1,20 @@
+L3DT Mosaic master file
+#MosaicName:	TX
+#MosaicType:	tx
+#FileExt:	jpg
+#nPxlsX:	2048
+#nPxlsY:	1024
+#nMapsX:	4
+#nMapsY:	2
+#SubMapSize:	512
+#HorizScale:	5.000000
+#WrapFlag:	FALSE
+#TileState:	0	OK
+#TileState:	1	OK
+#TileState:	2	OK
+#TileState:	3	OK
+#TileState:	4	OK
+#TileState:	5	OK
+#TileState:	6	OK
+#TileState:	7	OK
+#EOF

@@ -1,0 +1,55 @@
+vs.1.0                  // version instruction
+
+// c0-c3 contains composite transform matrix
+m4x4 oPos, v0, c0       // transform vertices by view/projection matrix
+
+// v2 texture coordination
+mov  oT0.xy, v2         // height
+
+// Light Direction
+add  r0, c6, -v0  // L = lpos - vertex, L in object space
+
+// v3 Tangent,  x
+// v4 Binormal, y
+// v1 normal,   z
+
+// matrix for Object Space to Tangent Space
+// ( Tan.x  Tan.y  Tan.z ) = ( v3.x v3.y v3.z )   ( L.x )
+// ( Bin.x  Bin.y  Bin.z ) = ( v4.x v4.y v4.z ) * ( L.y )
+// ( nor.x  nor.y  nor.z ) = ( v1.x v1.y v1.z )   ( L.z )
+
+dp3  r1.x, v3, r0
+dp3  r1.y, v4, r0
+dp3  r1.z, v1, r0
+
+// normalize vector in r1
+dp3  r1.w, r1, r1       // r1.w = |r1|^2
+rsq  r1.w, r1.w         // r1.w = 1/sqrt(r0.w) = 1/|r1|
+mul  r2.xyz, r1, r1.w   // r1 - normalized L vector in texture space
+
+// Halfangle vector
+// c6 lpos = r2
+// c4 eye
+// H = HalfVector = Normalize( VertexToEyeVector + LightVector ) = Norm( V + L )
+
+add  r0, c4, -v0        // V = VertexToEyeVector = eye - vertex
+// V to Tangent Space
+dp3  r1.x, v3, r0
+dp3  r1.y, v4, r0
+dp3  r1.z, v1, r0
+
+// normalize vector in r1
+dp3  r1.w, r1, r1       // r1.w = |r1|^2
+rsq  r1.w, r1.w         // r1.w = 1/sqrt(r0.w) = 1/|r1|
+mul  r1.xyz, r1, r1.w   // r1 - normalized V vector in Tangent Space
+
+mul  r4, r1, c7         // eye vector for offset mapping
+mul  r3, r4.x, c8       // r3 = (scale*Ex, bias*Ex, 0)
+mov  r3.z, v2.x         // r3 = (scale*Ex, bias*Ex, u)
+mov  oT1.xyz, r3
+mul  r3, r4.y, c8       // r3 = (scale*Ey, bias*Ey, 0)
+mov  r3.z, v2.y         // r3 = (scale*Ey, bias*Ey, v)
+mov  oT2.xyz, r3
+
+add  r1.xyz, r1, r2     // HalfVector = V + L, in Tangent Space
+mov  oT3.xyz, r1        // Cubic Normalized Tangent Space Halfangle vector

@@ -119,6 +119,7 @@ void Server::RenderDebugString(const char* szText)
 
 void Server::LoadHLSL(const char* szFileName)
 {
+	/*
 	if (!szFileName)
 	{
 		return;
@@ -132,5 +133,7 @@ void Server::LoadHLSL(const char* szFileName)
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 	}
 	SAFE_RELEASE(pErr);
+	*/
 }
+
 }

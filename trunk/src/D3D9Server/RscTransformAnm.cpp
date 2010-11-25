@@ -23,7 +23,7 @@ BOOL cRscTransformAnm::Create()
 void cRscTransformAnm::Free()
 {
 //	for_each(m_arrayTransformAnm.begin(),m_arrayTransformAnm.end(),FuncDeleteType<TRANSFORMANM*>);
-	GetResourceMng()->EraseResource(GetUniqueKey());
+	m_ResourceMng.EraseResource(GetUniqueKey());
 	delete this;
 }
 

@@ -52,7 +52,7 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	GetResourceMng()->EraseResource(GetUniqueKey());
+	m_ResourceMng.EraseResource(GetUniqueKey());
 	delete this;
 }
 

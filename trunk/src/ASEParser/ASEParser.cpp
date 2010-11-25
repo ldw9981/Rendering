@@ -858,7 +858,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
-							cRscTexture* pRscTexture= g_pD3DFramework->GetResourceMng()->CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 							Matrial.SetRscTexture(pRscTexture);
@@ -929,7 +929,7 @@ BOOL cASEParser::Parsing_MaterialList()
 											string strFullPath = strDataPath;
 											strFullPath += strFileName;
 
-											cRscTexture* pRscTexture= g_pD3DFramework->GetResourceMng()->CreateRscTexture(strFullPath.c_str());
+											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 											if(pRscTexture==NULL)
 												TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 											SubMatrial.SetRscTexture(pRscTexture);
@@ -1713,7 +1713,7 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 
 cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 {
-	cRscTransformAnm* pRscTransformAnm = g_pD3DFramework->GetResourceMng()->CreateRscTransformAnm();
+	cRscTransformAnm* pRscTransformAnm = m_ResourceMng.CreateRscTransformAnm();
 	ANMKEY localTM_anmkey;
 	D3DXMatrixDecompose(
 		&localTM_anmkey.ScaleAccum,
@@ -2132,7 +2132,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(vector<T>& arrVertex)
 	if (!arrVertex.empty())
 	{
 		DWORD nVertices=(DWORD)arrVertex.size();
-		pVertexBuffer = g_pD3DFramework->GetResourceMng()->CreateRscVertexBuffer(sizeof(T)*nVertices);
+		pVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(sizeof(T)*nVertices);
 
 		T* pVertices=(T*)pVertexBuffer->Lock();
 		for (UINT i=0;i< arrVertex.size();i++)
@@ -2151,7 +2151,7 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(vector<INDEX_FACE_SUBMATERIAL>
 	cRscIndexBuffer* pIndexBuffer=NULL;
 	if (!arrIndex.empty())
 	{
-		pIndexBuffer = g_pD3DFramework->GetResourceMng()->CreateRscIndexBuffer(
+		pIndexBuffer = m_ResourceMng.CreateRscIndexBuffer(
 			sizeof(FACEINDEX16)*(DWORD)arrIndex.size());
 
 		FACEINDEX16* pIndices=(FACEINDEX16*)pIndexBuffer->Lock();

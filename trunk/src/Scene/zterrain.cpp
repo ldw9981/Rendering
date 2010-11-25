@@ -134,7 +134,7 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 /// 정점, 인덱스 버퍼를 생성한다.
 HRESULT	ZTerrain::_CreateVIB()
 {
- 	m_pRscVertexBuffer = g_pD3DFramework->GetResourceMng()->CreateRscVertexBuffer(m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
+ 	m_pRscVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
  	if (m_pRscVertexBuffer == NULL)
  	{
 		_Destroy();
@@ -150,7 +150,7 @@ HRESULT	ZTerrain::_CreateVIB()
 	memcpy( pVertices, m_pvHeightMap, m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX) );
 	m_pRscVertexBuffer->Unlock();
 
-	m_pRscIndexBuffer = g_pD3DFramework->GetResourceMng()->CreateRscIndexBuffer((m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
+	m_pRscIndexBuffer = m_ResourceMng.CreateRscIndexBuffer((m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
 	if (m_pRscIndexBuffer == NULL)
 	{
 		_Destroy();

@@ -168,6 +168,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\MemoryValidate.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\MemoryValidate.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Registry.cpp"
 			>
 		</File>

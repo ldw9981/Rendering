@@ -51,7 +51,7 @@ void cGUIButton::Render()
 void cGUIButton::Create( const char* strImageFile)
 {	
 	m_ImageNumber=2;
-	m_pImage=g_pD3DFramework->GetResourceMng()->CreateRscTexture(strImageFile);
+	m_pImage=m_ResourceMng.CreateRscTexture(strImageFile);
 	
 	D3DSURFACE_DESC desc;
 	m_pImage->GetD3DTexture()->GetLevelDesc(0,&desc);

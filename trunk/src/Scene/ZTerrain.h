@@ -7,6 +7,7 @@
 #include "D3D9Server/RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 #include "ZQuadTree.h"
+#include "Resource/ResourceMng.h"
 
 struct TERRAINVERTEX
 {
@@ -35,7 +36,8 @@ class cRscIndexBuffer;
 class ZTerrain:
 	public cSceneNode,
 //	public cIRenderer,
-	private StaticD3DDEVICE9
+	public StaticD3DDEVICE9,
+	public cStaticResourceMng
 {
 private:
 	int						m_cxDIB;		/// DIB의 가로픽셀수

@@ -32,8 +32,30 @@ cMeshNode::cMeshNode(void)
 
 cMeshNode::~cMeshNode(void)
 {
-	SAFE_RELEASE(m_pRscVetextBuffer);
-	SAFE_RELEASE(m_pRscIndexBuffer);
+	vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
+	vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
+
+	for ( ;it!=it_end ; it++ )
+	{
+		delete *it;
+	}	
+	m_vecSubMesh.clear();
+
+//	for_each(m_vecSubMesh.begin(),m_vecSubMesh.end(),FuncDeleteType<cMeshNode*>);
+	
+//	m_vecSubMesh.clear();
+
+	//SAFE_RELEASE(m_pRscVetextBuffer);
+	if (m_pRscVetextBuffer)
+	{
+		m_pRscVetextBuffer->Release();
+		m_pRscVetextBuffer=NULL;
+	}
+	if (m_pRscIndexBuffer)
+	{
+		m_pRscIndexBuffer->Release();
+		m_pRscIndexBuffer=NULL;
+	}
 }
 
 
@@ -176,5 +198,23 @@ void cMeshNode::BuildSubMesh()
 	for ( ;it!=m_vecSubMesh.end();++it )
 	{
 		(*it)->BuildComposite();
+	}
+}
+
+void cMeshNode::SetRscIndexBuffer( cRscIndexBuffer* val )
+{
+	m_pRscIndexBuffer = val;
+	if (val)
+	{
+		val->AddRef();
+	}
+}
+
+void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
+{
+	m_pRscVetextBuffer = val;
+	if (val)
+	{
+		val->AddRef();
 	}
 }

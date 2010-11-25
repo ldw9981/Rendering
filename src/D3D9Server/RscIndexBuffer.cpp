@@ -45,7 +45,7 @@ void cRscIndexBuffer::Restore()
 void cRscIndexBuffer::Free()
 {	
 	SAFE_RELEASE(m_pD3DIndexBuffer);
-	GetResourceMng()->EraseResource(GetUniqueKey());
+	m_ResourceMng.EraseResource(GetUniqueKey());
 	delete this;
 }
 

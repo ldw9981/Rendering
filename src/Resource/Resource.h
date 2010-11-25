@@ -26,7 +26,7 @@ public:
 
 class cResource:
 	public cReferenceCounter,
-	private cStaticResourceMng
+	public cStaticResourceMng
 {
 public:
 	cResource(void);
@@ -43,8 +43,6 @@ private:
 
 
 public:
-	cResourceMng*	GetResourceMng() { return &m_ResourceMng; }
-
 
 	void			SetFilePath(const char* szFilePath) { m_strFilePath=szFilePath; }
 	const  string&	GetFilePath() const { return m_strFilePath; }

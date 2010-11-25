@@ -4,6 +4,7 @@
 #include "Foundation/Interface.h"
 #include "WinInput/WinInput.h"
 #include "GUIBase.h"
+#include "Resource/ResourceMng.h"
 
 struct GUIVERTEX
 {
@@ -23,7 +24,9 @@ struct BUTTONFAN
 class cRscTexture;
 class INotifiable;
 class cGUIButton:
-	public cGUIBase
+	public cGUIBase,
+	private cStaticResourceMng
+
 {
 public:
 	cGUIButton(INotifiable* pMediator);

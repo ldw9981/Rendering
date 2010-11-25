@@ -8,6 +8,7 @@
 #include "D3D9Server/RscIndexBuffer.h"
 #include "D3D9Server/RscTransformAnm.h"
 
+
 cResourceMng cStaticResourceMng::m_ResourceMng;
 
 cResourceMng::cResourceMng( void )

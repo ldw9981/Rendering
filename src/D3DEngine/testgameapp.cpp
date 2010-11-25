@@ -18,7 +18,7 @@ cTestGameApp::cTestGameApp( const char* szTitleName,BOOL bFullScreen,int nWidth,
 :cD3DFramework(szTitleName,bFullScreen,nWidth,nHeight)
 {
 	m_pMenuScene=NULL;
-	m_pTestScene=NULL;
+//	m_pTestScene=NULL;
 	m_pGlobalScene=NULL;
 	
 }
@@ -52,7 +52,7 @@ bool cTestGameApp::Open()
 	
 
 	m_pMenuScene = new cMenuView;
-	m_pTestScene = new cTestView;
+//	m_pTestScene = new cTestView;
 	m_pGlobalScene = new cGlobalView;
 	GetSceneMng()->ChangeTopScene((cView*)m_pMenuScene);
 	AttachObject(m_pGlobalScene);
@@ -61,9 +61,10 @@ bool cTestGameApp::Open()
 
 void cTestGameApp::Close()
 {
-	SAFE_DELETE(m_pGlobalScene);	
-	SAFE_DELETE(m_pTestScene);
-	SAFE_DELETE(m_pMenuScene);
+//	SAFE_DELETE(m_pGlobalScene);	
+	delete	m_pGlobalScene;
+	delete	m_pMenuScene;
+
 	cD3DFramework::Close();
 }
 
@@ -105,6 +106,10 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
+
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);
 

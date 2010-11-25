@@ -21,6 +21,7 @@
 #include <vector>
 #include <iostream>
 #include <stdio.h>
+#include "Foundation/MemoryValidate.h"
 
 using namespace std;
 // TODO: reference additional headers your program requires here

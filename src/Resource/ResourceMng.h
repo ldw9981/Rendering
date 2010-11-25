@@ -37,7 +37,7 @@ class cStaticResourceMng
 public:
 	cStaticResourceMng(void){};
 	~cStaticResourceMng(void){};
-public:
+protected:
 	static cResourceMng m_ResourceMng;
 };
 

@@ -15,7 +15,7 @@ public:
 public:
 	
 	cMenuView*	m_pMenuScene;
-	cTestView*	m_pTestScene;
+//	cTestView*	m_pTestScene;
 	cGlobalView* m_pGlobalScene;
 
 public:

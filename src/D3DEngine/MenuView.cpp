@@ -45,10 +45,9 @@ cMenuView::~cMenuView(void)
  	DettachObject(m_pZTerrain);
  	SAFE_DELETE(m_pZTerrain);
 
+	
 	DettachObject(m_pTank);
 	SAFE_DELETE(m_pTank);	
-
-
 }
 
 void cMenuView::Open( void* arg )

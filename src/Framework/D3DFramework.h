@@ -93,7 +93,7 @@ public:
 	
 	// get/set
 	cViewMng*				GetSceneMng() const { return m_pSceneMng; }
-	cResourceMng*			GetResourceMng() const { return m_pResourceMng; }
+	//cResourceMng*			GetResourceMng() const { return m_pResourceMng; }
 	cWinInput*				GetInput() const { return m_pInput; }
 
 	const RECT&				GetRequestRect()  { return m_RequestRect; }

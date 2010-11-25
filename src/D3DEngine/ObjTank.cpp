@@ -9,6 +9,7 @@ cObjTank::cObjTank(void)
 
 cObjTank::~cObjTank(void)
 {
+
 }
 
 

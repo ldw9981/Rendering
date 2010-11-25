@@ -5,7 +5,7 @@
 #include "D3D9Server/RscIndexBuffer.h"
 #include "D3D9Server/RscVertexBuffer.h"
 #include "D3D9Server/RscTransformAnm.h"
-
+#include "Resource/ResourceMng.h"
 
 #define DEF_INTERPOLATE_TIME 16
 
@@ -64,7 +64,8 @@ struct VNORMAL
 };
 
 class cASEParser:
-	public cASELexer
+	public cASELexer,
+	private cStaticResourceMng
 {
 public:
 	cASEParser();

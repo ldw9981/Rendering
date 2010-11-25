@@ -34,8 +34,10 @@ public:
 
 	void					SetStartIndex(WORD val) { m_nStartIndex = val; }
 	void					SetPrimitiveCount(WORD val) { m_nPrimitiveCount = val; }	
-	void					SetRscIndexBuffer(cRscIndexBuffer* val) { m_pRscIndexBuffer = val; }	
-	void					SetRscVertextBuffer(cRscVertexBuffer* val) { m_pRscVetextBuffer = val; }
+	
+	void					SetRscIndexBuffer(cRscIndexBuffer* val);
+
+	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 
 	BOOL					GetIsBone() const { return m_bIsBone; }
 	void					SetIsBone(BOOL val) { m_bIsBone = val; }		

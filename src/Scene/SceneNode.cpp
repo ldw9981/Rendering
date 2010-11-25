@@ -31,13 +31,20 @@ cSceneNode::cSceneNode(void)
 
 cSceneNode::~cSceneNode(void)
 {
+	list<cSceneNode*>::iterator it = m_listChildNode.begin();
+	list<cSceneNode*>::iterator it_end = m_listChildNode.end();
+
+	for ( ;it!=it_end ; it++ )
+	{
+		delete *it;
+	}	
+	m_listChildNode.clear();
+
 	SAFE_DELETE(m_pCullingSphere);
+	SAFE_DELETE(m_pBoundingSphere);
 
 	if( m_pRscTransformAnm !=NULL )
 		m_pRscTransformAnm->Release();
-
-	for_each(m_listChildNode.begin(),m_listChildNode.end(),FuncDeleteType<cSceneNode*>);
-	m_listChildNode.clear();
 }
 
 void cSceneNode::SetNodeName( const char* nodename )

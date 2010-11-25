@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <string>
 #include <algorithm>
+#include "Foundation/MemoryValidate.h"
 
 using namespace std;
 // TODO: reference additional headers your program requires here

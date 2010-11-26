@@ -23,11 +23,11 @@ private:
 	cRscTexture*			m_pTexture;
 
 public:
-	cMaterialEx& operator=(const cMaterialEx &Other);
+	cMaterialEx&  operator=(const cMaterialEx &Other);
 
 
 	cRscTexture*			GetRscTexture() const { return m_pTexture; }
-	void					SetRscTexture(cRscTexture* val) { m_pTexture = val; }
+	void					SetRscTexture(cRscTexture* val);
 
 
 

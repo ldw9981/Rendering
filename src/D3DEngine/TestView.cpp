@@ -59,7 +59,7 @@ void cTestView::Control()
 {	
 	if (m_pWinInput->IsTurnDn(VK_SPACE))
 	{
-		cTestGameApp* p=(cTestGameApp*)g_pD3DFramework;
+		TestGameApp* p=(TestGameApp*)g_pD3DFramework;
 			
 		p->m_pGlobalScene->SetHide(!p->m_pGlobalScene->GetHide());
 		

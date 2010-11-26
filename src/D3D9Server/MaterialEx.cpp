@@ -14,6 +14,7 @@ cMaterialEx::cMaterialEx(void)
 	Multiply	= 0.0f;
 	Transparency = 0.0f;
 
+
 	// 텍스쳐의 생성은 리소스매니져를 통해 생성한다.
 	m_pTexture = NULL;
 }
@@ -28,11 +29,13 @@ cMaterialEx::cMaterialEx( const cMaterialEx &Other )
 	Multiply	= Other.Multiply;
 	Transparency = Other.Transparency;	
 
+
 	m_pTexture = Other.m_pTexture;	
-	if (m_pTexture!=NULL)
+	
+	if (m_pTexture)
 	{
 		m_pTexture->AddRef();					
-	}	
+	}			
 }
 cMaterialEx::~cMaterialEx(void)
 {
@@ -48,12 +51,30 @@ cMaterialEx& cMaterialEx::operator =(const cMaterialEx &Other)
 	Specular	= Other.Specular;
 	Multiply	= Other.Multiply;
 	Transparency = Other.Transparency;
-	
 
+
+	if (m_pTexture)
+	{
+		m_pTexture->Release();					
+	}
 	m_pTexture = Other.m_pTexture;	
-	if (m_pTexture!=NULL)
+	if (m_pTexture)
 	{
 		m_pTexture->AddRef();					
 	}	
+	
 	return *this;
+}
+
+void cMaterialEx::SetRscTexture( cRscTexture* val )
+{
+	if (m_pTexture)
+	{
+		m_pTexture->Release();
+	}			
+	m_pTexture = val;
+	if (m_pTexture)
+	{
+		m_pTexture->AddRef();
+	}
 }

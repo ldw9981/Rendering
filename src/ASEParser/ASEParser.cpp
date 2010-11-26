@@ -727,25 +727,49 @@ BOOL cASEParser::Parsing_GeoObject()
 	}
 
 	cSphere tempSphere;
-	if (!bSkinned)	CalculateSphere(tempAxisMin,tempAxisMax,vecTempNormalVertex,tempSphere);
-	else	CalculateSphere(tempAxisMin,tempAxisMax,vecTempBlendVertex,tempSphere);	
+	if (!bSkinned)	
+	{
+		CalculateSphere(tempAxisMin,tempAxisMax,vecTempNormalVertex,tempSphere);
+	}
+	else
+	{
+		CalculateSphere(tempAxisMin,tempAxisMax,vecTempBlendVertex,tempSphere);	
+	}
 
 	// 이제 버텍스 가공 버텍스,노말 합치기
-	if (!bSkinned)	MergeNormalListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempVertexNormal);
-	else	MergeNormalListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempVertexNormal);
+	if (!bSkinned)	
+	{
+		MergeNormalListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempVertexNormal);
+	}
+	else
+	{
+		MergeNormalListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempVertexNormal);
+	}
 
 	// 텍스쳐 좌표줄이면서 텍스쳐좌표 인덱스 수정하기, 버텍스랑 합치면서 FaceIndex수정하기 	
-	if (!bSkinned)	MergeTexCoordListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
-	else	MergeTexCoordListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
-	
+	if (!bSkinned)	
+	{
+		MergeTexCoordListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
+	}
+	else
+	{
+		MergeTexCoordListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
+	}
+
 	// 서브매트리얼 ID별로 FACEINDEX정렬
 	sort(vecTempFaceIndex.begin(),vecTempFaceIndex.end(),INDEX_FACE_SUBMATERIAL::LessFaceIndex);	
 
 	// 리소스 버텍스 버퍼   생성 -> 데이터복사 -> 메쉬셋팅
 	cRscVertexBuffer* pNewRscVertexBuffer=NULL;
-	if(!bSkinned)	pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempNormalVertex);
-	else	pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempBlendVertex);	
-	
+	if(!bSkinned)	
+	{
+		pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempNormalVertex);
+	}
+	else
+	{
+		pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempBlendVertex);	
+	}
+
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
 	cRscIndexBuffer* pNewRscIndexBuffer=NULL;	
 	pNewRscIndexBuffer = CreateRscIndexBuffer(vecTempFaceIndex);
@@ -759,13 +783,19 @@ BOOL cASEParser::Parsing_GeoObject()
 	}
 	else
 	{
-		if (!bSkinned)	pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);			
-		else	pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );		
+		if (!bSkinned)
+		{
+			pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);		
+		
+		}
+		else
+		{
+			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );	
+		}
 
-		(*((cMeshNode*)pNewSceneNode)->GetBoundingSphere())=tempSphere;
-		(*((cMeshNode*)pNewSceneNode)->GetCullingSphere())=tempSphere;	
+		pNewSceneNode->SetBoundingSphere(tempSphere);
+		pNewSceneNode->SetCullingSphere(tempSphere);
 	}
-	
 
 	
 	return TRUE;
@@ -814,13 +844,13 @@ BOOL cASEParser::Parsing_MaterialList()
 				Matrial.Specular.g=GetFloat();
 				Matrial.Specular.b=GetFloat();			
 				break;
-			case TOKENR_MATERIAL_SHINE:
+			case TOKENR_MATERIAL_SHINE:				
 				Matrial.Multiply =GetFloat();
 				break;
-			case TOKENR_MATERIAL_SHINESTRENGTH:
+			case TOKENR_MATERIAL_SHINESTRENGTH:				
 				Matrial.Power=GetFloat();
 				break;
-			case TOKENR_MATERIAL_TRANSPARENCY:
+			case TOKENR_MATERIAL_TRANSPARENCY:				
 				Matrial.Transparency=GetFloat();
 				break;
 			case TOKENR_MAP_NAME:
@@ -967,7 +997,7 @@ BOOL cASEParser::Parsing_MaterialList()
 BOOL cASEParser::Parsing_HelperObject()
 {	
 	SCENENODEINFO stInfo;
-	memset(&stInfo,0,sizeof(SCENENODEINFO));
+	
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1022,8 +1052,7 @@ BOOL cASEParser::Parsing_HelperObject()
 
 BOOL cASEParser::Parsing_ShapeObject()
 {
-	SCENENODEINFO stInfo;
-	memset(&stInfo,0,sizeof(SCENENODEINFO));
+	SCENENODEINFO stInfo;	
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1100,8 +1129,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 
 BOOL cASEParser::Parsing_LightObject()
 {	
-	SCENENODEINFO stInfo;
-	memset(&stInfo,0,sizeof(SCENENODEINFO));
+	SCENENODEINFO stInfo;	
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1191,8 +1219,7 @@ BOOL cASEParser::Parsing_LightObject()
 
 BOOL cASEParser::Parsing_CameraObject()
 {
-	SCENENODEINFO stInfo;
-	memset(&stInfo,0,sizeof(SCENENODEINFO));
+	SCENENODEINFO stInfo;	
 
 	// {
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
@@ -2082,6 +2109,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 
 		pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 		pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
+
 		pNewSceneNode->SetMatrial(m_vecMaterial[nMaterialRef]);
 		pNewSceneNode->SetBoneRef(boneRef);
 	}
@@ -2105,20 +2133,19 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			else
 			{						
 				pSubNode->SetParentNode(m_pSceneRoot);
-			}	
-
+			}				
 
 			pSubNode->SetPrimitiveCount(nPrimitiveCount);
 			pSubNode->SetStartIndex(nStartIndex);		
 
 			pSubNode->SetRscVertextBuffer(pVertexBuffer);		
-			pSubNode->SetRscIndexBuffer(pIndexBuffer);
+			pSubNode->SetRscIndexBuffer(pIndexBuffer);		
 
-			vector<cMaterialEx>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
-			pSubNode->SetMatrial(refSubMaterial[nSubMaterialIndex]);
+			pSubNode->SetMatrial(m_vecMultiSubMaterial[nMaterialRef][nSubMaterialIndex]);
 			pSubNode->SetBoneRef(boneRef);
 
 			nStartIndex+=nPrimitiveCount*3; //cnt
+
 		}			
 	}
 	return pNewSceneNode;

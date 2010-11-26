@@ -53,8 +53,8 @@ void cGlobalView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam 
 {
 	if (pSource== m_pBtNextScene)
 	{
-		/*
-		cTestGameApp* p = (cTestGameApp*)g_pD3DFramework;
+		
+		TestGameApp* p = (TestGameApp*)g_pD3DFramework;
 
 		if (g_pD3DFramework->GetSceneMng()->IsTopScene((cView*)p->m_pMenuScene))
 		{
@@ -64,7 +64,7 @@ void cGlobalView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam 
 		{
 			g_pD3DFramework->GetSceneMng()->ChangeTopScene((cView*)p->m_pMenuScene);
 		}
-		*/
+		
 	}
 	else if (pSource == m_pBtExit)
 	{

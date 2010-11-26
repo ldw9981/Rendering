@@ -62,9 +62,9 @@ BOOL cASEParser::GetVector3(D3DXVECTOR3* pOutput)
 }
 
 
-string& cASEParser::GetString()
+string cASEParser::GetString()
 {	
-	static string temp;
+	string temp;
 	// string
 	m_Token=GetToken(m_TokenString);
 	if (m_Token!=TOKEND_STRING)
@@ -360,8 +360,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	
 
 
-	SCENENODEINFO stInfo;
-	memset(&stInfo,0,sizeof(SCENENODEINFO));
+	SCENENODEINFO stInfo;	
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;

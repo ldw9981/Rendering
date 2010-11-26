@@ -231,14 +231,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\SubRenderer.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\SubRenderer.h"
-				>
-			</File>
-			<File
 				RelativePath=".\TopRenderable.cpp"
 				>
 			</File>

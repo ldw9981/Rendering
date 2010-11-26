@@ -8,7 +8,7 @@
 UINT cReferenceCounter::Release()
 { 
 	m_RefCounter--; 
-	if (m_RefCounter==0)	
+	if (m_RefCounter==1)	
 	{
 		Free();	
 		// Release후 Free실행하여 인스턴스를 delete한경우

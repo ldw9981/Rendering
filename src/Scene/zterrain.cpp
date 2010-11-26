@@ -135,6 +135,8 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 HRESULT	ZTerrain::_CreateVIB()
 {
  	m_pRscVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
+	m_pRscVertexBuffer->AddRef();
+
  	if (m_pRscVertexBuffer == NULL)
  	{
 		_Destroy();
@@ -151,6 +153,8 @@ HRESULT	ZTerrain::_CreateVIB()
 	m_pRscVertexBuffer->Unlock();
 
 	m_pRscIndexBuffer = m_ResourceMng.CreateRscIndexBuffer((m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
+	m_pRscIndexBuffer->AddRef();
+
 	if (m_pRscIndexBuffer == NULL)
 	{
 		_Destroy();

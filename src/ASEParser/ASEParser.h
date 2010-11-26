@@ -28,6 +28,16 @@ struct SCENENODEINFO
 
 	cSceneNode* pParent;
 	cRscTransformAnm* pRscTransform;
+
+	SCENENODEINFO()
+	{
+		D3DXMatrixIsIdentity(&tmNode);
+		D3DXMatrixIsIdentity(&tmInvNode);
+		D3DXMatrixIsIdentity(&tmWorld);
+		D3DXMatrixIsIdentity(&tmLocal);
+		pParent=NULL;
+		pRscTransform=NULL;
+	}
 };
 
 
@@ -91,7 +101,7 @@ public:
 		D3DXMATRIX&		GetMatrix();
 
 
-	string&				GetString(); 
+		string			GetString(); 
 	
 		BOOL			GetString(LPSTR pOutput);
 		BOOL			Getstring(LPWSTR pOutput);

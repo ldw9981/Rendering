@@ -84,9 +84,11 @@ public:
 	void				RenderChildren();
 	void				FreeChildren();
 
+	void				SetCullingSphere(cSphere& Sphere);
 	cSphere*			GetCullingSphere() const { return m_pCullingSphere; }
 	cSphere*			CreateCullingSphere();
 
+	void				SetBoundingSphere(cSphere& Sphere);
 	cSphere*			GetBoundingSphere() const { return m_pBoundingSphere; }
 	cSphere*			CreateBoundingSphere();
 

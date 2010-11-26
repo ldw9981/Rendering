@@ -14,20 +14,20 @@
 
 using namespace D3D9;
 
-cTestGameApp::cTestGameApp( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight)
+TestGameApp::TestGameApp( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight)
 :cD3DFramework(szTitleName,bFullScreen,nWidth,nHeight)
 {
 	m_pMenuScene=NULL;
-//	m_pTestScene=NULL;
+	m_pTestScene=NULL;
 	m_pGlobalScene=NULL;
 	
 }
 
-cTestGameApp::~cTestGameApp(void)
+TestGameApp::~TestGameApp(void)
 {
 }
 
-bool cTestGameApp::Open()
+bool TestGameApp::Open()
 {
 	if(!cD3DFramework::Open())
 		return false;
@@ -52,35 +52,35 @@ bool cTestGameApp::Open()
 	
 
 	m_pMenuScene = new cMenuView;
-//	m_pTestScene = new cTestView;
+	m_pTestScene = new cTestView;
 	m_pGlobalScene = new cGlobalView;
 	GetSceneMng()->ChangeTopScene((cView*)m_pMenuScene);
 	AttachObject(m_pGlobalScene);
 	return true;
 }
 
-void cTestGameApp::Close()
+void TestGameApp::Close()
 {
-//	SAFE_DELETE(m_pGlobalScene);	
-	delete	m_pGlobalScene;
+	delete  m_pGlobalScene;	
+	delete	m_pTestScene;
 	delete	m_pMenuScene;
 
 	cD3DFramework::Close();
 }
 
 
-BOOL cTestGameApp::OnWM_Keyboard( MSG& msg )
+BOOL TestGameApp::OnWM_Keyboard( MSG& msg )
 {
 	return FALSE;
 }
 
 
-BOOL cTestGameApp::OnWM_Mouse( MSG& msg )
+BOOL TestGameApp::OnWM_Mouse( MSG& msg )
 {
 	return FALSE;
 }
 
-BOOL cTestGameApp::OnWM_General( MSG& msg )
+BOOL TestGameApp::OnWM_General( MSG& msg )
 {
 	switch(msg.message)
 	{
@@ -108,12 +108,12 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(224115);
+	//_CrtSetBreakAlloc(256161);
 
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);
 
-	cTestGameApp TestGameApp("TestGameApp",FALSE,1024,768);
+	TestGameApp TestGameApp("TestGameApp",FALSE,1024,768);
 	if(TestGameApp.Open())
 	{
 		TestGameApp.Run();

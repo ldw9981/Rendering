@@ -336,6 +336,10 @@ void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
 	this->SetLocalTM(stInfo.tmLocal);
 	this->SetWorldTM(stInfo.tmWorld);
 	this->SetRscTransformAnm(stInfo.pRscTransform);
+	if (m_pRscTransformAnm)
+	{
+		m_pRscTransformAnm->AddRef();
+	}	
 }
 
 void cSceneNode::SerializeIn( fstream& in )
@@ -358,5 +362,21 @@ void cSceneNode::SerializeOut( fstream& out )
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->SerializeIn(out);
+	}
+}
+
+void cSceneNode::SetBoundingSphere( cSphere& Sphere )
+{
+	if (m_pBoundingSphere)
+	{
+		*m_pBoundingSphere = Sphere;
+	}
+}
+
+void cSceneNode::SetCullingSphere( cSphere& Sphere )
+{
+	if (m_pCullingSphere)
+	{
+		*m_pCullingSphere = Sphere;
 	}
 }

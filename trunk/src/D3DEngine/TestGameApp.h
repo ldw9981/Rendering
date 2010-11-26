@@ -6,16 +6,16 @@ class cTestView;
 class cMenuView;
 class cGlobalView;
 
-class cTestGameApp :
+class TestGameApp :
 	public cD3DFramework
 {
 public:
-	cTestGameApp(const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight);
-	virtual ~cTestGameApp(void);
+	TestGameApp(const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight);
+	virtual ~TestGameApp(void);
 public:
 	
 	cMenuView*	m_pMenuScene;
-//	cTestView*	m_pTestScene;
+	cTestView*	m_pTestScene;
 	cGlobalView* m_pGlobalScene;
 
 public:

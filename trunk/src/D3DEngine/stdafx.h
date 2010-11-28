@@ -59,7 +59,7 @@
 #include <MMSystem.h>
 
 #include "Foundation/Define.h"
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 
 //using namespace boost;
 using namespace std;

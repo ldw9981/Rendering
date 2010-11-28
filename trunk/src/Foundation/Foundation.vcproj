@@ -160,19 +160,19 @@
 			>
 		</File>
 		<File
+			RelativePath=".\HeapValidator.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\HeapValidator.h"
+			>
+		</File>
+		<File
 			RelativePath=".\Interface.cpp"
 			>
 		</File>
 		<File
 			RelativePath=".\Interface.h"
-			>
-		</File>
-		<File
-			RelativePath=".\MemoryValidate.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\MemoryValidate.h"
 			>
 		</File>
 		<File

@@ -92,10 +92,8 @@ bool Server::Init()
 	m_pD3DDevice->SetRenderState(D3DRS_LIGHTING,TRUE);
 	
 
-	m_pNewFont = new cGUIFont();
-	
+	m_pNewFont = new cGUIFont();	
 
-	
 
 
 	

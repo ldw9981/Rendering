@@ -11,6 +11,7 @@
 #include "Framework/D3DFramework.h"
 #include "D3D9Server/Server.h"
 #include "Framework/environmentVariable.h"
+#include "Foundation/HeapValidator.h"
 
 using namespace D3D9;
 
@@ -106,10 +107,9 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
-
-	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-	//_CrtSetBreakAlloc(256161);
-
+	HeapValidator::SetDbgFlag();
+	//MemoryValidator::SetBreakAlloc(133);	
+	
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);
 
@@ -120,5 +120,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 	TestGameApp.Close();
 	
+	HeapValidator::CheckMemory();
 	return 0;
 }

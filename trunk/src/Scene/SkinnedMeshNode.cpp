@@ -75,12 +75,12 @@ void SkinnedMeshNode::Render()
 
 	
 	//메쉬에 사용될 매트리얼 얻기
-	cMaterialEx* pMaterial=&m_Matrial;
+	Material* pMaterial=&m_Matrial;
 	cRscTexture* pRscTexture=NULL;
 
 
 	//텍스쳐 적용
-	pRscTexture=pMaterial->GetRscTexture();
+	pRscTexture=pMaterial->GetMapDiffuse();
 	if (pRscTexture!=NULL)	
 		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
 	else

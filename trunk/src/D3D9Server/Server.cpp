@@ -90,20 +90,13 @@ bool Server::Init()
 	m_pD3DDevice->SetLight(0,&light);
 	m_pD3DDevice->LightEnable(0,TRUE);
 	m_pD3DDevice->SetRenderState(D3DRS_LIGHTING,TRUE);
-	
-
 	m_pNewFont = new cGUIFont();	
-
-
-
-	
 	return true;
 }
 
 void Server::Uninit()
 {
-	SAFE_DELETE(m_pNewFont);
-	
+	SAFE_DELETE(m_pNewFont);	
 	SAFE_RELEASE(m_pD3DDevice);
 	SAFE_RELEASE(m_pD3D9);
 }

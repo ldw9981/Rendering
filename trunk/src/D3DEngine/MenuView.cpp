@@ -31,7 +31,7 @@ cMenuView::cMenuView(void)
 
  	m_pTank = new cObjTank;
  	cASEParser parser;
- 	parser.Load(string(strDataPath+"box.ASE").c_str(),m_pTank);
+ 	parser.Load(string(strDataPath+"TigerTank.ASE").c_str(),m_pTank);
  	
 	
 	m_pTank->BuildComposite();

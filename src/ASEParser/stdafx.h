@@ -22,7 +22,7 @@
 #include <algorithm>
 #include <MMSystem.h>
 #include <assert.h>
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 
 using namespace std;
 

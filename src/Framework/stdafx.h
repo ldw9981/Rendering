@@ -22,7 +22,7 @@
 #include <assert.h>
 #include <string>
 #include <sstream>
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 
 using namespace std;
 

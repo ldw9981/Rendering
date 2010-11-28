@@ -32,6 +32,6 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 
 // TODO: reference additional headers your program requires here

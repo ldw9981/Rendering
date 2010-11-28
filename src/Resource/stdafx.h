@@ -21,6 +21,6 @@
 
 #include <d3dx9.h>
 #include <assert.h>
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 using namespace std;
 // TODO: reference additional headers your program requires here

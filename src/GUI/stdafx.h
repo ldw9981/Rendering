@@ -17,7 +17,7 @@
 #include <list>
 #include <assert.h>
 #include <map>
-#include "Foundation/MemoryValidate.h"
+#include "Foundation/HeapValidator.h"
 
 using namespace std;
 

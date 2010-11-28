@@ -3,7 +3,7 @@
 #include "D3D9Server/RscTexture.h"
 #include "Foundation/Define.h"
 
-cMaterialEx::cMaterialEx(void)
+Material::Material(void)
 {
 	Ambient		= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
 	Diffuse		= D3DXCOLOR(0.0f,0.0f,0.0f,0.0f);
@@ -16,10 +16,12 @@ cMaterialEx::cMaterialEx(void)
 
 
 	// 텍스쳐의 생성은 리소스매니져를 통해 생성한다.
-	m_pTexture = NULL;
+	m_pMapDiffuse = NULL;
+	m_pMapBump = NULL;
+	m_pMapRefract = NULL;
 }
 
-cMaterialEx::cMaterialEx( const cMaterialEx &Other )
+Material::Material( const Material &Other )
 {
 	Ambient		= Other.Ambient;
 	Diffuse		= Other.Diffuse;
@@ -30,19 +32,32 @@ cMaterialEx::cMaterialEx( const cMaterialEx &Other )
 	Transparency = Other.Transparency;	
 
 
-	m_pTexture = Other.m_pTexture;	
-	
-	if (m_pTexture)
+	m_pMapDiffuse = Other.m_pMapDiffuse;		
+	if (m_pMapDiffuse)
 	{
-		m_pTexture->AddRef();					
+		m_pMapDiffuse->AddRef();					
 	}			
+
+	m_pMapBump = Other.m_pMapBump;
+	if (m_pMapBump)
+	{
+		m_pMapBump->AddRef();					
+	}
+
+	m_pMapRefract = Other.m_pMapRefract;
+	if (m_pMapRefract)
+	{
+		m_pMapRefract->AddRef();					
+	}
 }
-cMaterialEx::~cMaterialEx(void)
+Material::~Material(void)
 {
-	SAFE_RELEASE(m_pTexture);		
+	SAFE_RELEASE(m_pMapDiffuse);		
+	SAFE_RELEASE(m_pMapBump);
+	SAFE_RELEASE(m_pMapRefract);
 }
 
-cMaterialEx& cMaterialEx::operator =(const cMaterialEx &Other)
+Material& Material::operator =(const Material &Other)
 {
 	Ambient		= Other.Ambient;
 	Diffuse		= Other.Diffuse;
@@ -53,28 +68,88 @@ cMaterialEx& cMaterialEx::operator =(const cMaterialEx &Other)
 	Transparency = Other.Transparency;
 
 
-	if (m_pTexture)
+	if (m_pMapDiffuse)
 	{
-		m_pTexture->Release();					
+		m_pMapDiffuse->Release();					
 	}
-	m_pTexture = Other.m_pTexture;	
-	if (m_pTexture)
+	m_pMapDiffuse = Other.m_pMapDiffuse;	
+	if (m_pMapDiffuse)
 	{
-		m_pTexture->AddRef();					
+		m_pMapDiffuse->AddRef();					
+	}	
+
+	if (m_pMapBump)
+	{
+		m_pMapBump->Release();					
+	}
+	m_pMapBump = Other.m_pMapBump;	
+	if (m_pMapBump)
+	{
+		m_pMapBump->AddRef();					
 	}	
 	
+	if (m_pMapRefract)
+	{
+		m_pMapRefract->Release();					
+	}
+	m_pMapRefract = Other.m_pMapRefract;	
+	if (m_pMapRefract)
+	{
+		m_pMapRefract->AddRef();					
+	}
 	return *this;
 }
 
-void cMaterialEx::SetRscTexture( cRscTexture* val )
+void Material::SetMapDiffuse( cRscTexture* val )
 {
-	if (m_pTexture)
+	if (m_pMapDiffuse)
 	{
-		m_pTexture->Release();
+		m_pMapDiffuse->Release();
 	}			
-	m_pTexture = val;
-	if (m_pTexture)
+	m_pMapDiffuse = val;
+	if (m_pMapDiffuse)
 	{
-		m_pTexture->AddRef();
+		m_pMapDiffuse->AddRef();
+	}
+}
+
+cRscTexture* Material::GetMapDiffuse() const
+{
+	return m_pMapDiffuse;
+}
+
+cRscTexture* Material::GetMapBump() const
+{
+	return m_pMapBump;
+}
+
+void Material::SetMapBump( cRscTexture* val )
+{	
+	if (m_pMapBump)
+	{
+		m_pMapBump->Release();
+	}			
+	m_pMapBump = val;
+	if (m_pMapBump)
+	{
+		m_pMapBump->AddRef();
+	}
+}
+
+cRscTexture* Material::GetMapRefract() const
+{
+	return m_pMapRefract;
+}
+
+void Material::SetMapRefract( cRscTexture* val )
+{
+	if (m_pMapRefract)
+	{
+		m_pMapRefract->Release();
+	}			
+	m_pMapRefract = val;
+	if (m_pMapRefract)
+	{
+		m_pMapRefract->AddRef();
 	}
 }

@@ -82,8 +82,8 @@ public:
 	virtual ~cASEParser(void);
 private:	
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
-	vector<cMaterialEx>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
-	vector<vector<cMaterialEx>>		m_vecMultiSubMaterial;
+	vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
+	vector<vector<Material>>		m_vecMultiSubMaterial;
 
 	cSceneNode*			m_pSceneRoot;
 	LONG				m_Token;

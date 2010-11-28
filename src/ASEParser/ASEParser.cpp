@@ -815,8 +815,8 @@ BOOL cASEParser::Parsing_MaterialList()
 	
 	for (int i=0;i<nMaterialCount;i++)
 	{
-		cMaterialEx Matrial;		
-		vector<cMaterialEx> vecSubMatrial;
+		Material Matrial;		
+		vector<Material> vecSubMatrial;
 		m_vecMultiSubMaterial.push_back(vecSubMatrial);
 
 		if(GetToken(m_TokenString) != TOKENR_MATERIAL)		// *MATERIAL	
@@ -864,7 +864,53 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_OPACITY:
 			case TOKENR_MAP_REFLECT:
 			case TOKENR_MAP_REFRACT:
+				{
+					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+						return FALSE;						
+					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+					{
+						switch(m_Token)
+						{
+						case TOKENR_BITMAP:
+
+							string strFileName=GetString().c_str();							
+							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							string strFullPath = strDataPath;
+							strFullPath += strFileName;
+
+							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+							if(pRscTexture==NULL)
+								TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
+							Matrial.SetMapRefract(pRscTexture);
+							break;
+						}		
+					}
+				}
+				break;
 			case TOKENR_MAP_BUMP:
+				{
+					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+						return FALSE;						
+					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+					{
+						switch(m_Token)
+						{
+						case TOKENR_BITMAP:
+
+							string strFileName=GetString().c_str();							
+							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							string strFullPath = strDataPath;
+							strFullPath += strFileName;
+
+							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+							if(pRscTexture==NULL)
+								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
+							Matrial.SetMapBump(pRscTexture);
+							break;
+						}		
+					}
+				}
+				break;
 			case TOKENR_MAP_SELFILLUM:
 			case TOKENR_MAP_AMBIENT:
 			case TOKENR_MAP_SHINESTRENGTH:
@@ -890,7 +936,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
-							Matrial.SetRscTexture(pRscTexture);
+							Matrial.SetMapDiffuse(pRscTexture);
 							break;
 						}		
 					}
@@ -902,7 +948,7 @@ BOOL cASEParser::Parsing_MaterialList()
 					int nNUMSUBMTLS=GetInt();
 					for (int iNUMSUBMTLS=0 ; iNUMSUBMTLS < nNUMSUBMTLS ; iNUMSUBMTLS++)
 					{
-						cMaterialEx SubMatrial;						
+						Material SubMatrial;						
 						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
 						GetInt();						// index
 						if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;						
@@ -936,7 +982,51 @@ BOOL cASEParser::Parsing_MaterialList()
 							case TOKENR_MAP_OPACITY:
 							case TOKENR_MAP_REFLECT:
 							case TOKENR_MAP_REFRACT:
+								{
+									if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+										return FALSE;						
+									while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+									{
+										switch(m_Token)
+										{
+										case TOKENR_BITMAP:
+
+											string strFileName=GetString().c_str();							
+											string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+											string strFullPath = strDataPath;
+											strFullPath += strFileName;
+
+											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+											if(pRscTexture==NULL)
+												TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
+											SubMatrial.SetMapRefract(pRscTexture);
+											break;
+										}		
+									}
+								}
 							case TOKENR_MAP_BUMP:
+								{
+									if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+										return FALSE;						
+									while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+									{			
+										switch(m_Token)
+										{
+										case TOKENR_BITMAP:
+											string strFileName=GetString().c_str();							
+											string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+											string strFullPath = strDataPath;
+											strFullPath += strFileName;
+
+											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+											if(pRscTexture==NULL)
+												TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
+											SubMatrial.SetMapBump(pRscTexture);
+											break;
+										}
+									}	
+								}
+								break;
 							case TOKENR_MAP_SELFILLUM:
 							case TOKENR_MAP_AMBIENT:
 							case TOKENR_MAP_SHINESTRENGTH:
@@ -961,7 +1051,7 @@ BOOL cASEParser::Parsing_MaterialList()
 											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 											if(pRscTexture==NULL)
 												TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
-											SubMatrial.SetRscTexture(pRscTexture);
+											SubMatrial.SetMapDiffuse(pRscTexture);
 										break;
 										}
 									}									
@@ -2050,7 +2140,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			pSubNode->SetRscVertextBuffer(pVertexBuffer);		
 			pSubNode->SetRscIndexBuffer(pIndexBuffer);
 
-			vector<cMaterialEx>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
+			vector<Material>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
 			pSubNode->SetMatrial(refSubMaterial[nSubMaterialIndex]);
 
 			nStartIndex+=nPrimitiveCount*3; //cnt

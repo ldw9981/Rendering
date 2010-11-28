@@ -23,7 +23,7 @@ protected:
 	int						m_nStartIndex;
 	int						m_nPrimitiveCount;
 
-	cMaterialEx				m_Matrial;
+	Material				m_Matrial;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
 	vector<cMeshNode*>		m_vecSubMesh;
@@ -42,7 +42,7 @@ public:
 	BOOL					GetIsBone() const { return m_bIsBone; }
 	void					SetIsBone(BOOL val) { m_bIsBone = val; }		
 
-	void					SetMatrial(cMaterialEx& val) { m_Matrial = val; }	
+	void					SetMatrial(Material& val) { m_Matrial = val; }	
 
 
 	void					AddMultiSub(cMeshNode* mesh);	

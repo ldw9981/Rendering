@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="d3d9.lib"
+				AdditionalLibraryDirectories="d3d9.lib;DxErr.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -123,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="d3d9.lib"
+				AdditionalLibraryDirectories="d3d9.lib;dxerr.lib"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -237,6 +237,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\..\data\hlsl.fx"
+			>
+		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

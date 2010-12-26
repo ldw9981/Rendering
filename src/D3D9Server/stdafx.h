@@ -19,6 +19,8 @@
 
 #include <d3d9.h>
 #include <d3dx9.h>
+#include <DxErr.h>
+
 #include <tchar.h>
 #include <assert.h>
 #include <string>

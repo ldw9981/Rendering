@@ -31,7 +31,8 @@ cMenuView::cMenuView(void)
 
  	m_pTank = new cObjTank;
  	cASEParser parser;
- 	parser.Load(string(strDataPath+"TigerTank.ASE").c_str(),m_pTank);
+ 	parser.Load(string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
+	//parser.Load(string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
  	
 	
 	m_pTank->BuildComposite();
@@ -55,7 +56,7 @@ void cMenuView::Open( void* arg )
 	m_Camera.SetActive();
 	m_Camera.SetPerspective(D3DXToRadian(45),1.0f,10000.0f,
 		(float)g_pD3DFramework->GetRequestRectWidth(),(float)g_pD3DFramework->GetRequestRectHeight());
-	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 100.0f, -950.0f),
+	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 0.0f, -500.0f),
 		&D3DXVECTOR3(0.0f, -1.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 

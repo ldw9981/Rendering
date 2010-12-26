@@ -18,9 +18,11 @@
 #include <list>
 #include <vector>
 #include <map>
-#include <tchar.h>
+//#include <tchar.h>
 #include <algorithm>
 #include <MMSystem.h>
-#include "Foundation/HeapValidator.h"
+
+#include <string>
+
 using namespace std;
 // TODO: reference additional headers your program requires here

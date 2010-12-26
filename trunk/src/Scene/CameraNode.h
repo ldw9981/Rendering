@@ -30,6 +30,8 @@ private:
 	D3DXMATRIX			m_matProjection;
 	D3DXMATRIX			m_matView;		
 	D3DXMATRIX			m_matViewProjection;
+	
+	
 	D3DXMATRIX			m_matViewProjectionInv;
 
 	float				m_FOV;
@@ -70,6 +72,9 @@ public:
 	cCollision::STATE					CheckWorldFrustum(cSphere* pSphere);
 	cCollision::STATE					CheckWorldFrustumWithoutYAxis(cSphere* pSphere);
 	BOOL				InsideWorldFrustum(D3DXVECTOR3& pos);
+	const D3DXMATRIX&	GetMatViewProjection() { return m_matViewProjection; }
+	const D3DXMATRIX&	GetMatView() { return m_matView; }
+	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }
 	cPlane&				GetWorldFrustumPlane(int side);
 	void				SetActive();	
 	

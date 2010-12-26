@@ -64,6 +64,7 @@ void cDebugInfoView::ProcessRender()
 
 void cDebugInfoView::AddDebugString( const char* format, ... )
 {
+	/*
 	va_list argptr;
 	char    buf[1024];
 	int i;
@@ -82,6 +83,7 @@ void cDebugInfoView::AddDebugString( const char* format, ... )
 		buf[i+1] = 0;
 	}
 	m_DebugString += buf;
+	*/
 
 }
 

@@ -45,6 +45,7 @@
 #include <D3dx9tex.h>
 #include <d3dx9core.h>
 #include <d3dx9math.h>
+#include <DxErr.h>
 
 #include <list>
 #include <vector>

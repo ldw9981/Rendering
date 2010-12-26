@@ -8,6 +8,7 @@
 #include "Math/Line.h"
 #include "CameraNode.h"
 #include "Foundation/Define.h"
+#include "D3D9Server/Server.h"
 
 cCameraNode*	cCameraNode::m_pActiveCamera=NULL;
 
@@ -55,12 +56,21 @@ void cCameraNode::Render()
 	if (m_bViewModified)
 	{		
 		D3DXMatrixInverse(&m_matView,NULL,&GetWorldTM());		
-		m_pD3DDevice->SetTransform (D3DTS_VIEW, &m_matView );				
+#ifdef USE_EFFECT
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
+#else
+		m_pD3DDevice->SetTransform (D3DTS_VIEW, &m_matView );		
+#endif
 	}	
 	if ( m_bProjectionModified)
 	{
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
+#ifdef USE_EFFECT
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmProjection,&m_matProjection);
+#else
 		m_pD3DDevice->SetTransform (D3DTS_PROJECTION, &m_matProjection );
+#endif
+		
 	}		
 
 	//둘중 하나라도 바뀌었다면 월드프러스텀 플랜을 다시만든다.
@@ -69,7 +79,7 @@ void cCameraNode::Render()
 		m_matViewProjection = m_matView * m_matProjection;				
 		m_bProjectionModified=FALSE;
 		m_bViewModified=FALSE;
-		MakeWorldFrustum();		
+		MakeWorldFrustum();	
 	}		
 }
 
@@ -305,6 +315,7 @@ void cCameraNode::MakeWorldPickingRay( float ScreenX,float ScreenY,cLine& Output
 	D3DXMatrixInverse(&matViewProjectionInv,NULL,&m_matViewProjection);
 
 	D3DXVec3TransformCoord(&posStart,&posStart,&matViewProjectionInv);
+
 	D3DXVec3TransformCoord(&posEnd,&posEnd,&matViewProjectionInv);	
 	Output.Make(posStart,posEnd);
 }

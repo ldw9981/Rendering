@@ -7,6 +7,8 @@
 #include "Math/Sphere.h"
 #include "Math/CollisionDetector.h"
 #include "D3D9Server/RscTexture.h"
+#include "D3D9Server/Server.h"
+
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
 
@@ -78,7 +80,21 @@ void cMeshNode::Update(DWORD elapseTime)
 void cMeshNode::Render()
 {		
 	//IndexBuffer,VertexBuffer셋팅
+
+#ifdef USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
+#else
 	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldTM );	
+#endif	
+
+	string strPick("BOPED_R_foot");
+	if ( m_strNodeName == strPick )
+	{
+		char temp[1024]={0,};		
+		sprintf_s(temp,1024,"%f %f %f\n",m_WorldTM._41,m_WorldTM._42,m_WorldTM._43);
+		OutputDebugStr(temp);
+	}
+
 	m_pD3DDevice->SetFVF(FVF_NORMALVERTEX);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
@@ -87,13 +103,23 @@ void cMeshNode::Render()
 	Material* pMaterial=&m_Matrial;
 	cRscTexture* pRscTexture=NULL;
 		
-		
+	
+#ifdef USE_EFFECT
 	//텍스쳐 적용
 	pRscTexture=pMaterial->GetMapDiffuse();
+	if (pRscTexture!=NULL)
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+	}
+
+#else
 	if (pRscTexture!=NULL)	
+
 		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
 	else
 		m_pD3DDevice->SetTexture(0,NULL);
+#endif
+	
 	
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
@@ -101,6 +127,7 @@ void cMeshNode::Render()
 			m_pRscVetextBuffer->GetVerties(),
 			m_nStartIndex,
 			m_nPrimitiveCount );
+
 }
 
 void cMeshNode::BuildComposite()

@@ -8,7 +8,7 @@
 #include "D3D9Server/RscIndexBuffer.h"
 #include "Math/CollisionDetector.h"
 #include "Foundation/Define.h"
-
+#include "D3D9Server/Server.h"
 
 /// 생성자
 ZTerrain::ZTerrain()
@@ -46,9 +46,9 @@ HRESULT	ZTerrain::Create( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, cons
 	
 	try
 	{
-		if( FAILED( _BuildHeightMap( lpBMPFilename ) ) ) throw _T("지형 높이맵 BMP파일없음\n");
-		if( FAILED( _LoadTextures( lpTEXFilename ) ) ) throw _T("지형 텍스쳐 파일없음\n");
-		if( FAILED( _CreateVIB() ) ) throw _T("버텍스 인덱스 버퍼 생성에러\n");
+		if( FAILED( _BuildHeightMap( lpBMPFilename ) ) ) throw ("지형 높이맵 BMP파일없음\n");
+		if( FAILED( _LoadTextures( lpTEXFilename ) ) ) throw ("지형 텍스쳐 파일없음\n");
+		if( FAILED( _CreateVIB() ) ) throw ("버텍스 인덱스 버퍼 생성에러\n");
 	}
 	catch (const char* msg)
 	{
@@ -166,11 +166,18 @@ HRESULT	ZTerrain::_CreateVIB()
 /// 화면에 지형을 출력한다.
 void	ZTerrain::Render()
 {	
+	return;
+
 	FillIndexBuffer();
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 
-	m_pD3DDevice->SetTexture( 0, m_pTex );								// 0번 텍스쳐 스테이지에 텍스쳐 고정(색깔맵)
+//	m_pD3DDevice->SetTexture( 0, m_pTex );								// 0번 텍스쳐 스테이지에 텍스쳐 고정(색깔맵)
+
+	//텍스쳐 적용
+	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_pTex);
+	
+
 	m_pD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );	// 0번 텍스처 스테이지의 확대 필터
  	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0 );		// 0번 텍스처 : 0번 텍스처 인덱스 사용
  	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
@@ -181,7 +188,15 @@ void	ZTerrain::Render()
 
 
 	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
-	m_pD3DDevice->SetTransform(D3DTS_WORLD, &GetWorldTM() );	
+	//m_pD3DDevice->SetTransform(D3DTS_WORLD, &GetWorldTM() );	
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
+
+
+
+
+
+
+
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 
 }

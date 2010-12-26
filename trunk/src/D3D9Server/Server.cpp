@@ -6,9 +6,11 @@
 namespace D3D9
 {
 
+Server*	Server::g_pServer = NULL;
 
 Server::Server(void)
 {
+	g_pServer = this;
 }
 
 Server::~Server(void)
@@ -110,21 +112,49 @@ void Server::RenderDebugString(const char* szText)
 
 void Server::LoadHLSL(const char* szFileName)
 {
-	/*
+#ifdef USE_EFFECT
+
 	if (!szFileName)
 	{
 		return;
 	}
+
+
 	// ★셰이더 읽기
 	HRESULT hr;
 	LPD3DXBUFFER pErr=NULL;
-	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,0 , NULL, &m_pEffect, &pErr )))
+	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG , NULL, &m_pEffect, &pErr )))
 	{
-		// 셰이더 읽기 실패
+
+
+
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
+		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);
+
+
+
+	}
+	else
+	{
+		D3DXEFFECT_DESC desc;
+		hr = m_pEffect->GetDesc(&desc);
+		m_hTechnique = m_pEffect->GetTechniqueByName( _T("TNoShader") );
+		//m_hTechnique = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
+
+		m_hmWorld = m_pEffect->GetParameterByName( NULL, "World" );
+		m_hmView = m_pEffect->GetParameterByName( NULL, "View" );
+		m_hmProjection = m_pEffect->GetParameterByName( NULL, "Projection" );
+
 	}
 	SAFE_RELEASE(pErr);
-	*/
+#endif
+	
+
+
+
+
+
+	
 }
 
 }

@@ -11,6 +11,8 @@
 #include "Math/Sphere.h"
 #include "Math/CollisionDetector.h"
 #include "D3D9Server/RscTexture.h"
+#include "D3D9Server/Server.h"
+
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
 
@@ -51,7 +53,7 @@ void SkinnedMeshNode::LinkToBone()
 일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
 void SkinnedMeshNode::Render()
-{	
+{
 	m_pD3DDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE,TRUE);
 	m_pD3DDevice->SetRenderState(D3DRS_VERTEXBLEND,D3DVBF_3WEIGHTS);				
 
@@ -65,7 +67,8 @@ void SkinnedMeshNode::Render()
 		BoneWorldTM = refItem.pBoneRef->GetWorldTM();				// BoneWorldTM		
 
 		BlendMat = refItem.BoneOffSetTM_INV * BoneWorldTM;
-		m_pD3DDevice->SetTransform(D3DTS_WORLDMATRIX(iBoneRef),&BlendMat);
+//		m_pD3DDevice->SetTransform(D3DTS_WORLDMATRIX(iBoneRef),&BlendMat);
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&BlendMat);
 	}		
 
 	//IndexBuffer,VertexBuffer셋팅			
@@ -78,13 +81,22 @@ void SkinnedMeshNode::Render()
 	Material* pMaterial=&m_Matrial;
 	cRscTexture* pRscTexture=NULL;
 
-
+/*
 	//텍스쳐 적용
 	pRscTexture=pMaterial->GetMapDiffuse();
 	if (pRscTexture!=NULL)	
 		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
 	else
 		m_pD3DDevice->SetTexture(0,NULL);
+*/
+	//텍스쳐 적용
+	pRscTexture=pMaterial->GetMapDiffuse();
+	if (pRscTexture!=NULL)
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+	}
+
+
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  

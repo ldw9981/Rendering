@@ -31,10 +31,10 @@ float4x4 Projection : PROJECTION;
 struct VS_OUTPUT
 {
    float4 Pos    : POSITION;
-   float3 Norm   : TEXCOORD0;
-   float3 View   : TEXCOORD1;
-   float3 Light  : TEXCOORD2;
-   float2 Tex    : TEXCOORD4;
+   float2 Tex    : TEXCOORD0;
+   float3 Norm   : TEXCOORD1;
+   float3 View   : TEXCOORD2;
+   float3 Light  : TEXCOORD3;  
 };
 
 // ¡§¡°Ω¶¿Ã¥ı
@@ -79,10 +79,11 @@ sampler Sampler = sampler_state
 
 // «»ºøΩ¶¿Ã¥ı
 float4 PS( float4 Diff   : COLOR0,
-           float3 Normal : TEXCOORD0,
-           float3 View   : TEXCOORD1,
-           float3 Light  : TEXCOORD2,
-           float2 Tex    : TEXCOORD4 ) : COLOR
+		   float2 Tex    : TEXCOORD0,
+           float3 Normal : TEXCOORD1,
+           float3 View   : TEXCOORD2,
+           float3 Light  : TEXCOORD3
+            ) : COLOR
 {
    // π›ªÁ∫§≈Õ∏¶ ±∏«—¥Ÿ
    float3 vReflect = normalize( 2 * dot( Normal, Light) * Normal - Light );       

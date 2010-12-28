@@ -79,6 +79,9 @@ void cCameraNode::Render()
 		m_matViewProjection = m_matView * m_matProjection;				
 		m_bProjectionModified=FALSE;
 		m_bViewModified=FALSE;
+#ifdef USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+#endif
 		MakeWorldFrustum();	
 	}		
 }

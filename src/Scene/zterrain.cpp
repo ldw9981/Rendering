@@ -195,7 +195,9 @@ void	ZTerrain::Render()
 
 
 
-
+#ifdef USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+#endif
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 

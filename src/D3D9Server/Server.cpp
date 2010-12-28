@@ -138,8 +138,8 @@ void Server::LoadHLSL(const char* szFileName)
 	{
 		D3DXEFFECT_DESC desc;
 		hr = m_pEffect->GetDesc(&desc);
-		m_hTechnique = m_pEffect->GetTechniqueByName( _T("TNoShader") );
-		//m_hTechnique = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
+		//m_hTechnique = m_pEffect->GetTechniqueByName( _T("TNoShader") );
+		m_hTechnique = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
 
 		m_hmWorld = m_pEffect->GetParameterByName( NULL, "World" );
 		m_hmView = m_pEffect->GetParameterByName( NULL, "View" );

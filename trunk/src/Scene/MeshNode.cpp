@@ -120,7 +120,11 @@ void cMeshNode::Render()
 		m_pD3DDevice->SetTexture(0,NULL);
 #endif
 	
-	
+
+#ifdef USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+#endif
+
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 

@@ -130,8 +130,9 @@ void cD3DFramework::ProcessRenderableList()
 	m_pD3DDevice->BeginScene();
 
 #ifdef USE_EFFECT
+	UINT passes = 0;
 	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTechnique);
-	D3D9::Server::g_pServer->GetEffect()->Begin(NULL,0);
+	D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
 	D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
 #endif
 

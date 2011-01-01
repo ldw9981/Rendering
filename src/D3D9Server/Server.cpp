@@ -144,6 +144,7 @@ void Server::LoadHLSL(const char* szFileName)
 		m_hmWorld = m_pEffect->GetParameterByName( NULL, "World" );
 		m_hmView = m_pEffect->GetParameterByName( NULL, "View" );
 		m_hmProjection = m_pEffect->GetParameterByName( NULL, "Projection" );
+		m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "ViewProjection" );
 
 	}
 	SAFE_RELEASE(pErr);

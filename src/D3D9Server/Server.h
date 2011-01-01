@@ -34,6 +34,7 @@ public:
 	D3DXHANDLE						m_hmProjection;	// 월드~투영행렬
 	D3DXHANDLE						m_hmView;	// 월드~투영행렬
 	D3DXHANDLE						m_hmWorld;	// 월드~투영행렬
+	D3DXHANDLE						m_hmViewProjection;
 	D3DXHANDLE						m_hvLightDir;
 
 	cGUIFont*					m_pNewFont;

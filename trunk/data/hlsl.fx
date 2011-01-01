@@ -26,6 +26,7 @@ texture Tex0;
 float4x4 World      : WORLD;
 float4x4 View       : VIEW;
 float4x4 Projection : PROJECTION;
+float4x4 ViewProjection : ViewProjection;
 
 // 출력정점
 struct VS_OUTPUT
@@ -67,6 +68,37 @@ VS_OUTPUT VS(
     
     return Out;
 }
+
+VS_OUTPUT VS_Skinning( 
+   float3 Pos  : POSITION,
+   float3 Norm : NORMAL,
+   float2 Tex  : TEXCOORD0 )
+{
+    VS_OUTPUT Out = (VS_OUTPUT) 0; 
+
+    // 광원벡터 계산(view space)
+    Out.Light = -lightDir;
+
+    // wold*view행렬계산
+    float4x4 WorldView = mul(World, View);
+
+    // 정점을 view공간으로
+    float3 P = mul(float4(Pos, 1), (float4x3)WorldView);
+    
+    // 법선을 view공간으로
+    Out.Norm = normalize(mul(Norm, (float3x3)WorldView));
+
+    // view벡터를 구한다(view 공간)
+    Out.View = -normalize(P);
+
+    // 투영공간에서의 위치계산
+    Out.Pos  = mul(float4(P, 1), Projection);
+    
+    Out.Tex = Tex;
+    
+    return Out;
+}
+
 
 // 텍스처 샘플러
 sampler Sampler = sampler_state

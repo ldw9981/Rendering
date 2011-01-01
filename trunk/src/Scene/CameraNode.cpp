@@ -80,6 +80,10 @@ void cCameraNode::Render()
 		m_bProjectionModified=FALSE;
 		m_bViewModified=FALSE;
 #ifdef USE_EFFECT
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
+#endif
+
+#ifdef USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
 		MakeWorldFrustum();	

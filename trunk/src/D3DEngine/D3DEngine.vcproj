@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8.00"
-	Name="D3DEngine"
+	Name="TestGameApp"
 	ProjectGUID="{8B1DA738-14A2-46E0-AA25-E1EC4C14F3E1}"
 	RootNamespace="D3DEngine"
 	Keyword="Win32Proj"

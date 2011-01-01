@@ -92,7 +92,7 @@ void cD3DFramework::Run()
 			m_DeltaFrameTime = m_CurrFrameTime - m_PrevFrameTime;
 			m_AccumFrameTime += m_DeltaFrameTime;
 			ProcessControlableList();						// Input
-			ProcessProgressableList(0);		// Update
+			ProcessProgressableList(m_DeltaFrameTime);		// Update
 			ProcessRenderableList();						// Render
 			m_PrevFrameTime=m_CurrFrameTime;
 		} 		

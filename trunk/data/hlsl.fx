@@ -28,6 +28,15 @@ float4x4 View       : VIEW;
 float4x4 Projection : PROJECTION;
 float4x4 ViewProjection : ViewProjection;
 
+#ifndef MATRIX_PALETTE_SIZE_DEFAULT
+#define MATRIX_PALETTE_SIZE_DEFAULT 26
+#endif
+
+const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
+float4x3 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
+
+
+
 // 출력정점
 struct VS_OUTPUT
 {
@@ -71,31 +80,33 @@ VS_OUTPUT VS(
 
 VS_OUTPUT VS_Skinning( 
    float3 Pos  : POSITION,
+   float3 BlendWeights    : BLENDWEIGHT,
+   float4 BlendIndices    : BLENDINDICES,
    float3 Norm : NORMAL,
    float2 Tex  : TEXCOORD0 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0; 
 
-    // 광원벡터 계산(view space)
-    Out.Light = -lightDir;
 
-    // wold*view행렬계산
-    float4x4 WorldView = mul(World, View);
+    float fLastWeight = 1.0;
+    float fWeight;
+    float afBlendWeights[ 3 ] = (float[ 3 ]) BlendWeights;
+	int aiIndices[ 4 ] = (int[ 4 ]) D3DCOLORtoUBYTE4( BlendIndices );
 
-    // 정점을 view공간으로
-    float3 P = mul(float4(Pos, 1), (float4x3)WorldView);
-    
-    // 법선을 view공간으로
-    Out.Norm = normalize(mul(Norm, (float3x3)WorldView));
+    for( int iBone = 0; iBone < 3 ; ++ iBone )
+    {
+        fWeight = afBlendWeights[ iBone ];
+        fLastWeight -= fWeight;
+        Out.Pos.xyz += mul( Pos, Palette[ aiIndices[ iBone ] ] ) * fWeight;
+        Out.Norm     += mul( Norm, Palette[ aiIndices[ iBone ] ] ) * fWeight;
+    }
 
-    // view벡터를 구한다(view 공간)
-    Out.View = -normalize(P);
+	Out.Pos.xyz += mul( Pos, Palette[ aiIndices[ 3 ] ] ) * fLastWeight;
+    Out.Norm    += mul( Norm, Palette[ aiIndices[ 3 ] ] ) * fLastWeight;
 
-    // 투영공간에서의 위치계산
-    Out.Pos  = mul(float4(P, 1), Projection);
-    
-    Out.Tex = Tex;
-    
+	Out.Pos = mul( float4( Out.Pos.xyz, 1.0f ), ViewProjection );
+	Out.Tex = Tex;    
+	
     return Out;
 }
 
@@ -134,6 +145,33 @@ float4 PS( float4 Diff   : COLOR0,
    
    return FinalColor;
 }
+
+
+// 테크닉 선언(쉐이더 & 픽셀 쉐이더 사용)
+technique TVertexAndPixelShader
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 VS();
+        PixelShader  = compile ps_2_0 PS();
+    }  
+}
+
+
+
+technique TSkinning
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 VS_Skinning();
+        PixelShader  = compile ps_2_0 PS();
+    }  
+}
+
+
+
 
 // 테크닉 선언(쉐이더 사용않함)
 technique TNoShader
@@ -183,13 +221,4 @@ technique TNoShader
     }
 }
 
-// 테크닉 선언(쉐이더 & 픽셀 쉐이더 사용)
-technique TVertexAndPixelShader
-{
-    pass P0
-    {
-        // shaders
-        VertexShader = compile vs_2_0 VS();
-        PixelShader  = compile ps_2_0 PS();
-    }  
-}
+

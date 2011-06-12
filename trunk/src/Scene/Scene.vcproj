@@ -170,6 +170,10 @@
 				RelativePath=".\ViewMng.h"
 				>
 			</File>
+			<File
+				RelativePath=".\ZTerrain.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Node"
@@ -256,10 +260,6 @@
 			</File>
 			<File
 				RelativePath=".\zterrain.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ZTerrain.h"
 				>
 			</File>
 		</Filter>

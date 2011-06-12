@@ -19,6 +19,9 @@ Server::~Server(void)
 
 bool Server::Init()
 {
+	char szTemp[MAX_PATH];
+	GetCurrentDirectory(MAX_PATH,szTemp);
+
 	// 1) D3D를 생성한다.
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
 
@@ -112,7 +115,7 @@ void Server::RenderDebugString(const char* szText)
 
 void Server::LoadHLSL(const char* szFileName)
 {
-#ifdef USE_EFFECT
+#if USE_EFFECT
 
 	if (!szFileName)
 	{
@@ -125,37 +128,26 @@ void Server::LoadHLSL(const char* szFileName)
 	LPD3DXBUFFER pErr=NULL;
 	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG , NULL, &m_pEffect, &pErr )))
 	{
-
-
-
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);
-
-
-
 	}
 	else
 	{
 		D3DXEFFECT_DESC desc;
 		hr = m_pEffect->GetDesc(&desc);
-		//m_hTechnique = m_pEffect->GetTechniqueByName( _T("TNoShader") );
-		m_hTechnique = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
+		
+		m_hTNoShader = m_pEffect->GetTechniqueByName( _T("TNoShader") );
+		m_hTBasic = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
+		m_hTSkinning = m_pEffect->GetTechniqueByName( _T("TSkinning") );	
 
 		m_hmWorld = m_pEffect->GetParameterByName( NULL, "World" );
 		m_hmView = m_pEffect->GetParameterByName( NULL, "View" );
 		m_hmProjection = m_pEffect->GetParameterByName( NULL, "Projection" );
 		m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "ViewProjection" );
-
+		m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );;
 	}
 	SAFE_RELEASE(pErr);
-#endif
-	
-
-
-
-
-
-	
+#endif	
 }
 
 }

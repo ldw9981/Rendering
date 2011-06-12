@@ -79,22 +79,14 @@ void cMeshNode::Update(DWORD elapseTime)
 */
 void cMeshNode::Render()
 {		
-	//IndexBuffer,VertexBuffer셋팅
-
-#ifdef USE_EFFECT
+#if USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTBasic);
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
 #else
 	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldTM );	
 #endif	
-
-	string strPick("BOPED_R_foot");
-	if ( m_strNodeName == strPick )
-	{
-		char temp[1024]={0,};		
-		sprintf_s(temp,1024,"%f %f %f\n",m_WorldTM._41,m_WorldTM._42,m_WorldTM._43);
-		OutputDebugStr(temp);
-	}
-
+	
+	//IndexBuffer,VertexBuffer셋팅
 	m_pD3DDevice->SetFVF(FVF_NORMALVERTEX);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
@@ -104,7 +96,7 @@ void cMeshNode::Render()
 	cRscTexture* pRscTexture=NULL;
 		
 	
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	//텍스쳐 적용
 	pRscTexture=pMaterial->GetMapDiffuse();
 	if (pRscTexture!=NULL)
@@ -121,7 +113,7 @@ void cMeshNode::Render()
 #endif
 	
 
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
 

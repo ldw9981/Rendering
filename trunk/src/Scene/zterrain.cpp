@@ -195,7 +195,7 @@ void	ZTerrain::Render()
 
 
 
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
 

@@ -685,7 +685,7 @@ BOOL cASEParser::Parsing_GeoObject()
 									bindex[iTop]=vecBoneWeight[iTop].bone_index;
 									bweight[iTop]=vecBoneWeight[iTop].bone_weight;
 								}												
-								
+
 								vecTempBlendVertex[iVertex].SetIndex(bindex);
 								vecTempBlendVertex[iVertex].SetWeight(bweight); 
 

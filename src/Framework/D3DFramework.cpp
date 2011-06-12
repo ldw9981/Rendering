@@ -129,9 +129,9 @@ void cD3DFramework::ProcessRenderableList()
 	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pD3DDevice->BeginScene();
 
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	UINT passes = 0;
-	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTechnique);
+	
 	D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
 	D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
 #endif
@@ -150,7 +150,7 @@ void cD3DFramework::ProcessRenderableList()
 
 	m_pD3D9Server->RenderDebugString(stream.str().c_str());
 
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->EndPass();
 	D3D9::Server::g_pServer->GetEffect()->End();
 #endif

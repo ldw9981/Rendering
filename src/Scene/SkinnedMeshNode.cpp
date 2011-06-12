@@ -19,11 +19,15 @@
 
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
-
+	m_pArrayMatBoneRef = NULL;
 }
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
 {
+	if (m_pArrayMatBoneRef!=NULL)
+	{
+		delete m_pArrayMatBoneRef;
+	}	
 	m_vecBoneRef.clear();	
 }
 
@@ -44,8 +48,15 @@ void SkinnedMeshNode::LinkToBone()
 
 		tmBoneOffset = pBoneRefInfo->pBoneRef->GetWorldTM() * tmWorldInv;
 		D3DXMatrixInverse(&pBoneRefInfo->BoneOffSetTM_INV,NULL,&tmBoneOffset);	
-
 	}	
+
+	
+	if(!m_vecBoneRef.empty())
+	{
+		m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];
+	}
+	
+		
 }
 
 /*
@@ -54,11 +65,22 @@ void SkinnedMeshNode::LinkToBone()
 */
 void SkinnedMeshNode::Render()
 {
+#if USE_EFFECT
+	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTSkinning);
+#else
 	m_pD3DDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE,TRUE);
-	m_pD3DDevice->SetRenderState(D3DRS_VERTEXBLEND,D3DVBF_3WEIGHTS);				
+	m_pD3DDevice->SetRenderState(D3DRS_VERTEXBLEND,D3DVBF_3WEIGHTS);	
+#endif
+			
 
-	int iBoneRef;
-	for (iBoneRef=0;iBoneRef<(int)m_vecBoneRef.size();iBoneRef++)
+	//IndexBuffer,VertexBuffer셋팅			
+	m_pD3DDevice->SetFVF(FVF_BLENDVERTEX);				
+	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
+	m_pRscIndexBuffer->SetIndices();			
+
+	int iBoneRef,nBoneRefSize = (int)m_vecBoneRef.size();
+	// 현재메쉬가 참조하는 본개수만큼
+	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
 		
@@ -67,38 +89,43 @@ void SkinnedMeshNode::Render()
 		BoneWorldTM = refItem.pBoneRef->GetWorldTM();				// BoneWorldTM		
 
 		BlendMat = refItem.BoneOffSetTM_INV * BoneWorldTM;
-//		m_pD3DDevice->SetTransform(D3DTS_WORLDMATRIX(iBoneRef),&BlendMat);
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&BlendMat);
-	}		
+#if USE_EFFECT
+		m_pArrayMatBoneRef[iBoneRef] = BlendMat;
+#else
+		m_pD3DDevice->SetTransform(D3DTS_WORLDMATRIX(iBoneRef),&BlendMat);
+#endif
+	}
 
-	//IndexBuffer,VertexBuffer셋팅			
-	m_pD3DDevice->SetFVF(FVF_BLENDVERTEX);				
-	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
-	m_pRscIndexBuffer->SetIndices();			
+#if USE_EFFECT
+	if (nBoneRefSize>0)
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetMatrixArray(D3D9::Server::g_pServer->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
+	}	
+#endif
+
+
 
 	
 	//메쉬에 사용될 매트리얼 얻기
 	Material* pMaterial=&m_Matrial;
 	cRscTexture* pRscTexture=NULL;
 
-/*
-	//텍스쳐 적용
-	pRscTexture=pMaterial->GetMapDiffuse();
-	if (pRscTexture!=NULL)	
-		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
-	else
-		m_pD3DDevice->SetTexture(0,NULL);
-*/
-	//텍스쳐 적용
+#if USE_EFFECT
 	pRscTexture=pMaterial->GetMapDiffuse();
 	if (pRscTexture!=NULL)
 	{
 		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",pRscTexture->GetD3DTexture());
 	}
+#else
+	pRscTexture=pMaterial->GetMapDiffuse();
+	if (pRscTexture!=NULL)	
+		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
+	else
+		m_pD3DDevice->SetTexture(0,NULL);
+#endif
 
 
-
-#ifdef USE_EFFECT
+#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
 
@@ -109,8 +136,14 @@ void SkinnedMeshNode::Render()
 		m_nStartIndex,
 		m_nPrimitiveCount );
 
+#if USE_EFFECT
+
+#else
 	m_pD3DDevice->SetRenderState(D3DRS_VERTEXBLEND,D3DVBF_DISABLE);
-	m_pD3DDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE,FALSE);						
+	m_pD3DDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE,FALSE);		
+#endif
+
+				
 				
 	
 }

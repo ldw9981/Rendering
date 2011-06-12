@@ -35,7 +35,8 @@ public:
 	virtual ~SkinnedMeshNode(void);
 
 protected:
-	vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보		
+	vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
+	D3DXMATRIX*				m_pArrayMatBoneRef;
 
 public:
 	virtual void			Render();	

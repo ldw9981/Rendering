@@ -3,7 +3,7 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 
 
-#define USE_EFFECT
+#define USE_EFFECT 1
 
 class cGUIFont;
 
@@ -29,14 +29,17 @@ public:
 	LPD3DXFONT				m_pFont;
 	LPD3DXEFFECT			m_pEffect;	
 	LPD3DXBUFFER			m_pError;	
-	D3DXHANDLE						m_hTechnique;// 테크닉
-	D3DXHANDLE						m_hmWVP;	// 월드~투영행렬
-	D3DXHANDLE						m_hmProjection;	// 월드~투영행렬
-	D3DXHANDLE						m_hmView;	// 월드~투영행렬
-	D3DXHANDLE						m_hmWorld;	// 월드~투영행렬
-	D3DXHANDLE						m_hmViewProjection;
-	D3DXHANDLE						m_hvLightDir;
+	D3DXHANDLE				m_hTNoShader;// 테크닉
+	D3DXHANDLE				m_hTSkinning;// 테크닉	
+	D3DXHANDLE				m_hTBasic;// 테크닉
 
+	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
+	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬
+	D3DXHANDLE				m_hmView;	// 월드~투영행렬
+	D3DXHANDLE				m_hmWorld;	// 월드~투영행렬
+	D3DXHANDLE				m_hmViewProjection;
+	D3DXHANDLE				m_hvLightDir;
+	D3DXHANDLE				m_hmPalette;
 	cGUIFont*					m_pNewFont;
 	string m_strHLSL;
 

@@ -132,6 +132,8 @@ void cD3DFramework::ProcessRenderableList()
 #if USE_EFFECT
 	UINT passes = 0;
 	
+	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTSkinning);
+	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 	D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
 	D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
 #endif

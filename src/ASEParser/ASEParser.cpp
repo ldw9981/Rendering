@@ -632,7 +632,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 								BONEREFINFO NewItem;
 								NewItem.strNodeName=GetString();
-								NewItem.pBoneRef=NULL;
+								NewItem.pRefBoneMesh=NULL;
 								vecBoneRef.push_back(NewItem);
 
 								if (!FindToken(TOKEND_BLOCK_END))
@@ -678,7 +678,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 								// 가중치가 큰 기준으로 정렬
 								sort(vecBoneWeight.begin(),vecBoneWeight.end(),BONEWEIGHT::GreatBoneWeight);
-								BYTE bindex[4]= { 0,0,0,0};
+								BYTE bindex[4]= { 0,0,0,0 };	
 								float bweight[4]= { 0.0f,0.0f,0.0f,0.0f };	
 								for (int iTop=0; (iTop<4)&&(iTop<(int)vecBoneWeight.size());iTop++)
 								{

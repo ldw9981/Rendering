@@ -42,11 +42,11 @@ void SkinnedMeshNode::LinkToBone()
 	{
 		BONEREFINFO* pBoneRefInfo=&(*iter);		
 		//이름,타입 같으면 캐스팅 MESH확인
-		pBoneRefInfo->pBoneRef = dynamic_cast<cMeshNode*>(GetRootNode()->FindNode(pBoneRefInfo->strNodeName));
+		pBoneRefInfo->pRefBoneMesh = dynamic_cast<cMeshNode*>(GetRootNode()->FindNode(pBoneRefInfo->strNodeName));
 		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
-		pBoneRefInfo->pBoneRef->SetIsBone(true);
+		pBoneRefInfo->pRefBoneMesh->SetIsBone(true);
 
-		tmBoneOffset = pBoneRefInfo->pBoneRef->GetWorldTM() * tmWorldInv;
+		tmBoneOffset = pBoneRefInfo->pRefBoneMesh->GetWorldTM() * tmWorldInv;
 		D3DXMatrixInverse(&pBoneRefInfo->BoneOffSetTM_INV,NULL,&tmBoneOffset);	
 	}	
 
@@ -66,7 +66,7 @@ void SkinnedMeshNode::LinkToBone()
 void SkinnedMeshNode::Render()
 {
 #if USE_EFFECT
-	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTSkinning);
+	
 #else
 	m_pD3DDevice->SetRenderState(D3DRS_INDEXEDVERTEXBLENDENABLE,TRUE);
 	m_pD3DDevice->SetRenderState(D3DRS_VERTEXBLEND,D3DVBF_3WEIGHTS);	
@@ -86,7 +86,7 @@ void SkinnedMeshNode::Render()
 		
 		D3DXMATRIX BlendMat,BoneWorldTM;	
 
-		BoneWorldTM = refItem.pBoneRef->GetWorldTM();				// BoneWorldTM		
+		BoneWorldTM = refItem.pRefBoneMesh->GetWorldTM();				// BoneWorldTM		
 
 		BlendMat = refItem.BoneOffSetTM_INV * BoneWorldTM;
 #if USE_EFFECT

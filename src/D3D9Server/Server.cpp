@@ -126,7 +126,7 @@ void Server::LoadHLSL(const char* szFileName)
 	// ¡Ú¼ÎÀÌ´õ ÀÐ±â
 	HRESULT hr;
 	LPD3DXBUFFER pErr=NULL;
-	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG , NULL, &m_pEffect, &pErr )))
+	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION , NULL, &m_pEffect, &pErr )))
 	{
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);

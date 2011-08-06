@@ -78,9 +78,9 @@ void cMeshNode::Update(DWORD elapseTime)
 	일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
 void cMeshNode::Render()
-{		
+{			
+	
 #if USE_EFFECT
-	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTBasic);
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
 #else
 	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldTM );	
@@ -116,7 +116,9 @@ void cMeshNode::Render()
 #if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
-
+	
+	return;
+	
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 

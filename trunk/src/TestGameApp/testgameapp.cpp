@@ -55,7 +55,7 @@ bool TestGameApp::Open()
 	m_pMenuScene = new cMenuView;
 	m_pTestScene = new cTestView;
 	m_pGlobalScene = new cGlobalView;
-	GetSceneMng()->ChangeTopScene((cView*)m_pMenuScene);
+	GetSceneMng()->ChangeTopScene((cView*)m_pTestScene);
 	AttachObject(m_pGlobalScene);
 	return true;
 }

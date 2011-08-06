@@ -65,6 +65,7 @@ void cTestView::Control()
 		
 	}
 	cView::Control();
+
 }
 
 void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )

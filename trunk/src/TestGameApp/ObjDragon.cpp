@@ -23,7 +23,7 @@ void cObjDragon::Init()
 	m_pDummy=FindNode(string("Dummy01"));
 	assert(m_pDummy!=NULL);
 	m_pDummy->SetIsActiveAnimation(FALSE);
-//	MoveOnLocal(0.0f,250.0f,0.0f);	
+	MoveOnLocal(0.0f,0.0f,820.0f);	
 	
 }
 
@@ -40,6 +40,7 @@ void cObjDragon::Update(DWORD elapseTime)
 
 void cObjDragon::Control()
 {
+	
 	float x=0.0f,y=0.0f,z=0.0f;
 	float ax=0.0f,ay=0.0f,az=0.0f;
 	float cx=0.0f,cy=0.0f,cz=0.0f;
@@ -53,39 +54,40 @@ void cObjDragon::Control()
 
 	if (m_pWinInput->IsCurrDn('W'))
 	{
-		cz= 10.0f;
+		cz= 1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('S'))
 	{
-		cz= -10.0f;	
+		cz= -1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('Q'))
 	{
-		cx= -10.0f;
+		cx= -1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('E'))
 	{
-		cx= 10.0f;	
+		cx= 1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('R'))
 	{
-		cy= 10.0f;
+		cy= 1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('F'))
 	{
-		cy= -10.0f;	
+		cy= -1.0f;
 	}
 
 	if (m_pWinInput->IsCurrDn('A'))
 	{
-		cay= -10.0f;
+		cay= -1.0f;
 	}
 	if (m_pWinInput->IsCurrDn('D'))
 	{
-		cay= 10.0f;
+		cay= 1.0f;
 	}
 	MoveOnLocal(cx,cy,cz);
 	RotateOnLocal(cax,cay,0.0f);
+	
 	
 }
 

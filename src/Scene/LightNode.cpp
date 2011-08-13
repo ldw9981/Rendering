@@ -14,7 +14,7 @@ cLightNode::~cLightNode(void)
 
 void cLightNode::Update(DWORD elapseTime)
 {
-	UpdateWorldTM(UpdateTransformAnm(elapseTime),GetParentNode());
+	UpdateMatrix(UpdateTransformAnm(elapseTime),GetParentNode());
 	UpdateChildren(elapseTime);
 }
 

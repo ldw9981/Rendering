@@ -5,6 +5,7 @@
 #include "Scene/CameraNode.h"
 
 class cObjDragon;
+class cObjTank;
 class cGUIButton;
 class cBackWall;
 class cTestView :
@@ -16,7 +17,8 @@ public:
 private:
 	cCameraNode			m_Camera;
 	cObjDragon*			m_pDragon;
-
+	cObjTank*			m_pTank;
+	BOOL		m_bControlCamera;
 public:
 	// cScene
 	virtual void Open(void* arg);

@@ -96,9 +96,9 @@ WorldTM이
 void cCameraNode::Update(DWORD elapseTime)
 {
 
-	UpdateWorldTM();
+	UpdateMatrix();
 
-	if(m_bWorldTMModified)
+	if(m_bModifiedMatWorld)
 	{
 		m_bViewModified=TRUE;	// 카메라가 월드변환이 바뀟었다. 뷰도 업데이트해야한다.
 	}	

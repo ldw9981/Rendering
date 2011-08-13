@@ -60,6 +60,7 @@ void cMenuView::Open( void* arg )
 		&D3DXVECTOR3(0.0f, -1.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
+
 }
 
 void cMenuView::Close()

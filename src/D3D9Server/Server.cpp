@@ -96,6 +96,8 @@ bool Server::Init()
 	m_pD3DDevice->LightEnable(0,TRUE);
 	m_pD3DDevice->SetRenderState(D3DRS_LIGHTING,TRUE);
 	m_pNewFont = new cGUIFont();	
+
+
 	return true;
 }
 

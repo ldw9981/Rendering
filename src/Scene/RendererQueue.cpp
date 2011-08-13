@@ -29,3 +29,4 @@ void cRendererQueue::Render()
  	}
 	m_listNode.clear();
 }
+

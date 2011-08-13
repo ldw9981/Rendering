@@ -53,7 +53,7 @@ public:
 	void					PushSubRender(cRendererQueue* pRendererQueue);
 
 
-
+	virtual void			SendQueue();
 };
 
 

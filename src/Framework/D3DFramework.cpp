@@ -129,16 +129,6 @@ void cD3DFramework::ProcessRenderableList()
 	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pD3DDevice->BeginScene();
 
-#if USE_EFFECT
-	UINT passes = 0;
-	
-	D3D9::Server::g_pServer->GetEffect()->SetTechnique(D3D9::Server::g_pServer->m_hTSkinning);
-	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-	D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
-	D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
-#endif
-
-
 
 	list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
@@ -152,10 +142,26 @@ void cD3DFramework::ProcessRenderableList()
 
 	m_pD3D9Server->RenderDebugString(stream.str().c_str());
 
+
+
+	for (int i=0;i<2;i++)
+	{
+		// 여기선 렌더큐들만 그린다.
 #if USE_EFFECT
-	D3D9::Server::g_pServer->GetEffect()->EndPass();
-	D3D9::Server::g_pServer->GetEffect()->End();
+		UINT passes = 0;
+
+		D3D9::Server::g_pServer->GetEffect()->SetTechnique(m_listRenderQueue[i].m_hTechnique);
+		D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
+		D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
+		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 #endif
+		m_listRenderQueue[i].Render();
+
+#if USE_EFFECT
+		D3D9::Server::g_pServer->GetEffect()->EndPass();
+		D3D9::Server::g_pServer->GetEffect()->End();
+#endif
+	}
 
 
 	m_pD3DDevice->EndScene();

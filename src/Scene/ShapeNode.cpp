@@ -16,7 +16,7 @@ cShapeNode::~cShapeNode(void)
 
 void cShapeNode::Update(DWORD elapseTime)
 {
-	UpdateWorldTM(UpdateTransformAnm(elapseTime),GetParentNode());
+	UpdateMatrix(UpdateTransformAnm(elapseTime),GetParentNode());
 	UpdateChildren(elapseTime);
 }
 

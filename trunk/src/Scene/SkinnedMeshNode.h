@@ -45,4 +45,7 @@ public:
 	void					SetBoneRef(vector<BONEREFINFO>& vecBoneRef);
 	vector<BONEREFINFO>&	GetArrayBoneRef()  { return m_vecBoneRef; }
 	void					LinkToBone();
+
+
+	virtual void			SendQueue();
 };

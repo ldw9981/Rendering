@@ -3,7 +3,7 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "./Framework/EnvironmentVariable.h"
 #include "FpsMng.h"
-
+#include "Scene/RendererQueue.h"
 
 class cD3DFramework;
 
@@ -32,6 +32,8 @@ public:
 public:
 
 	HINSTANCE				m_hInstance;		 	 
+
+	cRendererQueue			m_listRenderQueue[2];
 protected:	
 	
 	WNDCLASS				m_wndclass;			// 메인 윈도우 클래스
@@ -45,8 +47,11 @@ protected:
 	BOOL					m_bQuitLoop;
 
 	list<IRenderable*>		m_listRenderable;
+
+	
+
 	list<IUpdatable*>		m_listProgressable;
-	list<IControlable*>	m_listControlable;
+	list<IControlable*>		m_listControlable;
 
 	DWORD					m_CurrFrameTime;	// Milli Sec	
 	DWORD					m_PrevFrameTime;	// Milli Sec	

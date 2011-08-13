@@ -111,5 +111,7 @@ public:
 	// ISerialize
 	virtual void		SerializeIn(fstream& in);
 	virtual void		SerializeOut(fstream& out);
+
+	
 };
 

@@ -52,19 +52,24 @@ bool TestGameApp::Open()
 	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
 	
 
-	m_pMenuScene = new cMenuView;
+
+	g_pD3DFramework->m_listRenderQueue[0].m_hTechnique = m_pD3D9Server->m_hTBasic;
+	g_pD3DFramework->m_listRenderQueue[1].m_hTechnique = m_pD3D9Server->m_hTSkinning;
+
+
+//	m_pMenuScene = new cMenuView;
 	m_pTestScene = new cTestView;
-	m_pGlobalScene = new cGlobalView;
+//	m_pGlobalScene = new cGlobalView;
 	GetSceneMng()->ChangeTopScene((cView*)m_pTestScene);
-	AttachObject(m_pGlobalScene);
+//	AttachObject(m_pGlobalScene);
 	return true;
 }
 
 void TestGameApp::Close()
 {
-	delete  m_pGlobalScene;	
+//	delete  m_pGlobalScene;	
 	delete	m_pTestScene;
-	delete	m_pMenuScene;
+//	delete	m_pMenuScene;
 
 	cD3DFramework::Close();
 }
@@ -108,7 +113,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   int       nCmdShow)
 {
 	HeapValidator::SetDbgFlag();
-	//MemoryValidator::SetBreakAlloc(133);	
+	//HeapValidator::SetBreakAlloc(178);	
 	
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);

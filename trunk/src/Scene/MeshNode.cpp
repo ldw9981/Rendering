@@ -15,6 +15,7 @@
 #include "Scene/CameraNode.h"
 #include "Scene/RendererQueue.h"
 
+#include "Framework/D3DFramework.h"
 
 cMeshNode::cMeshNode(void)
 {		
@@ -63,9 +64,9 @@ cMeshNode::~cMeshNode(void)
 
 void cMeshNode::Update(DWORD elapseTime)
 {
-	UpdateWorldTM(UpdateTransformAnm(elapseTime),m_pParentNode);
+	UpdateMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
 
-	m_pBoundingSphere->SetCenterPos(D3DXVECTOR3(m_WorldTM._41,m_WorldTM._42,m_WorldTM._43));
+	m_pBoundingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 	*m_pCullingSphere = *m_pBoundingSphere;	
 	
 	UpdateSubMesh(elapseTime);
@@ -81,9 +82,9 @@ void cMeshNode::Render()
 {			
 	
 #if USE_EFFECT
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 #else
-	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_WorldTM );	
+	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorld );	
 #endif	
 	
 	//IndexBuffer,VertexBuffer셋팅
@@ -116,9 +117,6 @@ void cMeshNode::Render()
 #if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 #endif
-	
-	return;
-	
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 
@@ -168,7 +166,7 @@ void cMeshNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 	else if (retCS == cCollision::INSIDE)
 	{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음			
 		PushTraversal(pRendererQueue,pActiveCamera);
-		return;
+		goto children;
 	}
 	
 
@@ -178,12 +176,12 @@ void cMeshNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 		cCollision::STATE retBS=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
 		if( retBS != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
 		{				
-			pRendererQueue->Insert(this);						
+			SendQueue();						
 		}	
 	}
 	else
 	{	//어떠한 이유로 바운딩 스피어없으면 그냥 그린다.	
-		pRendererQueue->Insert(this);
+		SendQueue();
 	}
 		
 children:
@@ -204,7 +202,7 @@ void cMeshNode::PushSubRender( cRendererQueue* pRendererQueue )
 	vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 	for ( ;it!=m_vecSubMesh.end();++it )
 	{
-		pRendererQueue->Insert(*it);
+		(*it)->SendQueue();
 	}
 }
 
@@ -242,4 +240,9 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 	{
 		val->AddRef();
 	}
+}
+
+void cMeshNode::SendQueue()
+{
+	g_pD3DFramework->m_listRenderQueue[0].Insert(this);
 }

@@ -5,6 +5,7 @@
 cObjDragon::cObjDragon()
 {	
 	m_pDummy=NULL;
+	m_bControl = FALSE;
 }
 
 cObjDragon::~cObjDragon(void)
@@ -34,13 +35,13 @@ void cObjDragon::Uninit()
 
 void cObjDragon::Update(DWORD elapseTime)
 {
-	UpdateWorldTM();
+	UpdateMatrix();
 	UpdateChildren(elapseTime);
 }
 
 void cObjDragon::Control()
 {
-	
+	/*
 	float x=0.0f,y=0.0f,z=0.0f;
 	float ax=0.0f,ay=0.0f,az=0.0f;
 	float cx=0.0f,cy=0.0f,cz=0.0f;
@@ -87,7 +88,7 @@ void cObjDragon::Control()
 	}
 	MoveOnLocal(cx,cy,cz);
 	RotateOnLocal(cax,cay,0.0f);
-	
+	*/
 	
 }
 

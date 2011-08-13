@@ -231,62 +231,33 @@ void cSceneNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNo
 		goto children;
 	}
 
-		if (m_pCullingSphere!=NULL)
-		{
-			// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
-			int ret=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
-			if( ret == cCollision::OUTSIDE)
-			{	//  밖에 있는것이면 노드순회 없음
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere OUTSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-				return;
-			}
-			else if (ret == cCollision::INSIDE)
-			{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere INSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-				PushTraversal(pRendererQueue,pActiveCamera);
-				return;
-			}
-			else
-			{
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere INTERSECTION\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-			}
+	if (m_pCullingSphere!=NULL)
+	{
+		// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
+		int ret=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
+		if( ret == cCollision::OUTSIDE)
+		{	
+			//  밖에 있는것이면 노드순회 없음
+			return;	
 		}
-		
-		// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-		if (m_pBoundingSphere!=NULL)
-		{
-			int ret=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
-			if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
-			{	
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " BoundingSphere INSIDE or INTERSECTION\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-				pRendererQueue->Insert(this);						
-			}
-			else
-			{
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " BoundingSphere OUTSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-			}
+		else if (ret == cCollision::INSIDE)
+		{	
+			// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
+			PushTraversal(pRendererQueue,pActiveCamera);
+			return;
 		}
-		
+	}
+	
+	// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
+	if (m_pBoundingSphere!=NULL)
+	{
+		int ret=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
+		if( ret != cCollision::OUTSIDE)	
+		{	
+			// INTERSECT or INSIDE는 큐에 넣는다.
+			pRendererQueue->Insert(this);						
+		}
+	}		
 children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
@@ -380,3 +351,5 @@ void cSceneNode::SetCullingSphere( cSphere& Sphere )
 		*m_pCullingSphere = Sphere;
 	}
 }
+
+

@@ -12,10 +12,10 @@ class cObjDragon :
 public:
 	cObjDragon();
 	virtual ~cObjDragon(void);
-
+	BOOL		m_bControl;
 private:
 	cSceneNode* m_pDummy;		//¿ëÀÇ HelperObj
-
+	
 public:
 	//IObject
 	virtual	void	Init();

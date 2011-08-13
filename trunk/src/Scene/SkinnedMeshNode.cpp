@@ -15,6 +15,7 @@
 
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
+#include "Framework/D3DFramework.h"
 
 
 SkinnedMeshNode::SkinnedMeshNode(void)
@@ -158,3 +159,9 @@ void SkinnedMeshNode::SetBoneRef( vector<BONEREFINFO>& vecBoneRef )
 {
 	m_vecBoneRef = vecBoneRef;
 }
+
+void SkinnedMeshNode::SendQueue()
+{
+	g_pD3DFramework->m_listRenderQueue[1].Insert(this);
+}
+

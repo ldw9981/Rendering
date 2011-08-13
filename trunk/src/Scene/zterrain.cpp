@@ -189,7 +189,7 @@ void	ZTerrain::Render()
 
 	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
 	//m_pD3DDevice->SetTransform(D3DTS_WORLD, &GetWorldTM() );	
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_WorldTM);
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 
 
 

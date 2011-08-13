@@ -5,7 +5,7 @@
 int    BCLR = 0xff202080;   // 배경색
 
 // 광원의 방향 (view space)
-float3 lightDir <  string UIDirectional = "Light Direction"; > = {0.577, -0.577, 0.577};
+float3 lightDir <  string UIDirectional = "Light Direction"; > = {0.577, -0.877, 0.577};
 
 // 광원의 밝기
 float4 I_a = { 0.1f, 0.1f, 0.1f, 1.0f };    // 주변광
@@ -33,7 +33,7 @@ float4x4 ViewProjection : ViewProjection;
 #endif
 
 const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
-float4x3 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
+float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 
 
 
@@ -86,71 +86,37 @@ VS_OUTPUT VS_Skinning(
    float2 Tex  : TEXCOORD0 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0;     
-
-	float4x3 matWorldSkinned;
-
+    	
     float fLastWeight = 1.0;
     float fWeight;
     float afBlendWeights[ 3 ] = (float[ 3 ]) BlendWeights;
 	int aiIndices[ 4 ] = (int[ 4 ])BlendIndices;
-/*
-    for( int iBone = 0; iBone < 3 ; ++ iBone )
-    {
-        fWeight = afBlendWeights[ iBone ];
-        fLastWeight -= fWeight;
-        Out.Pos.xyz += mul( Pos, Palette[ aiIndices[ iBone ] ] ) * fWeight;
-        Out.Norm    += mul( Norm, (float3x3)Palette[ aiIndices[ iBone ] ] ) * fWeight;
-	} 
-*/
-
+	
 	fLastWeight = 1.0 - (BlendWeights.x + BlendWeights.y + BlendWeights.z);
 
+	float4x4 matWorldSkinned;
 	matWorldSkinned = mul(BlendWeights.x, Palette[BlendIndices.x]);
 	matWorldSkinned += mul(BlendWeights.y, Palette[BlendIndices.y]);
 	matWorldSkinned += mul(BlendWeights.z, Palette[BlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[BlendIndices.w]);
-
-//	Out.Pos.xyz += mul( Pos, Palette[ aiIndices[ 3 ] ] ) * fLastWeight;
-//	Out.Norm    += mul( Norm, (float3x3)Palette[ aiIndices[ 3 ] ] ) * fLastWeight;
-//	Out.Pos.xyz = mul(Pos, matWorldSkinned);
-	Out.Norm    = mul(Norm, (float3x3)matWorldSkinned);
-	Out.Tex = Tex;    
-		
+	matWorldSkinned += mul(fLastWeight, Palette[BlendIndices.w]);		
 		
 	 // wold*view행렬계산
-    float4x3 WorldView = mul(matWorldSkinned, View);
+    float4x4 WorldView = mul(matWorldSkinned, View);
 	
      // 정점을 view공간으로
     float3 P = mul(float4(Pos, 1), WorldView);
     
      // view벡터를 구한다(view 공간)
     Out.View = -normalize(P);
+    Out.Norm = mul(Norm, (float3x3)WorldView);
     
     // 광원벡터 계산(view space)
     Out.Light = -lightDir;
     
      // 투영공간에서의 위치계산
     Out.Pos  = mul(float4(P, 1), Projection);
-    
-   
-   /*
-       // wold*view행렬계산
-    float4x4 WorldView = mul(World, View);
+	Out.Tex = Tex;    
 
-    // 정점을 view공간으로
-    float3 P = mul(float4(Pos, 1), (float4x3)WorldView);
-    
-    // 법선을 view공간으로
-    Out.Norm = normalize(mul(Norm, (float3x3)WorldView));
-
-    // view벡터를 구한다(view 공간)
-    Out.View = -normalize(P);
-
-    // 투영공간에서의 위치계산
-    Out.Pos  = mul(float4(P, 1), Projection);
-    
-    Out.Tex = Tex;
-   */
     return Out;	
 }
 

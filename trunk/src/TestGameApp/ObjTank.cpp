@@ -26,7 +26,7 @@ void cObjTank::Uninit()
 
 void cObjTank::Update( DWORD elapseTime )
 {
-	UpdateWorldTM();
+	UpdateMatrix();
 	UpdateChildren(elapseTime);
 }
 

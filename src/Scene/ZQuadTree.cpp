@@ -301,7 +301,7 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 /*
 	CheckWorldFrustumForQuadTree를 사용한다
 */
-void ZQuadTree::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
+void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
 {
 	return;
 
@@ -320,7 +320,7 @@ void ZQuadTree::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
 	}
 }
 

@@ -223,46 +223,14 @@ cSphere* cSceneNode::CreateBoundingSphere()
 	return m_pBoundingSphere;
 }
 
-
-void cSceneNode::CullRendererTraversal( cCameraNode* pActiveCamera )
-{			
-	if (!m_bRender)
-	{
-		goto children;
-	}
-
-	if (m_pCullingSphere!=NULL)
-	{
-		// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
-		int ret=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
-		if( ret == cCollision::OUTSIDE)
-		{	
-			//  밖에 있는것이면 노드순회 없음
-			return;	
-		}
-		else if (ret == cCollision::INSIDE)
-		{	
-			// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-			PushTraversal(pActiveCamera);
-			return;
-		}
-	}
-	
-	// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-	if (m_pBoundingSphere!=NULL)
-	{
-		int ret=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
-		if( ret != cCollision::OUTSIDE)	
-		{	
-			// INTERSECT or INSIDE는 큐에 넣는다.
-			SendQueue();			
-		}
-	}		
-children:
+// 기본적기능
+// bRender체크후 자식만 돌자.
+void cSceneNode::CullRendererIntoRendererQueue( cCameraNode* pActiveCamera )
+{				
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
 	}
 }
 

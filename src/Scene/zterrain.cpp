@@ -235,7 +235,7 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-void ZTerrain::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
+void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
 {
 	
 	if (m_pCullingSphere!=NULL)
@@ -266,6 +266,6 @@ void ZTerrain::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
 	}
 }

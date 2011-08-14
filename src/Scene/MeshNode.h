@@ -18,11 +18,9 @@ public:
 	virtual ~cMeshNode(void);
 
 protected:	
-
 	BOOL					m_bIsBone;
 	int						m_nStartIndex;
 	int						m_nPrimitiveCount;
-
 	Material				m_Matrial;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
@@ -46,13 +44,9 @@ public:
 
 
 	void					AddMultiSub(cMeshNode* mesh);	
-	void					UpdateSubMesh(DWORD elapseTime);
-	void					BuildSubMesh();
-
-	void					CullRendererTraversal(cCameraNode* pActiveCamera );
-	void					PushSubRender();
 
 
+	void					CullRendererIntoRendererQueue(cCameraNode* pActiveCamera );
 	virtual void			SendQueue();
 };
 

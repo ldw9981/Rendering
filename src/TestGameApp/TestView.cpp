@@ -39,6 +39,13 @@ cTestView::cTestView(void)
 	m_pTank->BuildComposite();
 	m_pTank->Init();
 	AttachObject(m_pTank);
+
+	m_pP38 = new cObjTank;	
+	parser.Load(string(strDataPath+"p38.ase").c_str(),m_pP38);
+	parser.Close();
+	m_pP38->BuildComposite();
+	m_pP38->Init();
+	AttachObject(m_pP38);
 }
 
 cTestView::~cTestView(void)
@@ -48,6 +55,9 @@ cTestView::~cTestView(void)
 
 	DettachObject(m_pTank);
 	SAFE_DELETE(m_pTank);
+
+	DettachObject(m_pP38);
+	SAFE_DELETE(m_pP38);
 
 }
 

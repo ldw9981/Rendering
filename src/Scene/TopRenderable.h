@@ -13,7 +13,6 @@ public:
 	~cTopRenderable();
 
 private:
-	cRendererQueue	m_RendererQueue;
 
 public:
 	virtual void ProcessRender();

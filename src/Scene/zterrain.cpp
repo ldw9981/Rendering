@@ -243,30 +243,12 @@ void ZTerrain::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode
 		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pCullingSphere);
 		if( ret == cCollision::OUTSIDE)
 		{	//  밖에 있는것이면 노드순회 없음
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere OUTSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 			return;
 		}
 		else if (ret == cCollision::INSIDE)
 		{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere INSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-			PushTraversal(pRendererQueue,pActiveCamera);
+			PushTraversal(pActiveCamera);
 			return;
-		}
-		else
-		{
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " CullingSphere INTERSECTION\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
 		}
 	}
 
@@ -276,28 +258,14 @@ void ZTerrain::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode
 		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pBoundingSphere);
 		if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
 		{	
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " BoundingSphere INSIDE or INTERSECTION\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
-			pRendererQueue->Insert(this);						
-		}
-		else	
-		{
-#ifdef _DEBUG
-//				string temp=GetNodeName();
-//				temp += " BoundingSphere OUTSIDE\n";
-//				g_pD3DFramework->GetDebugInfoScene()->AddDebugString(temp.c_str());
-#endif	
+			SendQueue();				
 		}
 	}
-	
 	
 
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pRendererQueue,pActiveCamera);
+		(*it)->CullRendererTraversal(pActiveCamera);
 	}
 }

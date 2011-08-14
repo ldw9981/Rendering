@@ -145,7 +145,7 @@ void cMeshNode::BuildComposite()
 	cSceneNode::BuildComposite();
 }
 
-void cMeshNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
+void cMeshNode::CullRendererTraversal(cCameraNode* pActiveCamera )
 {	
 	if (!m_bRender)
 		goto children;
@@ -153,7 +153,7 @@ void cMeshNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 
 	if (!m_vecSubMesh.empty())
 	{
-		PushSubRender(pRendererQueue);
+		PushSubRender();
 		goto children;
 	}
 	
@@ -165,7 +165,7 @@ void cMeshNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 	}
 	else if (retCS == cCollision::INSIDE)
 	{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음			
-		PushTraversal(pRendererQueue,pActiveCamera);
+		PushTraversal(pActiveCamera);
 		goto children;
 	}
 	
@@ -188,7 +188,7 @@ children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pRendererQueue,pActiveCamera);
+		(*it)->CullRendererTraversal(pActiveCamera);
 	}
 }
 
@@ -197,7 +197,7 @@ void cMeshNode::AddMultiSub( cMeshNode* mesh )
 	m_vecSubMesh.push_back(mesh);
 }
 
-void cMeshNode::PushSubRender( cRendererQueue* pRendererQueue )
+void cMeshNode::PushSubRender()
 {
 	vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 	for ( ;it!=m_vecSubMesh.end();++it )

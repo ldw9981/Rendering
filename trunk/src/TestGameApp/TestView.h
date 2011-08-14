@@ -18,6 +18,7 @@ private:
 	cCameraNode			m_Camera;
 	cObjDragon*			m_pDragon;
 	cObjTank*			m_pTank;
+	cObjTank*			m_pP38;
 	BOOL		m_bControlCamera;
 public:
 	// cScene

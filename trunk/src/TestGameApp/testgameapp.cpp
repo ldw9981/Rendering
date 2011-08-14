@@ -113,7 +113,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   int       nCmdShow)
 {
 	HeapValidator::SetDbgFlag();
-	//HeapValidator::SetBreakAlloc(178);	
+	//HeapValidator::SetBreakAlloc(53612);	
 	
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);

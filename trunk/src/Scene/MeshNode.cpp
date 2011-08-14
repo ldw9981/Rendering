@@ -68,8 +68,16 @@ void cMeshNode::Update(DWORD elapseTime)
 
 	m_pBoundingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 	*m_pCullingSphere = *m_pBoundingSphere;	
-	
-	UpdateSubMesh(elapseTime);
+
+	if (!m_vecSubMesh.empty())
+	{
+		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		for ( ;it!=m_vecSubMesh.end();++it )
+		{
+			(*it)->Update(elapseTime);
+		}
+	}	
+
 	UpdateChildren(elapseTime);
 	UpdateParentCullingSphere(*m_pCullingSphere);	
 }
@@ -138,57 +146,60 @@ void cMeshNode::BuildComposite()
 			m_bRender=false;
 		}
 	}
-
-
-	BuildSubMesh();
+	else
+	{
+		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		for ( ;it!=m_vecSubMesh.end();++it )
+		{
+			(*it)->BuildComposite();
+		}
+	}
 
 	cSceneNode::BuildComposite();
 }
 
-void cMeshNode::CullRendererTraversal(cCameraNode* pActiveCamera )
+void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
 {	
 	if (!m_bRender)
 		goto children;
 	
-
-	if (!m_vecSubMesh.empty())
-	{
-		PushSubRender();
-		goto children;
-	}
 	
-	// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
-	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
-	if( retCS == cCollision::OUTSIDE)
-	{	//  밖에 있는것이면 노드순회 없음
-		return;
-	}
-	else if (retCS == cCollision::INSIDE)
-	{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음			
-		PushTraversal(pActiveCamera);
-		goto children;
-	}
-	
-
-		// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-	if (m_pBoundingSphere!=NULL)
+	if (m_vecSubMesh.empty())
 	{
-		cCollision::STATE retBS=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
-		if( retBS != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
-		{				
-			SendQueue();						
+		// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
+		cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
+		if( retCS == cCollision::OUTSIDE)
+		{	//  밖에 있는것이면 노드순회 없음
+			return;
+		}
+		else if (retCS == cCollision::INSIDE)
+		{	// 자기넣고 순회
+			SendQueue();					
+		}
+		else if (m_pBoundingSphere!=NULL)	// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
+		{
+			cCollision::STATE retBS=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
+			if ( retBS == cCollision::INTERSECT || retBS == cCollision::INTERSECT)	
+			{				
+				SendQueue();						
+			}	
 		}	
 	}
-	else
-	{	//어떠한 이유로 바운딩 스피어없으면 그냥 그린다.	
-		SendQueue();
-	}
-		
+	else	// 멀티서브일때
+	{
+		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		for ( ;it!=m_vecSubMesh.end();++it )
+		{
+			(*it)->CullRendererIntoRendererQueue(pActiveCamera);
+		}			
+	}		
+
+
 children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
 	}
 }
 
@@ -197,32 +208,6 @@ void cMeshNode::AddMultiSub( cMeshNode* mesh )
 	m_vecSubMesh.push_back(mesh);
 }
 
-void cMeshNode::PushSubRender()
-{
-	vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-	for ( ;it!=m_vecSubMesh.end();++it )
-	{
-		(*it)->SendQueue();
-	}
-}
-
-void cMeshNode::UpdateSubMesh( DWORD elapseTime )
-{
-	vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-	for ( ;it!=m_vecSubMesh.end();++it )
-	{
-		(*it)->Update(elapseTime);
-	}
-}
-
-void cMeshNode::BuildSubMesh()
-{
-	vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-	for ( ;it!=m_vecSubMesh.end();++it )
-	{
-		(*it)->BuildComposite();
-	}
-}
 
 void cMeshNode::SetRscIndexBuffer( cRscIndexBuffer* val )
 {

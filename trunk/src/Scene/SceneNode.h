@@ -28,7 +28,9 @@ protected:
 	list<cSceneNode*>		m_listChildNode;		
 	cSceneNode*				m_pParentNode;
 	cSceneNode*				m_pRootNode;
-	cSphere*				m_pCullingSphere;		// 자식의 컬링구 를 모두 포함하는구(위치,볼륨을 매프레임 갱신해야함) 
+
+	// 아래두개는 버텍스 버퍼가 있을때만 만들어진다.
+	cSphere*				m_pCullingSphere;		// 자식의 컬링구 를 모두 포함하는구(위치,볼륨을 매프레임 갱신됨) 
 	cSphere*				m_pBoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	
 	// Transform 애니메이션 정보
@@ -95,7 +97,7 @@ public:
 	void				UpdateParentCullingSphere(cSphere& Sphere);
 
 	//					순회 하면서 Renderer들을 큐에 넣는다.
-	virtual void		CullRendererTraversal(cCameraNode* pActiveCamera);
+	virtual void		CullRendererIntoRendererQueue(cCameraNode* pActiveCamera);
 	void				PushTraversal( cCameraNode* pActiveCamera,WORD testPlane=0 );
 	
 	cSceneNode&	operator=(const cSceneNode& other);

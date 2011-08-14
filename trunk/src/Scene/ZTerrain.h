@@ -114,7 +114,7 @@ public:
 
 	TERRAINVERTEX* GetHeightMap() const { return m_pvHeightMap; }
 
-	virtual void		CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
+	virtual void		CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
 };
 
 #endif // _ZTERRAIN_H_

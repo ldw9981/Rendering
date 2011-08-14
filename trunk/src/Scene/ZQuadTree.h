@@ -58,7 +58,7 @@ public:
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);
-	virtual void		CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
+	virtual void		CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
 	virtual void		Render();
 };
 

@@ -224,7 +224,7 @@ cSphere* cSceneNode::CreateBoundingSphere()
 }
 
 
-void cSceneNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
+void cSceneNode::CullRendererTraversal( cCameraNode* pActiveCamera )
 {			
 	if (!m_bRender)
 	{
@@ -243,7 +243,7 @@ void cSceneNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNo
 		else if (ret == cCollision::INSIDE)
 		{	
 			// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-			PushTraversal(pRendererQueue,pActiveCamera);
+			PushTraversal(pActiveCamera);
 			return;
 		}
 	}
@@ -255,14 +255,14 @@ void cSceneNode::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNo
 		if( ret != cCollision::OUTSIDE)	
 		{	
 			// INTERSECT or INSIDE는 큐에 넣는다.
-			pRendererQueue->Insert(this);						
+			SendQueue();			
 		}
 	}		
 children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pRendererQueue,pActiveCamera);
+		(*it)->CullRendererTraversal(pActiveCamera);
 	}
 }
 
@@ -270,20 +270,18 @@ children:
 /*
 	순회를하면서 cIRenderer를 큐에 넣는다. 
 */
-void cSceneNode::PushTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera,WORD testPlane/*=0*/ )
+void cSceneNode::PushTraversal( cCameraNode* pActiveCamera,WORD testPlane/*=0 */ )
 {
 	if (!m_bRender)
 	{
 		goto children;
-	}
-	
-	pRendererQueue->Insert(this);
-
+	}	
+	SendQueue();
 children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->PushTraversal(pRendererQueue,pActiveCamera,testPlane);
+		(*it)->PushTraversal(pActiveCamera,testPlane);
 	}
 }
 
@@ -350,6 +348,11 @@ void cSceneNode::SetCullingSphere( cSphere& Sphere )
 	{
 		*m_pCullingSphere = Sphere;
 	}
+}
+
+void cSceneNode::SendQueue()
+{
+
 }
 
 

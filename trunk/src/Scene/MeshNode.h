@@ -49,8 +49,8 @@ public:
 	void					UpdateSubMesh(DWORD elapseTime);
 	void					BuildSubMesh();
 
-	void					CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
-	void					PushSubRender(cRendererQueue* pRendererQueue);
+	void					CullRendererTraversal(cCameraNode* pActiveCamera );
+	void					PushSubRender();
 
 
 	virtual void			SendQueue();

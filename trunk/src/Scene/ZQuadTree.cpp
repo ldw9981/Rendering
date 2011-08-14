@@ -313,14 +313,14 @@ void ZQuadTree::CullRendererTraversal( cRendererQueue* pRendererQueue,cCameraNod
 	}
 	else if (ret == cCollision::INSIDE)
 	{	// 완전히 내부면 순회하며 자식은 모두 TOP,BOTTON플랜만 테스한후 큐에 넣는다.
-		PushTraversal(pRendererQueue,pActiveCamera,PB_TOP|PB_BOTTOM);
+		PushTraversal(pActiveCamera,PB_TOP|PB_BOTTOM);
 		return;
 	}			
 	
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererTraversal(pRendererQueue,pActiveCamera);
+		(*it)->CullRendererTraversal(pActiveCamera);
 	}
 }
 

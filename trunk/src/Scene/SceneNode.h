@@ -94,8 +94,9 @@ public:
 
 	void				UpdateParentCullingSphere(cSphere& Sphere);
 
-	virtual void		CullRendererTraversal(cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera);
-	void				PushTraversal( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera,WORD testPlane=0 );
+	//					순회 하면서 Renderer들을 큐에 넣는다.
+	virtual void		CullRendererTraversal(cCameraNode* pActiveCamera);
+	void				PushTraversal( cCameraNode* pActiveCamera,WORD testPlane=0 );
 	
 	cSceneNode&	operator=(const cSceneNode& other);
 
@@ -111,6 +112,8 @@ public:
 	// ISerialize
 	virtual void		SerializeIn(fstream& in);
 	virtual void		SerializeOut(fstream& out);
+
+	virtual void		SendQueue();
 
 	
 };

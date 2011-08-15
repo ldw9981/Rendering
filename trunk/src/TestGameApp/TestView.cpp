@@ -46,6 +46,13 @@ cTestView::cTestView(void)
 	m_pP38->BuildComposite();
 	m_pP38->Init();
 	AttachObject(m_pP38);
+
+	m_pAirPlaneBake = new cObjTank;	
+	parser.Load(string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
+	parser.Close();
+	m_pAirPlaneBake->BuildComposite();
+	m_pAirPlaneBake->Init();
+	AttachObject(m_pAirPlaneBake);
 }
 
 cTestView::~cTestView(void)
@@ -58,6 +65,9 @@ cTestView::~cTestView(void)
 
 	DettachObject(m_pP38);
 	SAFE_DELETE(m_pP38);
+
+	DettachObject(m_pAirPlaneBake);
+	SAFE_DELETE(m_pAirPlaneBake);
 
 }
 

@@ -871,7 +871,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
-
+						
 							/*
 
 							string strFileName=GetString().c_str();							
@@ -885,6 +885,13 @@ BOOL cASEParser::Parsing_MaterialList()
 							
 							SubMatrial.SetMapRefract(pRscTexture);
 							*/
+							break;
+						case TOKENR_MAP_GENERIC:
+							if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+								return FALSE;						
+							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+							{
+							}
 							break;
 						}		
 					}

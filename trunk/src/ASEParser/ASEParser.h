@@ -73,6 +73,7 @@ struct VNORMAL
 	D3DXVECTOR3 normal;
 };
 
+
 class cASEParser:
 	public cASELexer,
 	private cStaticResourceMng

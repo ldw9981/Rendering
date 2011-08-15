@@ -19,6 +19,8 @@ private:
 	cObjDragon*			m_pDragon;
 	cObjTank*			m_pTank;
 	cObjTank*			m_pP38;
+	cObjTank*			m_pAirPlaneBake;
+
 	BOOL		m_bControlCamera;
 public:
 	// cScene

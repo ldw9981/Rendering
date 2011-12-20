@@ -47,7 +47,7 @@ public:
 
 
 	void					CullRendererIntoRendererQueue(cCameraNode* pActiveCamera );
-	virtual void			SendQueue();
+	virtual void			QueueRenderer();
 };
 
 

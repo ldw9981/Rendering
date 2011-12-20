@@ -92,6 +92,7 @@ private:
 	cSceneNode*			m_pLastObject;
 	int					m_CNTOBJECT;
 public:	
+	virtual void		Close();
 		BOOL			SkipBlock();
 		BOOL			FindToken(LONG token);
 		LONG			GetNextASEToken();

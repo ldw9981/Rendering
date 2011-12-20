@@ -5,7 +5,7 @@
 int    BCLR = 0xff202080;   // 배경색
 
 // 광원의 방향 (view space)
-float3 lightDir <  string UIDirectional = "Light Direction"; > = {0.577, -0.877, 0.577};
+float3 lightDir <  string UIDirectional = "Light Direction"; > = {0.0, -1.0, 1.0};
 
 // 광원의 밝기
 float4 I_a = { 0.1f, 0.1f, 0.1f, 1.0f };    // 주변광

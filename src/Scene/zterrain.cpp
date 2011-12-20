@@ -190,14 +190,7 @@ void	ZTerrain::Render()
 	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
 	//m_pD3DDevice->SetTransform(D3DTS_WORLD, &GetWorldTM() );	
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-
-
-
-
-
-#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-#endif
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 
@@ -258,7 +251,7 @@ void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCa
 		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pBoundingSphere);
 		if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
 		{	
-			SendQueue();				
+			QueueRenderer();				
 		}
 	}
 	

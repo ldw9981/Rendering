@@ -47,5 +47,5 @@ public:
 	void					LinkToBone();
 
 
-	virtual void			SendQueue();
+	virtual void			QueueRenderer();
 };

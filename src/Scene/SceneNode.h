@@ -115,7 +115,7 @@ public:
 	virtual void		SerializeIn(fstream& in);
 	virtual void		SerializeOut(fstream& out);
 
-	virtual void		SendQueue();
+	virtual void		QueueRenderer();
 
 	
 };

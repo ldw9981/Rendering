@@ -1,9 +1,7 @@
 #pragma once
-#include "GameObject.h"
 #include "D3D9Server/StaticD3DDevice9.h"
 
 class cBackWall :
-	public cGameObject,
 	private StaticD3DDEVICE9
 {
 public:

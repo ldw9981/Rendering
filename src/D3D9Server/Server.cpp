@@ -117,7 +117,7 @@ void Server::RenderDebugString(const char* szText)
 
 void Server::LoadHLSL(const char* szFileName)
 {
-#if USE_EFFECT
+
 
 	if (!szFileName)
 	{
@@ -149,7 +149,7 @@ void Server::LoadHLSL(const char* szFileName)
 		m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );;
 	}
 	SAFE_RELEASE(pErr);
-#endif	
+
 }
 
 }

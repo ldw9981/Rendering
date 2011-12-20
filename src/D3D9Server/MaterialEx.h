@@ -25,6 +25,7 @@ public:
 	float					Power;          /* Sharpness if specular highlight */
 	float					Multiply;				//power의 곱
 	float					Transparency;			//메쉬 투명도
+
 private:		
 	cRscTexture*			m_pMapDiffuse;
 	cRscTexture*			m_pMapBump;

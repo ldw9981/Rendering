@@ -244,7 +244,7 @@ void cSceneNode::PushTraversal( cCameraNode* pActiveCamera,WORD testPlane/*=0 */
 	{
 		goto children;
 	}	
-	SendQueue();
+	QueueRenderer();
 children:
 	list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
@@ -318,7 +318,7 @@ void cSceneNode::SetCullingSphere( cSphere& Sphere )
 	}
 }
 
-void cSceneNode::SendQueue()
+void cSceneNode::QueueRenderer()
 {
 
 }

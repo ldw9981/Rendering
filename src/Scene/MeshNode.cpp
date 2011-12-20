@@ -64,8 +64,10 @@ cMeshNode::~cMeshNode(void)
 
 void cMeshNode::Update(DWORD elapseTime)
 {
-	UpdateMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
+	cTransformable::Update(elapseTime);
+	UpdateWorldMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
 
+	// 바운딩스피어의 위치는 로컬좌표 기준이므로 월드로 바로 스지는 못한다.
 	m_pBoundingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 	*m_pCullingSphere = *m_pBoundingSphere;	
 
@@ -89,11 +91,9 @@ void cMeshNode::Update(DWORD elapseTime)
 void cMeshNode::Render()
 {			
 	
-#if USE_EFFECT
+
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-#else
-	m_pD3DDevice->SetTransform(D3DTS_WORLD, &m_matWorld );	
-#endif	
+
 	
 	//IndexBuffer,VertexBuffer셋팅
 	m_pD3DDevice->SetFVF(FVF_NORMALVERTEX);
@@ -105,26 +105,20 @@ void cMeshNode::Render()
 	cRscTexture* pRscTexture=NULL;
 		
 	
-#if USE_EFFECT
+
 	//텍스쳐 적용
 	pRscTexture=pMaterial->GetMapDiffuse();
 	if (pRscTexture!=NULL)
 	{
 		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",pRscTexture->GetD3DTexture());
 	}
-
-#else
-	if (pRscTexture!=NULL)	
-
-		m_pD3DDevice->SetTexture(0,pRscTexture->GetD3DTexture());	
 	else
-		m_pD3DDevice->SetTexture(0,NULL);
-#endif
-	
+	{
+				
+	}	
 
-#if USE_EFFECT
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-#endif
+
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 
@@ -174,14 +168,14 @@ void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
 		}
 		else if (retCS == cCollision::INSIDE)
 		{	// 자기넣고 순회
-			SendQueue();					
+			QueueRenderer();					
 		}
 		else if (m_pBoundingSphere!=NULL)	// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
 		{
 			cCollision::STATE retBS=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
 			if ( retBS == cCollision::INTERSECT || retBS == cCollision::INTERSECT)	
 			{				
-				SendQueue();						
+				QueueRenderer();						
 			}	
 		}	
 	}
@@ -227,7 +221,7 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 	}
 }
 
-void cMeshNode::SendQueue()
+void cMeshNode::QueueRenderer()
 {
 	g_pD3DFramework->m_listRenderQueue[0].Insert(this);
 }

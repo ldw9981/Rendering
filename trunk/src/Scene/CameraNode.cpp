@@ -56,20 +56,16 @@ void cCameraNode::Render()
 	if (m_bViewModified)
 	{		
 		D3DXMatrixInverse(&m_matView,NULL,&GetWorldTM());		
-#if USE_EFFECT
+
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
-#else
-		m_pD3DDevice->SetTransform (D3DTS_VIEW, &m_matView );		
-#endif
+
 	}	
 	if ( m_bProjectionModified)
 	{
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
-#if USE_EFFECT
+
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmProjection,&m_matProjection);
-#else
-		m_pD3DDevice->SetTransform (D3DTS_PROJECTION, &m_matProjection );
-#endif
+
 		
 	}		
 
@@ -79,13 +75,10 @@ void cCameraNode::Render()
 		m_matViewProjection = m_matView * m_matProjection;				
 		m_bProjectionModified=FALSE;
 		m_bViewModified=FALSE;
-#if USE_EFFECT
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
-#endif
 
-#if USE_EFFECT
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-#endif
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
+		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+
 		MakeWorldFrustum();	
 	}		
 }
@@ -95,8 +88,8 @@ WorldTM¿Ã
 */
 void cCameraNode::Update(DWORD elapseTime)
 {
-
-	UpdateMatrix();
+	cTransformable::Update(elapseTime);
+	UpdateWorldMatrix();
 
 	if(m_bModifiedMatWorld)
 	{

@@ -35,7 +35,7 @@ public:
 			CHAR		GetNextChar();
 
 			BOOL		Open(const char* p_FileName, DWORD p_SizeOfBuffer=MAX_SIZE_OF_BUFFER);	// 파일을 연다.
-			VOID		Close();															// 닫아버린다.
+	virtual	void		Close();															// 닫아버린다.
 			BOOL		Reset();															// 처음부터 다시 시작한다.
 
 	virtual	LONG		GetToken(LPSTR p_TokenString);

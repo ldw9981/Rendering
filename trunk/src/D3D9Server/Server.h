@@ -3,7 +3,7 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 
 
-#define USE_EFFECT 1
+
 
 class cGUIFont;
 

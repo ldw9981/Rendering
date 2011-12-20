@@ -1,5 +1,4 @@
 #pragma once
-#include "GameObject.h"
 #include "Scene/SceneNode.h"
 #include "Foundation/Interface.h"
 #include "WinInput/WinInput.h"

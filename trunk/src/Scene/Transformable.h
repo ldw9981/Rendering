@@ -13,11 +13,16 @@ public:
 protected:
 	D3DXMATRIX				m_matWorld;		//							Transform에 의해서만 갱신된다. 
 	D3DXMATRIX				m_matLocal;
-
-
+	D3DXMATRIX				m_matVelocityPos;
+	D3DXMATRIX				m_matVelocityRot;
+	
 	BOOL					m_bModifiedMatLocal;
 	BOOL					m_bModifiedMatWorld;
-
+	BOOL					m_bModifiedVelocityPos;
+	BOOL					m_bModifiedVelocityRot;
+	D3DXVECTOR3				m_velPosPerSec;
+	D3DXVECTOR3				m_velRotPerSec;
+	D3DXVECTOR3				m_velSclPerSec;
 
 public:
 	BOOL					GetWorldTMModified() const { return m_bModifiedMatWorld; }
@@ -43,5 +48,10 @@ public:
 	void					RotateOnLocal( float angleX,float angleY,float angleZ );
 
 	// 월드행렬 리턴
-	void					UpdateMatrix(D3DXMATRIX* pRepLocalTM=NULL,cTransformable* pParent=NULL);
+	void					UpdateWorldMatrix(D3DXMATRIX* pRepLocalTM=NULL,cTransformable* pParent=NULL);
+	void					Update(DWORD dwElapseMS);
+
+
+	void					SetVelocityPosition( float x,float y,float z );
+	void					SetVelocityRotation( float x,float y,float z );
 };

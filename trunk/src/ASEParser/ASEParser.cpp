@@ -816,6 +816,15 @@ BOOL cASEParser::Parsing_MaterialList()
 	for (int i=0;i<nMaterialCount;i++)
 	{
 		Material Matrial;		
+				
+		std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
+		strDefaultDiffuse += std::string("diffuse_white.dds");
+
+		cRscTexture* pDiffuse= m_ResourceMng.CreateRscTexture(strDefaultDiffuse.c_str());
+		if(pDiffuse==NULL)
+			TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
+		Matrial.SetMapDiffuse(pDiffuse);
+
 		vector<Material> vecSubMatrial;
 		m_vecMultiSubMaterial.push_back(vecSubMatrial);
 
@@ -982,7 +991,16 @@ BOOL cASEParser::Parsing_MaterialList()
 					int nNUMSUBMTLS=GetInt();
 					for (int iNUMSUBMTLS=0 ; iNUMSUBMTLS < nNUMSUBMTLS ; iNUMSUBMTLS++)
 					{
-						Material SubMatrial;						
+						Material SubMatrial;											
+
+						std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
+						strDefaultDiffuse += std::string("diffuse_white.dds");
+
+						cRscTexture* pDiffuse= m_ResourceMng.CreateRscTexture(strDefaultDiffuse.c_str());
+						if(pDiffuse==NULL)
+							TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
+						SubMatrial.SetMapDiffuse(pDiffuse);
+
 						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
 						GetInt();						// index
 						if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;						
@@ -2152,6 +2170,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 		bIsMultiSub=true;
 	}
 
+
 	int nPrimitiveCount=0,nStartIndex=0;
 	if (!bIsMultiSub)
 	{
@@ -2203,7 +2222,16 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			pSubNode->SetRscIndexBuffer(pIndexBuffer);
 
 			vector<Material>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
-			pSubNode->SetMatrial(refSubMaterial[nSubMaterialIndex]);
+			
+			if ( (size_t)nSubMaterialIndex >= refSubMaterial.size()  )
+			{
+				pSubNode->SetMatrial(refSubMaterial[0]);
+			}
+			else
+			{
+				pSubNode->SetMatrial(refSubMaterial[nSubMaterialIndex]);
+			}
+			
 
 			nStartIndex+=nPrimitiveCount*3; //cnt
 		}			
@@ -2362,6 +2390,13 @@ cHelperNode* cASEParser::CreateHelperNode(SCENENODEINFO& stInfo)
 		pNewSceneNode->SetParentNode(m_pSceneRoot);
 	}	
 	return pNewSceneNode;
+}
+
+void cASEParser::Close()
+{
+	cASELexer::Close();
+	m_vecMaterial.clear();
+	m_vecMultiSubMaterial.clear();
 }
 
 

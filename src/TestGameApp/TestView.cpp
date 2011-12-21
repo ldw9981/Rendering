@@ -17,7 +17,7 @@
 #include "ObjTank.h"
 
 cTestView::cTestView(void)
-:m_pDragon(NULL)
+:m_pDragon(NULL),m_pTank(NULL) ,m_pP38(NULL) ,m_pAirPlaneBake(NULL)
 {
 	SetViewPortInfo(0,0,1024,768);
 

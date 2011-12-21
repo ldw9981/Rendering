@@ -53,28 +53,15 @@ VS_OUTPUT VS(
    float3 Norm : NORMAL,
    float2 Tex  : TEXCOORD0 )
 {
-    VS_OUTPUT Out = (VS_OUTPUT) 0; 
-
-    // 광원벡터 계산(view space)
-    Out.Light = -lightDir;
-
-    // wold*view행렬계산
-    float4x4 WorldView = mul(World, View);
-
-    // 정점을 view공간으로
-    float3 P = mul(float4(Pos, 1), (float4x3)WorldView);
-    
-    // 법선을 view공간으로
-    Out.Norm = normalize(mul(Norm, (float3x3)WorldView));
-
-    // view벡터를 구한다(view 공간)
-    Out.View = -normalize(P);
-
-    // 투영공간에서의 위치계산
-    Out.Pos  = mul(float4(P, 1), Projection);
-    
-    Out.Tex = Tex;
-    
+    VS_OUTPUT Out = (VS_OUTPUT) 0;    
+   
+    float4x4 WorldView = mul(World, View);    					 // wold*view행렬계산
+    float3 P = mul(float4(Pos, 1),(float4x3)WorldView);		// 정점을 view공간으로    
+    Out.Norm = normalize(mul(Norm,(float3x3)WorldView));		// 법선을 view공간으로    
+    Out.View = -normalize(P);									// view벡터를 구한다(view 공간)   
+    Out.Pos  = mul(float4(P, 1), Projection);    				 // 투영공간에서의 위치계산
+    Out.Tex = Tex;    
+	Out.Light = -lightDir;										 // 광원벡터 계산(view space)   
     return Out;
 }
 
@@ -86,7 +73,7 @@ VS_OUTPUT VS_Skinning(
    float2 Tex  : TEXCOORD0 )
 {
     VS_OUTPUT Out = (VS_OUTPUT) 0;     
-    	
+	
     float fLastWeight = 1.0;
     float fWeight;
     float afBlendWeights[ 3 ] = (float[ 3 ]) BlendWeights;
@@ -100,23 +87,14 @@ VS_OUTPUT VS_Skinning(
 	matWorldSkinned += mul(BlendWeights.z, Palette[BlendIndices.z]);
 	matWorldSkinned += mul(fLastWeight, Palette[BlendIndices.w]);		
 		
-	 // wold*view행렬계산
-    float4x4 WorldView = mul(matWorldSkinned, View);
 	
-     // 정점을 view공간으로
-    float3 P = mul(float4(Pos, 1), WorldView);
-    
-     // view벡터를 구한다(view 공간)
-    Out.View = -normalize(P);
-    Out.Norm = mul(Norm, (float3x3)WorldView);
-    
-    // 광원벡터 계산(view space)
-    Out.Light = -lightDir;
-    
-     // 투영공간에서의 위치계산
-    Out.Pos  = mul(float4(P, 1), Projection);
+    float4x4 WorldView = mul(matWorldSkinned, View);			 // wold*view행렬계산    
+    float3 P = mul(float4(Pos, 1),(float4x3)WorldView);					 // 정점을 view공간으로
+	Out.Norm = normalize(mul(Norm,(float3x3)WorldView));		 // 법선을 view공간으로    
+    Out.View = -normalize(P);									 // view벡터를 구한다(view 공간)        
+    Out.Pos  = mul(float4(P, 1), Projection);					// 투영공간에서의 위치계산
 	Out.Tex = Tex;    
-
+	Out.Light = -lightDir;										 // 광원벡터 계산(view space)     
     return Out;	
 }
 

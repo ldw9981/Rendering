@@ -406,7 +406,7 @@ BOOL cASEParser::Parsing_GeoObject()
 					return FALSE;
 
 				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
+				{					
 					switch(m_Token)
 					{
 					case TOKENR_TIMEVALUE:	
@@ -424,6 +424,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								return FALSE;
 							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 							{
+								ASSERT(m_Token!=TOKEND_BLOCK_START);
 								switch(m_Token)
 								{
 								case TOKENR_MESH_VERTEX:
@@ -479,6 +480,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 							{
+								ASSERT(m_Token!=TOKEND_BLOCK_START);
 								switch(m_Token)
 								{
 								case TOKENR_MESH_FACE:						
@@ -527,6 +529,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 							{
+								ASSERT(m_Token!=TOKEND_BLOCK_START);
 								switch(m_Token)
 								{
 								case TOKENR_MESH_TVERT:	
@@ -551,6 +554,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 							{
+								ASSERT(m_Token!=TOKEND_BLOCK_START);
 								switch(m_Token)
 								{
 								case TOKENR_MESH_TFACE:						
@@ -566,7 +570,13 @@ BOOL cASEParser::Parsing_GeoObject()
 							}
 						}	
 						break;
-
+					case TOKENR_MESH_MAPPINGCHANNEL:
+						{
+							GetInt();
+							SkipBlock();
+						}
+						
+						break;
 					case TOKENR_MESH_NUMCVERTEX:
 						GetInt();
 						break;
@@ -662,6 +672,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								vector<BONEWEIGHT>	  vecBoneWeight;
 								while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 								{
+									ASSERT(m_Token!=TOKEND_BLOCK_START);
 									switch(m_Token)
 									{
 									case TOKENR_BONE_BLENGING_WEIGHT:
@@ -877,6 +888,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
+						ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -900,6 +912,7 @@ BOOL cASEParser::Parsing_MaterialList()
 								return FALSE;						
 							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 							{
+								ASSERT(m_Token!=TOKEND_BLOCK_START);
 							}
 							break;
 						}		
@@ -912,6 +925,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
+						ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -936,6 +950,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
+						ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -967,6 +982,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
+						ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -1006,6 +1022,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;						
 						while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 						{
+							ASSERT(m_Token!=TOKEND_BLOCK_START);
 							switch(m_Token)
 							{
 							case TOKENR_MATERIAL_AMBIENT:
@@ -1038,6 +1055,7 @@ BOOL cASEParser::Parsing_MaterialList()
 										return FALSE;						
 									while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 									{
+										ASSERT(m_Token!=TOKEND_BLOCK_START);
 										switch(m_Token)
 										{
 										case TOKENR_BITMAP:
@@ -1065,6 +1083,7 @@ BOOL cASEParser::Parsing_MaterialList()
 										return FALSE;						
 									while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 									{
+										ASSERT(m_Token!=TOKEND_BLOCK_START);
 										switch(m_Token)
 										{
 										case TOKENR_BITMAP:
@@ -1089,6 +1108,7 @@ BOOL cASEParser::Parsing_MaterialList()
 										return FALSE;						
 									while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 									{
+										ASSERT(m_Token!=TOKEND_BLOCK_START);
 										switch(m_Token)
 										{
 										case TOKENR_BITMAP:
@@ -1948,6 +1968,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 
 				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 				{
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
 					if(m_Token!=TOKENR_CONTROL_POS_SAMPLE)
 						return FALSE;										
 
@@ -1970,6 +1991,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 
 				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 				{	
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
 					if(m_Token!=TOKENR_CONTROL_ROT_SAMPLE)
 						return FALSE;	
 
@@ -2019,7 +2041,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 
 				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 				{
-
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
 				}
 			}
 			break;

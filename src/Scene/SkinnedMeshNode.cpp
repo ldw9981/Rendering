@@ -87,35 +87,13 @@ void SkinnedMeshNode::Render()
 
 	}
 
-
 	if (nBoneRefSize>0)
 	{
 		D3D9::Server::g_pServer->GetEffect()->SetMatrixArray(D3D9::Server::g_pServer->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
 	}	
-
-
-
-
 	
-	//메쉬에 사용될 매트리얼 얻기
-	Material* pMaterial=&m_Matrial;
-	cRscTexture* pRscTexture=NULL;
-
-
-	pRscTexture=pMaterial->GetMapDiffuse();
-	if (pRscTexture!=NULL)
-	{
-		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",pRscTexture->GetD3DTexture());
-	}
-	else
-	{
-		ASSERT(pRscTexture!=NULL);
-	}
-
-
-
+	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  

@@ -52,7 +52,7 @@ HRESULT	ZTerrain::Create( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, cons
 	}
 	catch (const char* msg)
 	{
-		OutputDebugStr(msg);
+		OutputDebugString(msg);
 		_Destroy(); 
 		return E_FAIL;
 	}
@@ -206,7 +206,7 @@ HRESULT ZTerrain::FillIndexBuffer()
 	m_pQuadTree->GenTriIndex(pCamera, m_nTriangles, pI );
 	m_pRscIndexBuffer->Unlock();
 
-//	g_pD3DFramework->GetDebugInfoScene()->AddDebugString(_T("tri %d\n"),m_nTriangles);
+//	g_pD3DFramework->GetDebugInfoScene()->AddDebugstd::string(_T("tri %d\n"),m_nTriangles);
 	
 	return S_OK;
 }
@@ -256,7 +256,7 @@ void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCa
 	}
 	
 
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->CullRendererIntoRendererQueue(pActiveCamera);

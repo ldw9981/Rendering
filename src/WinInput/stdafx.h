@@ -15,7 +15,5 @@
 #include <list>
 #include <WinDef.h>
 #include <assert.h>
-#include "Foundation/HeapValidator.h"
 
-using namespace std;
 // TODO: reference additional headers your program requires here

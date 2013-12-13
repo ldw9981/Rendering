@@ -15,15 +15,15 @@ cMenuView::cMenuView(void)
 	SetViewPortInfo(0,0,1024,768);
 	m_bControlCamera=FALSE;
 
-	string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	
  	m_pZTerrain = new ZTerrain;
  	
 	
 	
  	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
-		string(strDataPath+"map129.bmp").c_str(),
-		string(strDataPath+"ground.bmp").c_str()
+		std::string(strDataPath+"map129.bmp").c_str(),
+		std::string(strDataPath+"ground.bmp").c_str()
 		);
  	AttachObject(m_pZTerrain);
 	
@@ -31,8 +31,8 @@ cMenuView::cMenuView(void)
 
  	m_pTank = new cObjTank;
  	cASEParser parser;
- 	//parser.Load(string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
-	parser.Load(string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
+ 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
+	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
  	
 	
 	m_pTank->BuildComposite();

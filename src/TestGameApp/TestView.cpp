@@ -2,9 +2,7 @@
 #include "TestView.h"
 #include "Scene/ViewMng.h"
 #include "ASEParser/ASEParser.h"
-#include "Framework/D3DFramework.h"
 #include "GUI/GUIButton.h"
-
 #include "TestGameApp.h"
 #include "Ground.h"
 #include "ObjDragon.h"
@@ -13,6 +11,7 @@
 #include "TestView.h"
 #include "MenuView.h"
 #include "GlobalView.h"
+#include "Framework/D3DFramework.h"
 #include "Framework/EnvironmentVariable.h"
 #include "ObjTank.h"
 
@@ -24,41 +23,39 @@ cTestView::cTestView(void)
 	
 	cASEParser parser;
 
-	string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
-
+	
 	m_pDragon = new cObjDragon;
-	parser.Load(string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
+	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
 	parser.Close();
 	m_pDragon->BuildComposite();
 	m_pDragon->Init();
-	AttachObject(m_pDragon);
-
-
+	AttachObject(m_pDragon);	
 
 	m_pTank = new cObjTank;	
-	parser.Load(string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
+	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	parser.Close();
 	m_pTank->BuildComposite();
 	m_pTank->Init();
 	AttachObject(m_pTank);
+
 	
-
-
 	m_pP38 = new cObjTank;	
-	parser.Load(string(strDataPath+"p38.ase").c_str(),m_pP38);
+	parser.Load(std::string(strDataPath+"Normal Map.ase").c_str(),m_pP38);
 	parser.Close();
 	m_pP38->BuildComposite();
 	m_pP38->Init();
 	AttachObject(m_pP38);
-
-
+	
+	/*
 	m_pAirPlaneBake = new cObjTank;	
-	parser.Load(string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
+	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
 	parser.Close();
 	m_pAirPlaneBake->BuildComposite();
 	m_pAirPlaneBake->Init();
-	AttachObject(m_pAirPlaneBake);
+	AttachObject(m_pAirPlaneBake);	
+	*/
 }
 
 cTestView::~cTestView(void)
@@ -115,12 +112,14 @@ void cTestView::Control()
 		if(m_bControlCamera)
 		{
 			m_bControlCamera=FALSE;
-			m_pAirPlaneBake->m_bControl=TRUE;
+			if (m_pAirPlaneBake)
+				m_pAirPlaneBake->m_bControl=TRUE;
 		}
 		else
 		{
 			m_bControlCamera=TRUE;
-			m_pAirPlaneBake->m_bControl=FALSE;			
+			if (m_pAirPlaneBake)
+				m_pAirPlaneBake->m_bControl=FALSE;			
 		}
 	}
 

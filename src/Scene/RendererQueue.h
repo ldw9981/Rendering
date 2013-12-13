@@ -14,7 +14,7 @@ public:
 	~cRendererQueue();
 	
 	D3DXHANDLE			m_hTechnique;// Å×Å©´Ð
-	list<IRenderer*>	m_listNode;
+	std::list<IRenderer*>	m_listNode;
 private:
 	std::string			m_strName;
 	

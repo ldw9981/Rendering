@@ -10,8 +10,8 @@
 #include "GlobalView.h"
 #include "Framework/D3DFramework.h"
 #include "D3D9Server/Server.h"
-#include "Framework/environmentVariable.h"
-#include "Foundation/HeapValidator.h"
+
+
 
 using namespace D3D9;
 
@@ -33,10 +33,10 @@ bool TestGameApp::Open()
 	if(!cD3DFramework::Open())
 		return false;
 	
-	string Path;
+	std::string Path;
 	Path = EnvironmentVariable::GetInstance().GetString("CurrPath");
 
-	string::size_type index=Path.length();
+	std::string::size_type index=Path.length();
 	for (int i=0;i<3;i++)
 	{
 		index=Path.rfind("\\",index-1,1);
@@ -47,15 +47,20 @@ bool TestGameApp::Open()
 	EnvironmentVariable::GetInstance().SetString("DataPath",Path.c_str());
 	
 
-	string strHLSL=Path;
+	std::string strHLSL=Path;
 	strHLSL+= "hlsl.fx";
 	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
+
+	for (int i=0;i<16;i++)
+	{	
+		if ( (i & 2) !=0 )	
+			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hPhongDiffuseBump;
+		else 	
+			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
+	}
 	
-
-
-	g_pD3DFramework->m_listRenderQueue[0].m_hTechnique = m_pD3D9Server->m_hTBasic;
-	g_pD3DFramework->m_listRenderQueue[1].m_hTechnique = m_pD3D9Server->m_hTSkinning;
-
+	for (int i=0;i<16;i++)
+		g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = m_pD3D9Server->m_hTSkinningPhongDiffuse;
 
 //	m_pMenuScene = new cMenuView;
 	m_pTestScene = new cTestView;
@@ -112,7 +117,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
-	HeapValidator::SetDbgFlag();
+	//HeapValidator::SetDbgFlag();
 	//HeapValidator::SetBreakAlloc(53612);	
 	
 	char buffer[256];
@@ -125,6 +130,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 	TestGameApp.Close();
 	
-	HeapValidator::CheckMemory();
+	//HeapValidator::CheckMemory();
 	return 0;
 }

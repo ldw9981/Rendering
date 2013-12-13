@@ -317,7 +317,7 @@ void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cC
 		return;
 	}			
 	
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->CullRendererIntoRendererQueue(pActiveCamera);

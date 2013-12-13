@@ -1,12 +1,8 @@
 #include "stdafx.h"
 #include "Foundation/Trace.h"
-
 #include "ASEParser.h"
 #include "ASELexer.h"
 #include "Lexer.h"
-
-
-
 #include "Scene/MeshNode.h"
 #include "Scene/HelperNode.h"
 #include "Scene/ShapeNode.h"
@@ -62,9 +58,9 @@ BOOL cASEParser::GetVector3(D3DXVECTOR3* pOutput)
 }
 
 
-string cASEParser::GetString()
+std::string cASEParser::GetString()
 {	
-	string temp;
+	std::string temp;
 	// string
 	m_Token=GetToken(m_TokenString);
 	if (m_Token!=TOKEND_STRING)
@@ -340,20 +336,20 @@ BOOL cASEParser::Parsing_GeoObject()
 	UINT totalVertices=0,totalFaces=0,totalBoneRef=0,totalTVertices=0;
 	UINT nMaterialRef=0;
 	
-	vector<BONEREFINFO>					vecBoneRef;		
-	map<SUBMATINDEX,WORD>				mapIndexCount;	
+	std::vector<BONEREFINFO>					vecBoneRef;		
+	std::map<SUBMATINDEX,WORD>				mapIndexCount;	
 
 	//cRscVertexBuffer에 복사할 내용
-	vector<NORMALVERTEX>				vecTempNormalVertex; 
-	vector<BLENDVERTEX>					vecTempBlendVertex;
+	std::vector<NORMALVERTEX>				vecNormalVertexForBuffer; 
+	std::vector<BLENDVERTEX>				vecBlendVertexForBuffer;
 	//cRscIndexBuffer에 복사할 내용
-	vector<INDEX_FACE_SUBMATERIAL>		vecTempFaceIndex;
+	std::vector<TRIANGLE_SUBMATERIAL>		vecIndexForBuffer;
 		
 	// 버텍스 가공을 위한 일시적인 정보
-	vector<TEXCOORD>					vecTempTVertex;
-	vector<TEXCOORD>					vecTempTVertexOut;
-	vector<FACEINDEX16>					vecTempTFaceIndex;	
-	vector<VNORMAL>						vecTempVertexNormal;
+	std::vector<TEXCOORD>					vecTempTVertex;
+	std::vector<TEXCOORD>					vecTempTVertexOut;
+	std::vector<TRIANGLE>					vecTempTFaceIndex;	
+	std::vector<VNORMAL>					vecTempVertexNormal;
 	
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	D3DXVECTOR3 tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f),tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
@@ -436,7 +432,7 @@ BOOL cASEParser::Parsing_GeoObject()
 										GetVector3(&Item.vertex);
 										// 원점중심 로컬좌표로 이동
 										D3DXVec3TransformCoord(&Item.vertex,&Item.vertex,&stInfo.tmInvNode);
-										vecTempNormalVertex.push_back(Item);	
+										vecNormalVertexForBuffer.push_back(Item);	
 
 										//Bounding Sphere를 위한 최대 최소 얻기
 										tempAxisMin.x= min(Item.vertex.x,tempAxisMin.x);
@@ -455,7 +451,7 @@ BOOL cASEParser::Parsing_GeoObject()
 										GetVector3(&Item.vertex);		
 										// 원점중심 로컬좌표로 이동
 										D3DXVec3TransformCoord(&Item.vertex,&Item.vertex,&stInfo.tmInvNode);
-										vecTempBlendVertex.push_back(Item);	
+										vecBlendVertexForBuffer.push_back(Item);	
 
 										//Bounding Sphere를 위한 최대 최소 얻기
 										tempAxisMin.x= min(Item.vertex.x,tempAxisMin.x);
@@ -485,7 +481,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								{
 								case TOKENR_MESH_FACE:						
 									int iFace,iMat;
-									FACEINDEX16 tFaceIndex;
+									TRIANGLE tFaceIndex;
 									iFace=GetInt();			// FaceIndex
 
 									m_Token=GetToken(m_TokenString);		// A:
@@ -503,10 +499,10 @@ BOOL cASEParser::Parsing_GeoObject()
 									// 서브매트리얼 ID를 키로 ID마다 사용되는 FACEINDEX수를 카운트한다.
 									mapIndexCount[iMat]++;
 
-									INDEX_FACE_SUBMATERIAL temp;		
-									temp.faceIndex = tFaceIndex;						
+									TRIANGLE_SUBMATERIAL temp;		
+									temp.triangle = tFaceIndex;						
 									temp.subMaterialIndex = iMat;									
-									vecTempFaceIndex.push_back(temp);
+									vecIndexForBuffer.push_back(temp);
 									break;
 								}					
 							}
@@ -559,7 +555,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								{
 								case TOKENR_MESH_TFACE:						
 									int iTFace;
-									FACEINDEX16 tFaceIndex;
+									TRIANGLE tFaceIndex;
 									iTFace=GetInt();			// FaceIndex						
 									tFaceIndex.index[0]=GetInt();			// 0						
 									tFaceIndex.index[2]=GetInt();			// 1						
@@ -658,7 +654,7 @@ BOOL cASEParser::Parsing_GeoObject()
 							if(GetToken(m_TokenString) != TOKEND_BLOCK_START)	
 								return FALSE;			
 
-							for (UINT iVertex=0;iVertex<vecTempBlendVertex.size();iVertex++)
+							for (UINT iVertex=0;iVertex<vecBlendVertexForBuffer.size();iVertex++)
 							{												
 
 								if(GetToken(m_TokenString) != TOKENR_MESH_WEIGHT)	
@@ -669,7 +665,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)	
 									return FALSE;
 
-								vector<BONEWEIGHT>	  vecBoneWeight;
+								std::vector<BONEWEIGHT>	  vecBoneWeight;
 								while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 								{
 									ASSERT(m_Token!=TOKEND_BLOCK_START);
@@ -697,8 +693,8 @@ BOOL cASEParser::Parsing_GeoObject()
 									bweight[iTop]=vecBoneWeight[iTop].bone_weight;
 								}												
 
-								vecTempBlendVertex[iVertex].SetIndex(bindex);
-								vecTempBlendVertex[iVertex].SetWeight(bweight); 
+								vecBlendVertexForBuffer[iVertex].SetIndex(bindex);
+								vecBlendVertexForBuffer[iVertex].SetWeight(bweight); 
 
 							}
 							if(GetToken(m_TokenString) != TOKEND_BLOCK_END)		return FALSE;
@@ -740,50 +736,50 @@ BOOL cASEParser::Parsing_GeoObject()
 	cSphere tempSphere;
 	if (!bSkinned)	
 	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecTempNormalVertex,tempSphere);
+		CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,tempSphere);
 	}
 	else
 	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecTempBlendVertex,tempSphere);	
+		CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,tempSphere);	
 	}
 
 	// 이제 버텍스 가공 버텍스,노말 합치기
 	if (!bSkinned)	
 	{
-		MergeNormalListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempVertexNormal);
+		MergeNormalListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
 	}
 	else
 	{
-		MergeNormalListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempVertexNormal);
+		MergeNormalListIntoVertexList(vecBlendVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
 	}
 
 	// 텍스쳐 좌표줄이면서 텍스쳐좌표 인덱스 수정하기, 버텍스랑 합치면서 FaceIndex수정하기 	
 	if (!bSkinned)	
 	{
-		MergeTexCoordListIntoVertexList(vecTempNormalVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
+		MergeTexCoordListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempTVertex,vecTempTFaceIndex);
 	}
 	else
 	{
-		MergeTexCoordListIntoVertexList(vecTempBlendVertex,vecTempFaceIndex,vecTempTVertex,vecTempTFaceIndex);
+		MergeTexCoordListIntoVertexList(vecBlendVertexForBuffer,vecIndexForBuffer,vecTempTVertex,vecTempTFaceIndex);
 	}
 
 	// 서브매트리얼 ID별로 FACEINDEX정렬
-	sort(vecTempFaceIndex.begin(),vecTempFaceIndex.end(),INDEX_FACE_SUBMATERIAL::LessFaceIndex);	
+	sort(vecIndexForBuffer.begin(),vecIndexForBuffer.end(),TRIANGLE_SUBMATERIAL::LessFaceIndex);	
 
 	// 리소스 버텍스 버퍼   생성 -> 데이터복사 -> 메쉬셋팅
 	cRscVertexBuffer* pNewRscVertexBuffer=NULL;
 	if(!bSkinned)	
 	{
-		pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempNormalVertex);
+		pNewRscVertexBuffer = CreateRscVertexBuffer(vecNormalVertexForBuffer);
 	}
 	else
 	{
-		pNewRscVertexBuffer = CreateRscVertexBuffer(vecTempBlendVertex);	
+		pNewRscVertexBuffer = CreateRscVertexBuffer(vecBlendVertexForBuffer);	
 	}
 
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
 	cRscIndexBuffer* pNewRscIndexBuffer=NULL;	
-	pNewRscIndexBuffer = CreateRscIndexBuffer(vecTempFaceIndex);
+	pNewRscIndexBuffer = CreateRscIndexBuffer(vecIndexForBuffer);
 
 	cSceneNode* pNewSceneNode=NULL;
 
@@ -827,7 +823,7 @@ BOOL cASEParser::Parsing_MaterialList()
 	for (int i=0;i<nMaterialCount;i++)
 	{
 		Material Matrial;		
-				
+		/*		
 		std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
 		strDefaultDiffuse += std::string("diffuse_white.dds");
 
@@ -835,8 +831,9 @@ BOOL cASEParser::Parsing_MaterialList()
 		if(pDiffuse==NULL)
 			TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
 		Matrial.SetMapDiffuse(pDiffuse);
+		*/
 
-		vector<Material> vecSubMatrial;
+		std::vector<Material> vecSubMatrial;
 		m_vecMultiSubMaterial.push_back(vecSubMatrial);
 
 		if(GetToken(m_TokenString) != TOKENR_MATERIAL)		// *MATERIAL	
@@ -930,9 +927,9 @@ BOOL cASEParser::Parsing_MaterialList()
 						{
 						case TOKENR_BITMAP:
 
-							string strFileName=GetString().c_str();							
-							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							string strFullPath = strDataPath;
+							std::string strFileName=GetString().c_str();							
+							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
 							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
@@ -955,15 +952,15 @@ BOOL cASEParser::Parsing_MaterialList()
 						{
 						case TOKENR_BITMAP:
 
-							string strFileName=GetString().c_str();							
-							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							string strFullPath = strDataPath;
+							std::string strFileName=GetString().c_str();							
+							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
 							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
-							Matrial.SetMapBump(pRscTexture);
+							Matrial.SetMapNormal(pRscTexture);
 							break;
 						}		
 					}
@@ -987,9 +984,9 @@ BOOL cASEParser::Parsing_MaterialList()
 						{
 						case TOKENR_BITMAP:
 					
-							string strFileName=GetString().c_str();							
-							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							string strFullPath = strDataPath;
+							std::string strFileName=GetString().c_str();							
+							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
 							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
@@ -1008,7 +1005,7 @@ BOOL cASEParser::Parsing_MaterialList()
 					for (int iNUMSUBMTLS=0 ; iNUMSUBMTLS < nNUMSUBMTLS ; iNUMSUBMTLS++)
 					{
 						Material SubMatrial;											
-
+						/*
 						std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
 						strDefaultDiffuse += std::string("diffuse_white.dds");
 
@@ -1016,7 +1013,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						if(pDiffuse==NULL)
 							TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
 						SubMatrial.SetMapDiffuse(pDiffuse);
-
+						*/
 						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
 						GetInt();						// index
 						if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;						
@@ -1088,9 +1085,9 @@ BOOL cASEParser::Parsing_MaterialList()
 										{
 										case TOKENR_BITMAP:
 
-											string strFileName=GetString().c_str();							
-											string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-											string strFullPath = strDataPath;
+											std::string strFileName=GetString().c_str();							
+											std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+											std::string strFullPath = strDataPath;
 											strFullPath += strFileName;
 
 											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
@@ -1113,15 +1110,15 @@ BOOL cASEParser::Parsing_MaterialList()
 										{
 										case TOKENR_BITMAP:
 
-											string strFileName=GetString().c_str();							
-											string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-											string strFullPath = strDataPath;
+											std::string strFileName=GetString().c_str();							
+											std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+											std::string strFullPath = strDataPath;
 											strFullPath += strFileName;
 
 											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
 											if(pRscTexture==NULL)
 												TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
-											Matrial.SetMapBump(pRscTexture);
+											Matrial.SetMapNormal(pRscTexture);
 											break;
 										}		
 									}
@@ -1143,9 +1140,9 @@ BOOL cASEParser::Parsing_MaterialList()
 										switch(m_Token)
 										{
 										case TOKENR_BITMAP:
-											string strFileName=GetString().c_str();							
-											string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-											string strFullPath = strDataPath;
+											std::string strFileName=GetString().c_str();							
+											std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+											std::string strFullPath = strDataPath;
 											strFullPath += strFileName;
 
 											cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
@@ -1660,14 +1657,14 @@ BOOL cASEParser::Parsing_Scene()
 // 노말리스트를 버텍스 리스트에 합친다. 
 // arrVertex [in,out] , arrVNormal [in] ,  arrFaceIndex[in,out]
 template <typename T>
-void cASEParser::MergeNormalListIntoVertexList(vector<T>& arrVertex,
-								   vector<INDEX_FACE_SUBMATERIAL>& arrFaceIndex,
-								   const vector<VNORMAL>& arrVNormal)
+void cASEParser::MergeNormalListIntoVertexList(std::vector<T>& arrVertex,
+								   std::vector<TRIANGLE_SUBMATERIAL>& arrFaceIndex,
+								   const std::vector<VNORMAL>& arrVNormal)
 {
 	// arrVertex를 참조하는 인덱스기준으로 FACE리스트를 만든다.
-	vector<list<WORD>>						arrVRefFaceList;	
+	std::vector<std::list<WORD>>						arrVRefFaceList;	
 	// arrVertex를 참조하는 기준으로 뒤쪽 WORD는 이미존재하는 노말을갖는 버텍스의 인덱스
-	vector<list<pair<D3DXVECTOR3,WORD>>>    arrVRefNormalInsert;			
+	std::vector<std::list<std::pair<D3DXVECTOR3,WORD>>>    arrVRefNormalInsert;			
 
 	if (arrVertex.empty())
 		return;
@@ -1683,16 +1680,16 @@ void cASEParser::MergeNormalListIntoVertexList(vector<T>& arrVertex,
 	int nFace=(int)arrFaceIndex.size();
 	for (int iFace=0;iFace<nFace;iFace++ )
 	{
-		arrVRefFaceList[arrFaceIndex[iFace].faceIndex.index[0]].push_back(iFace);	
-		arrVRefFaceList[arrFaceIndex[iFace].faceIndex.index[1]].push_back(iFace);
-		arrVRefFaceList[arrFaceIndex[iFace].faceIndex.index[2]].push_back(iFace);
+		arrVRefFaceList[arrFaceIndex[iFace].triangle.index[0]].push_back(iFace);	
+		arrVRefFaceList[arrFaceIndex[iFace].triangle.index[1]].push_back(iFace);
+		arrVRefFaceList[arrFaceIndex[iFace].triangle.index[2]].push_back(iFace);
 	}
 
 	//2. arrFaceNormal 을 arrVertex에 넣으며 arrFace내의 버텍스인덱스를 수정한다.
 	WORD nVNormal=(WORD)arrVNormal.size();
 	for (WORD iVNormal=0;iVNormal<nVNormal;iVNormal++)
 	{
-		list<pair<D3DXVECTOR3,WORD>>* pListNormalnsert;
+		std::list<std::pair<D3DXVECTOR3,WORD>>* pListNormalnsert;
 
 
 		WORD iRefVertex=arrVNormal[iVNormal].iRefVertex;
@@ -1701,13 +1698,13 @@ void cASEParser::MergeNormalListIntoVertexList(vector<T>& arrVertex,
 		if(pListNormalnsert->empty())
 		{	// arrVertex 인덱스의 노말들이 없으면 그냥 넣는다.			
 			arrVertex[iRefVertex].normal = arrVNormal[iVNormal].normal;			
-			arrVRefNormalInsert[iRefVertex].push_back(make_pair(arrVNormal[iVNormal].normal,iRefVertex));
+			arrVRefNormalInsert[iRefVertex].push_back(std::make_pair(arrVNormal[iVNormal].normal,iRefVertex));
 		}
 		else
 		{					
 			const D3DXVECTOR3* pNewNormal=&arrVNormal[iVNormal].normal;
 
-			list<pair<D3DXVECTOR3,WORD>>::iterator it;
+			std::list<std::pair<D3DXVECTOR3,WORD>>::iterator it;
 			it=pListNormalnsert->begin();
 			for ( ; it != pListNormalnsert->end() ; ++it)
 			{				
@@ -1718,14 +1715,14 @@ void cASEParser::MergeNormalListIntoVertexList(vector<T>& arrVertex,
 					WORD iExist=(*it).second;
 					WORD iRefFace=arrVNormal[iVNormal].iRefFace;
 
-					if (arrFaceIndex[iRefFace].faceIndex.index[0] == iRefVertex )
-						arrFaceIndex[iRefFace].faceIndex.index[0] = iExist;
+					if (arrFaceIndex[iRefFace].triangle.index[0] == iRefVertex )
+						arrFaceIndex[iRefFace].triangle.index[0] = iExist;
 
-					if (arrFaceIndex[iRefFace].faceIndex.index[1] == iRefVertex )
-						arrFaceIndex[iRefFace].faceIndex.index[1] = iExist;
+					if (arrFaceIndex[iRefFace].triangle.index[1] == iRefVertex )
+						arrFaceIndex[iRefFace].triangle.index[1] = iExist;
 
-					if (arrFaceIndex[iRefFace].faceIndex.index[2]== iRefVertex )
-						arrFaceIndex[iRefFace].faceIndex.index[2] = iExist;					
+					if (arrFaceIndex[iRefFace].triangle.index[2]== iRefVertex )
+						arrFaceIndex[iRefFace].triangle.index[2] = iExist;					
 
 					break;
 				}
@@ -1739,29 +1736,29 @@ void cASEParser::MergeNormalListIntoVertexList(vector<T>& arrVertex,
 				arrVertex[iInsert].normal = *pNewNormal;
 
 				// 인덱스에 해당되는 노말리스트에 노말과,실제 넣은 인덱스 추가
-				arrVRefNormalInsert[iRefVertex].push_back(make_pair(*pNewNormal,iInsert));
+				arrVRefNormalInsert[iRefVertex].push_back(std::make_pair(*pNewNormal,iInsert));
 				WORD iRefFace=arrVNormal[iVNormal].iRefFace;
 
-				if (arrFaceIndex[iRefFace].faceIndex.index[0] == iRefVertex )
-					arrFaceIndex[iRefFace].faceIndex.index[0] = iInsert;
+				if (arrFaceIndex[iRefFace].triangle.index[0] == iRefVertex )
+					arrFaceIndex[iRefFace].triangle.index[0] = iInsert;
 
-				if (arrFaceIndex[iRefFace].faceIndex.index[1] == iRefVertex )
-					arrFaceIndex[iRefFace].faceIndex.index[1] = iInsert;
+				if (arrFaceIndex[iRefFace].triangle.index[1] == iRefVertex )
+					arrFaceIndex[iRefFace].triangle.index[1] = iInsert;
 
-				if (arrFaceIndex[iRefFace].faceIndex.index[2]== iRefVertex )
-					arrFaceIndex[iRefFace].faceIndex.index[2] = iInsert;					
+				if (arrFaceIndex[iRefFace].triangle.index[2]== iRefVertex )
+					arrFaceIndex[iRefFace].triangle.index[2] = iInsert;					
 			}
 		}
 	}
 }
 
 
-void cASEParser::OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
-								const vector<TEXCOORD>& arrTexCoordIn,
-								vector<FACEINDEX16>& arrTFaceIndexInOut)
+void cASEParser::OptimizeTexCoordAndFace(std::vector<TEXCOORD>& arrTexCoordOut,
+								const std::vector<TEXCOORD>& arrTexCoordIn,
+								std::vector<TRIANGLE>& arrTFaceIndexInOut)
 {
-	map<float,map<float,WORD>>	mapUVINDEX;
-	vector<list<int>>			arrTVIndexedFaceIndexList;	// 해당버텍스를 사용하는 페이스인덱스의 리스트를 버텍스인덱스로 인덱스화
+	std::map<float,std::map<float,WORD>>	mapUVINDEX;
+	std::vector<std::list<int>>			arrTVIndexedFaceIndexList;	// 해당버텍스를 사용하는 페이스인덱스의 리스트를 버텍스인덱스로 인덱스화
 
 	//랜덤 액세스를 위한 초기할당
 	if (arrTexCoordIn.empty())
@@ -1783,16 +1780,16 @@ void cASEParser::OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
 	WORD nNumTexCoord=(WORD)arrTexCoordIn.size();
 	for (WORD iTexCoordIn=0;iTexCoordIn<nNumTexCoord;iTexCoordIn++)
 	{
-		pair<map<float,map<float,WORD>>::iterator	,bool> retItInsertU;
-		pair<map<float,WORD>::iterator				,bool> retItInsertV;
+		std::pair<std::map<float,std::map<float,WORD>>::iterator	,bool> retItInsertU;
+		std::pair<std::map<float,WORD>::iterator				,bool> retItInsertV;
 
-		map<float,WORD> mapVINDEX;
-		map<float,WORD>* pmapVINDEX;
+		std::map<float,WORD> mapVINDEX;
+		std::map<float,WORD>* pmapVINDEX;
 
 		// U좌표와 빈 mapVINDEX 삽입
-		retItInsertU= mapUVINDEX.insert(make_pair(arrTexCoordIn[iTexCoordIn].first,mapVINDEX));
+		retItInsertU= mapUVINDEX.insert(std::make_pair(arrTexCoordIn[iTexCoordIn].u,mapVINDEX));
 		pmapVINDEX=&(retItInsertU.first->second);		
-		retItInsertV=pmapVINDEX->insert(make_pair(arrTexCoordIn[iTexCoordIn].second,0));
+		retItInsertV=pmapVINDEX->insert(std::make_pair(arrTexCoordIn[iTexCoordIn].v,0));
 
 		WORD iTexCoordOut;
 		if (retItInsertV.second)	// V좌표 삽입 성공 (기존값이 없음)
@@ -1807,7 +1804,7 @@ void cASEParser::OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
 		}
 
 		// iTexCoordIn,iTexCoordOut 를 이용한  FACE내의 인덱스 수정
-		list<int>::iterator it2=arrTVIndexedFaceIndexList[iTexCoordIn].begin();		
+		std::list<int>::iterator it2=arrTVIndexedFaceIndexList[iTexCoordIn].begin();		
 		for ( ;it2!=arrTVIndexedFaceIndexList[iTexCoordIn].end();++it2)
 		{
 			int iFace=*it2;
@@ -1828,10 +1825,10 @@ void cASEParser::OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
 // arrTexCoordIn 의 텍스쳐 좌표들은 
 // arrTFaceIndexIn   페이스에 쓰이는 텍스쳐 좌표인덱스 
 template <typename T>
-void cASEParser::MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
-									 vector<INDEX_FACE_SUBMATERIAL>& arrVFaceIndexInOut,
-									 const vector<TEXCOORD>& arrTexCoordIn,
-									 const vector<FACEINDEX16>& arrTFaceIndexIn)
+void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
+									 std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
+									 const std::vector<TEXCOORD>& arrTexCoordIn,
+									 const std::vector<TRIANGLE>& arrTFaceIndexIn)
 {	
 	if (arrVertexInOut.empty())
 		return;
@@ -1842,15 +1839,15 @@ void cASEParser::MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
 	if (arrTFaceIndexIn.empty())
 		return;
 
-	vector<list<pair<TEXCOORD,WORD>>> arrVIndexedTCList;
+	std::vector<std::list<std::pair<TEXCOORD,WORD>>> arrVIndexedTCList;
 	//랜덤액세스를 위한 할당
 	arrVIndexedTCList.resize(arrVertexInOut.size());
 
 	int nFace=(int)arrVFaceIndexInOut.size();
 	for (int iFace=0;iFace<nFace;iFace++)
 	{
-		FACEINDEX16*		 pVFace=&arrVFaceIndexInOut[iFace].faceIndex;
-		const FACEINDEX16* pTFace=&arrTFaceIndexIn[iFace];
+		TRIANGLE*		 pVFace=&arrVFaceIndexInOut[iFace].triangle;
+		const TRIANGLE* pTFace=&arrTFaceIndexIn[iFace];
 
 		for (int i=0;i<3;i++)
 		{
@@ -1862,12 +1859,16 @@ void cASEParser::MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
 			if(arrVIndexedTCList[iRefVertex].empty())			// 버텍스에 텍스좌표 리스트들이 없으면
 			{
 				arrVertexInOut[iRefVertex].tex = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
-				arrVIndexedTCList[iRefVertex].push_back(make_pair(*pTexcoord,iRefVertex)); //리스트에 텍스좌표추가
+
+				std::pair<TEXCOORD,WORD> temp;
+				temp.first = *pTexcoord;
+				temp.second = iRefVertex;
+				arrVIndexedTCList[iRefVertex].push_back(temp); //리스트에 텍스좌표추가
 			}
 			else // 버텍스인덱스별 텍스좌표 리스트에 하나이상 들어있다.
 			{				
-				list<pair<TEXCOORD,WORD>>* pListTexcoordInsert=&arrVIndexedTCList[iRefVertex];
-				list<pair<TEXCOORD,WORD>>::iterator it=pListTexcoordInsert->begin();
+				std::list<std::pair<TEXCOORD,WORD>>* pListTexcoordInsert=&arrVIndexedTCList[iRefVertex];
+				std::list<std::pair<TEXCOORD,WORD>>::iterator it=pListTexcoordInsert->begin();
 				for ( ; it!=pListTexcoordInsert->end();++it)
 				{					
 					//텍스좌표가 같은것이면 이미 넣은것인덱스로 변경
@@ -1893,9 +1894,14 @@ void cASEParser::MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
 					pVFace->index[i]=iRefVertex;					
 
 					//리스트 생성,텍스추가
-					list<pair<TEXCOORD,WORD>> temp;
-					arrVIndexedTCList.push_back(temp);
-					arrVIndexedTCList[iRefVertex].push_back(make_pair(*pTexcoord,iRefVertex));
+					std::list<std::pair<TEXCOORD,WORD>> tempList;
+					arrVIndexedTCList.push_back(tempList);
+
+					std::pair<TEXCOORD,WORD> tempValue;
+					tempValue.first = *pTexcoord;
+					tempValue.second = iRefVertex;
+
+					arrVIndexedTCList[iRefVertex].push_back(tempValue);
 				}
 			}
 		}	
@@ -1903,7 +1909,7 @@ void cASEParser::MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
 }
 
 template <typename T>
-void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,vector<T>& arrVertex,cSphere& out )
+void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,std::vector<T>& arrVertex,cSphere& out )
 {
 	D3DXVECTOR3 tempCenterPos=D3DXVECTOR3(0.0f,0.0f,0.0f);
 	float		tempRadius=0.0f;
@@ -1940,7 +1946,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 	// time - AnmKey
 	DWORD dwTimeKey=0;
 	
-	map<DWORD,ANMKEY> mapAnmKey;
+	std::map<DWORD,ANMKEY> mapAnmKey;
 
 	mapAnmKey[0].AnmTick=0;
 	mapAnmKey[0].TranslationAccum=localTM_anmkey.TranslationAccum;
@@ -1984,7 +1990,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 			break;
 		case TOKENR_CONTROL_ROT_TRACK:
 			{
-				vector<pair<DWORD,D3DXQUATERNION>> arrayROTKEY;
+				std::vector<std::pair<DWORD,D3DXQUATERNION>> arrayROTKEY;
 
 				if(GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 					return FALSE;
@@ -2000,7 +2006,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 					dwTimeKey =  GetInt() / m_SceneTime.EX_TICKSPERMS;	
 					GetVector3(&axis);
 
-					pair<DWORD,D3DXQUATERNION> ItemDelta;
+					std::pair<DWORD,D3DXQUATERNION> ItemDelta;
 					ItemDelta.first = dwTimeKey;
 					ang = GetFloat();					
 					D3DXQuaternionRotationAxis(&ItemDelta.second,&axis,ang);
@@ -2013,10 +2019,10 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 				D3DXQuaternionIdentity(&prev_q);
 				D3DXQuaternionIdentity(&accum_q);
 
-				vector<pair<DWORD,D3DXQUATERNION>>::iterator rot_it=arrayROTKEY.begin();
+				std::vector<std::pair<DWORD,D3DXQUATERNION>>::iterator rot_it=arrayROTKEY.begin();
 				for ( ; rot_it!=arrayROTKEY.end() ; rot_it++)
 				{
-					pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
+					std::pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
 
 					if(rot_it == arrayROTKEY.begin())
 					{
@@ -2050,10 +2056,10 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 	
 
 	pRscTransformAnm->SetTimeLength(dwTimeKey);
-	vector<ANMKEY>& refArrAnmKey=pRscTransformAnm->GetArrayANMKEY();
+	std::vector<ANMKEY>& refArrAnmKey=pRscTransformAnm->GetArrayANMKEY();
 	
 	ANMKEY prevItem=localTM_anmkey;
-	map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
+	std::map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
 	for ( ; iter != mapAnmKey.end() ;iter++ )
 	{	
 		ANMKEY& currItem = iter->second;
@@ -2094,7 +2100,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 
 
 // 회전키정보의 누적변환
-void cASEParser::ConvertAccQuaternion(vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM)
+void cASEParser::ConvertAccQuaternion(std::vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM)
 {
 	ANMKEY localTM_anmkey;
 	D3DXMatrixDecompose(
@@ -2109,7 +2115,7 @@ void cASEParser::ConvertAccQuaternion(vector<ROTKEY>& arrayROTKEY,const D3DXMATR
 	D3DXQuaternionIdentity(&prev_q);
 	D3DXQuaternionIdentity(&accum_q);
 
-	vector<ROTKEY>::iterator rot_it=arrayROTKEY.begin();
+	std::vector<ROTKEY>::iterator rot_it=arrayROTKEY.begin();
 	for ( ; rot_it!=arrayROTKEY.end() ; rot_it++)
 	{
 		ROTKEY& Item = *rot_it;
@@ -2126,7 +2132,7 @@ void cASEParser::ConvertAccQuaternion(vector<ROTKEY>& arrayROTKEY,const D3DXMATR
 }
 
 // 회전키정보의 누적변환
-void cASEParser::ConvertAccQuaternionEX(vector<pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,map<DWORD,ANMKEY> outRefMapAnmKey)
+void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY> outRefMapAnmKey)
 {
 	ANMKEY localTM_anmkey;
 	D3DXMatrixDecompose(
@@ -2141,10 +2147,10 @@ void cASEParser::ConvertAccQuaternionEX(vector<pair<DWORD,D3DXQUATERNION>>& inAr
 	D3DXQuaternionIdentity(&prev_q);
 	D3DXQuaternionIdentity(&accum_q);
 
-	vector<pair<DWORD,D3DXQUATERNION>>::iterator rot_it=inArrayROTKEY.begin();
+	std::vector<std::pair<DWORD,D3DXQUATERNION>>::iterator rot_it=inArrayROTKEY.begin();
 	for ( ; rot_it!=inArrayROTKEY.end() ; rot_it++)
 	{
-		pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
+		std::pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
 
 		if(rot_it == inArrayROTKEY.begin())
 		{
@@ -2162,7 +2168,7 @@ cMeshNode*
 cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 							cRscVertexBuffer* pVertexBuffer,
 							cRscIndexBuffer* pIndexBuffer,
-							map<SUBMATINDEX,WORD>& mapIndexCount,
+							std::map<SUBMATINDEX,WORD>& mapIndexCount,
 							int nMaterialRef)
 {
 	assert(pIndexBuffer!=NULL);
@@ -2196,7 +2202,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	int nPrimitiveCount=0,nStartIndex=0;
 	if (!bIsMultiSub)
 	{
-		map<SUBMATINDEX,WORD>::iterator it;		
+		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
 			int nCount = (*it).second;
@@ -2216,7 +2222,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	}
 	else
 	{
-		map<SUBMATINDEX,WORD>::iterator it;		
+		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
 			int nSubMaterialIndex = (*it).first;
@@ -2243,7 +2249,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			pSubNode->SetRscVertextBuffer(pVertexBuffer);		
 			pSubNode->SetRscIndexBuffer(pIndexBuffer);
 
-			vector<Material>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
+			std::vector<Material>& refSubMaterial=m_vecMultiSubMaterial[nMaterialRef];
 			
 			if ( (size_t)nSubMaterialIndex >= refSubMaterial.size()  )
 			{
@@ -2266,9 +2272,9 @@ SkinnedMeshNode*
 cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 								  cRscVertexBuffer* pVertexBuffer,
 								  cRscIndexBuffer* pIndexBuffer,
-								  map<SUBMATINDEX,WORD>& mapIndexCount,
+								  std::map<SUBMATINDEX,WORD>& mapIndexCount,
 								  int nMaterialRef,
-								  vector<BONEREFINFO>& boneRef)
+								  std::vector<BONEREFINFO>& boneRef)
 {
 	assert(pIndexBuffer!=NULL);
 	assert(pVertexBuffer!=NULL);
@@ -2299,7 +2305,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	int nPrimitiveCount=0,nStartIndex=0;
 	if (!bIsMultiSub)
 	{
-		map<SUBMATINDEX,WORD>::iterator it;		
+		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
 			nPrimitiveCount=(*it).second;
@@ -2317,7 +2323,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	}
 	else
 	{
-		map<SUBMATINDEX,WORD>::iterator it;		
+		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
 			int nSubMaterialIndex = (*it).first;
@@ -2354,40 +2360,42 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 }
 
 template <typename T>
-cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(vector<T>& arrVertex)
+cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(std::vector<T>& arrVertex)
 {
 	cRscVertexBuffer* pVertexBuffer=NULL;
 	if (!arrVertex.empty())
 	{
-		DWORD nVertices=(DWORD)arrVertex.size();
-		pVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(sizeof(T)*nVertices);
+		DWORD nCount=(DWORD)arrVertex.size();
+		pVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(sizeof(T)*nCount);
 
 		T* pVertices=(T*)pVertexBuffer->Lock();
-		for (UINT i=0;i< arrVertex.size();i++)
+		for (UINT i=0;i< nCount;i++)
 		{
 			memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
 		}	
 		pVertexBuffer->Unlock();			
-		pVertexBuffer->SetVerties(nVertices);
+		pVertexBuffer->SetCount(nCount);
 	}
 	return pVertexBuffer;
 }
 
 
-cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(vector<INDEX_FACE_SUBMATERIAL>& arrIndex)
+cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(std::vector<TRIANGLE_SUBMATERIAL>& arrIndex)
 {
 	cRscIndexBuffer* pIndexBuffer=NULL;
 	if (!arrIndex.empty())
 	{
+		DWORD nCount=(DWORD)arrIndex.size();
 		pIndexBuffer = m_ResourceMng.CreateRscIndexBuffer(
-			sizeof(FACEINDEX16)*(DWORD)arrIndex.size());
+			sizeof(TRIANGLE)*nCount);
 
-		FACEINDEX16* pIndices=(FACEINDEX16*)pIndexBuffer->Lock();
-		for (UINT i=0;i< arrIndex.size();i++)
+		TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
+		for (UINT i=0;i< nCount;i++)
 		{
-			memcpy(&pIndices[i],&arrIndex[i].faceIndex,sizeof(FACEINDEX16));			
+			memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
 		}
 		pIndexBuffer->Unlock();		
+		pIndexBuffer->SetCount(nCount);
 	}			
 	return pIndexBuffer;
 }

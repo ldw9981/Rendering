@@ -24,7 +24,7 @@ protected:
 	Material				m_Matrial;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
-	vector<cMeshNode*>		m_vecSubMesh;
+	std::vector<cMeshNode*>		m_vecSubMesh;
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render();
@@ -48,6 +48,12 @@ public:
 
 	void					CullRendererIntoRendererQueue(cCameraNode* pActiveCamera );
 	virtual void			QueueRenderer();
+
+	void					CalculateTangentBinormal();
+	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
+		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
+		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
+		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
 };
 
 

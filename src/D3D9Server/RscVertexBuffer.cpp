@@ -7,7 +7,7 @@ cRscVertexBuffer::cRscVertexBuffer(void)
 {
 	m_pD3DVertexBuffer=NULL;
 	m_Type=D3DPOOL_DEFAULT;
-	m_nVerties=0;
+	m_nCount=0;
 }
 
 cRscVertexBuffer::~cRscVertexBuffer(void)
@@ -73,7 +73,7 @@ void cRscVertexBuffer::ProcessMakeUniqueKey()
 {
 	// 파일이름이 있으면 접두어_파일이름
 	// 없으면 접두어_유니크번호
-	string temp="VERTEXBUFFER_";	
+	std::string temp="VERTEXBUFFER_";	
 
 	if (!GetFilePath().empty())
 	{			
@@ -92,3 +92,4 @@ void cRscVertexBuffer::SetStreamSource( UINT stride )
 {
 	m_pD3DDevice->SetStreamSource( 0, m_pD3DVertexBuffer, 0,  stride );	
 }
+

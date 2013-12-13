@@ -12,15 +12,15 @@ cGlobalView::cGlobalView(void)
 	SetViewPortInfo(0,0,128,128);
 
 
-	string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
 	m_pBtNextScene = new cGUIButton((INotifiable*)this);
-	m_pBtNextScene->Create(string(strDataPath+"ButtonNextScene.bmp").c_str());
+	m_pBtNextScene->Create(std::string(strDataPath+"ButtonNextScene.bmp").c_str());
 	m_pBtNextScene->SetPos(0,0);
 	AttachObject(m_pBtNextScene);
 
 	m_pBtExit = new cGUIButton((INotifiable*)this);
-	m_pBtExit->Create(string(strDataPath+"ButtonExit.bmp").c_str());
+	m_pBtExit->Create(std::string(strDataPath+"ButtonExit.bmp").c_str());
 	m_pBtExit->SetPos(0,0+64);
 	AttachObject(m_pBtExit);
 

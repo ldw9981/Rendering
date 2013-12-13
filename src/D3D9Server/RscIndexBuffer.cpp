@@ -65,7 +65,7 @@ void cRscIndexBuffer::ProcessMakeUniqueKey()
 {
 	// 파일이름이 있으면 접두어_파일이름
 	// 없으면 접두어_유니크번호
-	string temp="INDEXBUFFER_";	
+	std::string temp="INDEXBUFFER_";	
 
 	if (!GetFilePath().empty())
 	{			

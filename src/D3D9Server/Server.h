@@ -29,9 +29,9 @@ public:
 	LPD3DXFONT				m_pFont;
 	LPD3DXEFFECT			m_pEffect;	
 	LPD3DXBUFFER			m_pError;	
-	D3DXHANDLE				m_hTNoShader;// 테크닉
-	D3DXHANDLE				m_hTSkinning;// 테크닉	
-	D3DXHANDLE				m_hTBasic;// 테크닉
+	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
+	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
+	D3DXHANDLE				m_hPhongDiffuseBump;
 
 	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
 	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬
@@ -40,8 +40,11 @@ public:
 	D3DXHANDLE				m_hmViewProjection;
 	D3DXHANDLE				m_hvLightDir;
 	D3DXHANDLE				m_hmPalette;
+	D3DXHANDLE				m_hvWorldLightPosition;
+	D3DXHANDLE				m_hvWorldCameraPosition;;
+
 	cGUIFont*					m_pNewFont;
-	string m_strHLSL;
+	std::string m_strHLSL;
 
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	

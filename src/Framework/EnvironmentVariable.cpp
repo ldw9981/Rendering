@@ -11,14 +11,14 @@ EnvironmentVariable::~EnvironmentVariable(void)
 }
 
 
-void EnvironmentVariable::SetString( string name,string strIn )
+void EnvironmentVariable::SetString( std::string name,std::string strIn )
 {
 	m_mapEnvironmentVarString[name]=strIn;
 }
 
-string& EnvironmentVariable::GetString( string name)
+std::string& EnvironmentVariable::GetString( std::string name)
 {
-	string& strOut = m_mapEnvironmentVarString[name];
+	std::string& strOut = m_mapEnvironmentVarString[name];
 	return strOut;
 }
 

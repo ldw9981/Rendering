@@ -35,8 +35,8 @@ cMeshNode::cMeshNode(void)
 
 cMeshNode::~cMeshNode(void)
 {
-	vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
-	vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
+	std::vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
+	std::vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
 
 	for ( ;it!=it_end ; it++ )
 	{
@@ -73,7 +73,7 @@ void cMeshNode::Update(DWORD elapseTime)
 
 	if (!m_vecSubMesh.empty())
 	{
-		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
 			(*it)->Update(elapseTime);
@@ -90,23 +90,28 @@ void cMeshNode::Update(DWORD elapseTime)
 */
 void cMeshNode::Render()
 {			
-	
-
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-
 	
 	//IndexBuffer,VertexBuffer셋팅
-	m_pD3DDevice->SetFVF(FVF_NORMALVERTEX);
+	m_pD3DDevice->SetFVF(FVF_NORMAL);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
-	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 
+	assert( m_Matrial.GetMapDiffuse()->GetD3DTexture() != NULL);
+
+	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+
+	if( m_Matrial.GetMapNormal() != NULL )
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
+	}
+
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 
-			m_pRscVetextBuffer->GetVerties(),
+			m_pRscVetextBuffer->GetCount(),
 			m_nStartIndex,
 			m_nPrimitiveCount );
 
@@ -114,26 +119,42 @@ void cMeshNode::Render()
 
 void cMeshNode::BuildComposite()
 {
-	if (m_bIsBone)
+	std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+	for ( ;it!=m_vecSubMesh.end();++it )
+	{
+		(*it)->BuildComposite();
+	}
+
+	if (m_bIsBone || m_pRscIndexBuffer==NULL || m_pRscVetextBuffer==NULL || m_Matrial.GetMapDiffuse() == NULL)
+	{
 		m_bRender=false;
+	}	
 
-	if (m_vecSubMesh.empty())
+	if (m_Matrial.GetMapNormal() != NULL && m_pRscVetextBuffer !=NULL && m_pRscIndexBuffer != NULL)
 	{
-		if ((m_pRscIndexBuffer==NULL)||(m_pRscVetextBuffer==NULL))
+		long vertexCount = m_pRscVetextBuffer->GetCount();
+		long triangleCount = m_pRscIndexBuffer->GetCount();
+		NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
+		TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock();
+
+		for (long a = 0; a < triangleCount; a++)
 		{
-			m_bRender=false;
+			long i1 = triangle->index[0];
+			long i2 = triangle->index[1];
+			long i3 = triangle->index[2];
+
+			CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
+				vertex[i1].tex,vertex[i2].tex,vertex[i3].tex,
+				vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
+				vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
+
+			triangle++;
 		}
-	}
-	else
-	{
-		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-		for ( ;it!=m_vecSubMesh.end();++it )
-		{
-			(*it)->BuildComposite();
-		}
+		m_pRscIndexBuffer->Unlock();
+		m_pRscVetextBuffer->Unlock();
 	}
 
-	cSceneNode::BuildComposite();
+	cSceneNode::BuildComposite();	
 }
 
 void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
@@ -165,7 +186,7 @@ void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
 	}
 	else	// 멀티서브일때
 	{
-		vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
 			(*it)->CullRendererIntoRendererQueue(pActiveCamera);
@@ -174,7 +195,7 @@ void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
 
 
 children:
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
@@ -207,5 +228,74 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 
 void cMeshNode::QueueRenderer()
 {
-	g_pD3DFramework->m_listRenderQueue[0].Insert(this);
+	int i = m_Matrial.index_renderer_queue();
+	g_pD3DFramework->m_listRenderQueue[i].Insert(this);
+}
+
+void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
+	const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
+	D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
+	D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3)
+{
+	float vector1[3], vector2[3];
+	float tuVector[2], tvVector[2];
+
+	float den;
+	float length;
+	D3DXVECTOR3 tangent;
+	D3DXVECTOR3 binormal;
+
+
+	// Calculate the two vectors for this face.
+	vector1[0] = vertex2.x - vertex1.x;
+	vector1[1] = vertex2.y - vertex1.y;
+	vector1[2] = vertex2.z - vertex1.z;
+
+	vector2[0] = vertex3.x - vertex1.x;
+	vector2[1] = vertex3.y - vertex1.y;
+	vector2[2] = vertex3.z - vertex1.z;
+
+	// Calculate the tu and tv texture space vectors.
+	tuVector[0] = t2.u - t1.u;
+	tvVector[0] = t2.v - t1.v;
+
+	tuVector[1] = t3.u - t1.u;
+	tvVector[1] = t3.v - t1.v;
+
+	// Calculate the denominator of the tangent/binormal equation.
+	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	// Calculate the length of this normal.
+	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+	// Normalize the normal and then store it
+	tangent.x = tangent.x / length;
+	tangent.y = tangent.y / length;
+	tangent.z = tangent.z / length;
+
+	// Calculate the length of this normal.
+	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+	// Normalize the normal and then store it
+	binormal.x = binormal.x / length;
+	binormal.y = binormal.y / length;
+	binormal.z = binormal.z / length;
+
+	tangent1 = tangent;
+	tangent2 = tangent;
+	tangent3 = tangent;
+
+	binormal1 = binormal;
+	binormal2 = binormal;
+	binormal3 = binormal;
+
 }

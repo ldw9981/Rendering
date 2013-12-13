@@ -22,7 +22,7 @@ void cRendererQueue::Insert( IRenderer* pItem )
 
 void cRendererQueue::Render()
 {
- 	list<IRenderer*>::iterator it=m_listNode.begin();
+ 	std::list<IRenderer*>::iterator it=m_listNode.begin();
  	for ( ; it!=m_listNode.end(); ++it )
  	{
  		(*it)->Render();

@@ -36,7 +36,6 @@ void cObjTank::Control()
 	{
 		return;
 	}
-
 	if (m_pWinInput->IsCurrDn('W'))
 	{
 		SetVelocityPosition(0.0f,0.0f,100.0f);
@@ -44,8 +43,7 @@ void cObjTank::Control()
 	else if (m_pWinInput->IsCurrDn('S'))
 	{
 		SetVelocityPosition(0.0f,0.0f,-100.0f);
-	}	
-
+	}
 	if (m_pWinInput->IsCurrDn('A'))
 	{
 		SetVelocityRotation(0.0f,-45.0f,0.0f);
@@ -62,7 +60,6 @@ void cObjTank::Control()
 	{
 		SetVelocityRotation(45.0f,0.0f,0.0f);
 	}
-
 }
 
 void cObjTank::Render()

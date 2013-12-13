@@ -21,21 +21,21 @@ public:
 class IRenderable
 {
 public:
-	list<IRenderable*>::iterator m_ItRenderable;
+	std::list<IRenderable*>::iterator m_ItRenderable;
 	virtual void ProcessRender()=0;
 };
 
 class IControlable
 {
 public:
-	list<IControlable*>::iterator m_ItControlable;
+	std::list<IControlable*>::iterator m_ItControlable;
 	virtual void Control()=0;
 };
 
 class IUpdatable
 {
 public:
-	list<IUpdatable*>::iterator m_ItProgressable;
+	std::list<IUpdatable*>::iterator m_ItProgressable;
 	virtual void Update(DWORD elapseTime)=0;
 };
 
@@ -50,6 +50,6 @@ public:
 class ISerializable
 {
 public:
-	virtual void SerializeIn(fstream& in)=0;
-	virtual void SerializeOut(fstream& out)=0;
+	virtual void SerializeIn(std::fstream& in)=0;
+	virtual void SerializeOut(std::fstream& out)=0;
 };

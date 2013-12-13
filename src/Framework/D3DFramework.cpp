@@ -47,7 +47,7 @@ bool cD3DFramework::Open()
 {
 	char CurrPath[MAX_PATH];
 	::GetCurrentDirectoryA(MAX_PATH,CurrPath);
-	EnvironmentVariable::GetInstance().SetString("CurrPath",string(CurrPath)+string("\\"));
+	EnvironmentVariable::GetInstance().SetString("CurrPath",std::string(CurrPath)+std::string("\\"));
 
 
 	InitWindow();
@@ -101,7 +101,7 @@ void cD3DFramework::Run()
 
 void cD3DFramework::ProcessControlableList()
 {
-	list<IControlable*>::iterator it_control=m_listControlable.begin();
+	std::list<IControlable*>::iterator it_control=m_listControlable.begin();
 	for ( ;it_control!=m_listControlable.end() ; ++it_control )
 	{
 		(*it_control)->Control();
@@ -112,7 +112,7 @@ void cD3DFramework::ProcessControlableList()
 
 void cD3DFramework::ProcessProgressableList(DWORD elapseTime)
 {	
-	list<IUpdatable*>::iterator it=m_listProgressable.begin();
+	std::list<IUpdatable*>::iterator it=m_listProgressable.begin();
 
 	
 
@@ -130,26 +130,24 @@ void cD3DFramework::ProcessRenderableList()
 	m_pD3DDevice->BeginScene();
 
 
-	list<IRenderable*>::iterator it=m_listRenderable.begin();
+	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
 	{
 		(*it)->ProcessRender();
 	}
 
 	int temp = m_FpsMng.GetFPS();
-	ostringstream stream;
+	std::ostringstream stream;
 	stream << "FPS " << temp;
 
 	m_pD3D9Server->RenderDebugString(stream.str().c_str());
 
 
 
-	for (int i=0;i<2;i++)
+	for (int i=0;i<16;i++)
 	{
-		// 여기선 렌더큐들만 그린다.
-
+		// 여기선 렌더큐들만 그린다
 		UINT passes = 0;
-
 		D3D9::Server::g_pServer->GetEffect()->SetTechnique(m_listRenderQueue[i].m_hTechnique);
 		D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
 		D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
@@ -157,11 +155,26 @@ void cD3DFramework::ProcessRenderableList()
 
 		m_listRenderQueue[i].Render();
 
+		D3D9::Server::g_pServer->GetEffect()->EndPass();
+		D3D9::Server::g_pServer->GetEffect()->End();
+	}
+
+	for (int i=0;i<16;i++)
+	{
+		// 여기선 렌더큐들만 그린다
+		UINT passes = 0;
+		D3D9::Server::g_pServer->GetEffect()->SetTechnique(m_listRenderQueueSkinned[i].m_hTechnique);
+		D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
+		D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
+		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+
+		m_listRenderQueueSkinned[i].Render();
 
 		D3D9::Server::g_pServer->GetEffect()->EndPass();
 		D3D9::Server::g_pServer->GetEffect()->End();
 
 	}
+
 
 
 	m_pD3DDevice->EndScene();

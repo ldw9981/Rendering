@@ -17,6 +17,7 @@
 #include <list>
 #include <map>
 
+
 #include <d3d9.h>
 #include <d3dx9.h>
 #include <DxErr.h>
@@ -25,7 +26,6 @@
 #include <assert.h>
 #include <string>
 #include <algorithm>
-#include "Foundation/HeapValidator.h"
+#include <bitset>
 
-using namespace std;
 // TODO: reference additional headers your program requires here

@@ -3,7 +3,7 @@
 
 struct BONEREFINFO
 {
-	string strNodeName;
+	std::string strNodeName;
 	cMeshNode* pRefBoneMesh;		//본은 무조건 메쉬이다	
 	D3DXMATRIX	BoneOffSetTM_INV;
 
@@ -35,15 +35,15 @@ public:
 	virtual ~SkinnedMeshNode(void);
 
 protected:
-	vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
+	std::vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
 	D3DXMATRIX*				m_pArrayMatBoneRef;
 
 public:
 	virtual void			Render();	
 	virtual void			BuildComposite();
 
-	void					SetBoneRef(vector<BONEREFINFO>& vecBoneRef);
-	vector<BONEREFINFO>&	GetArrayBoneRef()  { return m_vecBoneRef; }
+	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);
+	std::vector<BONEREFINFO>&	GetArrayBoneRef()  { return m_vecBoneRef; }
 	void					LinkToBone();
 
 

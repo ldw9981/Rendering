@@ -8,7 +8,7 @@
 4. Parser에서 SceneRoot에 Mesh를 넣을때 부모기준 local도 미리 계산한다. 
 Init부분에서 하지않는다.
 
-5. 내부 string사용은 모두 string으로 교체
+5. 내부 std::string사용은 모두 std::string으로 교체
 6. Release후 Free실행하여 인스턴스를 delete한경우 더이상 인스턴스멤버는 엑세스할수없다 그러므로상수0리턴
 
 할 것

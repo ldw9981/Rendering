@@ -38,7 +38,7 @@ void SkinnedMeshNode::LinkToBone()
 	D3DXMATRIX tmWorldInv,tmBoneOffset;
 	D3DXMatrixInverse(&tmWorldInv,NULL,&GetWorldTM());			
 
-	vector<BONEREFINFO>::iterator iter;
+	std::vector<BONEREFINFO>::iterator iter;
 	for ( iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; ++iter)
 	{
 		BONEREFINFO* pBoneRefInfo=&(*iter);		
@@ -67,7 +67,7 @@ void SkinnedMeshNode::LinkToBone()
 void SkinnedMeshNode::Render()
 {
 	//IndexBuffer,VertexBuffer¼ÂÆÃ			
-	m_pD3DDevice->SetFVF(FVF_BLENDVERTEX);				
+	m_pD3DDevice->SetFVF(FVF_BLEND);				
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -98,7 +98,7 @@ void SkinnedMeshNode::Render()
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
-		m_pRscVetextBuffer->GetVerties(),
+		m_pRscVetextBuffer->GetCount(),
 		m_nStartIndex,
 		m_nPrimitiveCount );			
 	
@@ -107,16 +107,58 @@ void SkinnedMeshNode::Render()
 void SkinnedMeshNode::BuildComposite()
 {	
 	LinkToBone();
-	cMeshNode::BuildComposite();
+
+	if (m_vecSubMesh.empty())
+	{
+		if ((m_pRscIndexBuffer==NULL)||(m_pRscVetextBuffer==NULL))
+		{
+			m_bRender=false;
+		}
+	}
+	else
+	{
+		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		for ( ;it!=m_vecSubMesh.end();++it )
+		{
+			(*it)->BuildComposite();
+		}
+	}
+
+	if (m_Matrial.GetMapNormal() != NULL && m_pRscVetextBuffer !=NULL && m_pRscIndexBuffer != NULL)
+	{
+		long vertexCount = m_pRscVetextBuffer->GetCount();
+		long triangleCount = m_pRscIndexBuffer->GetCount();
+		BLENDVERTEX* vertex=(BLENDVERTEX*)m_pRscVetextBuffer->Lock();
+		TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock();
+
+		for (long a = 0; a < triangleCount; a++)
+		{
+			long i1 = triangle->index[0];
+			long i2 = triangle->index[1];
+			long i3 = triangle->index[2];
+
+			CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
+				vertex[i1].tex,vertex[i2].tex,vertex[i3].tex,
+				vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
+				vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
+
+			triangle++;
+		}
+		m_pRscIndexBuffer->Unlock();
+		m_pRscVetextBuffer->Unlock();
+	}
+
+	cSceneNode::BuildComposite();	
 }
 
-void SkinnedMeshNode::SetBoneRef( vector<BONEREFINFO>& vecBoneRef )
+void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 {
 	m_vecBoneRef = vecBoneRef;
 }
 
 void SkinnedMeshNode::QueueRenderer()
 {
-	g_pD3DFramework->m_listRenderQueue[1].Insert(this);
+	int i = m_Matrial.index_renderer_queue();
+	g_pD3DFramework->m_listRenderQueueSkinned[i].Insert(this);
 }
 

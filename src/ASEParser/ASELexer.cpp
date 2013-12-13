@@ -5,9 +5,9 @@
 #define	NUMBER_OF_RESERVEDWORD				233
 #define MAX_SKIP_LEVEL						3000
 #define DEBUG_LEXER 1
+#define ASE_TOKEN_MAX						256
 
-
-LPSTR Token[256]	 = {"*3DSMAX_ASCIIEXPORT"		/*  0*/
+LPSTR Token[ASE_TOKEN_MAX]	 = {"*3DSMAX_ASCIIEXPORT"		/*  0*/
 ,  "*COMMENT"					/*  1*/
 ,  "*SCENE"					/*  2*/
 ,  "*MATERIAL_LIST"			/*  3*/
@@ -272,6 +272,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 		Char	 = GetNextChar();
 		if(!Char)
 		{
+			AddTokenHistory(TOKEND_END);
 			return	TOKEND_END;
 		}
 	}
@@ -281,7 +282,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 	{
 		p_TokenString[0]	 = '{';
 		p_TokenString[1]	 = NULL;
-
+		AddTokenHistory(TOKEND_BLOCK_START);
 		return	TOKEND_BLOCK_START;
 	}
 
@@ -290,7 +291,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 	{
 		p_TokenString[0]	 = '}';
 		p_TokenString[1]	 = NULL;
-
+		AddTokenHistory(TOKEND_BLOCK_END);
 		return	TOKEND_BLOCK_END;
 	}
 	// 4) '*'인가를 확인한다.
@@ -305,6 +306,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 			Char	 = GetNextChar();
 			if(!Char)
 			{
+				AddTokenHistory(TOKEND_END);
 				return	TOKEND_END;
 			}
 			p_StringPoint++;
@@ -316,12 +318,14 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 			if(!strcmp(p_TokenString, Token[i]))
 			{
 				// 맞는 Token을 찾았다! 그 번호를 return시켜준다.
+				AddTokenHistory(i);
 				return	i;
 			}
 		}
 
 		// 맞는 것은 전혀 찾지 못했다. 정의되지 않은 TOKEN이라고 돌려준다.
-		OutputDebugStr(p_TokenString);	OutputDebugStr("\n");
+		OutputDebugString(p_TokenString);	OutputDebugString("\n");
+		AddTokenHistory(TOKEND_NOTDEFINED);
 		return	TOKEND_NOTDEFINED;
 	}
 	// 5) 숫자인지를 확인한다.
@@ -336,13 +340,14 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 			Char	 = GetNextChar();
 			if(!Char)
 			{
+				AddTokenHistory(TOKEND_END);
 				return	TOKEND_END;
 			}
 			p_StringPoint++;
 		}
 		p_TokenString[p_StringPoint]	 = NULL;
 
-
+		AddTokenHistory(TOKEND_NUMBER);
 		return	TOKEND_NUMBER;
 	}
 	// 6) String인지를 검사한다.
@@ -352,6 +357,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 		Char	 = GetNextChar();
 		if(!Char)
 		{
+			AddTokenHistory(TOKEND_END);
 			return	TOKEND_END;
 		}
 
@@ -363,12 +369,13 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 			Char	 = GetNextChar();
 			if(!Char)
 			{
+				AddTokenHistory(TOKEND_END);
 				return	TOKEND_END;
 			}
 			p_StringPoint++;
 		}
 		p_TokenString[p_StringPoint]	 = NULL;
-		
+		AddTokenHistory(TOKEND_STRING);
 		return	TOKEND_STRING;
 	}
 	// 7) 지금까지 못찾았음 이건 허당이다~ 다음을 기약하자~
@@ -379,6 +386,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 		Char	 = GetNextChar();
 		if(!Char)
 		{
+			AddTokenHistory(TOKEND_END);
 			return	TOKEND_END;
 		}
 
@@ -391,6 +399,7 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 			Char	 = GetNextChar();
 			if(!Char)
 			{
+				AddTokenHistory(TOKEND_END);
 				return	TOKEND_END;
 			}
 			p_StringPoint++;
@@ -398,13 +407,25 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 		p_TokenString[p_StringPoint]	 = NULL;
 		
 		// 일반적인 Identifier라고 return한다.(Idendifier는 변수이름이라든지 뭐 그런거..)
+		AddTokenHistory(TOKEND_IDENTIFIER);
 		return	TOKEND_IDENTIFIER;
 	}
 
 	p_TokenString[0]	 = NULL;
 
 	TRACE1("Have no match token : %s\n", p_TokenString);
+	AddTokenHistory(TOKEND_NOTDEFINED);
 	return TOKEND_NOTDEFINED;
+}
+
+void cASELexer::AddTokenHistory( int identifier )
+{
+	if (identifier >= ASE_TOKEN_MAX)
+	{
+		ASSERT(identifier >= ASE_TOKEN_MAX);
+		return;
+	}
+	m_tokenHistory.push_back(Token[identifier]);
 }
 
 

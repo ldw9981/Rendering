@@ -35,7 +35,7 @@ BOOL cResourceMng::InsertResource(cResource* in )
 
 void cResourceMng::RestoreAll()
 {
-	list<cIRestore*>::iterator it=m_listRestore.begin();	
+	std::list<cIRestore*>::iterator it=m_listRestore.begin();	
 	for ( ;it!=m_listRestore.end();++it)
 	{
 		cIRestore* pItem=*it;
@@ -45,7 +45,7 @@ void cResourceMng::RestoreAll()
 
 
 
-void cResourceMng::EraseResource(const string& strKey )
+void cResourceMng::EraseResource(const std::string& strKey )
 {
 	m_mapResource.erase(strKey);
 }
@@ -57,12 +57,12 @@ void cResourceMng::EraseResource(const string& strKey )
 cRscTexture* cResourceMng::CreateRscTexture( const char* szFilePath)
 {	
 	cRscTexture* pItem=NULL;
-	string strUniqeKey;	
+	std::string strUniqeKey;	
 	if (szFilePath!=NULL)
 	{
 		strUniqeKey += "TEXTURE_";
 		strUniqeKey += szFilePath;
-		map<string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
+		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
 		if (it!=m_mapResource.end())
 		{
 			pItem=static_cast<cRscTexture*>(it->second);
@@ -87,14 +87,14 @@ Unique 번호 찾은후 없으면 생성
 cRscTexture* cResourceMng::CreateRscTexture( UINT nUniqueNumber/*=0*/)
 {
 	cRscTexture* pItem=NULL;
-	string strFindKey;	
+	std::string strFindKey;	
 	if (nUniqueNumber!=0)
 	{
 		char Buffer[256]={0,};
 		sprintf_s(Buffer,"TEXTURE_%d",nUniqueNumber);	
 		strFindKey = Buffer;
 
-		map<string,cResource*>::iterator it=m_mapResource.find(strFindKey);
+		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
 		if (it!=m_mapResource.end())
 		{
 			pItem=static_cast<cRscTexture*>(it->second);
@@ -118,7 +118,7 @@ cRscTexture* cResourceMng::CreateRscTexture( UINT nUniqueNumber/*=0*/)
 cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer( DWORD bufferSize,D3DPOOL type/*D3DPOOL_DEFAULT*/, UINT nUniqueNumber/*=0*/)
 {
 	cRscVertexBuffer* pItem=NULL;
-	string strFindKey;	
+	std::string strFindKey;	
 	// nUniqueNumber가 있고 맵에 있는 키이면 있는것으로 리턴한다.
 	if (nUniqueNumber!=0)
 	{
@@ -126,7 +126,7 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer( DWORD bufferSize,D3DPOOL 
 		sprintf_s(Buffer,"VERTEXBUFFER_%d",nUniqueNumber);	
 		strFindKey = Buffer;
 
-		map<string,cResource*>::iterator it=m_mapResource.find(strFindKey);
+		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
 		if (it!=m_mapResource.end())
 		{
 			pItem=static_cast<cRscVertexBuffer*>(it->second);
@@ -150,14 +150,14 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer( DWORD bufferSize,D3DPOOL 
 cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer( DWORD bufferSize,D3DPOOL type, UINT nUniqueNumber/*=0*/ )
 {
 	cRscIndexBuffer* pItem=NULL;
-	string strFindKey;	
+	std::string strFindKey;	
 	if (nUniqueNumber!=0)
 	{
 		char Buffer[256]={0,};
 		sprintf_s(Buffer,"INDEXBUFFER_%d",nUniqueNumber);	
 		strFindKey = Buffer;
 
-		map<string,cResource*>::iterator it=m_mapResource.find(strFindKey);
+		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
 		if (it!=m_mapResource.end())
 		{
 			pItem=static_cast<cRscIndexBuffer*>(it->second);
@@ -181,14 +181,14 @@ cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer( DWORD bufferSize,D3DPOOL ty
 cRscTransformAnm* cResourceMng::CreateRscTransformAnm( UINT findUniqueNumber/*=0*/ )
 {
 	cRscTransformAnm* pItem=NULL;
-	string strUniqeKey;	
+	std::string strUniqeKey;	
 	if (findUniqueNumber!=0)
 	{
 		char Buffer[256]={0,};
 		sprintf_s(Buffer,"TRANSFORMANM_%d",findUniqueNumber);	
 		strUniqeKey = Buffer;
 
-		map<string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
+		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
 		if (it!=m_mapResource.end())
 		{
 			pItem=static_cast<cRscTransformAnm*>(it->second);

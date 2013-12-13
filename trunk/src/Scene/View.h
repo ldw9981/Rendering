@@ -20,9 +20,9 @@ public:
 	cView(cView* pParent);
 	virtual ~cView(void);
 private:
-	list<IRenderable*>		m_RenderableList;
-	list<IUpdatable*>		m_ProgressableList;
-	list<IControlable*>	m_ControlableList;
+	std::list<IRenderable*>		m_RenderableList;
+	std::list<IUpdatable*>		m_ProgressableList;
+	std::list<IControlable*>	m_ControlableList;
 
 	cView*					m_pParentScene;				// ºÎ¸ð ¾À
 	cTopRenderable			m_TopRenderable;

@@ -53,17 +53,16 @@
 #include <map>
 #include <algorithm>
 #include <sstream>
-
+#include <bitset>
 //#include <hash_map>
 //#include <boost/shared_ptr.hpp>
 #include <assert.h>
 #include <MMSystem.h>
 
 #include "Foundation/Define.h"
-#include "Foundation/HeapValidator.h"
 
 //using namespace boost;
-using namespace std;
+//using namespace std;
 //using namespace stdext;
 
 #ifdef _DEBUG

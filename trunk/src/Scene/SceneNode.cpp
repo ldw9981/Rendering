@@ -31,8 +31,8 @@ cSceneNode::cSceneNode(void)
 
 cSceneNode::~cSceneNode(void)
 {
-	list<cSceneNode*>::iterator it = m_listChildNode.begin();
-	list<cSceneNode*>::iterator it_end = m_listChildNode.end();
+	std::list<cSceneNode*>::iterator it = m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it_end = m_listChildNode.end();
 
 	for ( ;it!=it_end ; it++ )
 	{
@@ -52,7 +52,7 @@ void cSceneNode::SetNodeName( const char* nodename )
 	m_strNodeName=nodename;
 }
 
-string& cSceneNode::GetNodeName()
+std::string& cSceneNode::GetNodeName()
 {
 	return m_strNodeName;
 }
@@ -62,7 +62,7 @@ void cSceneNode::SetParentName( const char* nodename )
 	m_strParentName=nodename;
 }
 
-string& cSceneNode::GetParentName()
+std::string& cSceneNode::GetParentName()
 {
 	return m_strParentName;
 }
@@ -84,7 +84,7 @@ void cSceneNode::AttachChildNode( cSceneNode* pItem )
 	pItem->m_ParentListIt = --m_listChildNode.end();
 }
 
-cSceneNode* cSceneNode::FindNode( string& nodename )
+cSceneNode* cSceneNode::FindNode( std::string& nodename )
 {
 //	if ( (type==ANYTHING)||(type==m_NodeType) )
 //	{
@@ -94,7 +94,7 @@ cSceneNode* cSceneNode::FindNode( string& nodename )
 //	}
 
 	// 아니면 자식에서 검색
-	list<cSceneNode*>::iterator iter;	
+	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pItem=NULL;
 	cSceneNode* pFoundItem=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
@@ -132,7 +132,7 @@ D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD elapseTime)
 
 void cSceneNode::UpdateChildren(DWORD elapseTime)
 {
-	list<cSceneNode*>::iterator iter;	
+	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pItem=NULL;
 	cSceneNode* pFoundItem=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
@@ -152,7 +152,7 @@ D3DXMATRIX& cSceneNode::GetAnimationTM()
 
 void cSceneNode::FreeChildren()
 {
-	list<cSceneNode*>::iterator iter;	
+	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pItem=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{
@@ -227,7 +227,7 @@ cSphere* cSceneNode::CreateBoundingSphere()
 // bRender체크후 자식만 돌자.
 void cSceneNode::CullRendererIntoRendererQueue( cCameraNode* pActiveCamera )
 {				
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
@@ -246,7 +246,7 @@ void cSceneNode::PushTraversal( cCameraNode* pActiveCamera,WORD testPlane/*=0 */
 	}	
 	QueueRenderer();
 children:
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->PushTraversal(pActiveCamera,testPlane);
@@ -255,7 +255,7 @@ children:
 
 void cSceneNode::BuildComposite()
 {
-	list<cSceneNode*>::iterator iter;	
+	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pNode=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{
@@ -279,23 +279,23 @@ void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
 	}	
 }
 
-void cSceneNode::SerializeIn( fstream& in )
+void cSceneNode::SerializeIn( std::fstream& in )
 {
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->SerializeIn(in);
 	}
 }
 
-void cSceneNode::SerializeOut( fstream& out )
+void cSceneNode::SerializeOut( std::fstream& out )
 {
 //	out.write((char*)m_strNodeName.c_str(),m_strNodeName.length());
 //	out.write((char*)m_strParentName.c_str(),m_strParentName.length());
 
 //	out << m_strNodeName;
 
-	list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->SerializeIn(out);

@@ -14,6 +14,7 @@ private:
 	cGUIButton* m_pBtNextScene;
 	cGUIButton* m_pBtExit;
 	cGUIFont*	m_pFont;
+	
 public:
 	// cScene
 	virtual void Open(void* arg);

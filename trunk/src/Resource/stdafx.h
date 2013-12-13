@@ -21,6 +21,5 @@
 
 #include <d3dx9.h>
 #include <assert.h>
-#include "Foundation/HeapValidator.h"
-using namespace std;
+#include <bitset>
 // TODO: reference additional headers your program requires here

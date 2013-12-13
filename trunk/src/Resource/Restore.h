@@ -7,7 +7,7 @@ public:
 	cStaticRestoreList(){};
 	~cStaticRestoreList(){};
 protected:
-	static list<cIRestore*>			m_listRestore;
+	static std::list<cIRestore*>			m_listRestore;
 };
 
 class cIRestore:
@@ -18,7 +18,7 @@ public:
 	virtual ~cIRestore(void);
 	
 
-	list<cIRestore*>::iterator		m_ItRestore;	//자기자신을 가리키는 이터레이터의 보관
+	std::list<cIRestore*>::iterator		m_ItRestore;	//자기자신을 가리키는 이터레이터의 보관
 public:
 	virtual void Restore()=0;
 };

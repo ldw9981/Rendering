@@ -56,7 +56,9 @@ CHAR cLexer::GetNextChar()
 
 BOOL cLexer::Open(const char* p_FileName, DWORD p_SizeOfBuffer)
 {
-	// 1) FileName String이 NULL이면 그냥 돌려보낸다.
+	m_tokenHistory.clear();
+
+	// 1) FileName std::string이 NULL이면 그냥 돌려보낸다.
 	if(p_FileName == NULL)
 	{
 		return	FALSE;
@@ -132,8 +134,13 @@ BOOL cLexer::Reset()
 }
 
 
-LONG cLexer::GetToken(LPSTR /*p_TokenString*/)
+LONG cLexer::GetToken(LPSTR /*p_Tokenstd::string*/)
 {
 	return	0;
+}
+
+void cLexer::AddTokenHistory( int identifier )
+{
+	
 }
 

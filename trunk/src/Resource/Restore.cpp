@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Restore.h"
 
-list<cIRestore*> cStaticRestoreList::m_listRestore;
+std::list<cIRestore*> cStaticRestoreList::m_listRestore;
 
 cIRestore::cIRestore( void )
 {

@@ -18,11 +18,11 @@ public:
 	cResourceMng(void);
 	~cResourceMng(void);
 private:
-	map<string,cResource*>					m_mapResource;
+	std::map<std::string,cResource*>					m_mapResource;
 	
 public:		
 	BOOL				InsertResource(cResource* in);
-	void				EraseResource(const string& strKey);	
+	void				EraseResource(const std::string& strKey);	
 	void				RestoreAll();
 
 	cRscTexture*		CreateRscTexture(const char* szFilePath);

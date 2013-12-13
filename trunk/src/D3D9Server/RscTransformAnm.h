@@ -53,7 +53,7 @@ public:
 protected:
 	DWORD	m_dwTimeAccum;
 public:
-	vector<ANMKEY> m_arrayANMKEY;
+	std::vector<ANMKEY> m_arrayANMKEY;
 
 	D3DXMATRIX m_tmSCL;
 	D3DXMATRIX m_tmROT;
@@ -66,7 +66,7 @@ protected:
 public:
 	DWORD					GetTimeLength() const { return m_dwTimeLength; }
 	void					SetTimeLength(DWORD val) { m_dwTimeLength = val; }
-	vector<ANMKEY>&			GetArrayANMKEY()  { return m_arrayANMKEY; }
+	std::vector<ANMKEY>&			GetArrayANMKEY()  { return m_arrayANMKEY; }
 	D3DXMATRIX&				GetTransform(DWORD dwTimeDelta);	
 	
 

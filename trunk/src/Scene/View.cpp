@@ -88,7 +88,7 @@ void cView::ProcessControlableList()
 	if (m_bHide)
 		return;
 
-	list<IControlable*>::iterator it_control=m_ControlableList.begin();
+	std::list<IControlable*>::iterator it_control=m_ControlableList.begin();
 	for ( ;it_control!=m_ControlableList.end() ; ++it_control )
 	{
 		(*it_control)->Control();
@@ -97,7 +97,7 @@ void cView::ProcessControlableList()
 
 void cView::ProcessProgressableList(DWORD elapseTime)
 {
-	list<IUpdatable*>::iterator it=m_ProgressableList.begin();
+	std::list<IUpdatable*>::iterator it=m_ProgressableList.begin();
 	for ( ;it!=m_ProgressableList.end() ; ++it )
 	{
 		(*it)->Update(elapseTime);
@@ -106,7 +106,7 @@ void cView::ProcessProgressableList(DWORD elapseTime)
 
 void cView::ProcessRenderableList()
 {
-	list<IRenderable*>::iterator it=m_RenderableList.begin();
+	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
 	for ( ;it!=m_RenderableList.end() ; ++it )
 	{
 		(*it)->ProcessRender();

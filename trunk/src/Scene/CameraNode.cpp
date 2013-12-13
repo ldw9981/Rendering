@@ -49,16 +49,16 @@ void cCameraNode::Render()
 #ifdef _DEBUG
 //	if (m_pActiveCamera!=this)
 //	{
-//		g_pD3DFramework->GetDebugInfoScene()->AddDebugString("cScene내부에서 ActiveCamera를 얻어 Render를 호출해야한다.\n");
+//		g_pD3DFramework->GetDebugInfoScene()->AddDebugstd::string("cScene내부에서 ActiveCamera를 얻어 Render를 호출해야한다.\n");
 //	}
 #endif
 
 	if (m_bViewModified)
 	{		
-		D3DXMatrixInverse(&m_matView,NULL,&GetWorldTM());		
-
+		D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
-
+		D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
+		D3D9::Server::g_pServer->GetEffect()->SetVector(D3D9::Server::g_pServer->m_hvWorldCameraPosition,&pos);
 	}	
 	if ( m_bProjectionModified)
 	{

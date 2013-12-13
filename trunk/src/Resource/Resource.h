@@ -38,18 +38,18 @@ private:
 	UINT			m_nUniqueNumber;				// 고유넘버
 
 
-	string			m_strUniqeKey;			// 리소스 매니져에 사용될 맵의 키	
-	string			m_strFilePath;			// 리소스에 1:1대응될 파일 	
+	std::string			m_strUniqeKey;			// 리소스 매니져에 사용될 맵의 키	
+	std::string			m_strFilePath;			// 리소스에 1:1대응될 파일 	
 
 
 public:
 
 	void			SetFilePath(const char* szFilePath) { m_strFilePath=szFilePath; }
-	const  string&	GetFilePath() const { return m_strFilePath; }
+	const  std::string&	GetFilePath() const { return m_strFilePath; }
 
 	
-	const  string&	GetUniqueKey() const { return m_strUniqeKey; }
-	void			SetUniqueKey(string& val) { m_strUniqeKey = val; }
+	const  std::string&	GetUniqueKey() const { return m_strUniqeKey; }
+	void			SetUniqueKey(std::string& val) { m_strUniqeKey = val; }
 	UINT			GetUniqueNumber() const { return m_nUniqueNumber; }
 	
 

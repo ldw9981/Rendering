@@ -92,22 +92,22 @@ void cGUIButton::SetPos( UINT x,UINT y )
 	{
 		m_pButtonFan[i].vertices[0].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.top,0.0f,1.0f);		
 		m_pButtonFan[i].vertices[0].color = 0xFFFFFFFF;
-		m_pButtonFan[i].vertices[0].tex.first = i*m_TWidth + 0.0f;
-		m_pButtonFan[i].vertices[0].tex.second = 0.0f;
+		m_pButtonFan[i].vertices[0].tex.u = i*m_TWidth + 0.0f;
+		m_pButtonFan[i].vertices[0].tex.v = 0.0f;
 
 		m_pButtonFan[i].vertices[1].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.top,0.0f,1.0f);		
 		m_pButtonFan[i].vertices[1].color = 0xFFFFFFFF;
-		m_pButtonFan[i].vertices[1].tex.first = i*m_TWidth + m_TWidth;
-		m_pButtonFan[i].vertices[1].tex.second = 0.0f;
+		m_pButtonFan[i].vertices[1].tex.u = i*m_TWidth + m_TWidth;
+		m_pButtonFan[i].vertices[1].tex.v = 0.0f;
 
 		m_pButtonFan[i].vertices[2].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.bottom,0.0f,1.0f);		
 		m_pButtonFan[i].vertices[2].color = 0xFFFFFFFF;
-		m_pButtonFan[i].vertices[2].tex.first = i*m_TWidth + m_TWidth;
-		m_pButtonFan[i].vertices[2].tex.second = 1.0f;
+		m_pButtonFan[i].vertices[2].tex.u = i*m_TWidth + m_TWidth;
+		m_pButtonFan[i].vertices[2].tex.v = 1.0f;
 
 		m_pButtonFan[i].vertices[3].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.bottom,0.0f,1.0f);		
 		m_pButtonFan[i].vertices[3].color = 0xFFFFFFFF;
-		m_pButtonFan[i].vertices[3].tex.first = i*m_TWidth + 0.0f;
-		m_pButtonFan[i].vertices[3].tex.second = 1.0f;				
+		m_pButtonFan[i].vertices[3].tex.u = i*m_TWidth + 0.0f;
+		m_pButtonFan[i].vertices[3].tex.v = 1.0f;				
 	}
 }

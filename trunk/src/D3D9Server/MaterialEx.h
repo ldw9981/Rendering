@@ -6,11 +6,18 @@ typedef WORD SUBMATINDEX;
 노드는 아직 아니다.
 */
 
-
-
 class cRscTexture;
 class Material
 {
+public:
+	enum MAP
+	{
+		DIFFUSE=0,
+		NORMAL,		
+		LIGHT,
+		REFRACT,
+		MAX
+	};
 public:
 	Material(void);
 	virtual ~Material(void);	
@@ -26,16 +33,21 @@ public:
 	float					Multiply;				//power의 곱
 	float					Transparency;			//메쉬 투명도
 
+	std::bitset<4>			index_renderer_queue_;
 private:		
 	cRscTexture*			m_pMapDiffuse;
-	cRscTexture*			m_pMapBump;
-	cRscTexture*			m_pMapRefract;
-
+	cRscTexture*			m_pMapNormal;
+	cRscTexture*			m_pMapRefract;	
+	//Light
+	//Specular
+	//Reflection
+	//Self Illumination
 public:
+	unsigned long			index_renderer_queue() const { return index_renderer_queue_.to_ulong(); }
 	cRscTexture*			GetMapDiffuse() const;
 	void					SetMapDiffuse(cRscTexture* val);
-	cRscTexture*			GetMapBump() const;
-	void					SetMapBump(cRscTexture* val);
+	cRscTexture*			GetMapNormal() const;
+	void					SetMapNormal(cRscTexture* val);
 	cRscTexture*			GetMapRefract() const;
 	void					SetMapRefract(cRscTexture* val);
 

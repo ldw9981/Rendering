@@ -28,6 +28,8 @@ protected:
 	DWORD				m_TotalFileSize;													// 파일의 전체 크기
 	DWORD				m_NowProgress;														// 현재 진행.
 
+	std::vector<std::string> m_tokenHistory;
+
 public:
 	cLexer(const char* p_FileName=NULL, DWORD p_SizeOfBuffer=MAX_SIZE_OF_BUFFER);
 	virtual ~cLexer();
@@ -39,5 +41,6 @@ public:
 			BOOL		Reset();															// 처음부터 다시 시작한다.
 
 	virtual	LONG		GetToken(LPSTR p_TokenString);
-	
+
+	virtual void		AddTokenHistory(int identifier);	
 };

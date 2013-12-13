@@ -5,6 +5,7 @@
 #include "FpsMng.h"
 #include "Scene/RendererQueue.h"
 
+
 class cD3DFramework;
 
 class		IUnknownObject;
@@ -33,7 +34,8 @@ public:
 
 	HINSTANCE				m_hInstance;		 	 
 
-	cRendererQueue			m_listRenderQueue[2];
+	cRendererQueue			m_listRenderQueue[16];
+	cRendererQueue			m_listRenderQueueSkinned[16];
 protected:	
 	
 	WNDCLASS				m_wndclass;			// 메인 윈도우 클래스
@@ -46,12 +48,12 @@ protected:
 	BOOL					m_bFullScreen;
 	BOOL					m_bQuitLoop;
 
-	list<IRenderable*>		m_listRenderable;
+	std::list<IRenderable*>		m_listRenderable;
 
 	
 
-	list<IUpdatable*>		m_listProgressable;
-	list<IControlable*>		m_listControlable;
+	std::list<IUpdatable*>		m_listProgressable;
+	std::list<IControlable*>		m_listControlable;
 
 	DWORD					m_CurrFrameTime;	// Milli Sec	
 	DWORD					m_PrevFrameTime;	// Milli Sec	

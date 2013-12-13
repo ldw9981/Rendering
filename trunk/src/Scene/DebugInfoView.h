@@ -15,7 +15,7 @@ public:
 	static cDebugInfoView* m_pInstance;
 private:
 	cGUIFont*			m_pFont;
-	string 				m_DebugString;
+	std::string 		m_DebugString;
 	BOOL				m_bRender;
 	
 

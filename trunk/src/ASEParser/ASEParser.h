@@ -19,8 +19,8 @@ struct BONEREFINFO;
 
 struct SCENENODEINFO
 {
-	string strNodeName;
-	string strParentName;
+	std::string strNodeName;
+	std::string strParentName;
 	D3DXMATRIX tmNode;
 	D3DXMATRIX tmInvNode;
 	D3DXMATRIX tmWorld;
@@ -45,7 +45,7 @@ struct SCENENODEINFO
 
 struct SCENETIME
 {
-	string			FILENAME;		// 모델의 파일이름
+	std::string			FILENAME;		// 모델의 파일이름
 	DWORD			FIRSTFRAME;		// 시작 프레임
 	DWORD			LASTFRAME;		// 마지막 프레임
 	DWORD			LASTFRAMEMS;	// 마지막 프레임의 ms
@@ -83,8 +83,8 @@ public:
 	virtual ~cASEParser(void);
 private:	
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
-	vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
-	vector<vector<Material>>		m_vecMultiSubMaterial;
+	std::vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
+	std::vector<std::vector<Material>>		m_vecMultiSubMaterial;
 
 	cSceneNode*			m_pSceneRoot;
 	LONG				m_Token;
@@ -103,7 +103,7 @@ public:
 		D3DXMATRIX&		GetMatrix();
 
 
-		string			GetString(); 
+		std::string		GetString(); 
 	
 		BOOL			GetString(LPSTR pOutput);
 		BOOL			Getstring(LPWSTR pOutput);
@@ -130,36 +130,36 @@ public:
 
 
 		template <typename T>
-		void			MergeNormalListIntoVertexList(vector<T>& arrVertex,
-			vector<INDEX_FACE_SUBMATERIAL>& arrFaceIndex,
-			const vector<VNORMAL>& arrVNormal);
+		void			MergeNormalListIntoVertexList(std::vector<T>& arrVertex,
+			std::vector<TRIANGLE_SUBMATERIAL>& arrFaceIndex,
+			const std::vector<VNORMAL>& arrVNormal);
 
-		void			OptimizeTexCoordAndFace(vector<TEXCOORD>& arrTexCoordOut,
-			const vector<TEXCOORD>& arrTexCoordIn,
-			vector<FACEINDEX16>& arrTFaceIndexInOut);
-
-		template <typename T>
-		void			MergeTexCoordListIntoVertexList(vector<T>& arrVertexInOut,
-			vector<INDEX_FACE_SUBMATERIAL>& arrVFaceIndexInOut,
-			const vector<TEXCOORD>& arrTexCoordIn,
-			const vector<FACEINDEX16>& arrTFaceIndexIn);
+		void			OptimizeTexCoordAndFace(std::vector<TEXCOORD>& arrTexCoordOut,
+			const std::vector<TEXCOORD>& arrTexCoordIn,
+			std::vector<TRIANGLE>& arrTFaceIndexInOut);
 
 		template <typename T>
-		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,vector<T>& arrVertex,cSphere& out);
+		void			MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
+			std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
+			const std::vector<TEXCOORD>& arrTexCoordIn,
+			const std::vector<TRIANGLE>& arrTFaceIndexIn);
+
+		template <typename T>
+		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,std::vector<T>& arrVertex,cSphere& out);
 
 	
 		
-		void  ConvertAccQuaternion(vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM);
-		void  ConvertAccQuaternionEX(vector<pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,map<DWORD,ANMKEY> outRefMapAnmKey);
-		cMeshNode*  CreateMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef);
-		SkinnedMeshNode* CreateSkinnedMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef,vector<BONEREFINFO>& boneRef);
+		void  ConvertAccQuaternion(std::vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM);
+		void  ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY> outRefMapAnmKey);
+		cMeshNode*  CreateMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef);
+		SkinnedMeshNode* CreateSkinnedMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef,std::vector<BONEREFINFO>& boneRef);
 		cHelperNode* CreateHelperNode(SCENENODEINFO& stInfo);
 
 		template <typename T>
-		cRscVertexBuffer* CreateRscVertexBuffer(vector<T>& arrVertex);
+		cRscVertexBuffer* CreateRscVertexBuffer(std::vector<T>& arrVertex);
 
 		
-		cRscIndexBuffer* CreateRscIndexBuffer(vector<INDEX_FACE_SUBMATERIAL>& arrIndex);
+		cRscIndexBuffer* CreateRscIndexBuffer(std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
 		
 };
 

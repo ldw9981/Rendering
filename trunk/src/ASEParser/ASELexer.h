@@ -294,5 +294,5 @@ public:
 
 	virtual	LONG		GetToken(LPSTR p_TokenString);
 
-
+	virtual void		AddTokenHistory( int identifier );
 };

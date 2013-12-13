@@ -4,18 +4,18 @@
 #include "Resource/Resource.h"
 #include "Resource/Restore.h"
 
-struct FACEINDEX16
+struct TRIANGLE
 {
 	WORD index[3];	
 };
 
 
-struct INDEX_FACE_SUBMATERIAL 
+struct TRIANGLE_SUBMATERIAL 
 {
-	FACEINDEX16	faceIndex;
+	TRIANGLE	triangle;
 	WORD		subMaterialIndex;
 	
-	static BOOL LessFaceIndex(INDEX_FACE_SUBMATERIAL a,INDEX_FACE_SUBMATERIAL b)
+	static BOOL LessFaceIndex(TRIANGLE_SUBMATERIAL a,TRIANGLE_SUBMATERIAL b)
 	{
 		if( a.subMaterialIndex < b.subMaterialIndex)
 			return TRUE;
@@ -39,6 +39,7 @@ private:
 	LPDIRECT3DINDEXBUFFER9					m_pD3DIndexBuffer;				// D3D  Memory POOL
 	DWORD									m_BufferSize;	
 	D3DPOOL									m_Type;
+	int										m_nCount;
 public:
 	// cResource
 	virtual void			ProcessMakeUniqueKey();
@@ -57,4 +58,6 @@ public:
 	void					SetIndices();
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
+	int GetCount() const { return m_nCount; }
+	void SetCount(int val) { m_nCount = val; }
 };

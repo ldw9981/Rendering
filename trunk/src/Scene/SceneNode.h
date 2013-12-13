@@ -23,9 +23,9 @@ public:
 	virtual ~cSceneNode(void);
 	
 protected:
-	string					m_strNodeName;			
-	string					m_strParentName;		
-	list<cSceneNode*>		m_listChildNode;		
+	std::string					m_strNodeName;			
+	std::string					m_strParentName;		
+	std::list<cSceneNode*>		m_listChildNode;		
 	cSceneNode*				m_pParentNode;
 	cSceneNode*				m_pRootNode;
 
@@ -40,7 +40,7 @@ protected:
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bRender;
 
-	list<cSceneNode*>::iterator m_ParentListIt;
+	std::list<cSceneNode*>::iterator m_ParentListIt;
 
 public:	
 	void				SetNodeInfo(SCENENODEINFO& stInfo);
@@ -57,14 +57,14 @@ public:
 	void				DettachChildNode(cSceneNode* pItem);
 
 	// 자신을 포함한 자식ASE오브젝트에서 ASE오브젝트를 찾는다.
-	cSceneNode*			FindNode(string& nodename);
+	cSceneNode*			FindNode(std::string& nodename);
 
 	//Get/Set
 	void				SetNodeName( const char* nodename );
-	string&				GetNodeName();
+	std::string&				GetNodeName();
 
 	void				SetParentName( const char* nodename );
-	string&				GetParentName();
+	std::string&				GetParentName();
 	BOOL				IsExistParentName();		
 	BOOL				IsRootNode();
 	
@@ -112,8 +112,8 @@ public:
 	virtual	void		BuildComposite();
 
 	// ISerialize
-	virtual void		SerializeIn(fstream& in);
-	virtual void		SerializeOut(fstream& out);
+	virtual void		SerializeIn(std::fstream& in);
+	virtual void		SerializeOut(std::fstream& out);
 
 	virtual void		QueueRenderer();
 

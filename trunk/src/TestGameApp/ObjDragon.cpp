@@ -21,7 +21,7 @@ void cObjDragon::Init()
 //	InitChildren();
 
 	
-	m_pDummy=FindNode(string("Dummy01"));
+	m_pDummy=FindNode(std::string("Dummy01"));
 	assert(m_pDummy!=NULL);
 	m_pDummy->SetIsActiveAnimation(FALSE);
 	MoveOnLocal(0.0f,0.0f,820.0f);	

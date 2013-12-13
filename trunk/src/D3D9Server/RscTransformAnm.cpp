@@ -31,7 +31,7 @@ void cRscTransformAnm::ProcessMakeUniqueKey()
 {
 	// 파일이름이 있으면 접두어_파일이름
 	// 없으면 접두어_유니크번호
-	string temp="TRANSFORMANM_";	
+	std::string temp="TRANSFORMANM_";	
 
 	if (!GetFilePath().empty())
 	{			

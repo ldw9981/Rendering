@@ -138,15 +138,22 @@ void Server::LoadHLSL(const char* szFileName)
 		D3DXEFFECT_DESC desc;
 		hr = m_pEffect->GetDesc(&desc);
 		
-		m_hTNoShader = m_pEffect->GetTechniqueByName( _T("TNoShader") );
-		m_hTBasic = m_pEffect->GetTechniqueByName( _T("TVertexAndPixelShader") );
-		m_hTSkinning = m_pEffect->GetTechniqueByName( _T("TSkinning") );	
+		m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
+		m_hPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
+		m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
 
-		m_hmWorld = m_pEffect->GetParameterByName( NULL, "World" );
-		m_hmView = m_pEffect->GetParameterByName( NULL, "View" );
-		m_hmProjection = m_pEffect->GetParameterByName( NULL, "Projection" );
-		m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "ViewProjection" );
-		m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );;
+		m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
+		m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
+		m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
+		m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "gViewProjectionMatrix" );
+		m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );
+
+
+		m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
+		m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
+
+		D3DXVECTOR4 posLight(0.0f,5000.0f,-5000.0f,0.0f);
+		m_pEffect->SetVector(m_hvWorldLightPosition,&posLight);
 	}
 	SAFE_RELEASE(pErr);
 

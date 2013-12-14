@@ -6,6 +6,7 @@
 #include "D3D9Server/RscVertexBuffer.h"
 #include "D3D9Server/RscTransformAnm.h"
 #include "Resource/ResourceMng.h"
+#include "Math/Sphere.h"
 
 #define DEF_INTERPOLATE_TIME 16
 
@@ -25,7 +26,7 @@ struct SCENENODEINFO
 	D3DXMATRIX tmInvNode;
 	D3DXMATRIX tmWorld;
 	D3DXMATRIX tmLocal;
-
+	cSphere boundingSphere;
 	cSceneNode* pParent;
 	cRscTransformAnm* pRscTransform;
 

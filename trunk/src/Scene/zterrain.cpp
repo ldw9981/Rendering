@@ -61,8 +61,8 @@ HRESULT	ZTerrain::Create( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, cons
 
 	CreateCullingSphere();
 	(*GetCullingSphere())=*m_pQuadTree->GetCullingSphere();
-	CreateBoundingSphere();
-	(*GetBoundingSphere())=*m_pQuadTree->GetCullingSphere();
+
+	m_BoundingSphere = *m_pQuadTree->GetCullingSphere();
 
 	return S_OK;
 }
@@ -246,14 +246,11 @@ void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCa
 	}
 
 		// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-	if (m_pBoundingSphere!=NULL)
-	{
-		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pBoundingSphere);
-		if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
-		{	
-			QueueRenderer();				
-		}
-	}
+	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
+	if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
+	{	
+		QueueRenderer();				
+	}	
 	
 
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();

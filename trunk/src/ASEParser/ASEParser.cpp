@@ -733,14 +733,13 @@ BOOL cASEParser::Parsing_GeoObject()
 		stInfo.pParent=m_pSceneRoot;
 	}
 
-	cSphere tempSphere;
 	if (!bSkinned)	
 	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,tempSphere);
+		CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,stInfo.boundingSphere);
 	}
 	else
 	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,tempSphere);	
+		CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,stInfo.boundingSphere);	
 	}
 
 	// 이제 버텍스 가공 버텍스,노말 합치기
@@ -799,12 +798,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		{
 			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );	
 		}
-
-		pNewSceneNode->SetBoundingSphere(tempSphere);
-		pNewSceneNode->SetCullingSphere(tempSphere);
-	}
-
-	
+	}	
 	return TRUE;
 }
 
@@ -823,7 +817,7 @@ BOOL cASEParser::Parsing_MaterialList()
 	for (int i=0;i<nMaterialCount;i++)
 	{
 		Material Matrial;		
-		/*		
+				
 		std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
 		strDefaultDiffuse += std::string("diffuse_white.dds");
 
@@ -831,7 +825,7 @@ BOOL cASEParser::Parsing_MaterialList()
 		if(pDiffuse==NULL)
 			TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
 		Matrial.SetMapDiffuse(pDiffuse);
-		*/
+		
 
 		std::vector<Material> vecSubMatrial;
 		m_vecMultiSubMaterial.push_back(vecSubMatrial);
@@ -1005,7 +999,7 @@ BOOL cASEParser::Parsing_MaterialList()
 					for (int iNUMSUBMTLS=0 ; iNUMSUBMTLS < nNUMSUBMTLS ; iNUMSUBMTLS++)
 					{
 						Material SubMatrial;											
-						/*
+						
 						std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
 						strDefaultDiffuse += std::string("diffuse_white.dds");
 
@@ -1013,7 +1007,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						if(pDiffuse==NULL)
 							TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
 						SubMatrial.SetMapDiffuse(pDiffuse);
-						*/
+						
 						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
 						GetInt();						// index
 						if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;						

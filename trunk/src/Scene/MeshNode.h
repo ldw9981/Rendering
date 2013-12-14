@@ -54,6 +54,7 @@ public:
 		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
 		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
 		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
+	void					DebugRender(); 
 };
 
 

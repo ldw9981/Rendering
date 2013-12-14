@@ -27,10 +27,8 @@ cMeshNode::cMeshNode(void)
 
 	m_nStartIndex=0;
 	m_nPrimitiveCount=0;
-	
 
 	CreateCullingSphere();
-	CreateBoundingSphere();
 }
 
 cMeshNode::~cMeshNode(void)
@@ -66,10 +64,11 @@ void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
-
+	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 	// 바운딩스피어의 위치는 로컬좌표 기준이므로 월드로 바로 스지는 못한다.
-	m_pBoundingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
-	*m_pCullingSphere = *m_pBoundingSphere;	
+	//m_pCullingSphere->SetRadius(m_pBoundingSphere->GetRadius());
+	//m_pCullingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
+	//*m_pCullingSphere = *m_pBoundingSphere;	
 
 	if (!m_vecSubMesh.empty())
 	{
@@ -81,7 +80,7 @@ void cMeshNode::Update(DWORD elapseTime)
 	}	
 
 	UpdateChildren(elapseTime);
-	UpdateParentCullingSphere(*m_pCullingSphere);	
+	//UpdateParentCullingSphere(*m_pCullingSphere);	
 }
 
 /*
@@ -90,6 +89,11 @@ void cMeshNode::Update(DWORD elapseTime)
 */
 void cMeshNode::Render()
 {			
+	//DebugRender();
+
+	if( m_Matrial.GetMapDiffuse() == NULL)
+		return;
+
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 	
 	//IndexBuffer,VertexBuffer셋팅
@@ -115,20 +119,31 @@ void cMeshNode::Render()
 			m_nStartIndex,
 			m_nPrimitiveCount );
 
+	
 }
 
 void cMeshNode::BuildComposite()
 {
-	std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-	for ( ;it!=m_vecSubMesh.end();++it )
-	{
-		(*it)->BuildComposite();
-	}
-
-	if (m_bIsBone || m_pRscIndexBuffer==NULL || m_pRscVetextBuffer==NULL || m_Matrial.GetMapDiffuse() == NULL)
+	if (m_bIsBone)
 	{
 		m_bRender=false;
-	}	
+	}
+
+	if (m_vecSubMesh.empty())
+	{
+		if ((m_pRscIndexBuffer==NULL)||(m_pRscVetextBuffer==NULL))
+		{
+			m_bRender=false;
+		}
+	}
+	else
+	{
+		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		for ( ;it!=m_vecSubMesh.end();++it )
+		{
+			(*it)->BuildComposite();
+		}
+	}
 
 	if (m_Matrial.GetMapNormal() != NULL && m_pRscVetextBuffer !=NULL && m_pRscIndexBuffer != NULL)
 	{
@@ -159,47 +174,32 @@ void cMeshNode::BuildComposite()
 
 void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
 {	
+	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->CullRendererIntoRendererQueue(pActiveCamera);
+	}
+
 	if (!m_bRender)
-		goto children;
-	
-	
-	if (m_vecSubMesh.empty())
-	{
-		// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
-		cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(m_pCullingSphere);
-		if( retCS == cCollision::OUTSIDE)
-		{	//  밖에 있는것이면 노드순회 없음
-			return;
-		}
-		else if (retCS == cCollision::INSIDE)
-		{	// 자기넣고 순회
-			QueueRenderer();					
-		}
-		else if (m_pBoundingSphere!=NULL)	// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-		{
-			cCollision::STATE retBS=pActiveCamera->CheckWorldFrustum(m_pBoundingSphere);
-			if ( retBS == cCollision::INTERSECT || retBS == cCollision::INTERSECT)	
-			{				
-				QueueRenderer();						
-			}	
-		}	
-	}
-	else	// 멀티서브일때
-	{
-		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
-		for ( ;it!=m_vecSubMesh.end();++it )
-		{
-			(*it)->CullRendererIntoRendererQueue(pActiveCamera);
-		}			
-	}		
+		return;
 
-
-children:
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
-	}
+	// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
+	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(&m_BoundingSphere);
+	if( retCS != cCollision::OUTSIDE)
+	{			
+		if (m_vecSubMesh.empty())
+		{
+			QueueRenderer();	
+		}
+		else
+		{
+			std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+			for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+			{
+				(*it_sub)->CullRendererIntoRendererQueue(pActiveCamera);
+			}
+		}
+	}	
 }
 
 void cMeshNode::AddMultiSub( cMeshNode* mesh )
@@ -297,5 +297,98 @@ void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& ve
 	binormal1 = binormal;
 	binormal2 = binormal;
 	binormal3 = binormal;
+
+}
+
+void cMeshNode::DebugRender() 
+{ 
+	int LineCount=16;
+	float fScale=m_BoundingSphere.GetRadius();
+	D3DCOLOR color=D3DCOLOR_RGBA(255,0,255,0);	
+
+	// 최소한의 다각형을 그리기위한 
+	if( LineCount < 6 ) 
+		LineCount = 6; 
+
+	float fRotationAngleAverage = ( D3DX_PI * 2) / LineCount; 
+
+	struct sDrawCircle 
+	{ 
+		D3DXVECTOR3 pos; 
+		D3DCOLOR color; 
+	}; 
+
+	sDrawCircle CircleLine[2]; 
+	D3DXVECTOR3 NewPos, Pos; 
+	D3DXMATRIXA16 matRot; 
+	
+	//mat.m[3][0] = GetWorldTM().[3][0];
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&GetWorldTM());
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+
+	// m_vtCircleCenter : Circle의 중심점 
+	m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE ); 
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE); 
+
+	Pos = D3DXVECTOR3( 1.f, 0.f, 0.f )* fScale; 
+	CircleLine[1].pos = Pos;// + m_pBoundingSphere->GetCenterPos(); 
+	CircleLine[1].color = CircleLine[0].color = color; 
+	for ( int i = 1; i < LineCount + 1; i++ ) 
+	{ 
+		CircleLine[0].pos = CircleLine[1].pos; 
+
+		// 회전하고자 하는 축에 따라 마음대로 
+		D3DXMatrixRotationY( &matRot, i * fRotationAngleAverage ); 
+		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
+
+		CircleLine[1].pos = (NewPos);// + m_pBoundingSphere->GetCenterPos() ); 
+
+		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
+		
+		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
+	} 
+	
+	
+	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
+	CircleLine[1].pos = Pos; 
+	CircleLine[1].color = CircleLine[0].color = color; 
+	for ( int i = 1; i < LineCount + 1; i++ ) 
+	{ 
+		CircleLine[0].pos = CircleLine[1].pos; 
+
+		// 회전하고자 하는 축에 따라 마음대로 
+		D3DXMatrixRotationX( &matRot, i * fRotationAngleAverage ); 
+		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
+
+		CircleLine[1].pos = (NewPos); 
+
+		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
+		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
+	} 
+
+	/*
+	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
+	CircleLine[1].pos = Pos + m_pBoundingSphere->GetCenterPos(); 
+	CircleLine[1].color = CircleLine[0].color = color; 
+	for ( int i = 1; i < LineCount + 1; i++ ) 
+	{ 
+		CircleLine[0].pos = CircleLine[1].pos; 
+
+		// 회전하고자 하는 축에 따라 마음대로 
+		D3DXMatrixRotationZ( &matRot, i * fRotationAngleAverage ); 
+		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
+
+		CircleLine[1].pos = (NewPos + m_pBoundingSphere->GetCenterPos() ); 
+
+		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
+		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
+	} 
+	*/
+
+	m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, TRUE ); 
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE ); 
+	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE ); 
+	
 
 }

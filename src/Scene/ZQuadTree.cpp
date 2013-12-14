@@ -66,7 +66,7 @@ ZQuadTree::ZQuadTree(ZTerrain* pTerrain,int tl,int tr,int bl,int br )
 	{		
 		CreateCellTriangle();	
 		// LeafNode에만 3차원 바운드 스피어가있다.
-		CreateBoundingSphere()->Make(tempAxisMin,tempAxisMax);	
+		m_BoundingSphere.Make(tempAxisMin,tempAxisMax);	
 	}
 	else
 	{		
@@ -144,7 +144,7 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 	else
 	{
 		// 리프노드일때는 3차원구로 컬링
-		if ( pCamera->CheckWorldFrustum(m_pBoundingSphere) == cCollision::OUTSIDE)
+		if ( pCamera->CheckWorldFrustum(&m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		

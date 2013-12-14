@@ -25,7 +25,6 @@ cSceneNode::cSceneNode(void)
 	m_bIsActiveAnimation=FALSE;
 	m_pRscTransformAnm=NULL;		
 	m_pCullingSphere=NULL;
-	m_pBoundingSphere=NULL;
 	m_bRender=true;
 }
 
@@ -41,7 +40,6 @@ cSceneNode::~cSceneNode(void)
 	m_listChildNode.clear();
 
 	SAFE_DELETE(m_pCullingSphere);
-	SAFE_DELETE(m_pBoundingSphere);
 
 	if( m_pRscTransformAnm !=NULL )
 		m_pRscTransformAnm->Release();
@@ -216,13 +214,6 @@ void cSceneNode::UpdateParentCullingSphere(cSphere& Sphere)
 	pNode->GetCullingSphere()->Merge(Sphere);	
 }
 
-cSphere* cSceneNode::CreateBoundingSphere()
-{
-	assert(m_pBoundingSphere==NULL);
-	m_pBoundingSphere = new cSphere;
-	return m_pBoundingSphere;
-}
-
 // 기본적기능
 // bRender체크후 자식만 돌자.
 void cSceneNode::CullRendererIntoRendererQueue( cCameraNode* pActiveCamera )
@@ -268,6 +259,7 @@ void cSceneNode::BuildComposite()
 
 void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
 {
+	m_BoundingSphere = stInfo.boundingSphere;
 	this->SetNodeName(stInfo.strNodeName.c_str());
 	this->SetParentName(stInfo.strParentName.c_str());
 	this->SetLocalTM(stInfo.tmLocal);
@@ -304,10 +296,7 @@ void cSceneNode::SerializeOut( std::fstream& out )
 
 void cSceneNode::SetBoundingSphere( cSphere& Sphere )
 {
-	if (m_pBoundingSphere)
-	{
-		*m_pBoundingSphere = Sphere;
-	}
+	m_BoundingSphere = Sphere;	
 }
 
 void cSceneNode::SetCullingSphere( cSphere& Sphere )

@@ -66,6 +66,8 @@ void SkinnedMeshNode::LinkToBone()
 */
 void SkinnedMeshNode::Render()
 {
+	//DebugRender();
+
 	//IndexBuffer,VertexBuffer¼ÂÆÃ			
 	m_pD3DDevice->SetFVF(FVF_BLEND);				
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));

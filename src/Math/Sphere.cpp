@@ -37,18 +37,14 @@ void cSphere::Make(const D3DXVECTOR3& min,const D3DXVECTOR3& max )
 	m_Radius = sqrt(m_RadiusSQ); 
 }
 
+// should'nt change position
 void cSphere::Merge(cSphere& other)
-{
-	
+{	
 	D3DXVECTOR3 temp;	
-	temp = (other.GetCenterPos() - m_CenterPos)/2.0f ;
-	m_CenterPos = m_CenterPos + temp;
+	temp = (other.GetCenterPos() - m_CenterPos);
 
-	float addRadius=0.0f,addRadiusSQ=0.0f;
-	addRadius = max (m_Radius, other.GetRadius());
-	addRadiusSQ = max (m_RadiusSQ, other.GetRadiusSQ());
-	m_RadiusSQ = D3DXVec3LengthSq(&temp) + addRadiusSQ;
-	m_Radius = sqrt(m_RadiusSQ);	
+	float length = D3DXVec3Length(&temp) + other.GetRadius();
+	m_Radius = max(m_Radius,length);
 }
 
 cSphere& cSphere::operator =(cSphere &rhs)

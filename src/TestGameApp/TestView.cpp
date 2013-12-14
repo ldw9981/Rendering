@@ -32,30 +32,33 @@ cTestView::cTestView(void)
 	m_pDragon->BuildComposite();
 	m_pDragon->Init();
 	AttachObject(m_pDragon);	
-
+	
+	
 	m_pTank = new cObjTank;	
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	parser.Close();
 	m_pTank->BuildComposite();
 	m_pTank->Init();
 	AttachObject(m_pTank);
-
 	
+	
+	/*
 	m_pP38 = new cObjTank;	
 	parser.Load(std::string(strDataPath+"Normal Map.ase").c_str(),m_pP38);
 	parser.Close();
 	m_pP38->BuildComposite();
 	m_pP38->Init();
 	AttachObject(m_pP38);
+	*/
 	
-	/*
+	
 	m_pAirPlaneBake = new cObjTank;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
 	parser.Close();
 	m_pAirPlaneBake->BuildComposite();
 	m_pAirPlaneBake->Init();
 	AttachObject(m_pAirPlaneBake);	
-	*/
+	
 }
 
 cTestView::~cTestView(void)

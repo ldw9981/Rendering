@@ -16,6 +16,7 @@ Material::Material(void)
 	// 텍스쳐의 생성은 리소스매니져를 통해 생성한다.
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
+	m_pMapLight = NULL;
 	m_pMapRefract = NULL;
 	
 }
@@ -32,15 +33,18 @@ Material::Material( const Material &Other )
 
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
+	m_pMapLight = NULL;
 	m_pMapRefract = NULL;
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
+	SetMapLight(Other.m_pMapLight);
 	SetMapRefract(Other.m_pMapRefract);
 }
 Material::~Material(void)
 {
 	SAFE_RELEASE(m_pMapDiffuse);		
 	SAFE_RELEASE(m_pMapNormal);
+	SAFE_RELEASE(m_pMapLight);
 	SAFE_RELEASE(m_pMapRefract);
 }
 
@@ -56,6 +60,7 @@ Material& Material::operator =(const Material &Other)
 	
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
+	SetMapLight(Other.m_pMapLight);
 	SetMapRefract(Other.m_pMapRefract);
 	return *this;
 }
@@ -113,6 +118,33 @@ void Material::SetMapNormal( cRscTexture* val )
 	else
 	{
 		index_renderer_queue_.reset(NORMAL);	
+	}
+}
+
+cRscTexture* Material::GetMapLight() const
+{
+	return m_pMapLight;
+}
+
+void Material::SetMapLight( cRscTexture* val )
+{
+	if (m_pMapLight)
+	{
+		m_pMapLight->Release();
+	}	
+	m_pMapLight = val;
+	if (m_pMapLight)
+	{		
+		m_pMapLight->AddRef();
+	}	
+
+	if (m_pMapLight)
+	{
+		index_renderer_queue_.set(LIGHT);
+	}
+	else
+	{
+		index_renderer_queue_.reset(LIGHT);	
 	}
 }
 

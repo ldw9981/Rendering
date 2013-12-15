@@ -38,6 +38,7 @@ private:
 	cRscTexture*			m_pMapDiffuse;
 	cRscTexture*			m_pMapNormal;
 	cRscTexture*			m_pMapRefract;	
+	cRscTexture*			m_pMapLight;
 	//Light
 	//Specular
 	//Reflection
@@ -50,7 +51,8 @@ public:
 	void					SetMapNormal(cRscTexture* val);
 	cRscTexture*			GetMapRefract() const;
 	void					SetMapRefract(cRscTexture* val);
-
+	cRscTexture*			GetMapLight() const;
+	void					SetMapLight(cRscTexture* val);
 };
 
 

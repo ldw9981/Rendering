@@ -428,4 +428,14 @@ void cASELexer::AddTokenHistory( int identifier )
 	m_tokenHistory.push_back(Token[identifier]);
 }
 
+void cASELexer::TraceHistory()
+{
+	std::vector<std::string>::iterator iter;
+	for ( iter=m_tokenHistory.begin() ; iter!=m_tokenHistory.end() ; ++iter)
+	{
+		std::string& text=(*iter);		
+		TRACE1("TraceHistory : %s\n", text.c_str());
+	}	
+}
+
 

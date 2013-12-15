@@ -84,8 +84,8 @@ public:
 	virtual ~cASEParser(void);
 private:	
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
-	std::vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
-	std::vector<std::vector<Material>>		m_vecMultiSubMaterial;
+	//std::vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
+	std::vector<std::vector<Material>>		m_vecMaterial;
 
 	cSceneNode*			m_pSceneRoot;
 	LONG				m_Token;
@@ -123,6 +123,7 @@ public:
 		BOOL			Parsing_HelperObject();
 		BOOL			Parsing_GeoObject();
 		BOOL			Parsing_MaterialList();
+		bool			GetSubMaterial(Material& SubMatrial);// return class
 		BOOL			Parsing_ShapeObject();
 		BOOL			Parsing_LightObject();
 		BOOL			Parsing_CameraObject();

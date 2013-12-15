@@ -1006,7 +1006,8 @@ BOOL cASEParser::Parsing_MaterialList()
 						
 						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
 						GetInt();						// index
-						GetSubMaterial(subMaterial);
+						if(!GetSubMaterial(subMaterial))
+							return false;
 
 						if (strMaterialClass == "Shell Material")
 						{							
@@ -1017,7 +1018,6 @@ BOOL cASEParser::Parsing_MaterialList()
 						}
 						else
 						{
-							GetSubMaterial(subMaterial);
 							m_vecMaterial[nMaterialIndex].push_back(subMaterial);			
 						}															
 					}

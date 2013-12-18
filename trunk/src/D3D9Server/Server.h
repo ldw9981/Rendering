@@ -31,7 +31,9 @@ public:
 	LPD3DXBUFFER			m_pError;	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
 	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
-	D3DXHANDLE				m_hPhongDiffuseBump;
+	D3DXHANDLE				m_hTPhongDiffuseLight;
+	D3DXHANDLE				m_hTPhongDiffuseBump;
+
 
 	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
 	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬

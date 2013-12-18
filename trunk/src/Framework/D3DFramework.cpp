@@ -29,6 +29,12 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 	m_szClassName = "cD3DFramework WndClass";			// default class name
 	m_bQuitLoop=FALSE;	
 
+	for (int i=0;i<16;i++)
+	{	
+		g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = NULL;
+		g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = NULL;
+	}
+
 }
 cD3DFramework::~cD3DFramework(void)
 {
@@ -175,10 +181,7 @@ void cD3DFramework::ProcessRenderableList()
 
 	}
 
-
-
 	m_pD3DDevice->EndScene();
-
 	m_pD3DDevice->Present( NULL, NULL, NULL, NULL );	
 }
 

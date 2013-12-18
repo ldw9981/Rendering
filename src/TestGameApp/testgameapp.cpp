@@ -10,8 +10,7 @@
 #include "GlobalView.h"
 #include "Framework/D3DFramework.h"
 #include "D3D9Server/Server.h"
-
-
+#include "D3D9Server/MaterialEx.h"
 
 using namespace D3D9;
 
@@ -51,14 +50,24 @@ bool TestGameApp::Open()
 	strHLSL+= "hlsl.fx";
 	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
 
+	std::bitset<Material::MAX> indexRenderQueue;
+
+	indexRenderQueue.set(Material::DIFFUSE);
+	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
+
+	indexRenderQueue.set(Material::NORMAL);
+	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuseBump;
+
+	indexRenderQueue.reset(Material::NORMAL);
+	indexRenderQueue.set(Material::LIGHT);
+	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuseLight;
+
 	for (int i=0;i<16;i++)
 	{	
-		if ( (i & 2) !=0 )	
-			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hPhongDiffuseBump;
-		else 	
+		if (g_pD3DFramework->m_listRenderQueue[i].m_hTechnique == NULL )	
 			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
 	}
-	
+
 	for (int i=0;i<16;i++)
 		g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = m_pD3D9Server->m_hTSkinningPhongDiffuse;
 

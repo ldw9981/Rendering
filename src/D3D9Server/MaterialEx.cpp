@@ -17,7 +17,7 @@ Material::Material(void)
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
-	m_pMapRefract = NULL;
+	//m_pMapRefract = NULL;
 	
 }
 
@@ -34,18 +34,18 @@ Material::Material( const Material &Other )
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
-	m_pMapRefract = NULL;
+	//m_pMapRefract = NULL;
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
-	SetMapRefract(Other.m_pMapRefract);
+	//SetMapRefract(Other.m_pMapRefract);
 }
 Material::~Material(void)
 {
 	SAFE_RELEASE(m_pMapDiffuse);		
 	SAFE_RELEASE(m_pMapNormal);
 	SAFE_RELEASE(m_pMapLight);
-	SAFE_RELEASE(m_pMapRefract);
+//	SAFE_RELEASE(m_pMapRefract);
 }
 
 Material& Material::operator =(const Material &Other)
@@ -61,7 +61,7 @@ Material& Material::operator =(const Material &Other)
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
-	SetMapRefract(Other.m_pMapRefract);
+	//SetMapRefract(Other.m_pMapRefract);
 	return *this;
 }
 
@@ -147,7 +147,7 @@ void Material::SetMapLight( cRscTexture* val )
 		index_renderer_queue_.reset(LIGHT);	
 	}
 }
-
+/*
 cRscTexture* Material::GetMapRefract() const
 {
 	return m_pMapRefract;
@@ -174,3 +174,4 @@ void Material::SetMapRefract( cRscTexture* val )
 		index_renderer_queue_.reset(REFRACT);	
 	}
 }
+*/

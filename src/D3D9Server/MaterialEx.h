@@ -12,10 +12,10 @@ class Material
 public:
 	enum MAP
 	{
-		DIFFUSE=0,
-		NORMAL,		
-		LIGHT,
-		REFRACT,
+		DIFFUSE	=0x000,
+		NORMAL	=0x001,		
+		LIGHT	=0x002,
+		//REFRACT =0x003,
 		MAX
 	};
 public:
@@ -37,7 +37,7 @@ public:
 private:		
 	cRscTexture*			m_pMapDiffuse;
 	cRscTexture*			m_pMapNormal;
-	cRscTexture*			m_pMapRefract;	
+//	cRscTexture*			m_pMapRefract;	
 	cRscTexture*			m_pMapLight;
 	//Light
 	//Specular
@@ -49,8 +49,8 @@ public:
 	void					SetMapDiffuse(cRscTexture* val);
 	cRscTexture*			GetMapNormal() const;
 	void					SetMapNormal(cRscTexture* val);
-	cRscTexture*			GetMapRefract() const;
-	void					SetMapRefract(cRscTexture* val);
+// 	cRscTexture*			GetMapRefract() const;
+// 	void					SetMapRefract(cRscTexture* val);
 	cRscTexture*			GetMapLight() const;
 	void					SetMapLight(cRscTexture* val);
 };

@@ -41,6 +41,7 @@ cTestView::cTestView(void)
 	m_pTank->Init();
 	AttachObject(m_pTank);
 	
+	
 	m_pP38 = new cObjTank;	
 	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pP38);
 	parser.Close();

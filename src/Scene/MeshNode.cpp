@@ -111,6 +111,11 @@ void cMeshNode::Render()
 		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
 	}
 
+	if( m_Matrial.GetMapLight() != NULL )
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
+	}
+
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
@@ -159,7 +164,7 @@ void cMeshNode::BuildComposite()
 			long i3 = triangle->index[2];
 
 			CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
-				vertex[i1].tex,vertex[i2].tex,vertex[i3].tex,
+				vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
 				vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
 				vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
 

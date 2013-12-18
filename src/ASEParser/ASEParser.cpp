@@ -333,7 +333,8 @@ BOOL cASEParser::Parsing_GeoObject()
 	//인스턴스내에 삽입될정보
 	bool bSkinned=false;
 	bool bMultiSub=false;
-	UINT totalVertices=0,totalFaces=0,totalBoneRef=0,totalTVertices=0;
+	UINT totalVertices=0,totalFaces=0,totalBoneRef=0;
+	UINT totalBaseTVertices=0,totalExtraTVertices=0;
 	UINT nMaterialRef=0;
 	
 	std::vector<BONEREFINFO>					vecBoneRef;		
@@ -346,11 +347,15 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::vector<TRIANGLE_SUBMATERIAL>		vecIndexForBuffer;
 		
 	// 버텍스 가공을 위한 일시적인 정보
-	std::vector<TEXCOORD>					vecTempTVertex;
-	std::vector<TEXCOORD>					vecTempTVertexOut;
-	std::vector<TRIANGLE>					vecTempTFaceIndex;	
+	std::vector<TEXCOORD>					vecTempBaseTVertexOut;
 	std::vector<VNORMAL>					vecTempVertexNormal;
+
+	std::vector<TEXCOORD>					vecTempBaseTVertex;
+	std::vector<TRIANGLE>					vecTempBaseTFaceIndex;
 	
+	std::vector<TEXCOORD>					vecTempExtraTVertex;
+	std::vector<TRIANGLE>					vecTempExtraTFaceIndex;	
+
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	D3DXVECTOR3 tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f),tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
 	
@@ -514,64 +519,64 @@ BOOL cASEParser::Parsing_GeoObject()
 						}	
 						break;
 					case TOKENR_MESH_NUMTVERTEX:
-						totalTVertices=GetInt();
-						vecTempTVertex.reserve(totalTVertices);
-
+						{
+							totalBaseTVertices=GetInt();
+							vecTempBaseTVertex.reserve(totalBaseTVertices);
+						}
 						break;
 					case TOKENR_MESH_TVERTLIST:
 						{				
-							if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
-								return FALSE;
-
-							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-							{
-								ASSERT(m_Token!=TOKEND_BLOCK_START);
-								switch(m_Token)
-								{
-								case TOKENR_MESH_TVERT:	
-									int index=GetInt();
-
-									D3DXVECTOR3 tvertex;
-									GetVector3(&tvertex);
-									tvertex.z = 1.0f-tvertex.z;
-									vecTempTVertex.push_back(TEXCOORD(tvertex.x,tvertex.z));
-									break;
-								}					
-							}
+							if(!GetTextureVertexList(vecTempBaseTVertex))
+								return false;
 						}	
 						break;
 					case TOKENR_MESH_NUMTVFACES:
-						SkipBlock();
+						{
+							GetInt();
+						}
 						break;
 					case TOKENR_MESH_TFACELIST:
 						{				
-							if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
-								return FALSE;
-
-							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-							{
-								ASSERT(m_Token!=TOKEND_BLOCK_START);
-								switch(m_Token)
-								{
-								case TOKENR_MESH_TFACE:						
-									int iTFace;
-									TRIANGLE tFaceIndex;
-									iTFace=GetInt();			// FaceIndex						
-									tFaceIndex.index[0]=GetInt();			// 0						
-									tFaceIndex.index[2]=GetInt();			// 1						
-									tFaceIndex.index[1]=GetInt();			// 2						
-									vecTempTFaceIndex.push_back(tFaceIndex);
-									break;
-								}					
-							}
+							if(!GetTextureFaceList(vecTempBaseTFaceIndex))
+								return false;
 						}	
 						break;
 					case TOKENR_MESH_MAPPINGCHANNEL:
 						{
-							GetInt();
-							SkipBlock();
-						}
-						
+							int n = GetInt();	// extra channel index
+							if (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_START)
+								return FALSE;
+
+							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+							{					
+								switch(m_Token)
+								{
+								case TOKENR_MESH_NUMTVERTEX:	
+									{
+										totalExtraTVertices=GetInt();
+										vecTempExtraTVertex.reserve(totalExtraTVertices);
+									}
+									break;
+								case TOKENR_MESH_TVERTLIST:
+									{				
+										if(!GetTextureVertexList(vecTempExtraTVertex))
+											return false;
+									}	
+									break;
+								case TOKENR_MESH_NUMTVFACES:
+									{
+										GetInt();
+									}
+									break;
+								case TOKENR_MESH_TFACELIST:
+									{				
+										if(!GetTextureFaceList(vecTempExtraTFaceIndex))
+											return false;
+									}	
+									break;
+								}
+							}
+						}						
 						break;
 					case TOKENR_MESH_NUMCVERTEX:
 						GetInt();
@@ -596,7 +601,6 @@ BOOL cASEParser::Parsing_GeoObject()
 									// *MESH_VERTEXNORMAL
 									if(GetToken(m_TokenString) != TOKENR_MESH_VERTEXNORMAL)
 										return FALSE;
-
 
 									VNORMAL temp;
 									temp.iRefFace= iRefFace;
@@ -733,71 +737,40 @@ BOOL cASEParser::Parsing_GeoObject()
 		stInfo.pParent=m_pSceneRoot;
 	}
 
-	if (!bSkinned)	
-	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,stInfo.boundingSphere);
-	}
-	else
-	{
-		CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,stInfo.boundingSphere);	
-	}
-
+	if (!bSkinned) CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,stInfo.boundingSphere);
+	else CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,stInfo.boundingSphere);		
+		
 	// 이제 버텍스 가공 버텍스,노말 합치기
-	if (!bSkinned)	
-	{
-		MergeNormalListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
-	}
-	else
-	{
-		MergeNormalListIntoVertexList(vecBlendVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
-	}
+	if (!bSkinned) MergeNormalListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
+	else MergeNormalListIntoVertexList(vecBlendVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);	
 
 	// 텍스쳐 좌표줄이면서 텍스쳐좌표 인덱스 수정하기, 버텍스랑 합치면서 FaceIndex수정하기 	
-	if (!bSkinned)	
-	{
-		MergeTexCoordListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempTVertex,vecTempTFaceIndex);
-	}
-	else
-	{
-		MergeTexCoordListIntoVertexList(vecBlendVertexForBuffer,vecIndexForBuffer,vecTempTVertex,vecTempTFaceIndex);
-	}
+	if (!bSkinned) MergeTexCoordListIntoVertexList(true,vecNormalVertexForBuffer,vecIndexForBuffer,vecTempBaseTVertex,vecTempBaseTFaceIndex);
+	else MergeTexCoordListIntoVertexList(true,vecBlendVertexForBuffer,vecIndexForBuffer,vecTempBaseTVertex,vecTempBaseTFaceIndex);
 
+	if (!bSkinned) MergeTexCoordListIntoVertexList(false,vecNormalVertexForBuffer,vecIndexForBuffer,vecTempExtraTVertex,vecTempExtraTFaceIndex);
+	else MergeTexCoordListIntoVertexList(false,vecBlendVertexForBuffer,vecIndexForBuffer,vecTempExtraTVertex,vecTempExtraTFaceIndex);
+
+	
 	// 서브매트리얼 ID별로 FACEINDEX정렬
 	sort(vecIndexForBuffer.begin(),vecIndexForBuffer.end(),TRIANGLE_SUBMATERIAL::LessFaceIndex);	
 
 	// 리소스 버텍스 버퍼   생성 -> 데이터복사 -> 메쉬셋팅
 	cRscVertexBuffer* pNewRscVertexBuffer=NULL;
-	if(!bSkinned)	
-	{
-		pNewRscVertexBuffer = CreateRscVertexBuffer(vecNormalVertexForBuffer);
-	}
-	else
-	{
-		pNewRscVertexBuffer = CreateRscVertexBuffer(vecBlendVertexForBuffer);	
-	}
+	if(!bSkinned) pNewRscVertexBuffer = CreateRscVertexBuffer(vecNormalVertexForBuffer);
+	else pNewRscVertexBuffer = CreateRscVertexBuffer(vecBlendVertexForBuffer);		
 
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
-	cRscIndexBuffer* pNewRscIndexBuffer=NULL;	
-	pNewRscIndexBuffer = CreateRscIndexBuffer(vecIndexForBuffer);
-
+	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(vecIndexForBuffer);
 	cSceneNode* pNewSceneNode=NULL;
-
 	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL)
 	{
-		pNewSceneNode = CreateHelperNode(stInfo);
-		
+		pNewSceneNode = CreateHelperNode(stInfo);		
 	}
 	else
 	{
-		if (!bSkinned)
-		{
-			pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);		
-		
-		}
-		else
-		{
-			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );	
-		}
+		if (!bSkinned)	pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);		
+		else pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );			
 	}	
 	return TRUE;
 }
@@ -926,6 +899,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						case TOKENR_BITMAP:
 
 							std::string strFileName=GetString().c_str();							
+							/*
 							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
@@ -934,6 +908,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							if(pRscTexture==NULL)
 								TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapRefract(pRscTexture);
+							*/
 							break;
 						}		
 					}
@@ -1685,18 +1660,18 @@ void cASEParser::OptimizeTexCoordAndFace(std::vector<TEXCOORD>& arrTexCoordOut,
 // arrTexCoordIn 의 텍스쳐 좌표들은 
 // arrTFaceIndexIn   페이스에 쓰이는 텍스쳐 좌표인덱스 
 template <typename T>
-void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
+void cASEParser::MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vector<T>& arrVertexInOut,
 									 std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
-									 const std::vector<TEXCOORD>& arrTexCoordIn,
-									 const std::vector<TRIANGLE>& arrTFaceIndexIn)
+									 const std::vector<TEXCOORD>& arrBaseTexCoordIn,
+									 const std::vector<TRIANGLE>& arrBaseTFaceIndexIn)
 {	
 	if (arrVertexInOut.empty())
 		return;
 	if (arrVertexInOut.empty())
 		return;
-	if (arrTexCoordIn.empty())
+	if (arrBaseTexCoordIn.empty())
 		return;
-	if (arrTFaceIndexIn.empty())
+	if (arrBaseTFaceIndexIn.empty())
 		return;
 
 	std::vector<std::list<std::pair<TEXCOORD,WORD>>> arrVIndexedTCList;
@@ -1707,18 +1682,21 @@ void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
 	for (int iFace=0;iFace<nFace;iFace++)
 	{
 		TRIANGLE*		 pVFace=&arrVFaceIndexInOut[iFace].triangle;
-		const TRIANGLE* pTFace=&arrTFaceIndexIn[iFace];
+		const TRIANGLE* pTFace=&arrBaseTFaceIndexIn[iFace];
 
 		for (int i=0;i<3;i++)
 		{
 			int iRefVertex=pVFace->index[i];					// 버텍스 인덱스
-			int iRefTexCoord=arrTFaceIndexIn[iFace].index[i];	//텍스좌표 인덱스
-			const TEXCOORD* pTexcoord=&arrTexCoordIn[iRefTexCoord]; //텍스좌표 얻기
-
+			int iRefTexCoord=arrBaseTFaceIndexIn[iFace].index[i];	//텍스좌표 인덱스
+			const TEXCOORD* pTexcoord=&arrBaseTexCoordIn[iRefTexCoord]; //텍스좌표 얻기
 
 			if(arrVIndexedTCList[iRefVertex].empty())			// 버텍스에 텍스좌표 리스트들이 없으면
 			{
-				arrVertexInOut[iRefVertex].tex = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
+				if (bBaseMapChannel) 
+					arrVertexInOut[iRefVertex].uv0 = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
+				else
+					arrVertexInOut[iRefVertex].uv1 = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
+				
 
 				std::pair<TEXCOORD,WORD> temp;
 				temp.first = *pTexcoord;
@@ -1733,7 +1711,7 @@ void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
 				{					
 					//텍스좌표가 같은것이면 이미 넣은것인덱스로 변경
 					if( (*it).first == *pTexcoord )
-					{						
+					{											
 						pVFace->index[i]=(*it).second;							
 						break;
 					}
@@ -1744,7 +1722,12 @@ void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
 					//버텍스 하나더 만들고 넣은 위치저장 후 인덱스화된 리스트에텍스추가 
 					T vertex;
 					memcpy(&vertex,&arrVertexInOut[iRefVertex],sizeof(vertex));
-					vertex.tex=*pTexcoord;
+
+					if (bBaseMapChannel) 
+						vertex.uv0 = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
+					else
+						vertex.uv1 = *pTexcoord;	// 버텍스리스트에 버테스의 텍스좌표 추가
+
 					arrVertexInOut.push_back(vertex);					
 
 					//새로운 인덱스
@@ -1764,7 +1747,7 @@ void cASEParser::MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
 					arrVIndexedTCList[iRefVertex].push_back(tempValue);
 				}
 			}
-		}	
+		}			
 	}
 }
 
@@ -2348,6 +2331,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 					case TOKENR_BITMAP:
 
 						std::string strFileName=GetString().c_str();							
+						/*
 						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
@@ -2356,6 +2340,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						if(pRscTexture==NULL)
 							TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapRefract(pRscTexture);
+						*/
 						break;
 					}		
 				}
@@ -2422,6 +2407,54 @@ bool cASEParser::GetSubMaterial( Material& material)
 			}
 			break;
 		}						
+	}
+	return true;
+}
+
+bool cASEParser::GetTextureVertexList(std::vector<TEXCOORD>& out)
+{
+	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
+		return FALSE;
+
+	while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+	{
+		ASSERT(m_Token!=TOKEND_BLOCK_START);
+		switch(m_Token)
+		{
+		case TOKENR_MESH_TVERT:	
+			int index=GetInt();
+
+			D3DXVECTOR3 tvertex;
+			GetVector3(&tvertex);
+			tvertex.z = 1.0f-tvertex.z;
+			out.push_back(TEXCOORD(tvertex.x,tvertex.z));
+			break;
+		}					
+	}
+
+	return true;
+}
+
+bool cASEParser::GetTextureFaceList(std::vector<TRIANGLE>& out)
+{
+	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
+		return FALSE;
+
+	while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+	{
+		ASSERT(m_Token!=TOKEND_BLOCK_START);
+		switch(m_Token)
+		{
+		case TOKENR_MESH_TFACE:						
+			int iTFace;
+			TRIANGLE tFaceIndex;
+			iTFace=GetInt();			// FaceIndex						
+			tFaceIndex.index[0]=GetInt();			// 0						
+			tFaceIndex.index[2]=GetInt();			// 1						
+			tFaceIndex.index[1]=GetInt();			// 2						
+			out.push_back(tFaceIndex);
+			break;
+		}					
 	}
 	return true;
 }

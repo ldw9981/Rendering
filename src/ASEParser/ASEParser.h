@@ -122,6 +122,9 @@ public:
 
 		BOOL			Parsing_HelperObject();
 		BOOL			Parsing_GeoObject();
+		bool			GetTextureVertexList(std::vector<TEXCOORD>& out);	
+		bool			GetTextureFaceList(std::vector<TRIANGLE>& out);
+
 		BOOL			Parsing_MaterialList();
 		bool			GetSubMaterial(Material& SubMatrial);// return class
 		BOOL			Parsing_ShapeObject();
@@ -141,7 +144,7 @@ public:
 			std::vector<TRIANGLE>& arrTFaceIndexInOut);
 
 		template <typename T>
-		void			MergeTexCoordListIntoVertexList(std::vector<T>& arrVertexInOut,
+		void			MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vector<T>& arrVertexInOut,
 			std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
 			const std::vector<TEXCOORD>& arrTexCoordIn,
 			const std::vector<TRIANGLE>& arrTFaceIndexIn);

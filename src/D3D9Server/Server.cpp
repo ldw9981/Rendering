@@ -139,9 +139,11 @@ void Server::LoadHLSL(const char* szFileName)
 		hr = m_pEffect->GetDesc(&desc);
 		
 		m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
-		m_hPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
-		m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
+		m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
+		m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
+		
 
+		m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
 		m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 		m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
 		m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
@@ -156,6 +158,8 @@ void Server::LoadHLSL(const char* szFileName)
 		m_pEffect->SetVector(m_hvWorldLightPosition,&posLight);
 	}
 	SAFE_RELEASE(pErr);
+
+
 
 }
 

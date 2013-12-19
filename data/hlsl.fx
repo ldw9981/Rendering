@@ -310,7 +310,15 @@ float4 ps_PhongDiffuseLight(PS_PHONG_DIFFUSE_INPUT input) : COLOR
 }
 
 
-
+technique TSkinningPhong
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 vs_SkinningPhongDiffuse();
+        PixelShader  = compile ps_2_0 ps_Phong();
+    }  
+}
 
 
 technique TSkinningPhongDiffuse

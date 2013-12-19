@@ -16,7 +16,6 @@ class cMeshNode:
 public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
-
 protected:	
 	BOOL					m_bIsBone;
 	int						m_nStartIndex;

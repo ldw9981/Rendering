@@ -25,32 +25,36 @@ struct TEXCOORD
 	}
 };
 
+
+
+
+
 struct NORMALVERTEX
 {	
 	D3DXVECTOR3	vertex;		//x,y,z
 	D3DXVECTOR3 normal;		//normal	
-	TEXCOORD	uv0;	
 	D3DXVECTOR3 tangent;	
-	D3DXVECTOR3 binormal;
+	D3DXVECTOR3 binormal;	
+	TEXCOORD	uv0;	
 	TEXCOORD	uv1;
 };
-#define FVF_NORMAL			(D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1|D3DFVF_NORMAL|D3DFVF_TEX2|D3DFVF_TEX3|D3DFVF_TEX4)  
+
+#define FVF_NORMAL			(D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX0|D3DFVF_TEX1|D3DFVF_TEX2|D3DFVF_TEX3)  
+
 
 
 struct BLENDVERTEX
-{
-	//x,y,z
-	D3DXVECTOR3	vertex;
+{	
+	D3DXVECTOR3	vertex;		//x,y,z
+	D3DXVECTOR3 normal;		//normal
+	D3DXVECTOR3 tangent;	
+	D3DXVECTOR3 binormal;	
+	TEXCOORD	uv0;	
+	TEXCOORD	uv1;
 	// weight
 	float		weight[3];	
 	// index
 	BYTE		index[4];
-	//normal
-	D3DXVECTOR3 normal;
-	TEXCOORD	uv0;	
-	D3DXVECTOR3 tangent;	
-	D3DXVECTOR3 binormal;	
-	TEXCOORD	uv1;
 
 	void SetWeight(float src_weight[3])
 	{

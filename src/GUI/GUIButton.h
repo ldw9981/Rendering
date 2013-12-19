@@ -1,6 +1,6 @@
 #pragma once
 
-#include "D3D9Server/RscVertexBuffer.h"
+#include "D3D9Server/Vertex.h"
 #include "Foundation/Interface.h"
 #include "WinInput/WinInput.h"
 #include "GUIBase.h"

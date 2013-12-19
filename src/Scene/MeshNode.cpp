@@ -66,10 +66,6 @@ void cMeshNode::Update(DWORD elapseTime)
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
-	// 바운딩스피어의 위치는 로컬좌표 기준이므로 월드로 바로 스지는 못한다.
-	//m_pCullingSphere->SetRadius(m_pBoundingSphere->GetRadius());
-	//m_pCullingSphere->SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
-	//*m_pCullingSphere = *m_pBoundingSphere;	
 
 	if (!m_vecSubMesh.empty())
 	{
@@ -81,7 +77,6 @@ void cMeshNode::Update(DWORD elapseTime)
 	}	
 
 	UpdateChildren(elapseTime);
-	//UpdateParentCullingSphere(*m_pCullingSphere);	
 }
 
 /*

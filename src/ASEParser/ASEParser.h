@@ -5,6 +5,7 @@
 #include "D3D9Server/RscIndexBuffer.h"
 #include "D3D9Server/RscVertexBuffer.h"
 #include "D3D9Server/RscTransformAnm.h"
+#include "D3D9Server/Vertex.h"
 #include "Resource/ResourceMng.h"
 #include "Math/Sphere.h"
 

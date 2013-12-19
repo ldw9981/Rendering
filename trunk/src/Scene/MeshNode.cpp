@@ -43,11 +43,6 @@ cMeshNode::~cMeshNode(void)
 	}	
 	m_vecSubMesh.clear();
 
-//	for_each(m_vecSubMesh.begin(),m_vecSubMesh.end(),FuncDeleteType<cMeshNode*>);
-	
-//	m_vecSubMesh.clear();
-
-	//SAFE_RELEASE(m_pRscVetextBuffer);
 	if (m_pRscVetextBuffer)
 	{
 		m_pRscVetextBuffer->Release();
@@ -86,39 +81,27 @@ void cMeshNode::Update(DWORD elapseTime)
 void cMeshNode::Render()
 {			
 	//DebugRender();
-
-	if( m_Matrial.GetMapDiffuse() == NULL)
-		return;
-
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
-	m_pRscIndexBuffer->SetIndices();			
+	m_pRscIndexBuffer->SetIndices();		
 
+	if( m_Matrial.GetMapDiffuse() != NULL )	
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
 
-	assert( m_Matrial.GetMapDiffuse()->GetD3DTexture() != NULL);
-
-	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
-
-	if( m_Matrial.GetMapNormal() != NULL )
-	{
+	if( m_Matrial.GetMapNormal() != NULL )	
 		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
-	}
-
+	
 	if( m_Matrial.GetMapLight() != NULL )
-	{
 		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
-	}
-
+	
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 
 			m_pRscVetextBuffer->GetCount(),
 			m_nStartIndex,
-			m_nPrimitiveCount );
-
-	
+			m_nPrimitiveCount );	
 }
 
 void cMeshNode::BuildComposite()

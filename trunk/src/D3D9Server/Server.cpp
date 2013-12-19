@@ -148,7 +148,7 @@ void Server::LoadHLSL(const char* szFileName)
 		m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
 		m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
 		
-
+		m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 		m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
 		m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 		m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );

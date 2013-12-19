@@ -31,6 +31,7 @@ public:
 	LPD3DXBUFFER			m_pError;	
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationNormal;
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationBlend;
+	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
 	D3DXHANDLE				m_hTPhong;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉

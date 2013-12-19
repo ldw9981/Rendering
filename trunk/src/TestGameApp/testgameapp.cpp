@@ -70,8 +70,14 @@ bool TestGameApp::Open()
 			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
 	}
 
+	indexRenderQueue.reset();
+	g_pD3DFramework->m_listRenderQueueSkinned[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTSkinningPhong;
 	for (int i=0;i<16;i++)
-		g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = m_pD3D9Server->m_hTSkinningPhongDiffuse;
+	{	
+		if (g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique == NULL )	
+			g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = m_pD3D9Server->m_hTSkinningPhongDiffuse;
+	}
+		
 
 //	m_pMenuScene = new cMenuView;
 	m_pTestScene = new cTestView;

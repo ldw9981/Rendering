@@ -52,6 +52,8 @@ bool TestGameApp::Open()
 
 	std::bitset<Material::MAX> indexRenderQueue;
 
+	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhong;
+
 	indexRenderQueue.set(Material::DIFFUSE);
 	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
 

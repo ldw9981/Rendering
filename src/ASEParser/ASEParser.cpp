@@ -784,23 +784,11 @@ BOOL cASEParser::Parsing_MaterialList()
 	int nMaterialCount,nMaterialIndex;
 	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;	
 	if (GetToken(m_TokenString) != TOKENR_MATERIAL_COUNT)	return FALSE;	// *MATERIAL_COUNT
-	nMaterialCount=GetInt();
-
-	
+	nMaterialCount=GetInt();	
 	
 	for (int i=0;i<nMaterialCount;i++)
 	{
 		Material material;		
-				
-		std::string strDefaultDiffuse = EnvironmentVariable::GetInstance().GetString("DataPath");
-		strDefaultDiffuse += std::string("diffuse_white.dds");
-
-		cRscTexture* pDiffuse= m_ResourceMng.CreateRscTexture(strDefaultDiffuse.c_str());
-		if(pDiffuse==NULL)
-			TRACE1("strDefaultDiffuse: %s 파일이없습니다.\n",strDefaultDiffuse.c_str());
-		material.SetMapDiffuse(pDiffuse);
-		
-
 		std::vector<Material> vecSubMatrial;
 		m_vecMaterial.push_back(vecSubMatrial);
 

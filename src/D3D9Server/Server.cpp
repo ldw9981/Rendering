@@ -143,6 +143,7 @@ void Server::LoadHLSL(const char* szFileName)
 		D3DXEFFECT_DESC desc;
 		hr = m_pEffect->GetDesc(&desc);
 		
+		m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
 		m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
 		m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
 		m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );

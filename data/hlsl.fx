@@ -210,6 +210,27 @@ struct PS_PHONG_DIFFUSE_BUMP_INPUT
    float2 mTexCoord1 : TEXCOORD6;  
 };
 
+float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
+{  
+   float3 color;
+   float3 lambert = saturate(input.mLambert);
+   float3 worldNormal = normalize(input.mNormal);
+   float3 cameraDir = normalize(input.mCameraDir);
+   float3 reflectDir = normalize(input.mReflect);
+   float3 diffuseSample = float3(1.0f,1.0f,1.0f);
+   float3 specular = 0;
+   specular = dot(reflectDir,-cameraDir);
+   specular = saturate(specular);
+   specular = pow(specular, gSpecularPower);
+  
+//   float4 specularIntensity = tex2D(gSpecularSampler,input.mTexCoord);
+//   specular = specular * specularIntensity.xyz;
+  
+   color = diffuseSample * gAmbientColor.xyz * gAmbientIntensity;
+   color += diffuseSample * lambert;
+   color += gSpecularColor.xyz * specular;
+   return float4(color,0.0f);
+}
 
 
 float4 ps_PhongDiffuse(PS_PHONG_DIFFUSE_INPUT input) : COLOR
@@ -304,6 +325,16 @@ technique TSkinningPhongDiffuse
 
 
 // Å×Å©´Ð ¼±¾ð(½¦ÀÌ´õ & ÇÈ¼¿ ½¦ÀÌ´õ »ç¿ë)
+technique TPhong
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_2_0 ps_Phong();
+    }  
+}
+
 technique TPhongDiffuse
 {
     pass P0

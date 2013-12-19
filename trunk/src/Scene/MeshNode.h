@@ -5,6 +5,7 @@
 #include "D3D9Server/RscIndexBuffer.h"
 #include "SceneNode.h"
 #include "D3D9Server/MaterialEx.h"
+#include "D3D9Server/Vertex.h"
 
 class cMeshNode;
 

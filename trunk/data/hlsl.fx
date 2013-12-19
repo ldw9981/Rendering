@@ -41,8 +41,8 @@ sampler gLightSampler = sampler_state
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
-float gAmbientIntensity;
-float4 gAmbientColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+float gAmbientIntensity = 0.0f;
+float4 gAmbientColor = { 0.0f, 0.0f, 0.0f, 0.0f };
 float4 gSpecularColor = { 1.0f, 1.0f, 1.0f, 1.0f };
 float gSpecularPower = 32;
 
@@ -58,23 +58,23 @@ float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 struct VS_PHONG_DIFFUSE_INPUT
 {
    float4 mPosition : POSITION;
-   float3 mNormal : NORMAL;
+   float3 mNormal : NORMAL;    
+   float3 mTangent : TANGENT;   
+   float3 mBiNormal : BINORMAL;   
    float2 mTexCoord : TEXCOORD0;  
-   float3 mTangent : TANGENT;
-   float3 mBiNormal : BINORMAL;
    float2 mTexCoord1 : TEXCOORD1;  
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
 {
    float3 mPosition : POSITION;
-   float3 mBlendWeights    : BLENDWEIGHT;
-   int4   mBlendIndices    : BLENDINDICES; 
    float3 mNormal : NORMAL;
-   float2 mTexCoord : TEXCOORD0;  
    float3 mTangent : TANGENT;
    float3 mBiNormal : BINORMAL;
-   float2 mTexCoord1 : TEXCOORD1;  
+   float2 mTexCoord : TEXCOORD0;
+   float2 mTexCoord1 : TEXCOORD1;   
+   float3 mBlendWeights    : BLENDWEIGHT;
+   int4   mBlendIndices    : BLENDINDICES; 
 };
 
 

@@ -17,6 +17,7 @@
 
 #include "Framework/D3DFramework.h"
 
+
 cMeshNode::cMeshNode(void)
 {		
 	m_bIsBone= FALSE;
@@ -95,9 +96,7 @@ void cMeshNode::Render()
 		return;
 
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-	
-	//IndexBuffer,VertexBuffer¼ÂÆÃ
-	m_pD3DDevice->SetFVF(FVF_NORMAL);
+	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -397,3 +396,5 @@ void cMeshNode::DebugRender()
 	
 
 }
+
+

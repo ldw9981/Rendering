@@ -48,7 +48,7 @@ cTestView::cTestView(void)
 	m_pP38->BuildComposite();
 	m_pP38->Init();
 	AttachObject(m_pP38);
-		
+	
 	
 	m_pAirPlaneBake = new cObjTank;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);

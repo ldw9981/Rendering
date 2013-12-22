@@ -169,6 +169,6 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 void SkinnedMeshNode::QueueRenderer()
 {
 	int i = m_Matrial.index_renderer_queue();
-	g_pD3DFramework->m_listRenderQueueSkinned[i].Insert(this);
+	D3D9::Server::g_pServer->m_listRenderQueueSkinned[i].Insert(this);
 }
 

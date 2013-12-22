@@ -21,6 +21,7 @@ namespace D3D9
 class cResourceMng;
 class cWinInput;
 class cViewMng;
+class cView;
 
 class cD3DFramework :	
 	private StaticD3DDEVICE9,
@@ -34,8 +35,6 @@ public:
 
 	HINSTANCE				m_hInstance;		 	 
 
-	cRendererQueue			m_listRenderQueue[16];
-	cRendererQueue			m_listRenderQueueSkinned[16];
 protected:	
 	
 	WNDCLASS				m_wndclass;			// 메인 윈도우 클래스
@@ -48,12 +47,10 @@ protected:
 	BOOL					m_bFullScreen;
 	BOOL					m_bQuitLoop;
 
+	// 이구조를 사용하면 추가될 객체의 Update/Render/Control호출 코드를 작성하지 않아도되며 추가순서에 따른 호출순서도 보장한다.
 	std::list<IRenderable*>		m_listRenderable;
-
-	
-
 	std::list<IUpdatable*>		m_listProgressable;
-	std::list<IControlable*>		m_listControlable;
+	std::list<IControlable*>	m_listControlable;
 
 	DWORD					m_CurrFrameTime;	// Milli Sec	
 	DWORD					m_PrevFrameTime;	// Milli Sec	
@@ -67,7 +64,7 @@ protected:
 	// Manager
 	cResourceMng*			m_pResourceMng;
 	CFpsMng					m_FpsMng;
-	cViewMng*				m_pSceneMng;
+	cView*					m_pView;
 	
 	
 	static EnvironmentVariable m_sEnvironmentVariable;
@@ -99,7 +96,7 @@ public:
 	DWORD					GetAccumFrameTime() const { return m_AccumFrameTime; }
 	
 	// get/set
-	cViewMng*				GetSceneMng() const { return m_pSceneMng; }
+	cView*					GetView() const { return m_pView; }
 	//cResourceMng*			GetResourceMng() const { return m_pResourceMng; }
 	cWinInput*				GetInput() const { return m_pInput; }
 
@@ -122,11 +119,11 @@ public:
 	virtual void 			Close();
 
 	//cD3DFramework
-	virtual void			ProcessControlableList();
-	virtual void 			ProcessProgressableList(DWORD elapseTime);
-	virtual void 			ProcessRenderableList();
+	virtual void			Control();
+	virtual void 			Update(DWORD elapseTime);
+	virtual void 			Render();
 
 
 };
 
-extern cD3DFramework*	g_pD3DFramework;
+extern cD3DFramework*	g_pApp;

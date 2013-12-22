@@ -4,6 +4,7 @@
 #include "GUI/GUIFont.h"
 #include "RscVertexBuffer.h"
 #include "Vertex.h"
+#include "MaterialEx.h"
 
 namespace D3D9
 {
@@ -13,6 +14,11 @@ Server*	Server::g_pServer = NULL;
 Server::Server(void)
 {
 	g_pServer = this;
+	for (int i=0;i<16;i++)
+	{	
+		m_listRenderQueue[i].m_hTechnique = NULL;
+		m_listRenderQueueSkinned[i].m_hTechnique = NULL;
+	}
 }
 
 Server::~Server(void)
@@ -137,36 +143,112 @@ void Server::LoadHLSL(const char* szFileName)
 	{
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);
+		return;
 	}
-	else
-	{
-		D3DXEFFECT_DESC desc;
-		hr = m_pEffect->GetDesc(&desc);
-		
-		m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
-		m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
-		m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
-		m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
-		
-		m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
-		m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
-		m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
-		m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
-		m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
-		m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "gViewProjectionMatrix" );
-		m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );
+	
+	D3DXEFFECT_DESC desc;
+	hr = m_pEffect->GetDesc(&desc);
+	
+	m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
+	m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
+	m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
+	m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
+	
+	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
+	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
+	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
+	m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
+	m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
+	m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "gViewProjectionMatrix" );
+	m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );
 
 
-		m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
-		m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
+	m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
+	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 
-		D3DXVECTOR4 posLight(0.0f,5000.0f,-5000.0f,0.0f);
-		m_pEffect->SetVector(m_hvWorldLightPosition,&posLight);
-	}
+	D3DXVECTOR4 posLight(0.0f,5000.0f,-5000.0f,0.0f);
+	m_pEffect->SetVector(m_hvWorldLightPosition,&posLight);
+
 	SAFE_RELEASE(pErr);
 
 
+	std::bitset<Material::MAX> indexRenderQueue;
 
+	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhong;
+
+	indexRenderQueue.set(Material::DIFFUSE);
+	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuse;
+
+	indexRenderQueue.set(Material::NORMAL);
+	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuseBump;
+
+	indexRenderQueue.reset(Material::NORMAL);
+	indexRenderQueue.set(Material::LIGHT);
+	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuseLight;
+
+	for (int i=0;i<16;i++)
+	{	
+		if (m_listRenderQueue[i].m_hTechnique == NULL )	
+			m_listRenderQueue[i].m_hTechnique = m_hTPhongDiffuse;
+	}
+
+	indexRenderQueue.reset();
+	m_listRenderQueueSkinned[indexRenderQueue.to_ulong()].m_hTechnique = m_hTSkinningPhong;
+	for (int i=0;i<16;i++)
+	{	
+		if (m_listRenderQueueSkinned[i].m_hTechnique == NULL )	
+			m_listRenderQueueSkinned[i].m_hTechnique = m_hTSkinningPhongDiffuse;
+	}
+
+
+}
+
+void Server::Render()
+{
+	for (int i=0;i<16;i++)
+	{
+		// 여기선 렌더큐들만 그린다
+		UINT passes = 0;
+		m_pEffect->SetTechnique(m_listRenderQueue[i].m_hTechnique);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+
+		m_listRenderQueue[i].Render();
+
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+
+	for (int i=0;i<16;i++)
+	{
+		// 여기선 렌더큐들만 그린다
+		UINT passes = 0;
+		m_pEffect->SetTechnique(m_listRenderQueueSkinned[i].m_hTechnique);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+
+		m_listRenderQueueSkinned[i].Render();
+
+		m_pEffect->EndPass();
+		m_pEffect->End();
+
+	}
+
+
+}
+
+void Server::Begin()
+{
+	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
+	m_pD3DDevice->BeginScene();	
+}
+
+void Server::End()
+{
+	m_pD3DDevice->EndScene();
+	m_pD3DDevice->Present( NULL, NULL, NULL, NULL );	
 }
 
 }

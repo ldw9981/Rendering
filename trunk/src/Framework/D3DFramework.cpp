@@ -12,7 +12,7 @@
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
 
-cD3DFramework* g_pD3DFramework=NULL;
+cD3DFramework* g_pApp=NULL;
 
 
 cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight )
@@ -25,15 +25,11 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 	
 
 
-	g_pD3DFramework = this;	
+	g_pApp = this;	
 	m_szClassName = "cD3DFramework WndClass";			// default class name
 	m_bQuitLoop=FALSE;	
 
-	for (int i=0;i<16;i++)
-	{	
-		g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = NULL;
-		g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = NULL;
-	}
+
 
 }
 cD3DFramework::~cD3DFramework(void)
@@ -67,18 +63,18 @@ bool cD3DFramework::Open()
 
 	m_pInput = new cWinInput;
 	m_pResourceMng = new cResourceMng;
-	m_pSceneMng = new cViewMng;
-	
+//	m_pView = new cView;
+//	m_pView->SetViewPortInfo(0,0,GetRequestRectWidth(),GetRequestRectHeight());
 
 	AttachObject(m_pInput);
-	AttachObject(m_pSceneMng);
+//	AttachObject(m_pView);
 	return true;
 }
 
 void cD3DFramework::Close()
 {		
 	
-	SAFE_DELETE( m_pSceneMng );
+//	SAFE_DELETE( m_pView );
 	SAFE_DELETE( m_pResourceMng );
 	SAFE_DELETE( m_pInput );
 
@@ -96,93 +92,49 @@ void cD3DFramework::Run()
  		{
 			m_CurrFrameTime=GetTickCount();		
 			m_DeltaFrameTime = m_CurrFrameTime - m_PrevFrameTime;
-			m_AccumFrameTime += m_DeltaFrameTime;
-			ProcessControlableList();						// Input
-			ProcessProgressableList(m_DeltaFrameTime);		// Update
-			ProcessRenderableList();						// Render
+			m_AccumFrameTime += m_DeltaFrameTime;			
+			Control();
+			Update(m_DeltaFrameTime);		// Update
+			Render();						// Render
 			m_PrevFrameTime=m_CurrFrameTime;
 		} 		
  	}	
 }
 
-void cD3DFramework::ProcessControlableList()
+void cD3DFramework::Control()
 {
 	std::list<IControlable*>::iterator it_control=m_listControlable.begin();
 	for ( ;it_control!=m_listControlable.end() ; ++it_control )
 	{
 		(*it_control)->Control();
-	}	
-	
+	}
 }
 
-
-void cD3DFramework::ProcessProgressableList(DWORD elapseTime)
-{	
+void cD3DFramework::Update(DWORD elapseTime)
+{
 	std::list<IUpdatable*>::iterator it=m_listProgressable.begin();
-
-	
-
 	for ( ;it!=m_listProgressable.end() ; ++it )
 	{
 		(*it)->Update(elapseTime);
 	}		
 }
 
-void cD3DFramework::ProcessRenderableList()
+void cD3DFramework::Render()
 {
-	m_pD3DDevice->SetViewport(&m_pD3D9Server->m_BaseViewPort);
-
-	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
-	m_pD3DDevice->BeginScene();
-
+	m_pView->SetViewPort();
+	D3D9::Server::g_pServer->Begin();
+	int temp = m_FpsMng.GetFPS();
+	std::ostringstream stream;
+	stream << "FPS " << temp;
+	D3D9::Server::g_pServer->RenderDebugString(stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
 	{
-		(*it)->ProcessRender();
+		(*it)->ProcessRender();	
 	}
 
-	int temp = m_FpsMng.GetFPS();
-	std::ostringstream stream;
-	stream << "FPS " << temp;
-
-	m_pD3D9Server->RenderDebugString(stream.str().c_str());
-
-
-
-	for (int i=0;i<16;i++)
-	{
-		// 여기선 렌더큐들만 그린다
-		UINT passes = 0;
-		D3D9::Server::g_pServer->GetEffect()->SetTechnique(m_listRenderQueue[i].m_hTechnique);
-		D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
-		D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
-		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-
-		m_listRenderQueue[i].Render();
-
-		D3D9::Server::g_pServer->GetEffect()->EndPass();
-		D3D9::Server::g_pServer->GetEffect()->End();
-	}
-
-	for (int i=0;i<16;i++)
-	{
-		// 여기선 렌더큐들만 그린다
-		UINT passes = 0;
-		D3D9::Server::g_pServer->GetEffect()->SetTechnique(m_listRenderQueueSkinned[i].m_hTechnique);
-		D3D9::Server::g_pServer->GetEffect()->Begin(&passes, 0);
-		D3D9::Server::g_pServer->GetEffect()->BeginPass(0);
-		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-
-		m_listRenderQueueSkinned[i].Render();
-
-		D3D9::Server::g_pServer->GetEffect()->EndPass();
-		D3D9::Server::g_pServer->GetEffect()->End();
-
-	}
-
-	m_pD3DDevice->EndScene();
-	m_pD3DDevice->Present( NULL, NULL, NULL, NULL );	
+	D3D9::Server::g_pServer->End();
 }
 
 
@@ -350,15 +302,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	if ((WM_KEYFIRST < msg.message)&&(msg.message < WM_KEYLAST))
 	{
-		bProcess=g_pD3DFramework->OnWM_Keyboard(msg);		
+		bProcess=g_pApp->OnWM_Keyboard(msg);		
 	}
 	else if ((WM_MOUSEFIRST < msg.message)&&(msg.message < WM_MOUSELAST))
 	{
-		bProcess=g_pD3DFramework->OnWM_Mouse(msg);
+		bProcess=g_pApp->OnWM_Mouse(msg);
 	}
 	else
 	{
-		bProcess=g_pD3DFramework->OnWM_General(msg);	
+		bProcess=g_pApp->OnWM_General(msg);	
 	}
 
 	// 처리 안된 메세지만 처리한다.

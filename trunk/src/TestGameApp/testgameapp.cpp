@@ -6,20 +6,17 @@
 
 #include "Scene/ViewMng.h"
 #include "TestView.h"
-#include "MenuView.h"
-#include "GlobalView.h"
 #include "Framework/D3DFramework.h"
 #include "D3D9Server/Server.h"
 #include "D3D9Server/MaterialEx.h"
+#include "Foundation/HeapValidator.h"
 
 using namespace D3D9;
 
 TestGameApp::TestGameApp( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight)
 :cD3DFramework(szTitleName,bFullScreen,nWidth,nHeight)
 {
-	m_pMenuScene=NULL;
-	m_pTestScene=NULL;
-	m_pGlobalScene=NULL;
+
 	
 }
 
@@ -49,50 +46,21 @@ bool TestGameApp::Open()
 	std::string strHLSL=Path;
 	strHLSL+= "hlsl.fx";
 	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
+	
+	m_pView = new cTestView;
+	m_pView->SetViewPortInfo(0,0,GetRequestRectWidth(),GetRequestRectHeight());
+	AttachObject(m_pView);
+	m_pView->Enter();
 
-	std::bitset<Material::MAX> indexRenderQueue;
-
-	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhong;
-
-	indexRenderQueue.set(Material::DIFFUSE);
-	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
-
-	indexRenderQueue.set(Material::NORMAL);
-	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuseBump;
-
-	indexRenderQueue.reset(Material::NORMAL);
-	indexRenderQueue.set(Material::LIGHT);
-	g_pD3DFramework->m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuseLight;
-
-	for (int i=0;i<16;i++)
-	{	
-		if (g_pD3DFramework->m_listRenderQueue[i].m_hTechnique == NULL )	
-			g_pD3DFramework->m_listRenderQueue[i].m_hTechnique = m_pD3D9Server->m_hTPhongDiffuse;
-	}
-
-	indexRenderQueue.reset();
-	g_pD3DFramework->m_listRenderQueueSkinned[indexRenderQueue.to_ulong()].m_hTechnique = m_pD3D9Server->m_hTSkinningPhong;
-	for (int i=0;i<16;i++)
-	{	
-		if (g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique == NULL )	
-			g_pD3DFramework->m_listRenderQueueSkinned[i].m_hTechnique = m_pD3D9Server->m_hTSkinningPhongDiffuse;
-	}
-		
-
-//	m_pMenuScene = new cMenuView;
-	m_pTestScene = new cTestView;
-//	m_pGlobalScene = new cGlobalView;
-	GetSceneMng()->ChangeTopScene((cView*)m_pTestScene);
-//	AttachObject(m_pGlobalScene);
+	
 	return true;
 }
 
 void TestGameApp::Close()
 {
-//	delete  m_pGlobalScene;	
-	delete	m_pTestScene;
-//	delete	m_pMenuScene;
-
+	m_pView->Leave();
+	DettachObject(m_pView);
+	SAFE_DELETE(m_pView);
 	cD3DFramework::Close();
 }
 
@@ -134,7 +102,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   LPTSTR    lpCmdLine,
 					   int       nCmdShow)
 {
-	//HeapValidator::SetDbgFlag();
+	HeapValidator::SetDbgFlag();
 	//HeapValidator::SetBreakAlloc(53612);	
 	
 	char buffer[256];
@@ -147,6 +115,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	}
 	TestGameApp.Close();
 	
-	//HeapValidator::CheckMemory();
+	HeapValidator::CheckMemory();
 	return 0;
 }

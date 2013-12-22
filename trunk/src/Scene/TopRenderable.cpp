@@ -15,7 +15,10 @@ cTopRenderable::~cTopRenderable()
 void cTopRenderable::ProcessRender()
 {
 	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
-	CullRendererIntoRendererQueue(pActiveCamera);
+	if (pActiveCamera)
+	{
+		CullRendererIntoRendererQueue(pActiveCamera);
+	}	
 }
 
 

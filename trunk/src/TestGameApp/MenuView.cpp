@@ -15,57 +15,55 @@ cMenuView::cMenuView(void)
 	SetViewPortInfo(0,0,1024,768);
 	m_bControlCamera=FALSE;
 
-	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-	
- 	m_pZTerrain = new ZTerrain;
- 	
-	
-	
- 	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
-		std::string(strDataPath+"map129.bmp").c_str(),
-		std::string(strDataPath+"ground.bmp").c_str()
-		);
- 	AttachObject(m_pZTerrain);
-	
 
-
- 	m_pTank = new cObjTank;
- 	cASEParser parser;
- 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
-	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
- 	
-	
-	m_pTank->BuildComposite();
- 	m_pTank->Init();
- 	AttachObject(m_pTank);
 
 }
 
 cMenuView::~cMenuView(void)
 {
- 	DettachObject(m_pZTerrain);
- 	SAFE_DELETE(m_pZTerrain);
 
-	
-	DettachObject(m_pTank);
-	SAFE_DELETE(m_pTank);	
 }
 
-void cMenuView::Open( void* arg )
+void cMenuView::Enter()
 {
 	m_Camera.SetActive();
 	m_Camera.SetPerspective(D3DXToRadian(45),1.0f,10000.0f,
-		(float)g_pD3DFramework->GetRequestRectWidth(),(float)g_pD3DFramework->GetRequestRectHeight());
+		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
 	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 100.0f, -950.0f),
 		&D3DXVECTOR3(0.0f, -1.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
+	m_pZTerrain = new ZTerrain;	
+
+	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
+		std::string(strDataPath+"map129.bmp").c_str(),
+		std::string(strDataPath+"ground.bmp").c_str()
+		);
+	AttachObject(m_pZTerrain);
+
+
+
+	m_pTank = new cObjTank;
+	cASEParser parser;
+	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
+	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
+
+
+	m_pTank->BuildComposite();
+	m_pTank->Init();
+	AttachObject(m_pTank);
 }
 
-void cMenuView::Close()
+void cMenuView::Leave()
 {
+	DettachObject(m_pZTerrain);
+	SAFE_DELETE(m_pZTerrain);
 
+
+	DettachObject(m_pTank);
+	SAFE_DELETE(m_pTank);	
 }
 
 void cMenuView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )

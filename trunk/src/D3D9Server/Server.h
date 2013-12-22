@@ -23,7 +23,8 @@ public:
 	static Server* g_pServer;
 
 	// D3D 변수추가	
-	D3DVIEWPORT9			m_BaseViewPort;
+	D3DVIEWPORT9			m_viewPortInfo;
+	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
 	D3DPRESENT_PARAMETERS	m_D3DPP;         // Parameters for CreateDevice/Reset
 	LPDIRECT3D9				m_pD3D9;
 	LPD3DXFONT				m_pFont;

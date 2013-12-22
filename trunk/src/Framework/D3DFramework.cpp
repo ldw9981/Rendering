@@ -121,7 +121,6 @@ void cD3DFramework::Update(DWORD elapseTime)
 
 void cD3DFramework::Render()
 {
-	m_pView->SetViewPort();
 	D3D9::Server::g_pServer->Begin();
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;

@@ -72,7 +72,7 @@ bool Server::Init()
 
 	m_pD3DDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
 
-	m_pD3DDevice->GetViewport(&m_BaseViewPort);
+	m_pD3DDevice->GetViewport(&m_viewPortInfo);
 
 	D3DMATERIAL9 mtrl;	
 	ZeroMemory(&mtrl,sizeof(D3DMATERIAL9));
@@ -241,6 +241,7 @@ void Server::Render()
 
 void Server::Begin()
 {
+	m_pD3DDevice->SetViewport(&m_viewPortInfo);
 	m_pD3DDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pD3DDevice->BeginScene();	
 }

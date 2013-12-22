@@ -46,41 +46,22 @@ cCameraNode::~cCameraNode(void)
 */
 void cCameraNode::Render()
 {	
-#ifdef _DEBUG
-//	if (m_pActiveCamera!=this)
-//	{
-//		g_pD3DFramework->GetDebugInfoScene()->AddDebugstd::string("cScene내부에서 ActiveCamera를 얻어 Render를 호출해야한다.\n");
-//	}
-#endif
 
-	if (m_bViewModified)
-	{		
 		D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
 		D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
 		D3D9::Server::g_pServer->GetEffect()->SetVector(D3D9::Server::g_pServer->m_hvWorldCameraPosition,&pos);
-	}	
-	if ( m_bProjectionModified)
-	{
+
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
-
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmProjection,&m_matProjection);
+			
 
-		
-	}		
-
-	//둘중 하나라도 바뀌었다면 월드프러스텀 플랜을 다시만든다.
-	if (m_bProjectionModified || m_bViewModified)
-	{	
 		m_matViewProjection = m_matView * m_matProjection;				
-		m_bProjectionModified=FALSE;
-		m_bViewModified=FALSE;
 
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
 		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 
 		MakeWorldFrustum();	
-	}		
 }
 
 /*

@@ -11,8 +11,8 @@ cDebugInfoView::cDebugInfoView()
 	m_pFont = new cGUIFont;
 	m_bRender = true;
 	SetViewPortInfo(0,0,
-		g_pD3DFramework->GetRequestRectWidth(),
-		g_pD3DFramework->GetRequestRectHeight());
+		g_pApp->GetRequestRectWidth(),
+		g_pApp->GetRequestRectHeight());
 	m_pInstance = this;
 }
 
@@ -21,12 +21,12 @@ cDebugInfoView::~cDebugInfoView()
 	SAFE_DELETE(m_pFont);
 }
 
-void cDebugInfoView::Open( void* arg )
+void cDebugInfoView::Enter( void* arg )
 {
 	
 }
 
-void cDebugInfoView::Close()
+void cDebugInfoView::Leave()
 {
 
 }

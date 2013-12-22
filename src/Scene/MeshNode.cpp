@@ -211,7 +211,8 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 void cMeshNode::QueueRenderer()
 {
 	int i = m_Matrial.index_renderer_queue();
-	g_pD3DFramework->m_listRenderQueue[i].Insert(this);
+	
+	D3D9::Server::g_pServer->m_listRenderQueue[i].Insert(this);
 }
 
 void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,

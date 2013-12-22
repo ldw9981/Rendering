@@ -21,8 +21,8 @@ private:
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
 public:	
-	virtual void Open(void* arg);
-	virtual void Close();
+	virtual void Enter();
+	virtual void Leave();
 
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender();

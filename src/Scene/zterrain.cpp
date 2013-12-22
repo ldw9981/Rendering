@@ -229,8 +229,7 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 }
 
 void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
-{
-	
+{	
 	if (m_pCullingSphere!=NULL)
 	{			
 		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pCullingSphere);

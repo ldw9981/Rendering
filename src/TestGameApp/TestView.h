@@ -8,6 +8,13 @@ class cObjDragon;
 class cObjTank;
 class cGUIButton;
 class cBackWall;
+
+
+class TestStateA;
+class TestStateB;
+class cGlobalView;
+
+
 class cTestView :
 	public cView
 {
@@ -15,17 +22,16 @@ public:
 	cTestView(void);
 	virtual ~cTestView(void);
 private:
+	TestStateA*	m_pTestStateA;
+	TestStateB*	m_pTestStateB;
 	cCameraNode			m_Camera;
-	cObjDragon*			m_pDragon;
-	cObjTank*			m_pTank;
+public:
+	cGlobalView* m_pGlobalButtonScene;
 	cObjTank*			m_pP38;
-	cObjTank*			m_pAirPlaneBake;
-
-	BOOL		m_bControlCamera;
 public:
 	// cScene
-	virtual void Open(void* arg);
-	virtual void Close();
+	virtual void Enter();
+	virtual void Leave();
 	// cIControlable
 	virtual void Control();
 	

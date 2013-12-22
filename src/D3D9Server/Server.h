@@ -1,7 +1,7 @@
 #pragma once
 #include "Framework/StaticHWND.h"
 #include "D3D9Server/StaticD3DDevice9.h"
-
+#include "Scene/RendererQueue.h"
 
 
 
@@ -52,6 +52,10 @@ public:
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
+
+	cRendererQueue			m_listRenderQueue[16];
+	cRendererQueue			m_listRenderQueueSkinned[16];
+
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	
 
@@ -62,6 +66,10 @@ public:
 	
 	void RenderDebugString(const char* szText);
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
+
+	void Render();
+	void Begin();
+	void End();
 };
 	
 

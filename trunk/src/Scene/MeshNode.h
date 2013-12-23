@@ -47,7 +47,7 @@ public:
 
 
 	void					CullRendererIntoRendererQueue(cCameraNode* pActiveCamera );
-	virtual void			QueueRenderer();
+	virtual void			QueueRenderer(bool bTraversal);
 
 	void					CalculateTangentBinormal();
 	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,

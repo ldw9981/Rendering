@@ -54,6 +54,12 @@ float gSpecularPower = 32;
 const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
 float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 
+struct VS_TERRAIN_INPUT
+{
+   float4 mPosition : POSITION;
+   float3 mNormal : NORMAL;    
+   float2 mTexCoord : TEXCOORD0;    
+};
 
 struct VS_PHONG_DIFFUSE_INPUT
 {
@@ -103,6 +109,27 @@ struct VS_PHONG_DIFFUSE_BUMP_OUTPUT
 };
 
 
+VS_PHONG_DIFFUSE_OUTPUT vs_Terrain( VS_TERRAIN_INPUT input)
+{
+   VS_PHONG_DIFFUSE_OUTPUT output;
+   output.mPosition = mul(input.mPosition , gWorldMatrix);
+   output.mPosition = mul(output.mPosition , gViewMatrix);
+   output.mPosition = mul(output.mPosition , gProjectionMatrix);
+   
+   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
+   float3 worldNormal = mul(input.mNormal,(float3x3)gWorldMatrix);
+   worldNormal = normalize(worldNormal);
+      
+   output.mLambert = dot(-lightDir, worldNormal);
+   output.mNormal = worldNormal;
+   output.mCameraDir = cameraDir;
+   output.mReflect = reflect(lightDir, worldNormal);
+   output.mTexCoord = input.mTexCoord;   
+   output.mTexCoord1 = input.mTexCoord;   
+   return output;
+}
+
 
 
 VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
@@ -125,8 +152,6 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
    output.mTexCoord1 = input.mTexCoord1;   
    return output;
 }
-
-
 
 
 
@@ -342,6 +367,17 @@ technique TPhong
         PixelShader  = compile ps_2_0 ps_Phong();
     }  
 }
+
+technique TTerrain
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 vs_Terrain();
+        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+    }  
+}
+
 
 technique TPhongDiffuse
 {

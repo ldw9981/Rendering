@@ -86,19 +86,11 @@ public:
 	void				RenderChildren();
 	void				FreeChildren();
 
-	void				SetCullingSphere(cSphere& Sphere);
-	cSphere*			GetCullingSphere() const { return m_pCullingSphere; }
-	cSphere*			CreateCullingSphere();
-
 	void				SetBoundingSphere(cSphere& Sphere);
 	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
-	cSphere*			CreateBoundingSphere();
-
-	void				UpdateParentCullingSphere(cSphere& Sphere);
 
 	//					순회 하면서 Renderer들을 큐에 넣는다.
 	virtual void		CullRendererIntoRendererQueue(cCameraNode* pActiveCamera);
-	void				PushTraversal( cCameraNode* pActiveCamera,WORD testPlane=0 );
 	
 	cSceneNode&	operator=(const cSceneNode& other);
 
@@ -115,7 +107,7 @@ public:
 	virtual void		SerializeIn(std::fstream& in);
 	virtual void		SerializeOut(std::fstream& out);
 
-	virtual void		QueueRenderer();
+	virtual void		QueueRenderer(bool bTraversal);
 
 	
 };

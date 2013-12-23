@@ -80,10 +80,11 @@ private:
 	/// 정점, 인덱스 버퍼를 생성한다.
 	HRESULT		_CreateVIB();
 
-	/// 화면에 지형을 출력한다.
-	virtual void	Render();
-public:
 
+public:
+	/// 화면에 지형을 출력한다.
+	virtual void    ProcessRender();
+	virtual void	Render();
 	virtual	void	Update(DWORD elapseTime);
 
 	/// x, z위치의 정점값을 얻어낸다.
@@ -113,8 +114,6 @@ public:
 	HRESULT		FillIndexBuffer();
 
 	TERRAINVERTEX* GetHeightMap() const { return m_pvHeightMap; }
-
-	virtual void		CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
 };
 
 #endif // _ZTERRAIN_H_

@@ -55,26 +55,19 @@ bool cD3DFramework::Open()
 	InitWindow();
 	ShowWindow(m_hWnd, SW_SHOWNORMAL);
 	UpdateWindow(m_hWnd);
-
-//	InitD3D();
-
 	m_pD3D9Server = new D3D9::Server;
-	m_pD3D9Server->Init();
+	
+	m_pD3D9Server->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new cWinInput;
 	m_pResourceMng = new cResourceMng;
-//	m_pView = new cView;
-//	m_pView->SetViewPortInfo(0,0,GetRequestRectWidth(),GetRequestRectHeight());
 
 	AttachObject(m_pInput);
-//	AttachObject(m_pView);
 	return true;
 }
 
 void cD3DFramework::Close()
 {		
-	
-//	SAFE_DELETE( m_pView );
 	SAFE_DELETE( m_pResourceMng );
 	SAFE_DELETE( m_pInput );
 
@@ -125,7 +118,7 @@ void cD3DFramework::Render()
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
 	stream << "FPS " << temp;
-	D3D9::Server::g_pServer->RenderDebugString(stream.str().c_str());
+	D3D9::Server::g_pServer->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )

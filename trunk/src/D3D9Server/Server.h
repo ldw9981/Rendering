@@ -34,6 +34,7 @@ public:
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationBlend;
 	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
+	D3DXHANDLE				m_hTerrain;// 테크닉
 	D3DXHANDLE				m_hTPhong;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseLight;
@@ -56,16 +57,17 @@ public:
 
 	cRendererQueue			m_listRenderQueue[16];
 	cRendererQueue			m_listRenderQueueSkinned[16];
+	cRendererQueue			m_listRenderTerrain;
 
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	
 
-	bool Init();
+	bool Init(bool bWindowed,int width,int height);
 	void Uninit();
 	
 	void LoadHLSL(const char* szFileName);
 	
-	void RenderDebugString(const char* szText);
+	void RenderDebugString(int x,int y,const char* szText);
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
 
 	void Render();

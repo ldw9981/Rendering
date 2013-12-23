@@ -21,7 +21,10 @@ cLexer::cLexer(const char* p_FileName, DWORD p_SizeOfBuffer)
 
 cLexer::~cLexer()
 {
-	Close();
+	if(m_File != NULL)
+	{
+		Close();
+	}
 }
 
 CHAR cLexer::GetNextChar()

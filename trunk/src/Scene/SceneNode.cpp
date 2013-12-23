@@ -38,9 +38,7 @@ cSceneNode::~cSceneNode(void)
 		delete *it;
 	}	
 	m_listChildNode.clear();
-
-	SAFE_DELETE(m_pCullingSphere);
-
+	
 	if( m_pRscTransformAnm !=NULL )
 		m_pRscTransformAnm->Release();
 }
@@ -189,30 +187,9 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 	m_listChildNode.erase(pItem->m_ParentListIt);
 }
 
-
-cSphere* cSceneNode::CreateCullingSphere()
-{
-	SAFE_DELETE(m_pCullingSphere);
-	m_pCullingSphere = new cSphere;
-	return m_pCullingSphere;
-}
-
 /*
 부모 중에 BS인 노드를 찾아 자신을 포함하는 BS로 갱신한다. 
 */
-void cSceneNode::UpdateParentCullingSphere(cSphere& Sphere)
-{
-	cSceneNode* pNode=this;
-	do 
-	{
-		pNode = pNode->GetParentNode();
-		if (pNode==NULL)
-			return;
-
-	} while(pNode->GetCullingSphere()==NULL);
-
-	pNode->GetCullingSphere()->Merge(Sphere);	
-}
 
 // 기본적기능
 // bRender체크후 자식만 돌자.
@@ -226,23 +203,6 @@ void cSceneNode::CullRendererIntoRendererQueue( cCameraNode* pActiveCamera )
 }
 
 
-/*
-	순회를하면서 cIRenderer를 큐에 넣는다. 
-*/
-void cSceneNode::PushTraversal( cCameraNode* pActiveCamera,WORD testPlane/*=0 */ )
-{
-	if (!m_bRender)
-	{
-		goto children;
-	}	
-	QueueRenderer();
-children:
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->PushTraversal(pActiveCamera,testPlane);
-	}
-}
 
 void cSceneNode::BuildComposite()
 {
@@ -299,15 +259,7 @@ void cSceneNode::SetBoundingSphere( cSphere& Sphere )
 	m_BoundingSphere = Sphere;	
 }
 
-void cSceneNode::SetCullingSphere( cSphere& Sphere )
-{
-	if (m_pCullingSphere)
-	{
-		*m_pCullingSphere = Sphere;
-	}
-}
-
-void cSceneNode::QueueRenderer()
+void cSceneNode::QueueRenderer(bool bTraversal)
 {
 
 }

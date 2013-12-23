@@ -19,14 +19,24 @@ Server::Server(void)
 		m_listRenderQueue[i].m_hTechnique = NULL;
 		m_listRenderQueueSkinned[i].m_hTechnique = NULL;
 	}
+	m_viewPortInfo.X = 0;
+	m_viewPortInfo.Y = 0;
+	m_viewPortInfo.Width = 1024;
+	m_viewPortInfo.Height = 768;	
+	m_viewPortInfo.MinZ = 0.0f;
+	m_viewPortInfo.MaxZ = 1.0f;
+
 }
 
 Server::~Server(void)
 {
 }
 
-bool Server::Init()
+bool Server::Init(bool bWindowed,int width,int height)
 {
+	m_viewPortInfo.Width = width;
+	m_viewPortInfo.Height = height;
+
 	char szTemp[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,szTemp);
 
@@ -36,17 +46,18 @@ bool Server::Init()
 
 	// 2) Device를 생성을 위한 Parameter를 설정한다.
 	memset(&m_D3DPP,0,sizeof(m_D3DPP));
-#ifdef _DEBUG
-
-	m_D3DPP.Windowed	 = true;
-	m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;
-#else 
-	m_D3DPP.Windowed	 = false;
-	m_D3DPP.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
-	m_D3DPP.BackBufferWidth = 1024;    // set the width of the buffer
-	m_D3DPP.BackBufferHeight = 768;    // set the height of the buffer
-#endif
-
+	if(bWindowed)
+	{
+		m_D3DPP.Windowed	 = true;
+		m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;
+	}
+	else
+	{
+		m_D3DPP.Windowed	 = false;
+		m_D3DPP.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
+		m_D3DPP.BackBufferWidth = m_viewPortInfo.Width;    // set the width of the buffer
+		m_D3DPP.BackBufferHeight = m_viewPortInfo.Height;    // set the height of the buffer
+	}
 	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; 
 	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
 	
@@ -71,8 +82,6 @@ bool Server::Init()
 		MessageBox(NULL,"Call to CreateDevice failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
 
 	m_pD3DDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-
-	m_pD3DDevice->GetViewport(&m_viewPortInfo);
 
 	D3DMATERIAL9 mtrl;	
 	ZeroMemory(&mtrl,sizeof(D3DMATERIAL9));
@@ -120,23 +129,18 @@ void Server::Uninit()
 }
 
 
-void Server::RenderDebugString(const char* szText)
-{
-	
-	m_pNewFont->DrawText(0,0,szText);
+void Server::RenderDebugString(int x,int y,const char* szText)
+{	
+	m_pNewFont->DrawText(x,y,szText);
 }
 
 void Server::LoadHLSL(const char* szFileName)
 {
-
-
 	if (!szFileName)
 	{
 		return;
 	}
 
-
-	// ★셰이더 읽기
 	HRESULT hr;
 	LPD3DXBUFFER pErr=NULL;
 	if( FAILED( hr = D3DXCreateEffectFromFile(m_pD3DDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION , NULL, &m_pEffect, &pErr )))
@@ -149,6 +153,7 @@ void Server::LoadHLSL(const char* szFileName)
 	D3DXEFFECT_DESC desc;
 	hr = m_pEffect->GetDesc(&desc);
 	
+	m_hTerrain = m_pEffect->GetTechniqueByName( _T("TTerrain") );
 	m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
 	m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
 	m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
@@ -200,7 +205,7 @@ void Server::LoadHLSL(const char* szFileName)
 			m_listRenderQueueSkinned[i].m_hTechnique = m_hTSkinningPhongDiffuse;
 	}
 
-
+	m_listRenderTerrain.m_hTechnique = m_hTerrain;
 }
 
 void Server::Render()
@@ -236,7 +241,16 @@ void Server::Render()
 
 	}
 
+	UINT passes = 0;
+	m_pEffect->SetTechnique(m_listRenderTerrain.m_hTechnique);
+	m_pEffect->Begin(&passes, 0);
+	m_pEffect->BeginPass(0);
+	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 
+	m_listRenderTerrain.Render();
+
+	m_pEffect->EndPass();
+	m_pEffect->End();
 }
 
 void Server::Begin()

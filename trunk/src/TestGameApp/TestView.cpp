@@ -93,9 +93,6 @@ void cTestView::Control()
 		TestGameApp* p=(TestGameApp*)g_pApp;
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
-		
-		DettachObject(m_pP38);
-		SAFE_DELETE(m_pP38);
 	}
 }
 
@@ -106,13 +103,16 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
 
-		if (GetState().IsCurr(std::string("TestStateB")))
+		if (GetState().IsCurr(std::string("TestStateA")))
 		{
-			GetState().Transite(std::string("TestStateA"));
+			GetState().Transite(std::string("TestStateB"));
 		}
 		else 
 		{
-			GetState().Transite(std::string("TestStateB"));
+			DettachObject(m_pP38);
+			SAFE_DELETE(m_pP38);
+
+			GetState().Transite(std::string("TestStateA"));
 		}	
 	
 	}

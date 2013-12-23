@@ -10,6 +10,7 @@
 #include "Foundation/Define.h"
 #include "D3D9Server/Server.h"
 
+
 /// 생성자
 ZTerrain::ZTerrain()
 {
@@ -59,10 +60,7 @@ HRESULT	ZTerrain::Create( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, cons
 	m_pQuadTree = new ZQuadTree( this,0,m_cxDIB - 1,m_cxDIB * ( m_czDIB - 1 ), m_cxDIB * m_czDIB - 1 );
 	AttachChildNode(m_pQuadTree);
 
-	CreateCullingSphere();
-	(*GetCullingSphere())=*m_pQuadTree->GetCullingSphere();
-
-	m_BoundingSphere = *m_pQuadTree->GetCullingSphere();
+	m_BoundingSphere = m_pQuadTree->GetBoundingSphere();
 
 	return S_OK;
 }
@@ -166,29 +164,11 @@ HRESULT	ZTerrain::_CreateVIB()
 /// 화면에 지형을 출력한다.
 void	ZTerrain::Render()
 {	
-	return;
-
-	FillIndexBuffer();
+	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
-
-//	m_pD3DDevice->SetTexture( 0, m_pTex );								// 0번 텍스쳐 스테이지에 텍스쳐 고정(색깔맵)
-
 	//텍스쳐 적용
-	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_pTex);
-	
-
-	m_pD3DDevice->SetSamplerState( 0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR );	// 0번 텍스처 스테이지의 확대 필터
- 	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_TEXCOORDINDEX, 0 );		// 0번 텍스처 : 0번 텍스처 인덱스 사용
- 	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP,   D3DTOP_MODULATE);
- 	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
- 	m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-
-	
-
-
-	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
-	//m_pD3DDevice->SetTransform(D3DTS_WORLD, &GetWorldTM() );	
+	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_pTex);	
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 
@@ -206,8 +186,13 @@ HRESULT ZTerrain::FillIndexBuffer()
 	m_pQuadTree->GenTriIndex(pCamera, m_nTriangles, pI );
 	m_pRscIndexBuffer->Unlock();
 
-//	g_pD3DFramework->GetDebugInfoScene()->AddDebugstd::string(_T("tri %d\n"),m_nTriangles);
-	
+
+
+	char temp[256];
+	itoa(m_nTriangles,temp,10);
+	D3D9::Server::g_pServer->RenderDebugString(0,20,temp);
+
+
 	return S_OK;
 }
 
@@ -228,33 +213,9 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-void ZTerrain::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
-{	
-	if (m_pCullingSphere!=NULL)
-	{			
-		int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pCullingSphere);
-		if( ret == cCollision::OUTSIDE)
-		{	//  밖에 있는것이면 노드순회 없음
-			return;
-		}
-		else if (ret == cCollision::INSIDE)
-		{	// 완전히 내부면 자식은 모두 큐에 넣고 순회없음
-			PushTraversal(pActiveCamera);
-			return;
-		}
-	}
-
-		// cCollision::INTERSECT 겹치면 자신의 바운딩 스피어랑 검사. 
-	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
-	if( ret != cCollision::OUTSIDE)	// INTERSECT or INSIDE는 큐에 넣는다.
-	{	
-		QueueRenderer();				
-	}	
-	
-
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
-	}
+void ZTerrain::ProcessRender()
+{
+	FillIndexBuffer();
+	D3D9::Server::g_pServer->m_listRenderTerrain.Insert(this);
 }
+

@@ -28,8 +28,6 @@ cMeshNode::cMeshNode(void)
 
 	m_nStartIndex=0;
 	m_nPrimitiveCount=0;
-
-	CreateCullingSphere();
 }
 
 cMeshNode::~cMeshNode(void)
@@ -154,34 +152,26 @@ void cMeshNode::BuildComposite()
 	cSceneNode::BuildComposite();	
 }
 
+/*
+	겹치면 자식까지 그냥 다 그린다. 밖이면 자식검사
+*/
 void cMeshNode::CullRendererIntoRendererQueue(cCameraNode* pActiveCamera )
-{	
+{
+	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(&m_BoundingSphere);
+	if( retCS != cCollision::OUTSIDE)
+	{			
+		if (m_bRender)
+		{
+			QueueRenderer(true);
+			return;
+		}
+	}	
+
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
 		(*it_child)->CullRendererIntoRendererQueue(pActiveCamera);
 	}
-
-	if (!m_bRender)
-		return;
-
-	// 자식노드에의해 갱신되는 컬링구가 활성화된 카메라 절두체와 어떤상태인지확인 확인
-	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(&m_BoundingSphere);
-	if( retCS != cCollision::OUTSIDE)
-	{			
-		if (m_vecSubMesh.empty())
-		{
-			QueueRenderer();	
-		}
-		else
-		{
-			std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
-			for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
-			{
-				(*it_sub)->CullRendererIntoRendererQueue(pActiveCamera);
-			}
-		}
-	}	
 }
 
 void cMeshNode::AddMultiSub( cMeshNode* mesh )
@@ -208,11 +198,26 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 	}
 }
 
-void cMeshNode::QueueRenderer()
+void cMeshNode::QueueRenderer(bool bTraversal)
 {
 	int i = m_Matrial.index_renderer_queue();
 	
 	D3D9::Server::g_pServer->m_listRenderQueue[i].Insert(this);
+
+	if (!bTraversal)
+		return;
+
+	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+	{
+		(*it_sub)->QueueRenderer(bTraversal);
+	}
+
+	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->QueueRenderer(bTraversal);
+	}
 }
 
 void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,

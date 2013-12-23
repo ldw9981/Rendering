@@ -60,7 +60,7 @@ ZQuadTree::ZQuadTree(ZTerrain* pTerrain,int tl,int tr,int bl,int br )
 	}	
 
 	// y축값 0.0f인 2차원 컬링 스피어 만들기
-	CreateCullingSphere()->Make(D3DXVECTOR3(tempAxisMin.x,0.0f,tempAxisMin.z),D3DXVECTOR3(tempAxisMax.x,0.0f,tempAxisMax.z));
+	m_BoundingSphere.Make(D3DXVECTOR3(tempAxisMin.x,0.0f,tempAxisMin.z),D3DXVECTOR3(tempAxisMax.x,0.0f,tempAxisMax.z));
 	
 	if(m_bIsLeafNode)
 	{		
@@ -136,7 +136,7 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 {
 	if( !m_bIsLeafNode )
 	{	// 그룹노드일때는 2차원 구로 컬링
-		if ( pCamera->CheckWorldFrustumWithoutYAxis(m_pCullingSphere) == cCollision::OUTSIDE)
+		if ( pCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		
@@ -303,9 +303,7 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 */
 void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
 {
-	return;
-
-	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_pCullingSphere);
+	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
 	if( ret == cCollision::OUTSIDE)
 	{	//  밖에 있는것이면 노드순회 없음
 		printf("d");
@@ -313,7 +311,7 @@ void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cC
 	}
 	else if (ret == cCollision::INSIDE)
 	{	// 완전히 내부면 순회하며 자식은 모두 TOP,BOTTON플랜만 테스한후 큐에 넣는다.
-		PushTraversal(pActiveCamera,PB_TOP|PB_BOTTOM);
+		QueueRenderer(true);
 		return;
 	}			
 	

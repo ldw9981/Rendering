@@ -85,11 +85,11 @@ void TestStateB::Control()
 
 	if (m_pWinInput->IsCurrDn('W'))
 	{
-		m_Camera.SetVelocityPosition(0.0f,0.0f,100.0f);
+		m_Camera.SetVelocityPosition(0.0f,0.0f,200.0f);
 	}
 	else if (m_pWinInput->IsCurrDn('S'))
 	{
-		m_Camera.SetVelocityPosition(0.0f,0.0f,-100.0f);
+		m_Camera.SetVelocityPosition(0.0f,0.0f,-200.0f);
 	}	
 
 

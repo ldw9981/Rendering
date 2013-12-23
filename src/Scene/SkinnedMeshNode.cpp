@@ -166,9 +166,29 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 	m_vecBoneRef = vecBoneRef;
 }
 
-void SkinnedMeshNode::QueueRenderer()
+void SkinnedMeshNode::QueueRenderer(bool bTraversal)
 {
-	int i = m_Matrial.index_renderer_queue();
-	D3D9::Server::g_pServer->m_listRenderQueueSkinned[i].Insert(this);
+	if (m_vecSubMesh.empty())
+	{
+		int i = m_Matrial.index_renderer_queue();
+		D3D9::Server::g_pServer->m_listRenderQueueSkinned[i].Insert(this);
+	}
+	else
+	{
+		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+		{
+			(*it_sub)->QueueRenderer(bTraversal);
+		}
+	}
+	
+	if (!bTraversal)
+		return;
+
+	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->QueueRenderer(bTraversal);
+	}
 }
 

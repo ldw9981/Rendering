@@ -107,6 +107,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 	
 	char buffer[256];
 	::GetCurrentDirectory(256,buffer);
+	OutputDebugString(buffer);
 
 	TestGameApp TestGameApp("TestGameApp",FALSE,1024,768);
 	if(TestGameApp.Open())

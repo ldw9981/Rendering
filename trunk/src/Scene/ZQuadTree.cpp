@@ -305,8 +305,7 @@ void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cC
 {
 	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
 	if( ret == cCollision::OUTSIDE)
-	{	//  밖에 있는것이면 노드순회 없음
-		printf("d");
+	{	//  밖에 있는것이면 노드순회 없음	
 		return;
 	}
 	else if (ret == cCollision::INSIDE)

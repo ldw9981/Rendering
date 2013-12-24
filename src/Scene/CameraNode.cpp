@@ -28,6 +28,7 @@ cCameraNode::cCameraNode()
 	m_ScreenWidth=0.0f;
 	m_ScreenHeight=0.0f;
 
+	m_bProcessInput = false;
 	m_bViewModified=FALSE;
 	m_bProjectionModified=FALSE;
 	
@@ -341,4 +342,49 @@ cCollision::STATE cCameraNode::CheckWorldFrustumWithoutYAxis( cSphere* pSphere )
 	}
 	//안쪽이다.
 	return cCollision::INSIDE;
+}
+
+void cCameraNode::Control()
+{
+	D3DXVECTOR3 vecPos(0.0f,0.0f,0.0f);
+	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
+	if (m_bProcessInput)
+	{
+		if (m_pWinInput->IsCurrDn('W'))
+		{
+			vecPos.z = 200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('S'))
+		{
+			vecPos.z = -200.0f;
+		}	
+		if (m_pWinInput->IsCurrDn('A'))
+		{
+			vecPos.x = -200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('D'))
+		{
+			vecPos.x = 200.0f;
+		}	
+		if (m_pWinInput->IsCurrDn('Q'))
+		{
+			vecRot.y = -45.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('E'))
+		{
+			vecRot.y = 45.0f;
+		}
+
+		if (m_pWinInput->IsCurrDn('R'))
+		{
+			vecRot.x = -45.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('F'))
+		{
+			vecRot.x = 45.0f;
+		}	
+	}	
+
+	SetVelocityPosition(vecPos);	
+	SetVelocityRotation(vecRot);
 }

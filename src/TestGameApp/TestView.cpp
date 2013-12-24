@@ -46,6 +46,7 @@ void cTestView::Enter()
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));		
 
 	m_Camera.SetLocalPos(D3DXVECTOR3(0.0f,0.0f,-1000.0f));
+	m_Camera.SetProcessInput(true);
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	cASEParser parser;
@@ -54,6 +55,7 @@ void cTestView::Enter()
 	parser.Close();
 	m_pP38->BuildComposite();
 	m_pP38->Init();
+	m_pP38->GetVelRotPerSec().y = D3DXToRadian(-45);
 	AttachObject(m_pP38);
 
 	m_pTestStateA = new TestStateA;
@@ -94,12 +96,14 @@ void cTestView::Control()
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
 	}
+	m_Camera.Control();
 }
 
 void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 	if (pSource== m_pGlobalButtonScene->m_pBtNextScene)
 	{
+		m_Camera.SetProcessInput(false);
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
 

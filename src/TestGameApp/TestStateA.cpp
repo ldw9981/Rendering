@@ -131,32 +131,44 @@ void TestStateA::Control()
 		return;
 	}
 
+	D3DXVECTOR3 vecPos(0.0f,0.0f,0.0f);
 	if (m_pWinInput->IsCurrDn('W'))
 	{
-		m_Camera.SetVelocityPosition(0.0f,0.0f,200.0f);
+		vecPos.z = 200.0f;
 	}
 	else if (m_pWinInput->IsCurrDn('S'))
 	{
-		m_Camera.SetVelocityPosition(0.0f,0.0f,-200.0f);
+		vecPos.z = -200.0f;
 	}	
-
-
 	if (m_pWinInput->IsCurrDn('A'))
 	{
-		m_Camera.SetVelocityRotation(0.0f,-45.0f,0.0f);
+		vecPos.x = -200.0f;
 	}
 	else if (m_pWinInput->IsCurrDn('D'))
 	{
-		m_Camera.SetVelocityRotation(0.0f,45.0f,0.0f);
-	}
-	if (m_pWinInput->IsCurrDn('E'))
-	{
-		m_Camera.SetVelocityRotation(-45.0f,0.0f,0.0f);
-	}
-	else if (m_pWinInput->IsCurrDn('C'))
-	{
-		m_Camera.SetVelocityRotation(45.0f,0.0f,0.0f);
+		vecPos.x = 200.0f;
 	}	
+	m_Camera.SetVelocityPosition(vecPos);	
+
+	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
+	if (m_pWinInput->IsCurrDn('Q'))
+	{
+		vecRot.y = -45.0f;
+	}
+	else if (m_pWinInput->IsCurrDn('E'))
+	{
+		vecRot.y = 45.0f;
+	}
+
+	if (m_pWinInput->IsCurrDn('R'))
+	{
+		vecRot.x = -45.0f;
+	}
+	else if (m_pWinInput->IsCurrDn('F'))
+	{
+		vecRot.x = 45.0f;
+	}	
+	m_Camera.SetVelocityRotation(vecRot);
 
 }
 

@@ -13,6 +13,8 @@ cTransformable::cTransformable( void )
 	m_bModifiedMatWorld = TRUE;
 	m_bModifiedVelocityPos = FALSE;
 	m_bModifiedVelocityRot = FALSE;
+	m_velPosPerSec = D3DXVECTOR3(0.0f,0.0f,0.0f);
+	m_velRotPerSec = D3DXVECTOR3(0.0f,0.0f,0.0f);
 }
 
 cTransformable::~cTransformable( void )
@@ -109,25 +111,25 @@ void cTransformable::Update( DWORD dwElapseMS )
 	float fElapseSec = float(dwElapseMS) / 1000.0f;
 
 	//D3DXMATRIX tmTemp,tmSCL,tmROT,tmPOS;		
-	if (m_bModifiedVelocityPos)
+
+	D3DXMatrixIdentity(&m_matVelocityPos);
+	D3DXMatrixIdentity(&m_matVelocityRot);
+
+	
+	if( D3DXVec3LengthSq(&m_velPosPerSec) > 0 )
 	{
-		D3DXMatrixTranslation( &m_matVelocityPos, m_velPosPerSec.x * fElapseSec, m_velPosPerSec.y * fElapseSec, m_velPosPerSec.z * fElapseSec );
-		m_bModifiedVelocityPos = FALSE;
-		
+		D3DXMatrixTranslation( &m_matVelocityPos, m_velPosPerSec.x * fElapseSec, m_velPosPerSec.y * fElapseSec, m_velPosPerSec.z * fElapseSec );	
 		m_matLocal = m_matVelocityPos * m_matLocal;	
-		
 		m_bModifiedMatLocal = TRUE;
 	}	
 
-	if (m_bModifiedVelocityRot)
+	if( D3DXVec3LengthSq(&m_velRotPerSec) > 0 )
 	{
-		D3DXMatrixRotationYawPitchRoll( &m_matVelocityRot, m_velRotPerSec.y * fElapseSec, m_velRotPerSec.x * fElapseSec, m_velRotPerSec.z * fElapseSec );
-		m_bModifiedVelocityRot = FALSE;
-
+		D3DXMatrixRotationYawPitchRoll( &m_matVelocityRot, m_velRotPerSec.y * fElapseSec, m_velRotPerSec.x * fElapseSec, m_velRotPerSec.z * fElapseSec );	
 		m_matLocal = m_matVelocityRot * m_matLocal;	
-
 		m_bModifiedMatLocal = TRUE;
 	}	
+	
 }
 
 void cTransformable::SetVelocityPosition( float x,float y,float z )
@@ -138,10 +140,24 @@ void cTransformable::SetVelocityPosition( float x,float y,float z )
 	m_bModifiedVelocityPos = TRUE;
 }
 
+void cTransformable::SetVelocityPosition( D3DXVECTOR3& pos )
+{
+	m_velPosPerSec = pos;
+	m_bModifiedVelocityPos = TRUE;
+}
+
 void cTransformable::SetVelocityRotation( float angleX,float angleY,float angleZ )
 {
 	m_velRotPerSec.x = D3DXToRadian(angleX);
 	m_velRotPerSec.y = D3DXToRadian(angleY);
 	m_velRotPerSec.z = D3DXToRadian(angleZ);	
+	m_bModifiedVelocityRot = TRUE;
+}
+
+void cTransformable::SetVelocityRotation( D3DXVECTOR3& rot )
+{
+	m_velRotPerSec.x = D3DXToRadian(rot.x);
+	m_velRotPerSec.y = D3DXToRadian(rot.y);
+	m_velRotPerSec.z = D3DXToRadian(rot.z);	
 	m_bModifiedVelocityRot = TRUE;
 }

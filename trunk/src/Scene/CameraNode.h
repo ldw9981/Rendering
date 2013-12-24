@@ -2,6 +2,7 @@
 #include "SceneNode.h"
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "Math/CollisionDetector.h"
+#include "WinInput/WinInput.h"
 
 // Plane Bit
 #define PB_LEFT			0x0001
@@ -18,11 +19,14 @@ class cSphere;
 class cRendererQueue;
 class cCameraNode :
 	public cSceneNode,
-	private StaticD3DDEVICE9
+	public IControlable,
+	private StaticD3DDEVICE9,
+	private cStaticWinInput
 {
 public:
 	cCameraNode();
 	virtual ~cCameraNode();
+
 	// Plane Number
 	enum PLANE_NUM { PN_LEFT,PN_RIGHT,PN_TOP,PN_BOTTOM,PN_NEAR,PN_FAR};	
 private:	
@@ -40,7 +44,7 @@ private:
 	float				m_ScreenWidth;
 	float				m_ScreenHeight;
 	
-
+	bool				m_bProcessInput;
 	BOOL				m_bViewModified;
 	BOOL				m_bProjectionModified;	
 	
@@ -52,8 +56,7 @@ public:
 
 	virtual void		Update(DWORD elapseTime);	// 카메라 정보 메트릭스로 뷰변환매트릭스를 만든다.
 	virtual void		Render();
-	
-
+	virtual void		Control();
 
 
 	void				SetLookAt(const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp);
@@ -77,7 +80,8 @@ public:
 	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }
 	cPlane&				GetWorldFrustumPlane(int side);
 	void				SetActive();	
-	
+	bool GetProcessInput() const { return m_bProcessInput; }
+	void SetProcessInput(bool val) { m_bProcessInput = val; }
 
 	static 	cCameraNode* GetActiveCamera()  { return m_pActiveCamera; }
 	static void			SetActiveCamera(cCameraNode* val) { m_pActiveCamera = val; }	

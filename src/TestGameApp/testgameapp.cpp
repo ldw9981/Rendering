@@ -6,6 +6,7 @@
 
 #include "Scene/ViewMng.h"
 #include "TestView.h"
+#include "MenuView.h"
 #include "Framework/D3DFramework.h"
 #include "D3D9Server/Server.h"
 #include "D3D9Server/MaterialEx.h"
@@ -47,7 +48,7 @@ bool TestGameApp::Open()
 	strHLSL+= "hlsl.fx";
 	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
 	
-	m_pView = new cTestView;
+	m_pView = new cMenuView;
 	m_pView->SetViewPortInfo(0,0,GetRequestRectWidth(),GetRequestRectHeight());
 	AttachObject(m_pView);
 	m_pView->Enter();

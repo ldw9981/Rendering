@@ -106,7 +106,7 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 		m_Camera.SetProcessInput(false);
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
-
+		
 		if (GetState().IsCurr(std::string("TestStateA")))
 		{
 			GetState().Transite(std::string("TestStateB"));
@@ -117,8 +117,7 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 			SAFE_DELETE(m_pP38);
 
 			GetState().Transite(std::string("TestStateA"));
-		}	
-	
+		}		
 	}
 	else if (pSource == m_pGlobalButtonScene->m_pBtExit)
 	{

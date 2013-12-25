@@ -5,6 +5,7 @@
 #include "TestGameApp.h"
 #include "Scene/ViewMng.h"
 #include "ObjTank.h"
+#include "ObjDragon.h"
 #include "GUI/GUIButton.h"
 #include "Scene/DebugInfoView.h"
 #include "Framework/EnvironmentVariable.h"
@@ -49,11 +50,37 @@ void cMenuView::Enter()
 	cASEParser parser;
 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
-
-
 	m_pTank->BuildComposite();
 	m_pTank->Init();
 	AttachObject(m_pTank);
+
+	m_pDragon = new cObjDragon;
+	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
+	parser.Close();
+	m_pDragon->BuildComposite();
+	m_pDragon->Init();
+	m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pDragon->SetLocalPos(D3DXVECTOR3(200.0f,200.0f,0.0f));
+	AttachObject(m_pDragon);	
+
+	m_pAirPlaneBake = new cObjTank;	
+	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
+	parser.Close();
+	m_pAirPlaneBake->BuildComposite();
+	m_pAirPlaneBake->Init();
+	m_pAirPlaneBake->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-200.0f,200.0f,0.0f));
+	AttachObject(m_pAirPlaneBake);	
+
+	m_pHouse = new cObjTank;	
+	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pHouse);
+	parser.Close();
+	m_pHouse->BuildComposite();
+	m_pHouse->Init();
+	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,400.0f,0.0f));
+	AttachObject(m_pHouse);
+
 }
 
 void cMenuView::Leave()
@@ -61,9 +88,18 @@ void cMenuView::Leave()
 	DettachObject(m_pZTerrain);
 	SAFE_DELETE(m_pZTerrain);
 
+	DettachObject(m_pHouse);
+	SAFE_DELETE(m_pHouse);	
 
 	DettachObject(m_pTank);
 	SAFE_DELETE(m_pTank);	
+
+	DettachObject(m_pAirPlaneBake);
+	SAFE_DELETE(m_pAirPlaneBake);
+
+	DettachObject(m_pDragon);
+	SAFE_DELETE(m_pDragon);
+
 }
 
 void cMenuView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
@@ -101,6 +137,7 @@ void cMenuView::ProcessRender()
 	cCameraNode* pActiveCamera=cCameraNode::GetActiveCamera();
 	pActiveCamera->Render();
 
+	m_pZTerrain->ProcessRender();
 	cView::ProcessRender();	
 }
 

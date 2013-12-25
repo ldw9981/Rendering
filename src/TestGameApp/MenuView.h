@@ -7,6 +7,7 @@
 class cGUIButton;
 class cObjTank;
 class cTerrainNode;
+class cObjDragon;
 class cMenuView :
 	public cView	
 {
@@ -20,6 +21,9 @@ private:
 	cObjTank*	m_pTank;
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
+	cObjDragon*			m_pDragon;
+	cObjTank*			m_pAirPlaneBake;
+	cObjTank*			m_pHouse;
 public:	
 	virtual void Enter();
 	virtual void Leave();

@@ -136,8 +136,6 @@ void cMenuView::ProcessRender()
 {
 	cCameraNode* pActiveCamera=cCameraNode::GetActiveCamera();
 	pActiveCamera->Render();
-
-	m_pZTerrain->ProcessRender();
 	cView::ProcessRender();	
 }
 

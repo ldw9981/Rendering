@@ -5,6 +5,7 @@
 #include "RscVertexBuffer.h"
 #include "Vertex.h"
 #include "MaterialEx.h"
+#include "Scene/View.h"
 
 namespace D3D9
 {
@@ -16,8 +17,8 @@ Server::Server(void)
 	g_pServer = this;
 	for (int i=0;i<16;i++)
 	{	
-		m_listRenderQueue[i].m_hTechnique = NULL;
-		m_listRenderQueueSkinned[i].m_hTechnique = NULL;
+		m_hTNormal[i] = NULL;
+		m_hTBlend[i] = NULL;
 	}
 	m_viewPortInfo.X = 0;
 	m_viewPortInfo.Y = 0;
@@ -179,47 +180,46 @@ void Server::LoadHLSL(const char* szFileName)
 
 	std::bitset<Material::MAX> indexRenderQueue;
 
-	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhong;
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhong;
 
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuse;
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuse;
 
 	indexRenderQueue.set(Material::NORMAL);
-	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuseBump;
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBump;
 
 	indexRenderQueue.reset(Material::NORMAL);
 	indexRenderQueue.set(Material::LIGHT);
-	m_listRenderQueue[indexRenderQueue.to_ulong()].m_hTechnique = m_hTPhongDiffuseLight;
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLight;
 
 	for (int i=0;i<16;i++)
 	{	
-		if (m_listRenderQueue[i].m_hTechnique == NULL )	
-			m_listRenderQueue[i].m_hTechnique = m_hTPhongDiffuse;
+		if (m_hTNormal[i] == NULL )	
+			m_hTNormal[i] = m_hTPhongDiffuse;
 	}
 
 	indexRenderQueue.reset();
-	m_listRenderQueueSkinned[indexRenderQueue.to_ulong()].m_hTechnique = m_hTSkinningPhong;
+	m_hTBlend[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
 	for (int i=0;i<16;i++)
 	{	
-		if (m_listRenderQueueSkinned[i].m_hTechnique == NULL )	
-			m_listRenderQueueSkinned[i].m_hTechnique = m_hTSkinningPhongDiffuse;
+		if (m_hTBlend[i] == NULL )	
+			m_hTBlend[i] = m_hTSkinningPhongDiffuse;
 	}
-
-	m_listRenderTerrain.m_hTechnique = m_hTerrain;
 }
 
-void Server::Render()
+void Server::Render(cView* pView)
 {
+	pView->SetViewPort();
 	UINT passes = 0;
 	for (int i=0;i<16;i++)
 	{
 		// 여기선 렌더큐들만 그린다		
-		m_pEffect->SetTechnique(m_listRenderQueue[i].m_hTechnique);
+		m_pEffect->SetTechnique(m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
 		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 
-		m_listRenderQueue[i].Render();
+		pView->m_listRenderQueue[i].Render();
 
 		m_pEffect->EndPass();
 		m_pEffect->End();
@@ -228,12 +228,12 @@ void Server::Render()
 	for (int i=0;i<16;i++)
 	{
 		// 여기선 렌더큐들만 그린다	
-		m_pEffect->SetTechnique(m_listRenderQueueSkinned[i].m_hTechnique);
+		m_pEffect->SetTechnique(m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
 		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 
-		m_listRenderQueueSkinned[i].Render();
+		pView->m_listRenderQueueSkinned[i].Render();
 
 		m_pEffect->EndPass();
 		m_pEffect->End();
@@ -241,12 +241,12 @@ void Server::Render()
 	}
 
 	
-	m_pEffect->SetTechnique(m_listRenderTerrain.m_hTechnique);
+	m_pEffect->SetTechnique(m_hTerrain);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);
 	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 
-	m_listRenderTerrain.Render();
+	pView->m_listRenderTerrain.Render();
 
 	m_pEffect->EndPass();
 	m_pEffect->End();

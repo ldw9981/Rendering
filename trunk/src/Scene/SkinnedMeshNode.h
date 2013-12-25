@@ -47,5 +47,5 @@ public:
 	void					LinkToBone();
 
 
-	virtual void			QueueRenderer(bool bTraversal);
+	virtual void			QueueRenderer(cView* pView,bool bTraversal);
 };

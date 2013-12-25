@@ -22,18 +22,22 @@ public:
 	cView(void);
 	virtual ~cView(void);
 	friend class cViewMng;
-private:
+protected:
 	std::list<IRenderable*>		m_RenderableList;
 	std::list<IUpdatable*>		m_ProgressableList;
 	std::list<IControlable*>	m_ControlableList;
 
 	cView*					m_pParentView;				// 부모 씬
-	cTopRenderable			m_TopRenderable;
+	cSceneNode				m_listScene;				// Transform 있는것들
 
 	BOOL					m_bHide;					//입력을 받지않고 그리지않는다.	갱신은 한다.	
 	D3DVIEWPORT9			m_ViewPortInfo;	
 	std::string				m_strName;
 public:
+	cRendererQueue			m_listRenderQueue[16];
+	cRendererQueue			m_listRenderQueueSkinned[16];
+	cRendererQueue			m_listRenderTerrain;
+	cRendererQueue			m_listRenderGUI;
 	cViewMng				m_ViewState;
 public:
 	cViewMng& GetState() { return m_ViewState; }

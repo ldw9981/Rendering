@@ -213,9 +213,13 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-void ZTerrain::ProcessRender()
+void ZTerrain::CullRendererIntoRendererQueue( cView* pView,cCameraNode* pActiveCamera )
 {
 	FillIndexBuffer();
-	D3D9::Server::g_pServer->m_listRenderTerrain.Insert(this);
+	QueueRenderer(pView,false);
 }
 
+void ZTerrain::QueueRenderer( cView* pView,bool bTraversal )
+{
+	pView->m_listRenderTerrain.Insert(this);
+}

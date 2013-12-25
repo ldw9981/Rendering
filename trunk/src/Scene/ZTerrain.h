@@ -35,7 +35,6 @@ class cRscIndexBuffer;
 */
 class ZTerrain:
 	public cSceneNode,
-//	public cIRenderer,
 	public StaticD3DDEVICE9,
 	public cStaticResourceMng
 {
@@ -83,10 +82,10 @@ private:
 
 public:
 	/// 화면에 지형을 출력한다.
-	virtual void    ProcessRender();
+	virtual void	CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
 	virtual void	Render();
 	virtual	void	Update(DWORD elapseTime);
-
+	virtual	void	QueueRenderer(cView* pView,bool bTraversal);
 	/// x, z위치의 정점값을 얻어낸다.
 	TERRAINVERTEX*	GetVertex( int x, int z ) { return (m_pvHeightMap+x+z*m_cxDIB); }
 

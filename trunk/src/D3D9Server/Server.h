@@ -6,6 +6,7 @@
 
 
 class cGUIFont;
+class cView;
 
 namespace D3D9
 {
@@ -54,10 +55,10 @@ public:
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
+	D3DXHANDLE				m_hTNormal[16];
+	D3DXHANDLE				m_hTBlend[16];
 
-	cRendererQueue			m_listRenderQueue[16];
-	cRendererQueue			m_listRenderQueueSkinned[16];
-	cRendererQueue			m_listRenderTerrain;
+
 
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	
@@ -70,7 +71,7 @@ public:
 	void RenderDebugString(int x,int y,const char* szText);
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
 
-	void Render();
+	void Render(cView* pView);
 	void Begin();
 	void End();
 };

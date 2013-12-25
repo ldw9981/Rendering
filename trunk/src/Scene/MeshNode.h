@@ -8,7 +8,7 @@
 #include "D3D9Server/Vertex.h"
 
 class cMeshNode;
-
+class cView;
 
 class cMeshNode:
 	public cSceneNode,
@@ -46,8 +46,8 @@ public:
 	void					AddMultiSub(cMeshNode* mesh);	
 
 
-	void					CullRendererIntoRendererQueue(cCameraNode* pActiveCamera );
-	virtual void			QueueRenderer(bool bTraversal);
+	void					CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
+	virtual void			QueueRenderer(cView* pView,bool bTraversal);
 
 	void					CalculateTangentBinormal();
 	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,

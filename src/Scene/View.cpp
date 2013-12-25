@@ -9,14 +9,14 @@ cView::cView(void)
 :m_pParentView(NULL)
 {
 	m_bHide=FALSE;
-	AttachObject(&m_ViewState);
+
 	m_ViewPortInfo.MinZ = 0.0f;
 	m_ViewPortInfo.MaxZ = 1.0f;
 }
 
 cView::~cView(void)
 {
-	DettachObject(&m_ViewState);
+	
 }
 
 void cView::AttachObject( IUnknownObject* pIUnknownObject )
@@ -32,7 +32,7 @@ void cView::AttachObject( IUnknownObject* pIUnknownObject )
 	cSceneNode* pSceneGraphNode = dynamic_cast<cSceneNode*>(pIUnknownObject);
 	if (pSceneGraphNode !=NULL)
 	{
-		m_TopRenderable.AttachChildNode(pSceneGraphNode);
+		m_listScene.AttachChildNode(pSceneGraphNode);
 		return;
 	}
 
@@ -64,7 +64,7 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 	cSceneNode* pSceneGraphNode = dynamic_cast<cSceneNode*>(pIUnknownObject);
 	if (pSceneGraphNode !=NULL)
 	{
-		m_TopRenderable.DettachChildNode(pSceneGraphNode);
+		m_listScene.DettachChildNode(pSceneGraphNode);
 		return;
 	}
 
@@ -83,13 +83,14 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 
 void cView::Update( DWORD elapseTime )
 {	
-	m_TopRenderable.Update(elapseTime);		// SceneGraph는 계층트리구조 부모우선 순회가 이루어져야한다.
+	m_listScene.Update(elapseTime);		// SceneGraph는 계층트리구조 부모우선 순회가 이루어져야한다.
 
 	std::list<IUpdatable*>::iterator it=m_ProgressableList.begin();
 	for ( ;it!=m_ProgressableList.end() ; ++it )
 	{
 		(*it)->Update(elapseTime);
 	}		
+	m_ViewState.Update(elapseTime);
 }
 
 void cView::Control()
@@ -102,23 +103,31 @@ void cView::Control()
 	{
 		(*it_control)->Control();
 	}	
+	m_ViewState.Control();
 }
 
 void cView::ProcessRender()
 {
 	if (m_bHide)
 		return;
+	
+	// scene 
+	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
+	if (pActiveCamera)
+	{
+		m_listScene.CullRendererIntoRendererQueue(this,pActiveCamera);
+	}		
+	D3D9::Server::g_pServer->Render(this);
 
-	SetViewPort();
-	m_TopRenderable.ProcessRender();		// 컬링하면서 렌더큐에 넣는다.	
-	D3D9::Server::g_pServer->Render();
-
-
+	// gui 
 	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
 	for ( ;it!=m_RenderableList.end() ; ++it )
 	{
 		(*it)->ProcessRender();	
 	}
+	
+	// state 
+	m_ViewState.ProcessRender();
 }
 
 void cView::SetViewPortInfo( UINT x,UINT y,UINT width,UINT height )
@@ -163,4 +172,3 @@ void cView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 
 }
-

@@ -9,6 +9,7 @@ class cRscTransformAnm;
 class cRendererQueue;
 class cSphere;
 class cCameraNode;
+class cView;
 struct SCENENODEINFO;
 
 class cSceneNode:
@@ -90,13 +91,13 @@ public:
 	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
 
 	//					순회 하면서 Renderer들을 큐에 넣는다.
-	virtual void		CullRendererIntoRendererQueue(cCameraNode* pActiveCamera);
+	virtual void		CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera);
 	
 	cSceneNode&	operator=(const cSceneNode& other);
 
 
-	virtual void		Render()=0;
-	virtual void		Update(DWORD elapseTime)=0;
+	virtual void		Render();;
+	virtual void		Update(DWORD elapseTime);;
 
 	/*
 		빌드란 씬노드구성후 작동하기전에 노드의 후처리 작업으로 완성시킴을 의미한다.
@@ -107,7 +108,7 @@ public:
 	virtual void		SerializeIn(std::fstream& in);
 	virtual void		SerializeOut(std::fstream& out);
 
-	virtual void		QueueRenderer(bool bTraversal);
+	virtual void		QueueRenderer(cView* pView,bool bTraversal);
 
 	
 };

@@ -193,12 +193,12 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 
 // 기본적기능
 // bRender체크후 자식만 돌자.
-void cSceneNode::CullRendererIntoRendererQueue( cCameraNode* pActiveCamera )
+void cSceneNode::CullRendererIntoRendererQueue( cView* pView,cCameraNode* pActiveCamera )
 {				
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pView,pActiveCamera);
 	}
 }
 
@@ -259,9 +259,31 @@ void cSceneNode::SetBoundingSphere( cSphere& Sphere )
 	m_BoundingSphere = Sphere;	
 }
 
-void cSceneNode::QueueRenderer(bool bTraversal)
+void cSceneNode::QueueRenderer(cView* pView,bool bTraversal)
 {
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->QueueRenderer(pView,bTraversal);
+	}
+}
 
+void cSceneNode::Render()
+{
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->Render();
+	}
+}
+
+void cSceneNode::Update( DWORD elapseTime )
+{
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->Update(elapseTime);
+	}
 }
 
 

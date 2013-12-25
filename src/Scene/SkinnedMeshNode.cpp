@@ -16,7 +16,7 @@
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
 #include "Framework/D3DFramework.h"
-
+#include "Scene/View.h"
 
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
@@ -166,19 +166,19 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 	m_vecBoneRef = vecBoneRef;
 }
 
-void SkinnedMeshNode::QueueRenderer(bool bTraversal)
+void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 {
 	if (m_vecSubMesh.empty())
 	{
 		int i = m_Matrial.index_renderer_queue();
-		D3D9::Server::g_pServer->m_listRenderQueueSkinned[i].Insert(this);
+		pView->m_listRenderQueueSkinned[i].Insert(this);
 	}
 	else
 	{
 		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
 		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 		{
-			(*it_sub)->QueueRenderer(bTraversal);
+			(*it_sub)->QueueRenderer(pView,bTraversal);
 		}
 	}
 	
@@ -188,7 +188,7 @@ void SkinnedMeshNode::QueueRenderer(bool bTraversal)
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRenderer(bTraversal);
+		(*it_child)->QueueRenderer(pView,bTraversal);
 	}
 }
 

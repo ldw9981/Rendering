@@ -11,6 +11,7 @@ class ZTerrain;
 class cTriangle;
 class cCameraNode;
 class cRendererQueue;
+class cView;
 struct TERRAINVERTEX;
 
 
@@ -58,7 +59,7 @@ public:
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);
-	virtual void		CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera );
+	virtual void		CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
 	virtual void		Render();
 };
 

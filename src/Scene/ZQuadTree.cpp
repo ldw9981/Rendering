@@ -9,6 +9,7 @@
 #include "DebugInfoView.h"
 #include "RendererQueue.h"
 #include "Foundation/Define.h"
+#include "View.h"
 
 // 최초 루트노드 생성자
 ZQuadTree::ZQuadTree(ZTerrain* pTerrain,int tl,int tr,int bl,int br )
@@ -301,7 +302,7 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 /*
 	CheckWorldFrustumForQuadTree를 사용한다
 */
-void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cCameraNode* pActiveCamera )
+void ZQuadTree::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera )
 {
 	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
 	if( ret == cCollision::OUTSIDE)
@@ -310,14 +311,14 @@ void ZQuadTree::CullRendererIntoRendererQueue( cRendererQueue* pRendererQueue,cC
 	}
 	else if (ret == cCollision::INSIDE)
 	{	// 완전히 내부면 순회하며 자식은 모두 TOP,BOTTON플랜만 테스한후 큐에 넣는다.
-		QueueRenderer(true);
+		QueueRenderer(pView,true);
 		return;
 	}			
 	
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererIntoRendererQueue(pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pView,pActiveCamera);
 	}
 }
 

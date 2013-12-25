@@ -210,10 +210,10 @@ void Server::LoadHLSL(const char* szFileName)
 
 void Server::Render()
 {
+	UINT passes = 0;
 	for (int i=0;i<16;i++)
 	{
-		// 여기선 렌더큐들만 그린다
-		UINT passes = 0;
+		// 여기선 렌더큐들만 그린다		
 		m_pEffect->SetTechnique(m_listRenderQueue[i].m_hTechnique);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
@@ -227,8 +227,7 @@ void Server::Render()
 
 	for (int i=0;i<16;i++)
 	{
-		// 여기선 렌더큐들만 그린다
-		UINT passes = 0;
+		// 여기선 렌더큐들만 그린다	
 		m_pEffect->SetTechnique(m_listRenderQueueSkinned[i].m_hTechnique);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
@@ -241,7 +240,7 @@ void Server::Render()
 
 	}
 
-	UINT passes = 0;
+	
 	m_pEffect->SetTechnique(m_listRenderTerrain.m_hTechnique);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);

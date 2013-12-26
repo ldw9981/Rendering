@@ -131,11 +131,11 @@ BOOL cCollision::CollisionSphereSphere( cSphere& SphereA,D3DXVECTOR3& vecA,cSphe
 
 	return TRUE;
 }
-cCollision::STATE cCollision::IntersectSpherePlane( cSphere& Sphere,cPlane& TargetPlane,float *pDist/*=NULL*/,float Loose /*=0.0f*/)
+cCollision::STATE cCollision::IntersectSpherePlane(cSphere& sphere,cPlane& TargetPlane,float *pDist/*=NULL*/,float Loose /*=0.0f*/)
 {
 	float lengthCenterToPlane,radius;
-	lengthCenterToPlane= TargetPlane.GetDistance(Sphere.GetCenterPos()) + Loose;
-	radius= Sphere.GetRadius();
+	lengthCenterToPlane= TargetPlane.GetDistance(sphere.GetCenterPos()) + Loose;
+	radius= sphere.GetRadius();
 	
 
 	//평면 앞쪽에 위치

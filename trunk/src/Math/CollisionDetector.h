@@ -24,7 +24,7 @@ public:
 	static BOOL IntersectSphereSphere(cSphere& SphereA,cSphere& SphereB);
 
 	// Sphere - Plane
-	static cCollision::STATE	IntersectSpherePlane(cSphere& Sphere,cPlane& TargetPlane,float *pDist=NULL,float Loose=0.0f);
+	static cCollision::STATE	IntersectSpherePlane(cSphere& sphere,cPlane& TargetPlane,float *pDist=NULL,float Loose=0.0f);
 
 	// Line - Plane
 	static BOOL IntersectLinePlane(cLine& Line, cPlane& TargetPlane,D3DXVECTOR3* pCrossPos=NULL ,D3DXVECTOR3* pReflectionVec=NULL);

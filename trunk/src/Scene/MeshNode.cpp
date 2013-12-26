@@ -158,7 +158,7 @@ void cMeshNode::BuildComposite()
 */
 void cMeshNode::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera )
 {
-	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(&m_BoundingSphere);
+	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(m_BoundingSphere);
 	if( retCS != cCollision::OUTSIDE)
 	{			
 		if (m_bRender)

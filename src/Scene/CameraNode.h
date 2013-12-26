@@ -71,9 +71,9 @@ public:
 	void				MakeWorldPickingRay(float ScreenX,float ScreenY,cLine& Output);
 	void				MakeWorldFrustum();
 
-	cCollision::STATE					CheckWorldFrustum(cSphere* pSphere,WORD plane);
-	cCollision::STATE					CheckWorldFrustum(cSphere* pSphere);
-	cCollision::STATE					CheckWorldFrustumWithoutYAxis(cSphere* pSphere);
+	cCollision::STATE					CheckWorldFrustum(cSphere& sphere,WORD plane);
+	cCollision::STATE					CheckWorldFrustum(cSphere& sphere);
+	cCollision::STATE					CheckWorldFrustumWithoutYAxis(cSphere& sphere);
 	BOOL				InsideWorldFrustum(D3DXVECTOR3& pos);
 	const D3DXMATRIX&	GetMatViewProjection() { return m_matViewProjection; }
 	const D3DXMATRIX&	GetMatView() { return m_matView; }

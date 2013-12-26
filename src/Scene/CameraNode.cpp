@@ -181,14 +181,13 @@ void cCameraNode::MakeWorldFrustum()
 		m_pWorldFrustumPlane[i].Normalize();
 }
 
-cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere* pSphere )
+cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere& sphere )
 {
-	assert(pSphere!=NULL);
 	int ret;
 	BOOL bIntersect=false;
 	for (int i=0;i<6;i++)
 	{	
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[i]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[i]);				
 		if (ret==cCollision::OUTSIDE)	
 		{	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 			return cCollision::OUTSIDE;
@@ -208,7 +207,7 @@ cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere* pSphere )
 	return cCollision::INSIDE;
 }
 
-cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere* pSphere,WORD plane )
+cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere& sphere,WORD plane )
 {
 	cCollision::STATE ret;
 	BOOL bInside=TRUE;
@@ -216,37 +215,37 @@ cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere* pSphere,WORD plane )
 
 	if (plane&PB_TOP)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_TOP]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_TOP]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
 	if (plane&PB_BOTTOM)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_BOTTOM]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_BOTTOM]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
 	if (plane&PB_LEFT)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_LEFT]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_LEFT]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
 	if (plane&PB_RIGHT)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_RIGHT]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_RIGHT]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
 	if (plane&PB_NEAR)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_NEAR]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_NEAR]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
 	if (plane&PB_FAR)
 	{
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[PN_FAR]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_FAR]);				
 		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
 	}
@@ -312,9 +311,8 @@ void cCameraNode::SetActive()
 /*
 	PLANE_TOP , PLANE_BOTTOMÀ» °Ë»ç¾ÈÇÑ´Ù.
 */
-cCollision::STATE cCameraNode::CheckWorldFrustumWithoutYAxis( cSphere* pSphere )
+cCollision::STATE cCameraNode::CheckWorldFrustumWithoutYAxis(cSphere& sphere)
 {
-	assert(pSphere!=NULL);
 	cCollision::STATE ret;
 	BOOL bInside=TRUE;
 	for (int i=0;i<6;i++)
@@ -324,7 +322,7 @@ cCollision::STATE cCameraNode::CheckWorldFrustumWithoutYAxis( cSphere* pSphere )
 			continue;
 		}
 
-		ret=cCollision::IntersectSpherePlane(*pSphere,m_pWorldFrustumPlane[i]);				
+		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[i]);				
 		if (ret==cCollision::OUTSIDE)	
 		{	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 			return cCollision::OUTSIDE;

@@ -137,7 +137,7 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 {
 	if( !m_bIsLeafNode )
 	{	// 그룹노드일때는 2차원 구로 컬링
-		if ( pCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere) == cCollision::OUTSIDE)
+		if ( pCamera->CheckWorldFrustumWithoutYAxis(m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		
@@ -145,7 +145,7 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 	else
 	{
 		// 리프노드일때는 3차원구로 컬링
-		if ( pCamera->CheckWorldFrustum(&m_BoundingSphere) == cCollision::OUTSIDE)
+		if ( pCamera->CheckWorldFrustum(m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		
@@ -304,7 +304,7 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 */
 void ZQuadTree::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera )
 {
-	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(&m_BoundingSphere);
+	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_BoundingSphere);
 	if( ret == cCollision::OUTSIDE)
 	{	//  밖에 있는것이면 노드순회 없음	
 		return;

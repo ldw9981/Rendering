@@ -132,25 +132,24 @@ void cView::ProcessRender()
 
 void cView::SetViewPortInfo( UINT x,UINT y,UINT width,UINT height )
 {
-	m_ViewPortInfo.X=x;
-	m_ViewPortInfo.Y=y;
+	if (m_pParentView)
+	{ 
+		m_ViewPortInfo.X= m_pParentView->m_ViewPortInfo.X + x;
+		m_ViewPortInfo.Y= m_pParentView->m_ViewPortInfo.Y + y;
+	}
+	else
+	{
+		m_ViewPortInfo.X = x;
+		m_ViewPortInfo.Y = y;
+	}
+
 	m_ViewPortInfo.Width=width;
 	m_ViewPortInfo.Height=height;	
 }
 
 void cView::SetViewPort()
 {
-	if (m_pParentView!=NULL)
-	{
-		D3DVIEWPORT9 temp=m_ViewPortInfo;
-		temp.X += m_pParentView->m_ViewPortInfo.X;
-		temp.Y += m_pParentView->m_ViewPortInfo.Y;
-		m_pD3DDevice->SetViewport(&m_ViewPortInfo);				
-	}
-	else
-	{
-		m_pD3DDevice->SetViewport(&m_ViewPortInfo);				
-	}	
+	m_pD3DDevice->SetViewport(&m_ViewPortInfo);				
 }
 
 void cView::Render()

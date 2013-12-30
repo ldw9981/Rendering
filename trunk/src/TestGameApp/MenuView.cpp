@@ -60,7 +60,7 @@ void cMenuView::Enter()
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	m_pTank->BuildComposite();
 	m_pTank->Init();
-	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,0.0f));
+	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pTank);
 	
 	
@@ -69,8 +69,8 @@ void cMenuView::Enter()
 	parser.Close();
 	m_pDragon->BuildComposite();
 	m_pDragon->Init();
-	m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pDragon->SetLocalPos(D3DXVECTOR3(200.0f,200.0f,0.0f));
+	//m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
 	AttachObject(m_pDragon);	
 	
 	m_pAirPlaneBake = new cObjDragon;	
@@ -79,7 +79,7 @@ void cMenuView::Enter()
 	m_pAirPlaneBake->BuildComposite();
 	m_pAirPlaneBake->Init();
 	m_pAirPlaneBake->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(0.0f,100.0f,0.0f));
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	AttachObject(m_pAirPlaneBake);	
 
 	m_pHouse = new cObjDragon;	
@@ -88,7 +88,7 @@ void cMenuView::Enter()
 	m_pHouse->BuildComposite();
 	m_pHouse->Init();
 	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,0.0f));
+	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pHouse);
 	
 }
@@ -121,7 +121,7 @@ void cMenuView::Update( DWORD elapseTime )
 {
 	cView::Update(elapseTime);
 	m_Camera.Update(elapseTime);
-	/*
+	
  	D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
  	m_pTank->GetWorldPos(pos);
  
@@ -129,16 +129,9 @@ void cMenuView::Update( DWORD elapseTime )
  	{
  		printf("d");
  	}
-	
-
 	pos.y+=50.0f;
-	if (pos.y > 150.0f)
-	{
-		printf("d");
-	}
-
 	m_pTank->SetLocalPos(pos);
-	*/
+	
 	
 }
 

@@ -40,7 +40,6 @@ protected:
 
 public:
 	virtual void			Render();	
-	virtual void			RenderShadow();
 	virtual void			BuildComposite();
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);
@@ -49,4 +48,5 @@ public:
 
 
 	virtual void			QueueRenderer(cView* pView,bool bTraversal);
+	virtual void			QueueRendererShadow(cView* pView,bool bTraversal);
 };

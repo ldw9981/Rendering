@@ -225,7 +225,8 @@ void Server::LoadHLSL(const char* szFileName)
 	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
-	m_hTCreateShadow = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
+	m_hTCreateShadowNormal = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
+	m_hTCreateShadowBlend = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
 
 	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 	m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
@@ -332,12 +333,20 @@ void Server::Render(cView* pView)
 	
 	
 	//1. write depth
-	m_pEffect->SetTechnique(m_hTCreateShadow);
+	m_pEffect->SetTechnique(m_hTCreateShadowNormal);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);
-	pView->m_listScene.RenderShadow();	
+	pView->m_listShadowNormal.Render();
 	m_pEffect->EndPass();
 	m_pEffect->End();
+
+	m_pEffect->SetTechnique(m_hTCreateShadowBlend);
+	m_pEffect->Begin(&passes, 0);
+	m_pEffect->BeginPass(0);
+	pView->m_listShadowBlend.Render();
+	m_pEffect->EndPass();
+	m_pEffect->End();
+
 	
 	
 	//////////////////////////////

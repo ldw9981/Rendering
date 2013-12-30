@@ -111,7 +111,7 @@ public:
 	virtual void		SerializeOut(std::fstream& out);
 
 	virtual void		QueueRenderer(cView* pView,bool bTraversal);
-
+	virtual void		QueueRendererShadow(cView* pView,bool bTraversal);
 	
 };
 

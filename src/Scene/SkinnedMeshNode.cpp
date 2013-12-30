@@ -170,8 +170,11 @@ void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 {
 	if (m_vecSubMesh.empty())
 	{
-		int i = m_Matrial.index_renderer_queue();
-		pView->m_listRenderQueueSkinned[i].Insert(this);
+		if (m_bRender)
+		{
+			int i = m_Matrial.index_renderer_queue();
+			pView->m_listRenderQueueSkinned[i].Insert(this);
+		}
 	}
 	else
 	{
@@ -197,7 +200,10 @@ void SkinnedMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 {
 	if (m_vecSubMesh.empty())
 	{
-		pView->m_listShadowBlend.Insert(this);
+		if (m_bRender)
+		{
+			pView->m_listShadowBlend.Insert(this);
+		}
 	}
 	else
 	{

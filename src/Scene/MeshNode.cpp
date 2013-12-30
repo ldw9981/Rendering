@@ -105,7 +105,7 @@ void cMeshNode::Render()
 
 void cMeshNode::BuildComposite()
 {
-	if (m_bIsBone)
+	if (m_bIsBone || m_Matrial.GetMapDiffuse() == NULL)
 	{
 		m_bRender=false;
 	}
@@ -201,9 +201,11 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 
 void cMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 {
-	int i = m_Matrial.index_renderer_queue();
-	
-	pView->m_listRenderQueue[i].Insert(this);
+	if (m_bRender)
+	{
+		int i = m_Matrial.index_renderer_queue();
+		pView->m_listRenderQueue[i].Insert(this);
+	}
 
 	if (!bTraversal)
 		return;
@@ -385,7 +387,10 @@ void cMeshNode::DebugRender()
 
 void cMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 {
-	pView->m_listShadowNormal.Insert(this);
+	if (m_bRender)
+	{
+		pView->m_listShadowNormal.Insert(this);
+	}
 
 	if (!bTraversal)
 		return;

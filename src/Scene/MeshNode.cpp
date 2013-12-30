@@ -382,4 +382,32 @@ void cMeshNode::DebugRender()
 
 }
 
+void cMeshNode::RenderShadow()
+{
+	if (m_vecSubMesh.empty())
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
+		m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
+		m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
+		m_pRscIndexBuffer->SetIndices();		
+
+		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+		m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+			0,  
+			0, 
+			m_pRscVetextBuffer->GetCount(),
+			m_nStartIndex,
+			m_nPrimitiveCount );
+	}
+	else
+	{
+		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+		{
+			(*it_sub)->RenderShadow();
+		}
+	}
+	cSceneNode::RenderShadow();	
+}
+
 

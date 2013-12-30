@@ -22,8 +22,8 @@ private:
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
 	cObjDragon*			m_pDragon;
-	cObjTank*			m_pAirPlaneBake;
-	cObjTank*			m_pHouse;
+	cObjDragon*			m_pAirPlaneBake;
+	cObjDragon*			m_pHouse;
 public:	
 	virtual void Enter();
 	virtual void Leave();

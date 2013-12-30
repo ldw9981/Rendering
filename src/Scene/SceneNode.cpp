@@ -286,4 +286,13 @@ void cSceneNode::Update( DWORD elapseTime )
 	}
 }
 
+void cSceneNode::RenderShadow()
+{
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->RenderShadow();
+	}
+}
+
 

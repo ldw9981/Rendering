@@ -192,3 +192,53 @@ void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 	}
 }
 
+void SkinnedMeshNode::RenderShadow()
+{
+	//DebugRender();			
+	if (m_vecSubMesh.empty())
+	{
+		m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationBlend);
+		m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
+		m_pRscIndexBuffer->SetIndices();			
+
+		int iBoneRef,nBoneRefSize = (int)m_vecBoneRef.size();
+		// 현재메쉬가 참조하는 본개수만큼
+		for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
+		{
+			BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
+
+			D3DXMATRIX BlendMat,BoneWorldTM;	
+
+			BoneWorldTM = refItem.pRefBoneMesh->GetWorldTM();				// BoneWorldTM		
+
+			BlendMat = refItem.BoneOffSetTM_INV * BoneWorldTM;
+
+			m_pArrayMatBoneRef[iBoneRef] = BlendMat;
+
+		}
+
+		if (nBoneRefSize>0)
+		{
+			D3D9::Server::g_pServer->GetEffect()->SetMatrixArray(D3D9::Server::g_pServer->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
+		}	
+
+		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+
+		m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+			0,  
+			0, 
+			m_pRscVetextBuffer->GetCount(),
+			m_nStartIndex,
+			m_nPrimitiveCount );			
+	}
+	else
+	{
+		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+		{
+			(*it_sub)->RenderShadow();
+		}
+	}
+	cSceneNode::RenderShadow();
+}
+

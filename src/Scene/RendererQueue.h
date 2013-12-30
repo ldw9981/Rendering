@@ -22,4 +22,5 @@ private:
 public:
 	void	Insert(IRenderer* pItem);
 	void	Render();
+	bool	IsEmpty();
 };

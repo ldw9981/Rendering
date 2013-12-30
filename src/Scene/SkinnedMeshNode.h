@@ -40,6 +40,7 @@ protected:
 
 public:
 	virtual void			Render();	
+	virtual void			RenderShadow();
 	virtual void			BuildComposite();
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);

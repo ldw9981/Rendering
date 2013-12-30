@@ -29,8 +29,7 @@ cCameraNode::cCameraNode()
 	m_ScreenHeight=0.0f;
 
 	m_bProcessInput = false;
-	m_bViewModified=FALSE;
-	m_bProjectionModified=FALSE;
+	m_bProjectionModified = false;
 	
 	m_pWorldFrustumPlane = new cPlane[6];	
 }
@@ -46,23 +45,24 @@ cCameraNode::~cCameraNode(void)
 	cScene내부에서 ActiveCamera를 얻어 Render를 호출한다.
 */
 void cCameraNode::Render()
-{	
+{			
+	D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
+	D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
+	D3D9::Server::g_pServer->GetEffect()->SetVector(D3D9::Server::g_pServer->m_hvWorldCameraPosition,&pos);
 
-		D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
-		D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
-		D3D9::Server::g_pServer->GetEffect()->SetVector(D3D9::Server::g_pServer->m_hvWorldCameraPosition,&pos);
-
+	if (m_bProjectionModified)
+	{
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
 		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmProjection,&m_matProjection);
-			
+		m_bProjectionModified = false;
+	}		
 
-		m_matViewProjection = m_matView * m_matProjection;				
+	m_matViewProjection = m_matView * m_matProjection;				
+	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
+	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
-		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-
-		MakeWorldFrustum();	
+	MakeWorldFrustum();	
 }
 
 /*
@@ -72,11 +72,12 @@ void cCameraNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix();
-
+	/*
 	if(m_bModifiedMatWorld)
 	{
 		m_bViewModified=TRUE;	// 카메라가 월드변환이 바뀟었다. 뷰도 업데이트해야한다.
 	}	
+	*/
 	UpdateChildren(elapseTime);
 }
 
@@ -84,8 +85,7 @@ void cCameraNode::Update(DWORD elapseTime)
 void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp )
 {
 	D3DXMATRIX temp;
-//	D3DXMatrixLookAtLH(&temp,pEye,pAt,pUp);
-	D3DXVECTOR3 xaxis,yaxis,zaxis,tVector3;
+	D3DXVECTOR3 xaxis,yaxis,zaxis,tVector3;	
 
 	tVector3=*pAt-*pEye;
 	D3DXVec3Normalize(&zaxis,&tVector3);
@@ -105,17 +105,17 @@ void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,co
 	temp._22 = yaxis.y;
 	temp._32 = yaxis.z;
 
+	
 	// Z axis
 	temp._13 = zaxis.x;
 	temp._23 = zaxis.y;
 	temp._33 = zaxis.z;	
 
-	temp._41 = pEye->x;
-	temp._42 = pEye->y;
-	temp._43 = pEye->z;
+	temp._41 = -D3DXVec3Dot(&xaxis,pEye);
+	temp._42 = -D3DXVec3Dot(&yaxis,pEye);
+	temp._43 = -D3DXVec3Dot(&zaxis,pEye);
 
-	SetLocalTM(temp);
-	m_bViewModified=TRUE;
+	D3DXMatrixInverse(&m_matLocal,NULL,&temp);
 }
 
 void cCameraNode::SetPerspective(float fovy,float zn,float zf,float ScreenWidth,float ScreenHeight)
@@ -125,7 +125,7 @@ void cCameraNode::SetPerspective(float fovy,float zn,float zf,float ScreenWidth,
 	m_ScreenHeight = ScreenHeight;
 	m_Near=zn;
 	m_Far=zf;
-	m_bProjectionModified=TRUE;		
+	m_bProjectionModified = true;
 }
 
 
@@ -277,7 +277,7 @@ void cCameraNode::SetScreenWidthHeight( float ScreenWidth,float ScreenHeight )
 {
 	m_ScreenHeight=ScreenHeight;
 	m_ScreenWidth=ScreenWidth;
-	m_bProjectionModified=TRUE;
+	m_bProjectionModified = true;
 }
 
 void cCameraNode::MakeWorldPickingRay( float ScreenX,float ScreenY,cLine& Output )
@@ -364,6 +364,16 @@ void cCameraNode::Control()
 		{
 			vecPos.x = 200.0f;
 		}	
+		if (m_pWinInput->IsCurrDn('R'))
+		{
+			vecPos.y = 200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('F'))
+		{
+			vecPos.y = -200.0f;
+		}	
+
+
 		if (m_pWinInput->IsCurrDn('Q'))
 		{
 			vecRot.y = -45.0f;
@@ -373,14 +383,7 @@ void cCameraNode::Control()
 			vecRot.y = 45.0f;
 		}
 
-		if (m_pWinInput->IsCurrDn('R'))
-		{
-			vecRot.x = -45.0f;
-		}
-		else if (m_pWinInput->IsCurrDn('F'))
-		{
-			vecRot.x = 45.0f;
-		}	
+
 	}	
 
 	SetVelocityPosition(vecPos);	

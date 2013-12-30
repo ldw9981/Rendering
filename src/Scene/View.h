@@ -28,7 +28,7 @@ protected:
 	std::list<IControlable*>	m_ControlableList;
 
 	cView*					m_pParentView;				// 부모 씬
-	cSceneNode				m_listScene;				// Transform 있는것들
+	
 
 	BOOL					m_bHide;					//입력을 받지않고 그리지않는다.	갱신은 한다.	
 	D3DVIEWPORT9			m_ViewPortInfo;	
@@ -39,6 +39,7 @@ public:
 	cRendererQueue			m_listRenderTerrain;
 	cRendererQueue			m_listRenderGUI;
 	cViewMng				m_ViewState;
+	cSceneNode				m_listScene;				// Transform 있는것들
 public:
 	cViewMng& GetState() { return m_ViewState; }
 	cView* GetParentView() const { return m_pParentView; }

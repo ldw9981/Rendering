@@ -189,7 +189,7 @@ HRESULT ZTerrain::FillIndexBuffer()
 
 
 	char temp[256];
-	itoa(m_nTriangles,temp,10);
+	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
 	D3D9::Server::g_pServer->RenderDebugString(0,20,temp);
 
 

@@ -117,7 +117,10 @@ void cD3DFramework::Render()
 	D3D9::Server::g_pServer->Begin();
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
-	stream << "FPS " << temp;
+	stream << "FPS " << temp << " ";
+	stream << "LIGHT" << D3D9::Server::g_pServer->m_WorldLightPosition.x << " ";
+	stream << D3D9::Server::g_pServer->m_WorldLightPosition.y << " "; 
+	stream << D3D9::Server::g_pServer->m_WorldLightPosition.z;
 	D3D9::Server::g_pServer->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();

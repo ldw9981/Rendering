@@ -40,7 +40,9 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseLight;
 	D3DXHANDLE				m_hTPhongDiffuseBump;
-
+	D3DXHANDLE				m_hTCreateShadow;	// 쉐이더
+	LPD3DXEFFECT			m_pApplyShadowShader;
+	LPD3DXEFFECT			m_pCreateShadowShader;
 
 	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
 	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬
@@ -51,13 +53,19 @@ public:
 	D3DXHANDLE				m_hmPalette;
 	D3DXHANDLE				m_hvWorldLightPosition;
 	D3DXHANDLE				m_hvWorldCameraPosition;;
+	
+	D3DXHANDLE				m_hmLightView;
+	D3DXHANDLE				m_hmLightProjection;
 
+	D3DXVECTOR4				m_WorldLightPosition;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
 	D3DXHANDLE				m_hTNormal[16];
 	D3DXHANDLE				m_hTBlend[16];
-
+	// 그림자맵 렌더타깃
+	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
+	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 
 
 	void SetHLSL(std::string val) { m_strHLSL = val; }

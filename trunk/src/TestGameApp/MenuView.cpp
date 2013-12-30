@@ -9,13 +9,21 @@
 #include "GUI/GUIButton.h"
 #include "Scene/DebugInfoView.h"
 #include "Framework/EnvironmentVariable.h"
+#include "D3D9Server/Server.h"
+
+#define PI           3.14159265f
+#define FOV          (PI/4.0f)	
 
 cMenuView::cMenuView(void)
-:m_pTank(NULL)
 {
 	SetViewPortInfo(0,0,1024,768);
 	m_bControlCamera=FALSE;
 
+	m_pZTerrain=NULL;
+	m_pHouse=NULL;
+	m_pTank=NULL;
+	m_pAirPlaneBake=NULL;
+	m_pDragon=NULL;
 
 
 }
@@ -28,10 +36,10 @@ cMenuView::~cMenuView(void)
 void cMenuView::Enter()
 {
 	m_Camera.SetActive();
-	m_Camera.SetPerspective(D3DXToRadian(45),1.0f,10000.0f,
+	m_Camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 100.0f, -950.0f),
-		&D3DXVECTOR3(0.0f, -1.0f, 0.0f),
+	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
@@ -52,8 +60,10 @@ void cMenuView::Enter()
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	m_pTank->BuildComposite();
 	m_pTank->Init();
+	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,0.0f));
 	AttachObject(m_pTank);
-
+	
+	
 	m_pDragon = new cObjDragon;
 	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
 	parser.Close();
@@ -62,25 +72,25 @@ void cMenuView::Enter()
 	m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pDragon->SetLocalPos(D3DXVECTOR3(200.0f,200.0f,0.0f));
 	AttachObject(m_pDragon);	
-
-	m_pAirPlaneBake = new cObjTank;	
+	
+	m_pAirPlaneBake = new cObjDragon;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
 	parser.Close();
 	m_pAirPlaneBake->BuildComposite();
 	m_pAirPlaneBake->Init();
 	m_pAirPlaneBake->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-200.0f,200.0f,0.0f));
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(0.0f,100.0f,0.0f));
 	AttachObject(m_pAirPlaneBake);	
 
-	m_pHouse = new cObjTank;	
+	m_pHouse = new cObjDragon;	
 	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pHouse);
 	parser.Close();
 	m_pHouse->BuildComposite();
 	m_pHouse->Init();
 	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,400.0f,0.0f));
+	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,0.0f));
 	AttachObject(m_pHouse);
-
+	
 }
 
 void cMenuView::Leave()
@@ -111,7 +121,7 @@ void cMenuView::Update( DWORD elapseTime )
 {
 	cView::Update(elapseTime);
 	m_Camera.Update(elapseTime);
-
+	/*
  	D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
  	m_pTank->GetWorldPos(pos);
  
@@ -128,7 +138,7 @@ void cMenuView::Update( DWORD elapseTime )
 	}
 
 	m_pTank->SetLocalPos(pos);
-
+	*/
 	
 }
 
@@ -142,70 +152,33 @@ void cMenuView::ProcessRender()
 void cMenuView::Control()
 {
 	cView::Control();
+	cCameraNode* pActiveCamera=cCameraNode::GetActiveCamera();
+	pActiveCamera->Control();
 	
 	if (m_pWinInput->IsTurnDn(VK_TAB))
 	{
-		if(m_bControlCamera)
+		if(m_Camera.GetProcessInput())
 		{
-			m_bControlCamera=FALSE;
+			m_Camera.SetProcessInput(false);
 			m_pTank->m_bControl=TRUE;
 		}
 		else
 		{
-			m_bControlCamera=TRUE;
+			m_Camera.SetProcessInput(true);
 			m_pTank->m_bControl=FALSE;			
 		}
 	}
-
-	if (!m_bControlCamera)
+	
+	if (m_pWinInput->IsCurrDn(VK_OEM_PLUS))
 	{
-		return;
-	}
-	float x=0.0f,y=0.0f,z=0.0f;
-	float ax=0.0f,ay=0.0f,az=0.0f;
-	float cx=0.0f,cy=0.0f,cz=0.0f;
-	float cax=0.0f,cay=0.0f;
-	float cbax=0.0f,cbay=0.0f,cbaz=0.0f;
-	float apax=0.0f,apay=0.0f,apaz=0.0f;
-	D3DXMATRIX tempTM,tempRM,tempViewTM;
-
-
-	// 자신의 축벡터에 크기만큼 자신의 위치를 변경한다.
-
-	if (m_pWinInput->IsCurrDn('W'))
-	{
-		cz= 0.1f;
-	}
-	if (m_pWinInput->IsCurrDn('S'))
-	{
-		cz= -0.1f;	
-	}
-	if (m_pWinInput->IsCurrDn('Q'))
-	{
-		cx= -5.0f;
-	}
-	if (m_pWinInput->IsCurrDn('E'))
-	{
-		cx= 5.0f;	
-	}
-	if (m_pWinInput->IsCurrDn('R'))
-	{
-		cy= 5.0f;
-	}
-	if (m_pWinInput->IsCurrDn('F'))
-	{
-		cy= -5.0f;	
+		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
+		
 	}
 
-	if (m_pWinInput->IsCurrDn('A'))
+	if (m_pWinInput->IsCurrDn(VK_OEM_MINUS))
 	{
-		cay= -0.1f;
+		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
 	}
-	if (m_pWinInput->IsCurrDn('D'))
-	{
-		cay= 0.1f;
-	}
-	cCameraNode::GetActiveCamera()->MoveOnLocal(cx,cy,cz);
-	cCameraNode::GetActiveCamera()->RotateOnLocal(cax,cay,0.0f);
 
+			
 }

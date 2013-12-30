@@ -16,8 +16,8 @@ protected:
 	D3DXMATRIX				m_matVelocityPos;
 	D3DXMATRIX				m_matVelocityRot;
 	
-	BOOL					m_bModifiedMatLocal;
-	BOOL					m_bModifiedMatWorld;
+//	BOOL					m_bModifiedMatLocal;
+//	BOOL					m_bModifiedMatWorld;
 	BOOL					m_bModifiedVelocityPos;
 	BOOL					m_bModifiedVelocityRot;
 	D3DXVECTOR3				m_velPosPerSec;
@@ -26,8 +26,8 @@ protected:
 	D3DXVECTOR3				m_velSclPerSec;
 
 public:
-	BOOL					GetWorldTMModified() const { return m_bModifiedMatWorld; }
-	void					SetWorldTMModified(BOOL val) { m_bModifiedMatWorld = val; }
+//	BOOL					GetWorldTMModified() const { return m_bModifiedMatWorld; }
+//	void					SetWorldTMModified(BOOL val) { m_bModifiedMatWorld = val; }
 
 	void					SetWorldTM(const D3DXMATRIX& val) { m_matWorld = val; }
 	const D3DXMATRIX&		GetWorldTM() const { return m_matWorld; }
@@ -35,7 +35,7 @@ public:
 
 
 	const D3DXMATRIX&		GetLocalTM() const { return m_matLocal; }
-	void					SetLocalTM(const D3DXMATRIX& val) {  m_matLocal = val; m_bModifiedMatLocal=TRUE; }
+	void					SetLocalTM(const D3DXMATRIX& val);
 
 
 	void					SetLocalPos( D3DXVECTOR3& pos );

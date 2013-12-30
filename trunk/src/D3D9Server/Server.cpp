@@ -7,6 +7,28 @@
 #include "MaterialEx.h"
 #include "Scene/View.h"
 
+#define PI           3.14159265f
+#define FOV          (PI/4.0f)							// 시야각
+#define ASPECT_RATIO (1024/(float)768)		// 화면의 종횡비
+#define NEAR_PLANE   1									// 근접 평면
+#define FAR_PLANE    10000								// 원거리 평면
+
+#define T_SIZE 256
+
+#define SHADOWMAP_SIZE 4096
+
+
+struct GUIVERTEX
+{
+	//x,y,z
+	D3DXVECTOR4	vertex;
+	TEXCOORD	tex;
+};
+RECT				m_Rect;
+
+GUIVERTEX g_vertices[4];
+#define FVF_GUIVERTEX (D3DFVF_XYZRHW|D3DFVF_TEX1)  
+
 namespace D3D9
 {
 
@@ -27,11 +49,42 @@ Server::Server(void)
 	m_viewPortInfo.MinZ = 0.0f;
 	m_viewPortInfo.MaxZ = 1.0f;
 
+	m_pShadowRenderTarget = NULL;
+	m_pShadowDepthStencil = NULL;
 }
 
 Server::~Server(void)
 {
 }
+
+void SetPos( UINT x,UINT y )
+{
+	// 이미지의 위치, 사이즈로 영역 계산
+	m_Rect.left = x;
+	m_Rect.top = y;
+	m_Rect.right = (LONG)x+T_SIZE;
+	m_Rect.bottom = (LONG)y+T_SIZE;	
+
+	// vertex의 수정
+
+	g_vertices[0].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.top,0.0f,0.0f);		
+	g_vertices[0].tex.u = 0.0f;
+	g_vertices[0].tex.v = 1.0f;
+
+	g_vertices[1].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.top,0.0f,0.0f);		
+	g_vertices[1].tex.u = 1.0f;
+	g_vertices[1].tex.v = 1.0f;
+
+	g_vertices[2].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.bottom,0.0f,0.0f);		
+	g_vertices[2].tex.u = 1.0f;
+	g_vertices[2].tex.v = 0.0f;
+
+	g_vertices[3].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.bottom,0.0f,0.0f);		
+	g_vertices[3].tex.u = 0.0f;
+	g_vertices[3].tex.v = 0.0f;				
+
+}
+
 
 bool Server::Init(bool bWindowed,int width,int height)
 {
@@ -98,30 +151,39 @@ bool Server::Init(bool bWindowed,int width,int height)
 
 	m_pD3DDevice->SetMaterial(&mtrl);
 
+	m_WorldLightPosition = D3DXVECTOR4(500.0f, 5500.0f, -500.0f, 1.0f);
 
-	D3DLIGHT9 light;
-	ZeroMemory(&light,sizeof(D3DLIGHT9));
-	light.Type	=	D3DLIGHT_DIRECTIONAL;
-
-	light.Diffuse.r = 1.0f;
-	light.Diffuse.g = 1.0f;
-	light.Diffuse.b = 1.0f;
-
-	light.Direction = D3DXVECTOR3(0.0f,-1.0f,1.0f);		// 타겟 방향
-	//	light.Range = 1000.0f;
-
-	m_pD3DDevice->SetLight(0,&light);
-	m_pD3DDevice->LightEnable(0,TRUE);
-	m_pD3DDevice->SetRenderState(D3DRS_LIGHTING,TRUE);
+	
 	m_pNewFont = new cGUIFont();	
 
 	m_pD3DDevice->CreateVertexDeclaration(declNormal, &m_pVertexDeclationNormal);
 	m_pD3DDevice->CreateVertexDeclaration(declBlend, &m_pVertexDeclationBlend);
+
+
+	// 렌더타깃을 만든다.
+	const int shadowMapSize = SHADOWMAP_SIZE;
+	if(FAILED(m_pD3DDevice->CreateTexture( shadowMapSize, shadowMapSize,
+		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
+		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL ) ))
+	{
+		return false;
+	}
+
+	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
+	if(FAILED(m_pD3DDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
+		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
+		&m_pShadowDepthStencil, NULL)))
+	{
+		return false;
+	}
+	SetPos(1024-T_SIZE,0);
 	return true;
 }
 
 void Server::Uninit()
 {
+	SAFE_RELEASE(m_pShadowDepthStencil);
+	SAFE_RELEASE(m_pShadowRenderTarget);
 	SAFE_RELEASE(m_pVertexDeclationNormal);
 	SAFE_RELEASE(m_pVertexDeclationBlend);
 	SAFE_DELETE(m_pNewFont);	
@@ -162,6 +224,9 @@ void Server::LoadHLSL(const char* szFileName)
 	
 	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
+	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
+	m_hTCreateShadow = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
+
 	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 	m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
 	m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
@@ -172,8 +237,9 @@ void Server::LoadHLSL(const char* szFileName)
 	m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 
-	D3DXVECTOR4 posLight(0.0f,5000.0f,-5000.0f,0.0f);
-	m_pEffect->SetVector(m_hvWorldLightPosition,&posLight);
+	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
+	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
+
 
 	SAFE_RELEASE(pErr);
 
@@ -205,51 +271,127 @@ void Server::LoadHLSL(const char* szFileName)
 		if (m_hTBlend[i] == NULL )	
 			m_hTBlend[i] = m_hTSkinningPhongDiffuse;
 	}
+
+
 }
 
 void Server::Render(cView* pView)
 {
-	pView->SetViewPort();
+	cCameraNode* pCamera = cCameraNode::GetActiveCamera();
+	if (!pCamera)
+	{
+		return;
+	}
 	UINT passes = 0;
+	pView->SetViewPort();
+	
+	// 광원-뷰 행렬을 만든다.
+	D3DXMATRIX matLightView;
+	{
+		D3DXVECTOR3 vEyePt( m_WorldLightPosition.x, m_WorldLightPosition.y,  m_WorldLightPosition.z );		
+		D3DXVECTOR3 vLookatPt;
+		pCamera->GetWorldPos(vLookatPt);
+
+		vEyePt += vLookatPt;
+		D3DXVECTOR3 vUpVec(    0.0f, 1.0f,  0.0f );
+		D3DXMatrixLookAtLH( &matLightView, &vEyePt, &vLookatPt, &vUpVec );
+	}
+
+		// 광원-투영 행렬을 만든다.
+	D3DXMATRIX matLightProjection;
+	{
+		//D3DXMatrixPerspectiveFovLH( &matLightProjection, D3DX_PI / 4.0f, 1, 3000, FAR_PLANE );
+		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, NEAR_PLANE, FAR_PLANE );
+	}
+
+
+	// 현재 하드웨어 벡버퍼와 깊이버퍼
+	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
+	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
+	m_pD3DDevice->GetRenderTarget(0, &pHWBackBuffer);
+	m_pD3DDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);
+
+	//////////////////////////////
+	// 1. 그림자 만들기
+	//////////////////////////////
+
+	// 그림자 맵의 렌더타깃과 깊이버퍼를 사용한다.
+	LPDIRECT3DSURFACE9 pShadowSurface = NULL;
+	if( SUCCEEDED( m_pShadowRenderTarget->GetSurfaceLevel( 0, &pShadowSurface ) ) )
+	{
+		m_pD3DDevice->SetRenderTarget( 0, pShadowSurface );
+		pShadowSurface->Release();
+		pShadowSurface = NULL;
+	}
+	m_pD3DDevice->SetDepthStencilSurface( m_pShadowDepthStencil );
+	m_pD3DDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
+
+	m_pEffect->SetVector(m_hvWorldLightPosition,&m_WorldLightPosition);
+	m_pEffect->SetMatrix(m_hmLightView, &matLightView);
+	m_pEffect->SetMatrix(m_hmLightProjection, &matLightProjection);	
+	
+	
+	//1. write depth
+	m_pEffect->SetTechnique(m_hTCreateShadow);
+	m_pEffect->Begin(&passes, 0);
+	m_pEffect->BeginPass(0);
+	pView->m_listScene.RenderShadow();	
+	m_pEffect->EndPass();
+	m_pEffect->End();
+	
+	
+	//////////////////////////////
+	// 2. 그림자 입히기
+	//////////////////////////////
+
+	// 하드웨어 백버퍼/깊이버퍼를 사용한다.
+	m_pD3DDevice->SetRenderTarget( 0, pHWBackBuffer );
+	m_pD3DDevice->SetDepthStencilSurface(pHWDepthStencilBuffer);
+
+	pHWBackBuffer->Release();
+	pHWBackBuffer = NULL;
+	pHWDepthStencilBuffer->Release();
+	pHWDepthStencilBuffer = NULL;
+
+	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
+	
+
 	for (int i=0;i<16;i++)
 	{
-		// 여기선 렌더큐들만 그린다		
+		if(pView->m_listRenderQueue[i].IsEmpty())
+			continue;
+
 		m_pEffect->SetTechnique(m_hTNormal[i]);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-
+		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->BeginPass(0);	
 		pView->m_listRenderQueue[i].Render();
-
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-
+	
 	for (int i=0;i<16;i++)
 	{
-		// 여기선 렌더큐들만 그린다	
+		if(pView->m_listRenderQueueSkinned[i].IsEmpty())
+			continue;
+
 		m_pEffect->SetTechnique(m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
-		// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-
 		pView->m_listRenderQueueSkinned[i].Render();
-
 		m_pEffect->EndPass();
 		m_pEffect->End();
-
 	}
-
 	
 	m_pEffect->SetTechnique(m_hTerrain);
-	m_pEffect->Begin(&passes, 0);
+	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 	m_pEffect->BeginPass(0);
-	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-
 	pView->m_listRenderTerrain.Render();
-
 	m_pEffect->EndPass();
 	m_pEffect->End();
+
+	m_pD3DDevice->SetTexture (0, m_pShadowRenderTarget );
+	m_pD3DDevice->SetFVF(FVF_GUIVERTEX);
+	m_pD3DDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &g_vertices[0], sizeof(GUIVERTEX));
 }
 
 void Server::Begin()

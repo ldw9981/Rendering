@@ -28,6 +28,7 @@ protected:
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render();
+	virtual void			RenderShadow();
 	virtual	void			BuildComposite();
 
 	void					SetStartIndex(WORD val) { m_nStartIndex = val; }

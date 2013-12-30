@@ -16,16 +16,7 @@ cObjDragon::~cObjDragon(void)
 void cObjDragon::Init()
 {
 
-//	GetModel()->SetMeshRenderType(cScene::ONLYSKINEDMESH);
-//	GetModel()->SetActiveCamera(FALSE);
-//	InitChildren();
 
-	
-	m_pDummy=FindNode(std::string("Dummy01"));
-	assert(m_pDummy!=NULL);
-	m_pDummy->SetIsActiveAnimation(FALSE);
-	MoveOnLocal(0.0f,0.0f,820.0f);	
-	
 }
 
 void cObjDragon::Uninit()

@@ -30,3 +30,8 @@ void cRendererQueue::Render()
 	m_listNode.clear();
 }
 
+bool cRendererQueue::IsEmpty()
+{
+	return m_listNode.empty();
+}
+

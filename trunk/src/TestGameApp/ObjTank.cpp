@@ -32,34 +32,50 @@ void cObjTank::Update( DWORD elapseTime )
 
 void cObjTank::Control()
 {
-	if (!m_bControl)
+	D3DXVECTOR3 vecPos(0.0f,0.0f,0.0f);
+	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
+	if (m_bControl)
 	{
-		return;
-	}
-	if (m_pWinInput->IsCurrDn('W'))
-	{
-		SetVelocityPosition(0.0f,0.0f,100.0f);
-	}
-	else if (m_pWinInput->IsCurrDn('S'))
-	{
-		SetVelocityPosition(0.0f,0.0f,-100.0f);
-	}
-	if (m_pWinInput->IsCurrDn('A'))
-	{
-		SetVelocityRotation(0.0f,-45.0f,0.0f);
-	}
-	else if (m_pWinInput->IsCurrDn('D'))
-	{
-		SetVelocityRotation(0.0f,45.0f,0.0f);
-	}
-	if (m_pWinInput->IsCurrDn('E'))
-	{
-		SetVelocityRotation(-45.0f,0.0f,0.0f);
-	}
-	else if (m_pWinInput->IsCurrDn('C'))
-	{
-		SetVelocityRotation(45.0f,0.0f,0.0f);
-	}
+		if (m_pWinInput->IsCurrDn('W'))
+		{
+			vecPos.z = 200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('S'))
+		{
+			vecPos.z = -200.0f;
+		}	
+		if (m_pWinInput->IsCurrDn('A'))
+		{
+			vecPos.x = -200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('D'))
+		{
+			vecPos.x = 200.0f;
+		}	
+		if (m_pWinInput->IsCurrDn('R'))
+		{
+			vecPos.y = 200.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('F'))
+		{
+			vecPos.y = -200.0f;
+		}	
+
+
+		if (m_pWinInput->IsCurrDn('Q'))
+		{
+			vecRot.y = -45.0f;
+		}
+		else if (m_pWinInput->IsCurrDn('E'))
+		{
+			vecRot.y = 45.0f;
+		}
+
+
+	}	
+
+	SetVelocityPosition(vecPos);	
+	SetVelocityRotation(vecRot);
 }
 
 void cObjTank::Render()

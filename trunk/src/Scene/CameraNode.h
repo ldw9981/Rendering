@@ -45,8 +45,8 @@ private:
 	float				m_ScreenHeight;
 	
 	bool				m_bProcessInput;
-	BOOL				m_bViewModified;
-	BOOL				m_bProjectionModified;	
+//	BOOL				m_bViewModified;
+	bool				m_bProjectionModified;	
 	
 	cPlane*				m_pWorldFrustumPlane;	
 	static cCameraNode*	m_pActiveCamera;
@@ -63,10 +63,10 @@ public:
 
 	// Make Projection Matrix
 	void				SetPerspective(float fovy,float zn,float zf,float ScreenWidth,float ScreenHeight);
-	void				SetFOV(float val) { m_FOV = val; m_bProjectionModified=TRUE; }
+	void				SetFOV(float val) { m_FOV = val; m_bProjectionModified=true; }
 	void				SetScreenWidthHeight(float ScreenWidth,float ScreenHeight );	
-	void				SetNear(float val) { m_Near = val; m_bProjectionModified=TRUE;}
-	void				SetFar(float val) { m_Far = val; m_bProjectionModified=TRUE; }
+	void				SetNear(float val) { m_Near = val; m_bProjectionModified=true;}
+	void				SetFar(float val) { m_Far = val; m_bProjectionModified=true; }
 
 	void				MakeWorldPickingRay(float ScreenX,float ScreenY,cLine& Output);
 	void				MakeWorldFrustum();

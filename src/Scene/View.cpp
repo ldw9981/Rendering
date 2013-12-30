@@ -115,7 +115,7 @@ void cView::ProcessRender()
 	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
 	if (pActiveCamera)
 	{
-		m_listScene.CullRendererIntoRendererQueue(this,pActiveCamera);
+		m_listScene.CullRendererIntoRendererQueue(this,&pActiveCamera->GetFrustum());
 	}		
 	D3D9::Server::g_pServer->Render(this);
 

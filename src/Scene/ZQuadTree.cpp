@@ -4,6 +4,7 @@
 #include "Math/Triangle.h"
 #include "Scene/CameraNode.h"
 #include "Math/Sphere.h"
+#include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
 #include "Framework/D3DFramework.h"
 #include "DebugInfoView.h"
@@ -133,11 +134,11 @@ void	ZQuadTree::DevideSelf()
 }
 
 // 출력할 폴리곤의 인덱스를 생성한다.
-void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
+void ZQuadTree::GenTriIndex(Frustum& frustum,int& nTris, LPVOID pIndex )
 {
 	if( !m_bIsLeafNode )
 	{	// 그룹노드일때는 2차원 구로 컬링
-		if ( pCamera->CheckWorldFrustumWithoutYAxis(m_BoundingSphere) == cCollision::OUTSIDE)
+		if ( cCollision::CheckWorldFrustumWithoutYAxis(frustum,m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		
@@ -145,7 +146,7 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 	else
 	{
 		// 리프노드일때는 3차원구로 컬링
-		if ( pCamera->CheckWorldFrustum(m_BoundingSphere) == cCollision::OUTSIDE)
+		if ( cCollision::CheckWorldFrustum(frustum,m_BoundingSphere) == cCollision::OUTSIDE)
 		{
 			return;
 		}		
@@ -165,10 +166,10 @@ void ZQuadTree::GenTriIndex( cCameraNode* pCamera,int& nTris, LPVOID pIndex )
 	}
 
 	// 자식 노드들 검색
-	if( m_pChild[CORNER_TL] ) m_pChild[CORNER_TL]->GenTriIndex(pCamera, nTris, pIndex );
-	if( m_pChild[CORNER_TR] ) m_pChild[CORNER_TR]->GenTriIndex(pCamera, nTris, pIndex );
-	if( m_pChild[CORNER_BL] ) m_pChild[CORNER_BL]->GenTriIndex(pCamera, nTris, pIndex );
-	if( m_pChild[CORNER_BR] ) m_pChild[CORNER_BR]->GenTriIndex(pCamera, nTris, pIndex );
+	if( m_pChild[CORNER_TL] ) m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex );
+	if( m_pChild[CORNER_TR] ) m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex );
+	if( m_pChild[CORNER_BL] ) m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex );
+	if( m_pChild[CORNER_BR] ) m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex );
 }
 
 void ZQuadTree::CreateCellTriangle()
@@ -302,9 +303,9 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 /*
 	CheckWorldFrustumForQuadTree를 사용한다
 */
-void ZQuadTree::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera )
+void ZQuadTree::CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum)
 {
-	int ret=pActiveCamera->CheckWorldFrustumWithoutYAxis(m_BoundingSphere);
+	int ret= cCollision::CheckWorldFrustumWithoutYAxis(*pFrustum,m_BoundingSphere);
 	if( ret == cCollision::OUTSIDE)
 	{	//  밖에 있는것이면 노드순회 없음	
 		return;
@@ -318,7 +319,7 @@ void ZQuadTree::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveC
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererIntoRendererQueue(pView,pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pView,pFrustum);
 	}
 }
 

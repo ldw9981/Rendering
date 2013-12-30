@@ -12,6 +12,7 @@ class cTriangle;
 class cCameraNode;
 class cRendererQueue;
 class cView;
+class Frustum;
 struct TERRAINVERTEX;
 
 
@@ -52,14 +53,14 @@ public:
 
 	virtual void		Update(DWORD elapseTime);
 
-	void				GenTriIndex(cCameraNode* pCamera, int& nTris, LPVOID pIndex ); /// 출력할 인덱스를 생성한다.	
+	void				GenTriIndex(Frustum& frustum, int& nTris, LPVOID pIndex ); /// 출력할 인덱스를 생성한다.	
 	
 
 	BOOL				CheckInside(D3DXVECTOR3& pos,float loose=0.0f);
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);
-	virtual void		CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
+	virtual void		CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	virtual void		Render();
 };
 

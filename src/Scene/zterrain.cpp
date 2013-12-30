@@ -7,6 +7,7 @@
 #include "Resource/ResourceMng.h"
 #include "D3D9Server/RscIndexBuffer.h"
 #include "Math/CollisionDetector.h"
+#include "Math/Frustum.h"
 #include "Foundation/Define.h"
 #include "D3D9Server/Server.h"
 
@@ -176,22 +177,18 @@ void	ZTerrain::Render()
 
 }
 
-HRESULT ZTerrain::FillIndexBuffer()
+HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 {
 	cCameraNode* pCamera=cCameraNode::GetActiveCamera();
-
 	LPDWORD		pI=NULL;
 	pI=(LPDWORD)m_pRscIndexBuffer->Lock();	
 	m_nTriangles=0;
-	m_pQuadTree->GenTriIndex(pCamera, m_nTriangles, pI );
+	m_pQuadTree->GenTriIndex(frustum, m_nTriangles, pI );
 	m_pRscIndexBuffer->Unlock();
-
-
 
 	char temp[256];
 	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
 	D3D9::Server::g_pServer->RenderDebugString(0,20,temp);
-
 
 	return S_OK;
 }
@@ -213,9 +210,9 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-void ZTerrain::CullRendererIntoRendererQueue( cView* pView,cCameraNode* pActiveCamera )
+void ZTerrain::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
 {
-	FillIndexBuffer();
+	FillIndexBuffer(*pFrustum);
 	QueueRenderer(pView,false);
 }
 

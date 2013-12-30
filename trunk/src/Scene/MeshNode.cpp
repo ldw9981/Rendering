@@ -156,9 +156,9 @@ void cMeshNode::BuildComposite()
 /*
 	겹치면 자식까지 그냥 다 그린다. 밖이면 자식검사
 */
-void cMeshNode::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera )
+void cMeshNode::CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum  )
 {
-	cCollision::STATE retCS=pActiveCamera->CheckWorldFrustum(m_BoundingSphere);
+	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere);
 	if( retCS != cCollision::OUTSIDE)
 	{			
 		if (m_bRender)
@@ -171,7 +171,7 @@ void cMeshNode::CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveC
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->CullRendererIntoRendererQueue(pView,pActiveCamera);
+		(*it_child)->CullRendererIntoRendererQueue(pView,pFrustum);
 	}
 }
 

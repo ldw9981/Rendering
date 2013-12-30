@@ -37,6 +37,19 @@ const float cPlane::GetDistance(const D3DXVECTOR3& pos )
 {
 	return (a*pos.x + b*pos.y + c*pos.z + d);
 }
+/*
+                  plane
+                    `
+           |           ` 
+           |           /  `
+           | distance/       `
+           |       /            `
+           |     /                 `
+           |   ^                      ` 
+           | / normal
+-----------+-----------
+           | 
+*/
 void cPlane::Make(const D3DXVECTOR3& Normal,float d )
 {
 	D3DXPLANE::a=Normal.x;

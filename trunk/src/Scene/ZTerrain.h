@@ -24,7 +24,7 @@ class cCameraNode;
 class cRscTexture;
 class cRscVertexBuffer;
 class cRscIndexBuffer;
-
+class Frustum;
 
 
 
@@ -82,7 +82,7 @@ private:
 
 public:
 	/// 화면에 지형을 출력한다.
-	virtual void	CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
+	virtual void	CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	virtual void	Render();
 	virtual	void	Update(DWORD elapseTime);
 	virtual	void	QueueRenderer(cView* pView,bool bTraversal);
@@ -110,7 +110,7 @@ public:
 	float		GetCZTerrain() { return m_czDIB * m_vfScale.z; }
 
 	
-	HRESULT		FillIndexBuffer();
+	HRESULT		FillIndexBuffer(Frustum& frustum);
 
 	TERRAINVERTEX* GetHeightMap() const { return m_pvHeightMap; }
 };

@@ -30,13 +30,11 @@ cCameraNode::cCameraNode()
 
 	m_bProcessInput = false;
 	m_bProjectionModified = false;
-	
-	m_pWorldFrustumPlane = new cPlane[6];	
 }
 
 cCameraNode::~cCameraNode(void)
 {
-	SAFE_DELETEARRAY(m_pWorldFrustumPlane);
+
 }
 
 
@@ -62,7 +60,7 @@ void cCameraNode::Render()
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
 	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
 
-	MakeWorldFrustum();	
+	m_frustum.Make(m_matViewProjection);
 }
 
 /*
@@ -130,149 +128,7 @@ void cCameraNode::SetPerspective(float fovy,float zn,float zf,float ScreenWidth,
 
 
 
-cPlane& cCameraNode::GetWorldFrustumPlane( int side )
-{
-	return m_pWorldFrustumPlane[side];
-}
 
-void cCameraNode::MakeWorldFrustum()
-{	
-	D3DXVECTOR3 Normal;
-	float dist;	
-	
-	Normal.x=m_matViewProjection._14 + m_matViewProjection._11;
-	Normal.y=m_matViewProjection._24 + m_matViewProjection._21;
-	Normal.z=m_matViewProjection._34 + m_matViewProjection._31;
-	dist=	 m_matViewProjection._44 + m_matViewProjection._41;
-	m_pWorldFrustumPlane[PN_LEFT].Make(Normal,dist);
-
-	Normal.x=m_matViewProjection._14 - m_matViewProjection._11;
-	Normal.y=m_matViewProjection._24 - m_matViewProjection._21;
-	Normal.z=m_matViewProjection._34 - m_matViewProjection._31;
-	dist=	 m_matViewProjection._44 - m_matViewProjection._41;
-	m_pWorldFrustumPlane[PN_RIGHT].Make(Normal,dist);
-
-	Normal.x= m_matViewProjection._14 - m_matViewProjection._12;
-	Normal.y= m_matViewProjection._24 - m_matViewProjection._22;
-	Normal.z= m_matViewProjection._34 - m_matViewProjection._32;
-	dist=	  m_matViewProjection._44 - m_matViewProjection._42;
-	m_pWorldFrustumPlane[PN_TOP].Make(Normal,dist);
-
-	Normal.x= m_matViewProjection._14 + m_matViewProjection._12;
-	Normal.y= m_matViewProjection._24 + m_matViewProjection._22;
-	Normal.z= m_matViewProjection._34 + m_matViewProjection._32;
-	dist=	  m_matViewProjection._44 + m_matViewProjection._42;
-	m_pWorldFrustumPlane[PN_BOTTOM].Make(Normal,dist);
-
-	Normal.x= m_matViewProjection._14 + m_matViewProjection._13;
-	Normal.y= m_matViewProjection._24 + m_matViewProjection._23;
-	Normal.z= m_matViewProjection._34 + m_matViewProjection._33;
-	dist=	  m_matViewProjection._44 + m_matViewProjection._43;
-	m_pWorldFrustumPlane[PN_NEAR].Make(Normal,dist);
-
-
-	Normal.x= m_matViewProjection._14 - m_matViewProjection._13;
-	Normal.y= m_matViewProjection._24 - m_matViewProjection._23;
-	Normal.z= m_matViewProjection._34 - m_matViewProjection._33;
-	dist=	  m_matViewProjection._44 - m_matViewProjection._43;
-	m_pWorldFrustumPlane[PN_FAR].Make(Normal,dist);
-
-	for( int i = 0; i < 6; ++i )
-		m_pWorldFrustumPlane[i].Normalize();
-}
-
-cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere& sphere )
-{
-	int ret;
-	BOOL bIntersect=false;
-	for (int i=0;i<6;i++)
-	{	
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[i]);				
-		if (ret==cCollision::OUTSIDE)	
-		{	// 바깥쪽이면 무조건 바깥
-			return cCollision::OUTSIDE;
-		}
-		else if (ret==cCollision::INTERSECT)
-		{	//겹치면 안쪽은 아니다.
-			bIntersect=true;
-		}			
-	}
-	
-	// 6면 검사후 
-  	if (bIntersect)
-	{	// OUTSIDE는 아니지만 겹친다.
-		return cCollision::INTERSECT;	
-	}
-	//안쪽이다.
-	return cCollision::INSIDE;
-}
-
-cCollision::STATE cCameraNode::CheckWorldFrustum( cSphere& sphere,WORD plane )
-{
-	cCollision::STATE ret;
-	BOOL bInside=TRUE;
-
-
-	if (plane&PB_TOP)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_TOP]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-	if (plane&PB_BOTTOM)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_BOTTOM]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-	if (plane&PB_LEFT)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_LEFT]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-	if (plane&PB_RIGHT)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_RIGHT]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-	if (plane&PB_NEAR)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_NEAR]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-	if (plane&PB_FAR)
-	{
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[PN_FAR]);				
-		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
-		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
-	}
-
-	// 6면 검사후 
-	if (!bInside)
-	{	// 안쪽이 아니면 겹친다.
-		return cCollision::INTERSECT;	
-	}	
-	//안쪽이다.
-	return cCollision::INSIDE;
-}
-
-
-BOOL cCameraNode::InsideWorldFrustum( D3DXVECTOR3& pos )
-{
-	BOOL bInside=TRUE;
-	// 현재는 left, right, far plane만 적용한다.
-	for(UINT i = 0 ; i < 6 ; i++ )
-	{
-		if(m_pWorldFrustumPlane[i].GetDistance(pos) < 0.0f )
-		{
-			bInside=FALSE;
-		}
-	}
-	return bInside;
-}
 void cCameraNode::SetScreenWidthHeight( float ScreenWidth,float ScreenHeight )
 {
 	m_ScreenHeight=ScreenHeight;
@@ -308,39 +164,7 @@ void cCameraNode::SetActive()
 	m_pActiveCamera = this;
 }
 
-/*
-	PLANE_TOP , PLANE_BOTTOM을 검사안한다.
-*/
-cCollision::STATE cCameraNode::CheckWorldFrustumWithoutYAxis(cSphere& sphere)
-{
-	cCollision::STATE ret;
-	BOOL bInside=TRUE;
-	for (int i=0;i<6;i++)
-	{	
-		if ( i==PN_TOP || i==PN_BOTTOM)
-		{
-			continue;
-		}
 
-		ret=cCollision::IntersectSpherePlane(sphere,m_pWorldFrustumPlane[i]);				
-		if (ret==cCollision::OUTSIDE)	
-		{	// 바깥쪽이면 무조건 바깥
-			return cCollision::OUTSIDE;
-		}
-		else if (ret==cCollision::INTERSECT)
-		{	//겹치면 안쪽은 아니다.
-			bInside=FALSE;
-		}			
-	}
-
-	// 6면 검사후 
-	if (!bInside)
-	{	// 안쪽이 아니면 겹친다.
-		return cCollision::INTERSECT;	
-	}
-	//안쪽이다.
-	return cCollision::INSIDE;
-}
 
 void cCameraNode::Control()
 {

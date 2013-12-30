@@ -47,7 +47,7 @@ public:
 	void					AddMultiSub(cMeshNode* mesh);	
 
 
-	void					CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera );
+	void					CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	virtual void			QueueRenderer(cView* pView,bool bTraversal);
 
 	void					CalculateTangentBinormal();

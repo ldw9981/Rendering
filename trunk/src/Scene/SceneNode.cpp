@@ -9,6 +9,7 @@
 #include "Math/Sphere.h"
 #include "Scene/MeshNode.h"
 #include "Scene/CameraNode.h"
+#include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
 #include "ZQuadTree.h"
 #include "Foundation/Define.h"
@@ -193,12 +194,12 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 
 // 기본적기능
 // bRender체크후 자식만 돌자.
-void cSceneNode::CullRendererIntoRendererQueue( cView* pView,cCameraNode* pActiveCamera )
+void cSceneNode::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
 {				
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->CullRendererIntoRendererQueue(pView,pActiveCamera);
+		(*it)->CullRendererIntoRendererQueue(pView,pFrustum);
 	}
 }
 

@@ -10,6 +10,7 @@ class cRendererQueue;
 class cSphere;
 class cCameraNode;
 class cView;
+class Frustum;
 struct SCENENODEINFO;
 
 class cSceneNode:
@@ -91,7 +92,7 @@ public:
 	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
 
 	//					순회 하면서 Renderer들을 큐에 넣는다.
-	virtual void		CullRendererIntoRendererQueue(cView* pView,cCameraNode* pActiveCamera);
+	virtual void		CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	
 	cSceneNode&	operator=(const cSceneNode& other);
 

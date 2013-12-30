@@ -4,6 +4,7 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "AABB.h"
+#include "Frustum.h"
 
 #include "Foundation/Trace.h"
 cCollision::cCollision(void)
@@ -210,4 +211,132 @@ int cCollision::IntersectAABBSphere( cAABB& AABB,cSphere& Sphere )
 		return OUTSIDE;
 	}
 	return INTERSECT;
+}
+
+
+cCollision::STATE cCollision::CheckWorldFrustum(Frustum& frustum, cSphere& sphere )
+{
+	int ret;
+	BOOL bIntersect=false;
+	for (int i=0;i<6;i++)
+	{	
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i]);				
+		if (ret==cCollision::OUTSIDE)	
+		{	// 바깥쪽이면 무조건 바깥
+			return cCollision::OUTSIDE;
+		}
+		else if (ret==cCollision::INTERSECT)
+		{	//겹치면 안쪽은 아니다.
+			bIntersect=true;
+		}			
+	}
+
+	// 6면 검사후 
+	if (bIntersect)
+	{	// OUTSIDE는 아니지만 겹친다.
+		return cCollision::INTERSECT;	
+	}
+	//안쪽이다.
+	return cCollision::INSIDE;
+}
+
+cCollision::STATE cCollision::CheckWorldFrustum(Frustum& frustum, cSphere& sphere,WORD plane )
+{
+	cCollision::STATE ret;
+	BOOL bInside=TRUE;
+
+
+	if (plane&Frustum::PB_TOP)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_TOP]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+	if (plane&Frustum::PB_BOTTOM)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_BOTTOM]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+	if (plane&Frustum::PB_LEFT)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_LEFT]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+	if (plane&Frustum::PB_RIGHT)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_RIGHT]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+	if (plane&Frustum::PB_NEAR)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_NEAR]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+	if (plane&Frustum::PB_FAR)
+	{
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[Frustum::PN_FAR]);				
+		if (ret==cCollision::OUTSIDE)	return cCollision::OUTSIDE;	// 바깥쪽이면 무조건 바깥
+		else if (ret==cCollision::INTERSECT)	bInside=FALSE;				
+	}
+
+	// 6면 검사후 
+	if (!bInside)
+	{	// 안쪽이 아니면 겹친다.
+		return cCollision::INTERSECT;	
+	}	
+	//안쪽이다.
+	return cCollision::INSIDE;
+}
+
+
+BOOL cCollision::InsideWorldFrustum(Frustum& frustum, D3DXVECTOR3& pos )
+{
+	BOOL bInside=TRUE;
+	// 현재는 left, right, far plane만 적용한다.
+	for(UINT i = 0 ; i < 6 ; i++ )
+	{
+		if(frustum.m_plane[i].GetDistance(pos) < 0.0f )
+		{
+			bInside=FALSE;
+		}
+	}
+	return bInside;
+}
+
+/*
+	PLANE_TOP , PLANE_BOTTOM을 검사안한다.
+*/
+cCollision::STATE cCollision::CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSphere& sphere)
+{
+	cCollision::STATE ret;
+	BOOL bInside=TRUE;
+	for (int i=0;i<6;i++)
+	{	
+		if ( i== Frustum::PN_TOP || i== Frustum::PN_BOTTOM)
+		{
+			continue;
+		}
+
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i]);				
+		if (ret==cCollision::OUTSIDE)	
+		{	// 바깥쪽이면 무조건 바깥
+			return cCollision::OUTSIDE;
+		}
+		else if (ret==cCollision::INTERSECT)
+		{	//겹치면 안쪽은 아니다.
+			bInside=FALSE;
+		}			
+	}
+
+	// 6면 검사후 
+	if (!bInside)
+	{	// 안쪽이 아니면 겹친다.
+		return cCollision::INTERSECT;	
+	}
+	//안쪽이다.
+	return cCollision::INSIDE;
 }

@@ -3,14 +3,9 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "Math/CollisionDetector.h"
 #include "WinInput/WinInput.h"
+#include "Math/Frustum.h"
 
-// Plane Bit
-#define PB_LEFT			0x0001
-#define PB_RIGHT		0x0002
-#define PB_TOP			0x0004
-#define PB_BOTTOM		0x0008
-#define PB_NEAR			0x000F
-#define PB_FAR			0x0010
+
 
 class cPlane;
 class cSceneRoot;
@@ -26,9 +21,6 @@ class cCameraNode :
 public:
 	cCameraNode();
 	virtual ~cCameraNode();
-
-	// Plane Number
-	enum PLANE_NUM { PN_LEFT,PN_RIGHT,PN_TOP,PN_BOTTOM,PN_NEAR,PN_FAR};	
 private:	
 
 	D3DXMATRIX			m_matProjection;
@@ -45,10 +37,11 @@ private:
 	float				m_ScreenHeight;
 	
 	bool				m_bProcessInput;
-//	BOOL				m_bViewModified;
 	bool				m_bProjectionModified;	
 	
-	cPlane*				m_pWorldFrustumPlane;	
+	Frustum				m_frustum;
+	
+
 	static cCameraNode*	m_pActiveCamera;
 	
 public:
@@ -69,16 +62,11 @@ public:
 	void				SetFar(float val) { m_Far = val; m_bProjectionModified=true; }
 
 	void				MakeWorldPickingRay(float ScreenX,float ScreenY,cLine& Output);
-	void				MakeWorldFrustum();
 
-	cCollision::STATE					CheckWorldFrustum(cSphere& sphere,WORD plane);
-	cCollision::STATE					CheckWorldFrustum(cSphere& sphere);
-	cCollision::STATE					CheckWorldFrustumWithoutYAxis(cSphere& sphere);
-	BOOL				InsideWorldFrustum(D3DXVECTOR3& pos);
 	const D3DXMATRIX&	GetMatViewProjection() { return m_matViewProjection; }
 	const D3DXMATRIX&	GetMatView() { return m_matView; }
 	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }
-	cPlane&				GetWorldFrustumPlane(int side);
+	Frustum&      GetFrustum()  { return m_frustum; }
 	void				SetActive();	
 	bool GetProcessInput() const { return m_bProcessInput; }
 	void SetProcessInput(bool val) { m_bProcessInput = val; }

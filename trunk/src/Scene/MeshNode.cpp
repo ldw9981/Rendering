@@ -382,32 +382,25 @@ void cMeshNode::DebugRender()
 
 }
 
-void cMeshNode::RenderShadow()
-{
-	if (m_vecSubMesh.empty())
-	{
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-		m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
-		m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
-		m_pRscIndexBuffer->SetIndices();		
 
-		D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-		m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
-			0,  
-			0, 
-			m_pRscVetextBuffer->GetCount(),
-			m_nStartIndex,
-			m_nPrimitiveCount );
-	}
-	else
+void cMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
+{
+	pView->m_listShadowNormal.Insert(this);
+
+	if (!bTraversal)
+		return;
+
+	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 	{
-		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
-		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
-		{
-			(*it_sub)->RenderShadow();
-		}
+		(*it_sub)->QueueRendererShadow(pView,bTraversal);
 	}
-	cSceneNode::RenderShadow();	
+
+	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->QueueRendererShadow(pView,bTraversal);
+	}
 }
 
 

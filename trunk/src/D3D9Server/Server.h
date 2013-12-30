@@ -40,7 +40,8 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuse;// Å×Å©´Ð
 	D3DXHANDLE				m_hTPhongDiffuseLight;
 	D3DXHANDLE				m_hTPhongDiffuseBump;
-	D3DXHANDLE				m_hTCreateShadow;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowNormal;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowBlend;	// ½¦ÀÌ´õ
 	LPD3DXEFFECT			m_pApplyShadowShader;
 	LPD3DXEFFECT			m_pCreateShadowShader;
 

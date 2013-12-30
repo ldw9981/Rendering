@@ -28,7 +28,6 @@ protected:
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render();
-	virtual void			RenderShadow();
 	virtual	void			BuildComposite();
 
 	void					SetStartIndex(WORD val) { m_nStartIndex = val; }
@@ -49,6 +48,7 @@ public:
 
 	void					CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	virtual void			QueueRenderer(cView* pView,bool bTraversal);
+	virtual void			QueueRendererShadow(cView* pView,bool bTraversal);
 
 	void					CalculateTangentBinormal();
 	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,

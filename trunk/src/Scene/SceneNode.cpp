@@ -296,4 +296,13 @@ void cSceneNode::RenderShadow()
 	}
 }
 
+void cSceneNode::QueueRendererShadow( cView* pView,bool bTraversal )
+{
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->QueueRendererShadow(pView,bTraversal);
+	}
+}
+
 

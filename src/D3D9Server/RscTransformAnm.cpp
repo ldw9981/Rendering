@@ -29,8 +29,13 @@ void cRscTransformAnm::Free()
 
 
 
-D3DXMATRIX& cRscTransformAnm::GetTransform(DWORD& animationTime, DWORD dwTimeDelta )
+void cRscTransformAnm::GetTransform(D3DXMATRIX& out ,DWORD& animationTime, DWORD dwTimeDelta )
 {
+	D3DXMATRIX tmSCL;
+	D3DXMATRIX tmROT;
+	D3DXMATRIX tmPOS;
+	
+
 	animationTime += dwTimeDelta;
 	animationTime %= m_dwTimeLength;
 
@@ -58,22 +63,21 @@ D3DXMATRIX& cRscTransformAnm::GetTransform(DWORD& animationTime, DWORD dwTimeDel
 	D3DXVec3Lerp(&stTempAnmKey.TranslationAccum,&m_arrayANMKEY[nIndexPrev].TranslationAccum,&m_arrayANMKEY[nIndexAfter].TranslationAccum,fValue);
 
 	// 각성분에대한  TM구하기
-	D3DXMatrixScaling(&m_tmSCL,
+	D3DXMatrixScaling(&tmSCL,
 			stTempAnmKey.ScaleAccum.x,
 			stTempAnmKey.ScaleAccum.y,
 			stTempAnmKey.ScaleAccum.z);
 
-	D3DXMatrixRotationQuaternion(&m_tmROT,
+	D3DXMatrixRotationQuaternion(&tmROT,
 			&stTempAnmKey.RotationAccum);					
 
-	D3DXMatrixTranslation(&m_tmPOS,
+	D3DXMatrixTranslation(&tmPOS,
 			stTempAnmKey.TranslationAccum.x,
 			stTempAnmKey.TranslationAccum.y,
 			stTempAnmKey.TranslationAccum.z);			
 
 	// TM	
-	m_tmAnm = m_tmSCL * m_tmROT * m_tmPOS;		
-	return m_tmAnm;
+	out = tmSCL * tmROT * tmPOS;		
 }
 
 float cRscTransformAnm::GetInterpolateValue( int start_time,int end_time,int inter_time )

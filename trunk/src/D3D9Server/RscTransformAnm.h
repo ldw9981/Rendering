@@ -49,9 +49,6 @@ class cRscTransformAnm:
 public:
 	cRscTransformAnm();
 	~cRscTransformAnm();
-
-protected:
-	DWORD	m_dwTimeAccum;
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
 
@@ -67,11 +64,10 @@ public:
 	DWORD					GetTimeLength() const { return m_dwTimeLength; }
 	void					SetTimeLength(DWORD val) { m_dwTimeLength = val; }
 	std::vector<ANMKEY>&			GetArrayANMKEY()  { return m_arrayANMKEY; }
-	D3DXMATRIX&				GetTransform(DWORD dwTimeDelta);	
+	D3DXMATRIX&				GetTransform(DWORD& animationTime, DWORD dwTimeDelta);	
 	
 
 	// cResource
-	virtual void			ProcessMakeUniqueKey();
 	virtual	BOOL			Create();	
 	virtual	void			Free();
 };

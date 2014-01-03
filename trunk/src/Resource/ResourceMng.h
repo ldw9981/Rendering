@@ -25,11 +25,19 @@ public:
 	void				EraseResource(const std::string& strKey);	
 	void				RestoreAll();
 
-	cRscTexture*		CreateRscTexture(const char* szFilePath);
-	cRscTexture*		CreateRscTexture(UINT nUniqueNumber=0);
-	cRscVertexBuffer*	CreateRscVertexBuffer(DWORD bufferSize,D3DPOOL type=D3DPOOL_DEFAULT,UINT nUniqueNumber=0);
-	cRscIndexBuffer*	CreateRscIndexBuffer(DWORD bufferSize,D3DPOOL type=D3DPOOL_DEFAULT,UINT nUniqueNumber=0);
-	cRscTransformAnm*	CreateRscTransformAnm(UINT findUniqueNumber=0);	
+	void				GetKeyTexture(std::string& key,const  char* filePath );
+	cRscTexture*		CreateRscTexture(const char* filePath);
+
+	void				GetKeyVertexBuffer(std::string& key, const char* rootName,const char* meshName );
+	cRscVertexBuffer*	CreateRscVertexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_DEFAULT);
+
+	void				GetKeyIndexBuffer(std::string& key, const char* rootName, const char* meshName );
+	cRscIndexBuffer*	CreateRscIndexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_DEFAULT);
+
+	void				GetKeyTransformAnm( std::string& key, const  char* rootName, const char* meshName, const char* anmName );
+	cRscTransformAnm*	CreateRscTransformAnm(const char* rootName,const char* meshName, const char* anmName);
+	
+	int					GetCount();
 };
 
 class cStaticResourceMng
@@ -37,8 +45,8 @@ class cStaticResourceMng
 public:
 	cStaticResourceMng(void){};
 	~cStaticResourceMng(void){};
-protected:
-	static cResourceMng m_ResourceMng;
+public:
+	static cResourceMng* m_pResourceMng;
 };
 
 

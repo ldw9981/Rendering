@@ -46,8 +46,6 @@ private:
 	
 public:
 
-
-	virtual void		Update(DWORD elapseTime);	// 카메라 정보 메트릭스로 뷰변환매트릭스를 만든다.
 	virtual void		Render();
 	virtual void		Control();
 

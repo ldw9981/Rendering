@@ -102,6 +102,10 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 	
 	if( !pDIB ) return E_FAIL;
 
+	char filename[256];
+	_splitpath_s(lpFilename,NULL,0,NULL,0,filename,256,NULL,0);
+	m_strNodeName = filename;
+
 	m_cxDIB = DIB_CX( pDIB );
 	m_czDIB = DIB_CY( pDIB );
 	
@@ -133,7 +137,7 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 /// 정점, 인덱스 버퍼를 생성한다.
 HRESULT	ZTerrain::_CreateVIB()
 {
- 	m_pRscVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
+ 	m_pRscVertexBuffer = m_pResourceMng->CreateRscVertexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
 	m_pRscVertexBuffer->AddRef();
 
  	if (m_pRscVertexBuffer == NULL)
@@ -151,7 +155,7 @@ HRESULT	ZTerrain::_CreateVIB()
 	memcpy( pVertices, m_pvHeightMap, m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX) );
 	m_pRscVertexBuffer->Unlock();
 
-	m_pRscIndexBuffer = m_ResourceMng.CreateRscIndexBuffer((m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
+	m_pRscIndexBuffer = m_pResourceMng->CreateRscIndexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),(m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
 	m_pRscIndexBuffer->AddRef();
 
 	if (m_pRscIndexBuffer == NULL)

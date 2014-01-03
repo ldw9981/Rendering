@@ -19,7 +19,7 @@
 #include "Scene/View.h"
 
 
-cMeshNode::cMeshNode(void)
+cMeshNode::cMeshNode(void):cSceneNode()
 {		
 	m_bIsBone= FALSE;
 
@@ -58,9 +58,13 @@ cMeshNode::~cMeshNode(void)
 void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateTransformAnm(elapseTime),m_pParentNode);
+	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
+	if ( m_strNodeName == std::string("Bone03"))
+	{
+		printf("DDD");
+	}
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
-
+	
 	if (!m_vecSubMesh.empty())
 	{
 		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
@@ -69,7 +73,7 @@ void cMeshNode::Update(DWORD elapseTime)
 			(*it)->Update(elapseTime);
 		}
 	}	
-
+	
 	UpdateChildren(elapseTime);
 }
 

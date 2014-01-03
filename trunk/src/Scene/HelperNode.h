@@ -11,6 +11,5 @@ public:
 private:
 
 public:
-	virtual void	Update(DWORD elapseTime);
 	virtual void	Render();
 };

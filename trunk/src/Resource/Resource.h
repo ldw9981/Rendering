@@ -31,29 +31,12 @@ class cResource:
 public:
 	cResource(void);
 	virtual ~cResource(void);
-public:
-	static UINT		m_nAccNumber;			// 리소스 고유넘버를 위한 번호증가값 	
-	
-private:
-	UINT			m_nUniqueNumber;				// 고유넘버
-
-
+protected:
 	std::string			m_strUniqeKey;			// 리소스 매니져에 사용될 맵의 키	
-	std::string			m_strFilePath;			// 리소스에 1:1대응될 파일 	
-
-
 public:
-
-	void			SetFilePath(const char* szFilePath) { m_strFilePath=szFilePath; }
-	const  std::string&	GetFilePath() const { return m_strFilePath; }
-
 	
 	const  std::string&	GetUniqueKey() const { return m_strUniqeKey; }
 	void			SetUniqueKey(std::string& val) { m_strUniqeKey = val; }
-	UINT			GetUniqueNumber() const { return m_nUniqueNumber; }
-	
-
-	virtual void	ProcessMakeUniqueKey()=0;  
 	virtual BOOL	Create()=0;		// AddReference 호출후 실제 리소스에 해당되는 D3D API의 호출
 };
 

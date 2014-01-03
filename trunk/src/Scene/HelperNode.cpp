@@ -14,13 +14,6 @@ cHelperNode::~cHelperNode(void)
 	
 }
 
-void cHelperNode::Update(DWORD elapseTime)
-{
-	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateTransformAnm(elapseTime),GetParentNode());
-	UpdateChildren(elapseTime);
-}
-
 void cHelperNode::Render()
 {
 

@@ -13,11 +13,11 @@ class cRscTexture:
 public:	
 	cRscTexture(void);
 	~cRscTexture(void);		
-private:	
+protected:	
 	LPDIRECT3DTEXTURE9		m_pD3DTexture;			
+	std::string				m_filePath;
 public:		
 	// cResource
-	virtual void			ProcessMakeUniqueKey();
 	virtual	BOOL			Create();	
 	virtual	void			Free();
 
@@ -27,4 +27,5 @@ public:
 	LPDIRECT3DTEXTURE9		GetD3DTexture() const { return m_pD3DTexture; }
 	void					SetTexture(UINT stage);
 	static void				SetNullTexture(UINT stage);
+	void SetFilePath(const char* filePath) { m_filePath = filePath; }
 };

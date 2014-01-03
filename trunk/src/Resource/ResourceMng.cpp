@@ -9,11 +9,11 @@
 #include "D3D9Server/RscTransformAnm.h"
 
 
-cResourceMng cStaticResourceMng::m_ResourceMng;
+cResourceMng* cStaticResourceMng::m_pResourceMng;
 
 cResourceMng::cResourceMng( void )
 {
-
+	cStaticResourceMng::m_pResourceMng = this;
 }
 
 cResourceMng::~cResourceMng( void )
@@ -26,7 +26,6 @@ cResourceMng::~cResourceMng( void )
 
 BOOL cResourceMng::InsertResource(cResource* in )
 {
-	in->ProcessMakeUniqueKey();
 	if( m_mapResource.insert(make_pair(in->GetUniqueKey(),in)).second )
 		return TRUE;
 
@@ -54,155 +53,153 @@ void cResourceMng::EraseResource(const std::string& strKey )
 
 // 파일명이 찾은후 없으면 생성
 // NULL이면 생성 
-cRscTexture* cResourceMng::CreateRscTexture( const char* szFilePath)
+
+void cResourceMng::GetKeyTexture(std::string& key, const char* filePath )
+{
+	char fileName[256];
+	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
+	key = std::string("TEXTURE_");
+	key += fileName;
+}
+
+cRscTexture* cResourceMng::CreateRscTexture( const char* filePath )
 {	
 	cRscTexture* pItem=NULL;
-	std::string strUniqeKey;	
-	if (szFilePath!=NULL)
+	std::string strKey;
+	GetKeyTexture(strKey,filePath);	
+
+	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
+	if (it!=m_mapResource.end())
 	{
-		strUniqeKey += "TEXTURE_";
-		strUniqeKey += szFilePath;
-		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
-		if (it!=m_mapResource.end())
-		{
-			pItem=static_cast<cRscTexture*>(it->second);
-			return pItem;
-		}
+		pItem=static_cast<cRscTexture*>(it->second);
+		return pItem;
 	}
+
 	pItem = new cRscTexture;
-	pItem->SetFilePath(szFilePath);
+	pItem->SetUniqueKey(strKey);
+	pItem->SetFilePath(filePath);
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	pItem->ProcessMakeUniqueKey();
-	m_mapResource.insert(make_pair(pItem->GetUniqueKey(),pItem));
+	m_mapResource.insert(make_pair(strKey,pItem));
 	return pItem;	
 }
-/*
-Unique 번호 찾은후 없으면 생성
-입력번호NULL이면 생성
-*/
-cRscTexture* cResourceMng::CreateRscTexture( UINT nUniqueNumber/*=0*/)
+
+
+void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,const char* meshName )
 {
-	cRscTexture* pItem=NULL;
-	std::string strFindKey;	
-	if (nUniqueNumber!=0)
-	{
-		char Buffer[256]={0,};
-		sprintf_s(Buffer,"TEXTURE_%d",nUniqueNumber);	
-		strFindKey = Buffer;
-
-		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
-		if (it!=m_mapResource.end())
-		{
-			pItem=static_cast<cRscTexture*>(it->second);
-			return pItem;
-		}
-	}
-
-	pItem = new cRscTexture;	
-	if(!pItem->Create())	
-	{
-		delete pItem;
-		return NULL;
-	}
-	pItem->ProcessMakeUniqueKey();
-	m_mapResource.insert(make_pair(pItem->GetUniqueKey(),pItem));
-	return pItem;		
+	key = std::string("VERTEXBUFFER_");
+	key += rootName;
+	key += std::string("_");
+	key += meshName;
 }
 
-
-
-cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer( DWORD bufferSize,D3DPOOL type/*D3DPOOL_DEFAULT*/, UINT nUniqueNumber/*=0*/)
+cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_DEFAULT*/ )
 {
 	cRscVertexBuffer* pItem=NULL;
-	std::string strFindKey;	
-	// nUniqueNumber가 있고 맵에 있는 키이면 있는것으로 리턴한다.
-	if (nUniqueNumber!=0)
-	{
-		char Buffer[256]={0,};
-		sprintf_s(Buffer,"VERTEXBUFFER_%d",nUniqueNumber);	
-		strFindKey = Buffer;
+	std::string strKey;	
+	GetKeyVertexBuffer(strKey,rootName,meshName);
 
-		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
-		if (it!=m_mapResource.end())
-		{
-			pItem=static_cast<cRscVertexBuffer*>(it->second);
-			return pItem;
-		}
-	}
+	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
+	if (it!=m_mapResource.end())
+	{
+		pItem=static_cast<cRscVertexBuffer*>(it->second);
+		return pItem;
+	}	
 
 	pItem = new cRscVertexBuffer;
 	pItem->SetBufferSize(bufferSize);
 	pItem->SetType(type);
+	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	pItem->ProcessMakeUniqueKey();
-	m_mapResource.insert(make_pair(pItem->GetUniqueKey(),pItem));
+	m_mapResource.insert(make_pair(strKey,pItem));
 	return pItem;
 }
 
-cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer( DWORD bufferSize,D3DPOOL type, UINT nUniqueNumber/*=0*/ )
+void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,const char* meshName )
+{
+	key = std::string("INDEXBUFFER_");
+	key += rootName;
+	key += std::string("_");
+	key += meshName;
+}
+
+cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type )
 {
 	cRscIndexBuffer* pItem=NULL;
-	std::string strFindKey;	
-	if (nUniqueNumber!=0)
-	{
-		char Buffer[256]={0,};
-		sprintf_s(Buffer,"INDEXBUFFER_%d",nUniqueNumber);	
-		strFindKey = Buffer;
+	std::string strKey;	
+	GetKeyIndexBuffer(strKey,rootName,meshName);
 
-		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strFindKey);
-		if (it!=m_mapResource.end())
-		{
-			pItem=static_cast<cRscIndexBuffer*>(it->second);
-			return pItem;
-		}
-	}
+	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
+	if (it!=m_mapResource.end())
+	{
+		pItem=static_cast<cRscIndexBuffer*>(it->second);
+		return pItem;
+	}	
 
 	pItem = new cRscIndexBuffer;	
 	pItem->SetBufferSize(bufferSize);
 	pItem->SetType(type);
+	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	pItem->ProcessMakeUniqueKey();
-	m_mapResource.insert(make_pair(pItem->GetUniqueKey(),pItem));
+	m_mapResource.insert(make_pair(strKey,pItem));
 	return pItem;
 }
 
-cRscTransformAnm* cResourceMng::CreateRscTransformAnm( UINT findUniqueNumber/*=0*/ )
-{
-	cRscTransformAnm* pItem=NULL;
-	std::string strUniqeKey;	
-	if (findUniqueNumber!=0)
-	{
-		char Buffer[256]={0,};
-		sprintf_s(Buffer,"TRANSFORMANM_%d",findUniqueNumber);	
-		strUniqeKey = Buffer;
 
-		std::map<std::string,cResource*>::iterator it=m_mapResource.find(strUniqeKey);
-		if (it!=m_mapResource.end())
-		{
-			pItem=static_cast<cRscTransformAnm*>(it->second);
-			return pItem;
-		}
+void cResourceMng::GetKeyTransformAnm( std::string& key,const char* rootName,const char* meshName,const char* anmName )
+{
+	key = std::string("TRANSFORMANM_");
+	key += rootName;
+	key += std::string("_");
+	key += meshName;
+	key += std::string("_");
+	key += anmName;
+}
+
+cRscTransformAnm* cResourceMng::CreateRscTransformAnm(const char* rootName,const char* meshName,const char* anmName)
+{
+	assert(rootName!=NULL);
+	assert(meshName!=NULL);
+	assert(anmName!=NULL);
+
+	cRscTransformAnm* pItem=NULL;
+	std::string strKey;	
+	GetKeyTransformAnm(strKey,rootName,meshName,anmName);
+
+	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
+	if (it!=m_mapResource.end())
+	{
+		pItem=static_cast<cRscTransformAnm*>(it->second);
+		return pItem;
 	}
 
 	pItem = new cRscTransformAnm;	
+	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	pItem->ProcessMakeUniqueKey();
-	m_mapResource.insert(make_pair(pItem->GetUniqueKey(),pItem));
+	m_mapResource.insert(make_pair(strKey,pItem));
 	return pItem;		
 }
+
+int cResourceMng::GetCount()
+{
+	return m_mapResource.size();
+}
+
+
+
+

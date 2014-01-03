@@ -45,7 +45,7 @@ void cRscIndexBuffer::Restore()
 void cRscIndexBuffer::Free()
 {	
 	SAFE_RELEASE(m_pD3DIndexBuffer);
-	m_ResourceMng.EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseResource(m_strUniqeKey);
 	delete this;
 }
 
@@ -61,24 +61,7 @@ VOID cRscIndexBuffer::Unlock()
 	m_pD3DIndexBuffer->Unlock();	
 }
 
-void cRscIndexBuffer::ProcessMakeUniqueKey()
-{
-	// 파일이름이 있으면 접두어_파일이름
-	// 없으면 접두어_유니크번호
-	std::string temp="INDEXBUFFER_";	
 
-	if (!GetFilePath().empty())
-	{			
-		temp += GetFilePath();		
-	}
-	else
-	{
-		char buffer[4];
-		_itoa_s(GetUniqueNumber(),buffer,4,10);
-		temp += buffer;
-	}
-	SetUniqueKey(temp);
-}
 
 void cRscIndexBuffer::SetIndices()
 {

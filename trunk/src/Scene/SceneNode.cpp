@@ -27,6 +27,7 @@ cSceneNode::cSceneNode(void)
 	m_pRscTransformAnm=NULL;		
 	m_pCullingSphere=NULL;
 	m_bRender=true;
+	m_animationTime = 0;
 }
 
 cSceneNode::~cSceneNode(void)
@@ -115,7 +116,7 @@ BOOL cSceneNode::IsRootNode()
 	return TRUE;
 }
 
-D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD elapseTime)
+D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime)
 {	
 	if ( m_pRscTransformAnm==NULL)
 		return NULL;
@@ -123,7 +124,7 @@ D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD elapseTime)
 	if (!m_bIsActiveAnimation)
 		return NULL;
 
-	m_AnimationTM = m_pRscTransformAnm->GetTransform(elapseTime);
+	m_AnimationTM = m_pRscTransformAnm->GetTransform(animationTime,elapseTime);
 	return &m_AnimationTM;
 }
 
@@ -280,11 +281,9 @@ void cSceneNode::Render()
 
 void cSceneNode::Update( DWORD elapseTime )
 {
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->Update(elapseTime);
-	}
+	cTransformable::Update(elapseTime);
+	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),GetParentNode());
+	UpdateChildren(elapseTime);
 }
 
 void cSceneNode::RenderShadow()

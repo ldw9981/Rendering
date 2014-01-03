@@ -21,25 +21,14 @@ cRscTexture::~cRscTexture(void)
 
 BOOL cRscTexture::Create()
 {	
-	if (!GetFilePath().empty())
-	{	
-		if (AddRef()==1)
-		{
-			HRESULT hResult=D3DXCreateTextureFromFile(m_pD3DDevice,GetFilePath().c_str(),&m_pD3DTexture);
-			if (!SUCCEEDED(hResult))
-				return FALSE;
+	if (AddRef() > 1)
+		return TRUE;
 
-		}	
-	}	
-	else
-	{
-		if (AddRef()==1)
-		{
+	if (m_filePath.empty())
+		return FALSE;
 
-		}
-	}
-	ProcessMakeUniqueKey();	
-	return TRUE;	
+	HRESULT hResult=D3DXCreateTextureFromFile(m_pD3DDevice,m_filePath.c_str(),&m_pD3DTexture);
+	return SUCCEEDED(hResult);		
 }
 
 
@@ -52,7 +41,7 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	m_ResourceMng.EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseResource(GetUniqueKey());
 	delete this;
 }
 
@@ -61,24 +50,6 @@ void cRscTexture::SetTexture( UINT stage )
 	m_pD3DDevice->SetTexture(stage,m_pD3DTexture);
 }
 
-void cRscTexture::ProcessMakeUniqueKey()
-{
-	// 파일이름이 있으면 접두어_파일이름
-	// 없으면 접두어_유니크번호
-	std::string temp="TEXTURE_";	
-
-	if (!GetFilePath().empty())
-	{			
-		temp += GetFilePath();		
-	}
-	else
-	{
-		char buffer[4];
-		_itoa_s(GetUniqueNumber(),buffer,4,10);
-		temp += buffer;
-	}
-	SetUniqueKey(temp);
-}
 
 void cRscTexture::SetNullTexture( UINT stage )
 {

@@ -23,12 +23,6 @@ void cObjTank::Uninit()
 }
 
 
-void cObjTank::Update( DWORD elapseTime )
-{
-	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix();
-	UpdateChildren(elapseTime);
-}
 
 void cObjTank::Control()
 {

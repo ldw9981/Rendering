@@ -24,12 +24,6 @@ void cObjDragon::Uninit()
 //	UninitChildren();
 }
 
-void cObjDragon::Update(DWORD elapseTime)
-{
-	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix();
-	UpdateChildren(elapseTime);
-}
 
 void cObjDragon::Control()
 {

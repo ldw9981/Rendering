@@ -24,13 +24,9 @@ UINT cReferenceCounter::AddRef()
 	return m_RefCounter;
 }
 
-
-UINT cResource::m_nAccNumber=0;
-
 cResource::cResource( void )
 {
-	m_nAccNumber++;	
-	m_nUniqueNumber=m_nAccNumber;	
+
 }	
 
 cResource::~cResource( void )
@@ -38,39 +34,5 @@ cResource::~cResource( void )
 
 }
 
-/*
-void cResource::ProcessMakeUniqueKey() 
-{
-	// 파일이름이 있으면 접두어_파일이름
-	// 없으면 접두어_유니크번호
-	WCHAR szBuffer[1024]={0,};
-	switch(m_Type)	
-	{
-	case TEXTURE:
-		swprintf_s(szBuffer,1024,"TEXTURE_");
-		break;
-	case INDEXBUFFER:
-		break;
-		swprintf_s(szBuffer,1024,"INDEXBUFFER_");
-	case VERTEXBUFFER:
-		swprintf_s(szBuffer,1024,"VERTEXBUFFER_");
-		break;
-	}
-	m_strUniqeKey = szBuffer;	
 
-	if (!m_strFilePath.empty())
-	{			
-		m_strUniqeKey += m_strFilePath;		
-		
-	}
-	else
-	{
-		WCHAR buffer[4];
-		_itow_s(m_nUniqueNumber,buffer,4,10);
-		m_strUniqeKey += buffer;
-	}
-		
-	
-}
-*/
 

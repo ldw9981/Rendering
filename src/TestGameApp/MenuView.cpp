@@ -53,9 +53,11 @@ void cMenuView::Enter()
 	AttachObject(m_pZTerrain);
 
 
-
-	m_pTank = new cObjTank;
 	cASEParser parser;
+
+	
+	m_pTank = new cObjTank;
+
 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	m_pTank->BuildComposite();
@@ -73,6 +75,7 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
 	AttachObject(m_pDragon);	
 	
+	
 	m_pAirPlaneBake = new cObjDragon;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
 	parser.Close();
@@ -81,15 +84,19 @@ void cMenuView::Enter()
 	m_pAirPlaneBake->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	AttachObject(m_pAirPlaneBake);	
-
+	
+	
+	
 	m_pHouse = new cObjDragon;	
-	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pHouse);
+	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pHouse);
 	parser.Close();
 	m_pHouse->BuildComposite();
 	m_pHouse->Init();
 	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pHouse);
+	
+	
 	
 }
 
@@ -122,16 +129,18 @@ void cMenuView::Update( DWORD elapseTime )
 	cView::Update(elapseTime);
 	m_Camera.Update(elapseTime);
 	
- 	D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
- 	m_pTank->GetWorldPos(pos);
- 
-	if(!m_pZTerrain->GetHeight(pos.x,pos.z,pos.y))
- 	{
- 		printf("d");
- 	}
-	pos.y+=50.0f;
-	m_pTank->SetLocalPos(pos);
-	
+	if (m_pTank)
+	{
+		D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
+		m_pTank->GetWorldPos(pos);
+
+		if(!m_pZTerrain->GetHeight(pos.x,pos.z,pos.y))
+		{
+			printf("d");
+		}
+		pos.y+=50.0f;
+		m_pTank->SetLocalPos(pos);
+	}
 	
 }
 
@@ -165,7 +174,8 @@ void cMenuView::Control()
 	if (m_pWinInput->IsCurrDn(VK_OEM_PLUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
-		
+		DettachObject(m_pDragon);
+		SAFE_DELETE(m_pDragon);
 	}
 
 	if (m_pWinInput->IsCurrDn(VK_OEM_MINUS))

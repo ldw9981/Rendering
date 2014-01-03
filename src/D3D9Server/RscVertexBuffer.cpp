@@ -46,7 +46,7 @@ BOOL cRscVertexBuffer::Create()
 void cRscVertexBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	m_ResourceMng.EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseResource(GetUniqueKey());
 	delete this;
 }
 
@@ -69,24 +69,7 @@ void cRscVertexBuffer::Unlock()
 	m_pD3DVertexBuffer->Unlock();
 }
 
-void cRscVertexBuffer::ProcessMakeUniqueKey()
-{
-	// 파일이름이 있으면 접두어_파일이름
-	// 없으면 접두어_유니크번호
-	std::string temp="VERTEXBUFFER_";	
 
-	if (!GetFilePath().empty())
-	{			
-		temp += GetFilePath();		
-	}
-	else
-	{
-		char buffer[4];
-		_itoa_s(GetUniqueNumber(),buffer,4,10);
-		temp += buffer;
-	}
-	SetUniqueKey(temp);
-}
 
 void cRscVertexBuffer::SetStreamSource( UINT stride )
 {

@@ -18,7 +18,6 @@ public:
 	//IObject
 	virtual	void	Init();
 	virtual	void	Uninit();
-	virtual	void	Update(DWORD elapseTime);
 
 	virtual void    Control();
 	virtual void	Render();

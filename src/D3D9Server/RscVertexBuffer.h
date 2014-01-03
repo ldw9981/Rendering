@@ -22,7 +22,6 @@ private:
 
 public:	
 	// cResource
-	virtual void			ProcessMakeUniqueKey();  
 	virtual	BOOL			Create();	
 	virtual	void			Free();
 

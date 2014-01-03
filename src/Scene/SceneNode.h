@@ -41,6 +41,7 @@ protected:
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bRender;
+	DWORD					m_animationTime;
 
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 
@@ -49,7 +50,7 @@ public:
 	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
 	void				SetRscTransformAnm(cRscTransformAnm* val);
 		
-	D3DXMATRIX*			UpdateTransformAnm(DWORD elapseTime);
+	D3DXMATRIX*			UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime);
 	D3DXMATRIX&			GetAnimationTM();
 			
 
@@ -99,7 +100,7 @@ public:
 
 	virtual void		Render();
 	virtual void		RenderShadow();
-	virtual void		Update(DWORD elapseTime);;
+	virtual void		Update(DWORD elapseTime);
 
 	/*
 		빌드란 씬노드구성후 작동하기전에 노드의 후처리 작업으로 완성시킴을 의미한다.

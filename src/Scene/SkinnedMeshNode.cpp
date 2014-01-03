@@ -92,7 +92,11 @@ void SkinnedMeshNode::Render()
 		D3D9::Server::g_pServer->GetEffect()->SetMatrixArray(D3D9::Server::g_pServer->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
 	}	
 	
-	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+
+	if( m_Matrial.GetMapDiffuse() != NULL )
+	{
+		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+	}
 
 	if( m_Matrial.GetMapNormal() != NULL )
 	{

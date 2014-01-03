@@ -93,6 +93,7 @@ private:
 	CHAR				m_TokenString[MAX_PARSER_BUFFERSIZE];
 	cSceneNode*			m_pLastObject;
 	int					m_CNTOBJECT;
+	int					m_repeat;
 public:	
 	virtual void		Close();
 		BOOL			SkipBlock();
@@ -110,7 +111,7 @@ public:
 		BOOL			GetString(LPSTR pOutput);
 		BOOL			Getstring(LPWSTR pOutput);
 		BOOL			GetIdentifier(LPSTR pOutput);
-	cRscTransformAnm*	GetRscTransformAnm(const D3DXMATRIX& localTM);
+	cRscTransformAnm*	GetRscTransformAnm(const char* meshName,const D3DXMATRIX& localTM);
 	
 		
 		D3DXMATRIX&		GetNodeTM();
@@ -162,10 +163,10 @@ public:
 		cHelperNode* CreateHelperNode(SCENENODEINFO& stInfo);
 
 		template <typename T>
-		cRscVertexBuffer* CreateRscVertexBuffer(std::vector<T>& arrVertex);
+		cRscVertexBuffer* CreateRscVertexBuffer(const char* meshName,std::vector<T>& arrVertex);
 
 		
-		cRscIndexBuffer* CreateRscIndexBuffer(std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
+		cRscIndexBuffer* CreateRscIndexBuffer(const char* meshName,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
 		
 };
 

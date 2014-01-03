@@ -3,8 +3,7 @@
 #include "Foundation/Define.h"
 
 cRscTransformAnm::cRscTransformAnm()
-:m_dwTimeLength(0),
-m_dwTimeAccum(0)
+:m_dwTimeLength(0)
 {
 	
 }
@@ -23,52 +22,34 @@ BOOL cRscTransformAnm::Create()
 void cRscTransformAnm::Free()
 {
 //	for_each(m_arrayTransformAnm.begin(),m_arrayTransformAnm.end(),FuncDeleteType<TRANSFORMANM*>);
-	m_ResourceMng.EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseResource(GetUniqueKey());
 	delete this;
 }
 
-void cRscTransformAnm::ProcessMakeUniqueKey()
+
+
+
+D3DXMATRIX& cRscTransformAnm::GetTransform(DWORD& animationTime, DWORD dwTimeDelta )
 {
-	// 파일이름이 있으면 접두어_파일이름
-	// 없으면 접두어_유니크번호
-	std::string temp="TRANSFORMANM_";	
+	animationTime += dwTimeDelta;
+	animationTime %= m_dwTimeLength;
 
-	if (!GetFilePath().empty())
-	{			
-		temp += GetFilePath();		
-	}
-	else
-	{
-		char buffer[4];
-		_itoa_s(GetUniqueNumber(),buffer,4,10);
-		temp += buffer;
-	}
-	SetUniqueKey(temp);
-}
-
-
-
-D3DXMATRIX& cRscTransformAnm::GetTransform( DWORD dwTimeDelta )
-{
-	m_dwTimeAccum += dwTimeDelta;
-	m_dwTimeAccum %= m_dwTimeLength;
-
-	float fIndexRate = (float)m_dwTimeAccum / (float)m_dwTimeLength;	
+	float fIndexRate = (float)animationTime / (float)m_dwTimeLength;	
 	int nIndex = (int)((float)m_arrayANMKEY.size() * fIndexRate);
 	int nIndexPrev=nIndex;
 	int nIndexAfter=nIndex;
 
 	// 추정인덱스의 시간을 살표보고  크면 인덱스 -1
-	if(m_dwTimeAccum < m_arrayANMKEY[nIndex].AnmTick)
+	if(animationTime < m_arrayANMKEY[nIndex].AnmTick)
 	{
 		if(nIndex>0)	nIndexPrev--;
 	}
-	else if( m_dwTimeAccum >= m_arrayANMKEY[nIndex].AnmTick) 
+	else if( animationTime >= m_arrayANMKEY[nIndex].AnmTick) 
 	{
 		if (nIndex<(int)m_arrayANMKEY.size()-1)		nIndexAfter++;
 	}
 
-	float fValue=GetInterpolateValue(m_arrayANMKEY[nIndexPrev].AnmTick,m_arrayANMKEY[nIndexAfter].AnmTick,m_dwTimeAccum);
+	float fValue=GetInterpolateValue(m_arrayANMKEY[nIndexPrev].AnmTick,m_arrayANMKEY[nIndexAfter].AnmTick,animationTime);
 	
 	ANMKEY stTempAnmKey=m_arrayANMKEY[nIndex];
 	

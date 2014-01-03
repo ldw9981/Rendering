@@ -66,18 +66,7 @@ void cCameraNode::Render()
 /*
 WorldTM이 
 */
-void cCameraNode::Update(DWORD elapseTime)
-{
-	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix();
-	/*
-	if(m_bModifiedMatWorld)
-	{
-		m_bViewModified=TRUE;	// 카메라가 월드변환이 바뀟었다. 뷰도 업데이트해야한다.
-	}	
-	*/
-	UpdateChildren(elapseTime);
-}
+
 
 
 void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp )

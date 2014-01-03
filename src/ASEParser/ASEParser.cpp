@@ -17,6 +17,7 @@
 cASEParser::cASEParser()
 {
 	m_CNTOBJECT=0;	
+	m_repeat = 0;
 }
 cASEParser::~cASEParser(void)
 {
@@ -199,8 +200,12 @@ BOOL cASEParser::GetIdentifier( LPSTR pOutput )
 
 BOOL cASEParser::Load( const char* strFileName ,cSceneNode* pOutput)
 {	
+	m_repeat++;
 	BOOL bResult;
 	
+	char filename[256];
+	_splitpath_s(strFileName,NULL,0,NULL,0,filename,256,NULL,0);
+	m_SceneTime.FILENAME = filename;
 
 	m_pSceneRoot = pOutput;
 
@@ -358,7 +363,6 @@ BOOL cASEParser::Parsing_GeoObject()
 
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	D3DXVECTOR3 tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f),tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
-	
 
 
 	SCENENODEINFO stInfo;	
@@ -396,7 +400,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.tmLocal);				
+				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);				
 				
 			}
 			break;
@@ -757,11 +761,11 @@ BOOL cASEParser::Parsing_GeoObject()
 
 	// 리소스 버텍스 버퍼   생성 -> 데이터복사 -> 메쉬셋팅
 	cRscVertexBuffer* pNewRscVertexBuffer=NULL;
-	if(!bSkinned) pNewRscVertexBuffer = CreateRscVertexBuffer(vecNormalVertexForBuffer);
-	else pNewRscVertexBuffer = CreateRscVertexBuffer(vecBlendVertexForBuffer);		
+	if(!bSkinned) pNewRscVertexBuffer = CreateRscVertexBuffer(stInfo.strNodeName.c_str(),vecNormalVertexForBuffer);
+	else pNewRscVertexBuffer = CreateRscVertexBuffer(stInfo.strNodeName.c_str(),vecBlendVertexForBuffer);		
 
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
-	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(vecIndexForBuffer);
+	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(stInfo.strNodeName.c_str(),vecIndexForBuffer);
 	cSceneNode* pNewSceneNode=NULL;
 	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL)
 	{
@@ -916,9 +920,9 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFileName=GetString().c_str();							
 							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 							std::string strFullPath = strDataPath;
-							strFullPath += strFileName;
+							strFullPath += strFileName;					
 
-							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapNormal(pRscTexture);
@@ -950,7 +954,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
-							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapDiffuse(pRscTexture);
@@ -1042,7 +1046,7 @@ BOOL cASEParser::Parsing_HelperObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.tmLocal);
+				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;
 		case	TOKENR_BOUNDINGBOX_MIN:
@@ -1096,7 +1100,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.tmLocal);
+				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
 		case TOKENR_SHAPE_LINECOUNT:
@@ -1173,7 +1177,7 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.tmLocal);
+				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
 		case TOKENR_LIGHT_TYPE:
@@ -1285,7 +1289,7 @@ BOOL cASEParser::Parsing_CameraObject()
 		case TOKENR_TM_ANIMATION:		
 			if (bLoadCameraAnmTM==FALSE)
 			{				
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.tmLocal);
+				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 				bLoadCameraAnmTM=TRUE;												
 			}			
 			else
@@ -1436,7 +1440,7 @@ BOOL cASEParser::Parsing_Scene()
 		switch(m_Token)
 		{
 		case TOKENR_SCENE_FILENAME:
-			m_SceneTime.FILENAME=GetString();
+			//m_SceneTime.FILENAME=GetString(); 실제파일이름과 맥스파일 안의 이름이 다를수있으므로 사용하지않음
 			break;
 		case TOKENR_SCENE_FIRSTFRAME:
 			m_SceneTime.FIRSTFRAME=GetInt();			
@@ -1764,9 +1768,14 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 
 
 
-cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
+cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* meshName, const D3DXMATRIX& localTM )
 {
-	cRscTransformAnm* pRscTransformAnm = m_ResourceMng.CreateRscTransformAnm();
+	cRscTransformAnm* pRscTransformAnm = m_pResourceMng->CreateRscTransformAnm(m_SceneTime.FILENAME.c_str(),meshName,"DEFAULT");
+
+	// 리소스 가 이미 있으면 있는거 전달
+	if( pRscTransformAnm->GetArrayANMKEY().empty() == false)
+		return pRscTransformAnm;
+
 	ANMKEY localTM_anmkey;
 	D3DXMatrixDecompose(
 		&localTM_anmkey.ScaleAccum,
@@ -1884,11 +1893,10 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 			break;
 		}
 	} 
-	
 
 	pRscTransformAnm->SetTimeLength(dwTimeKey);
 	std::vector<ANMKEY>& refArrAnmKey=pRscTransformAnm->GetArrayANMKEY();
-	
+
 	ANMKEY prevItem=localTM_anmkey;
 	std::map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
 	for ( ; iter != mapAnmKey.end() ;iter++ )
@@ -1922,8 +1930,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm( const D3DXMATRIX& localTM )
 		pRscTransformAnm->Release();
 		pRscTransformAnm=NULL;
 	}			
-
-
+	
 
 	return pRscTransformAnm;
 }
@@ -2175,13 +2182,13 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 }
 
 template <typename T>
-cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(std::vector<T>& arrVertex)
+cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::vector<T>& arrVertex)
 {
 	cRscVertexBuffer* pVertexBuffer=NULL;
 	if (!arrVertex.empty())
 	{
 		DWORD nCount=(DWORD)arrVertex.size();
-		pVertexBuffer = m_ResourceMng.CreateRscVertexBuffer(sizeof(T)*nCount);
+		pVertexBuffer = m_pResourceMng->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
 
 		T* pVertices=(T*)pVertexBuffer->Lock();
 		for (UINT i=0;i< nCount;i++)
@@ -2195,13 +2202,13 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(std::vector<T>& arrVertex)
 }
 
 
-cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(std::vector<TRIANGLE_SUBMATERIAL>& arrIndex)
+cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex)
 {
 	cRscIndexBuffer* pIndexBuffer=NULL;
 	if (!arrIndex.empty())
 	{
 		DWORD nCount=(DWORD)arrIndex.size();
-		pIndexBuffer = m_ResourceMng.CreateRscIndexBuffer(
+		pIndexBuffer = m_pResourceMng->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
 			sizeof(TRIANGLE)*nCount);
 
 		TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
@@ -2241,6 +2248,10 @@ void cASEParser::Close()
 {
 	cASELexer::Close();
 	m_vecMaterial.clear();
+
+	m_pSceneRoot = NULL;
+	m_pLastObject = NULL;
+	m_CNTOBJECT = 0;
 }
 
 bool cASEParser::GetSubMaterial( Material& material)
@@ -2350,7 +2361,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapNormal(pRscTexture);
@@ -2380,7 +2391,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapDiffuse(pRscTexture);

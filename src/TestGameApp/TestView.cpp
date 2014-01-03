@@ -20,6 +20,7 @@
 #include "TestStateB.h"
 #include "GlobalView.h"
 #include "ObjTank.h"
+#include "D3D9Server/Server.h"
 
 cTestView::cTestView(void)
 {
@@ -96,6 +97,18 @@ void cTestView::Control()
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
 	}
+	if (m_pWinInput->IsCurrDn(VK_OEM_PLUS))
+	{
+		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
+
+	}
+
+	if (m_pWinInput->IsCurrDn(VK_OEM_MINUS))
+	{
+		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
+	}
+
+
 	m_Camera.Control();
 }
 

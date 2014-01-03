@@ -42,7 +42,7 @@ private:
 	int										m_nCount;
 public:
 	// cResource
-	virtual void			ProcessMakeUniqueKey();
+
 	virtual	BOOL			Create();
 	virtual	void			Free();
 

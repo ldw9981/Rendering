@@ -51,10 +51,6 @@ public:
 	~cRscTransformAnm();
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
-
-	D3DXMATRIX m_tmSCL;
-	D3DXMATRIX m_tmROT;
-	D3DXMATRIX m_tmPOS;
 	D3DXMATRIX m_tmAnm;
 	DWORD	m_dwTimeLength;
 	
@@ -63,8 +59,8 @@ protected:
 public:
 	DWORD					GetTimeLength() const { return m_dwTimeLength; }
 	void					SetTimeLength(DWORD val) { m_dwTimeLength = val; }
-	std::vector<ANMKEY>&			GetArrayANMKEY()  { return m_arrayANMKEY; }
-	D3DXMATRIX&				GetTransform(DWORD& animationTime, DWORD dwTimeDelta);	
+	std::vector<ANMKEY>&	GetArrayANMKEY()  { return m_arrayANMKEY; }
+	void					GetTransform(D3DXMATRIX& out,DWORD& animationTime, DWORD dwTimeDelta);	
 	
 
 	// cResource

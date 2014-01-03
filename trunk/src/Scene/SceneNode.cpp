@@ -124,7 +124,7 @@ D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime
 	if (!m_bIsActiveAnimation)
 		return NULL;
 
-	m_AnimationTM = m_pRscTransformAnm->GetTransform(animationTime,elapseTime);
+	m_pRscTransformAnm->GetTransform(m_AnimationTM,animationTime,elapseTime);
 	return &m_AnimationTM;
 }
 

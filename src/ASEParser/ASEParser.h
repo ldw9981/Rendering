@@ -109,7 +109,7 @@ public:
 		BOOL			GetString(LPSTR pOutput);
 		BOOL			Getstring(LPWSTR pOutput);
 		BOOL			GetIdentifier(LPSTR pOutput);
-	cRscTransformAnm*	GetRscTransformAnm(const char* meshName,const D3DXMATRIX& localTM);
+	cRscTransformAnm*	GetRscTransformAnm(const char* rootName,const char* meshName,const D3DXMATRIX& localTM);
 	
 		
 		D3DXMATRIX&		GetNodeTM();
@@ -149,8 +149,7 @@ public:
 			const std::vector<TEXCOORD>& arrTexCoordIn,
 			const std::vector<TRIANGLE>& arrTFaceIndexIn);
 
-		template <typename T>
-		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,std::vector<T>& arrVertex,cSphere& out);
+		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,cSphere& out);
 
 	
 		

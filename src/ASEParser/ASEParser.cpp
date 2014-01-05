@@ -400,7 +400,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;
 		case TOKENR_MESH:
@@ -740,8 +740,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		stInfo.pParent=m_pSceneRoot;
 	}
 
-	if (!bSkinned) CalculateSphere(tempAxisMin,tempAxisMax,vecNormalVertexForBuffer,stInfo.boundingSphere);
-	else CalculateSphere(tempAxisMin,tempAxisMax,vecBlendVertexForBuffer,stInfo.boundingSphere);		
+	CalculateSphere(tempAxisMin,tempAxisMax,stInfo.boundingSphere);
 		
 	// 이제 버텍스 가공 버텍스,노말 합치기
 	if (!bSkinned) MergeNormalListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
@@ -1048,7 +1047,7 @@ BOOL cASEParser::Parsing_HelperObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;
 		case	TOKENR_BOUNDINGBOX_MIN:
@@ -1104,7 +1103,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;		
 		case TOKENR_SHAPE_LINECOUNT:
@@ -1180,7 +1179,7 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;		
 		case TOKENR_LIGHT_TYPE:
@@ -1292,7 +1291,7 @@ BOOL cASEParser::Parsing_CameraObject()
 		case TOKENR_TM_ANIMATION:		
 			if (bLoadCameraAnmTM==FALSE)
 			{				
-				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 				bLoadCameraAnmTM=TRUE;												
 			}			
 			else
@@ -1746,34 +1745,21 @@ void cASEParser::MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vecto
 	}
 }
 
-template <typename T>
-void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,std::vector<T>& arrVertex,cSphere& out )
+void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,cSphere& out )
 {
-	D3DXVECTOR3 tempCenterPos=D3DXVECTOR3(0.0f,0.0f,0.0f);
-	float		tempRadius=0.0f;
-	//버텍스 가공 하기전에 Bounding Sphere구하기
-	// 최대 최소의 중간값으로 Center pos을 구한다.
-	tempCenterPos.x= tempAxisMin.x + (tempAxisMax.x - tempAxisMin.x)/2.0f;
-	tempCenterPos.y= tempAxisMin.y + (tempAxisMax.y - tempAxisMin.y)/2.0f;
-	tempCenterPos.z= tempAxisMin.z + (tempAxisMax.z - tempAxisMin.z)/2.0f;
-
-	float MaxLengthSq=0.0f,LengthSq=0.0f;
-	int nCount = (int)arrVertex.size();
-	for (int i=0;i<nCount;i++)
-	{		
-		LengthSq=D3DXVec3LengthSq(&D3DXVECTOR3(tempCenterPos - arrVertex[i].vertex));
-		MaxLengthSq=max(MaxLengthSq,LengthSq);		
-	}	
-	tempRadius=sqrt(MaxLengthSq);
-	
-	out.Make(tempCenterPos,tempRadius);
+	float tempRadius=0.0f;
+	float MaxLengthSq=0.0f,LengthSq1=0.0f,LengthSq2=0.0f;
+	LengthSq2 = D3DXVec3LengthSq(&tempAxisMin);
+	LengthSq1 = D3DXVec3LengthSq(&tempAxisMax);
+	MaxLengthSq=max(LengthSq1,LengthSq2);		
+	out.Make(D3DXVECTOR3(0.0f,0.0f,0.0f),sqrt(MaxLengthSq));
 }
 
 
 
-cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* meshName, const D3DXMATRIX& localTM )
+cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* rootName,const char* meshName, const D3DXMATRIX& localTM )
 {
-	cRscTransformAnm* pRscTransformAnm = m_pResourceMng->CreateRscTransformAnm(m_SceneTime.FILENAME.c_str(),meshName,"DEFAULT");
+	cRscTransformAnm* pRscTransformAnm = m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
 
 	// 리소스 가 이미 있으면 있는거 전달
 	if( pRscTransformAnm->GetArrayANMKEY().empty() == false)

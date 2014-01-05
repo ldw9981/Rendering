@@ -62,7 +62,7 @@ void cMeshNode::Update(DWORD elapseTime)
 */
 void cMeshNode::Render()
 {			
-	//DebugRender();
+	DebugRender();
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));

@@ -29,7 +29,6 @@ struct SCENENODEINFO
 	D3DXMATRIX tmLocal;
 	cSphere boundingSphere;
 	cSceneNode* pParent;
-	cRscTransformAnm* pRscTransform;
 
 	SCENENODEINFO()
 	{
@@ -38,7 +37,6 @@ struct SCENENODEINFO
 		D3DXMatrixIsIdentity(&tmWorld);
 		D3DXMatrixIsIdentity(&tmLocal);
 		pParent=NULL;
-		pRscTransform=NULL;
 	}
 };
 

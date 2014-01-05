@@ -18,7 +18,8 @@ cRscIndexBuffer::~cRscIndexBuffer(void)
 BOOL cRscIndexBuffer::Create()
 {
 	assert(m_RefCounter>=0);
-	if (AddRef()!=1)
+	
+	if (m_RefCounter > 0 )
 		return TRUE;
 
 	HRESULT hResult;		
@@ -45,7 +46,7 @@ void cRscIndexBuffer::Restore()
 void cRscIndexBuffer::Free()
 {	
 	SAFE_RELEASE(m_pD3DIndexBuffer);
-	m_pResourceMng->EraseResource(m_strUniqeKey);
+	m_pResourceMng->EraseRscIndexBuffer(m_strUniqeKey);
 	delete this;
 }
 

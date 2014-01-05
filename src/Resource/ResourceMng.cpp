@@ -18,37 +18,12 @@ cResourceMng::cResourceMng( void )
 
 cResourceMng::~cResourceMng( void )
 {
-	
-	m_mapResource.clear();
+	assert(GetCount()==0);
+	m_contTexture.clear();
+	m_contIndexBuffer.clear();
+	m_contVertexBuffer.clear();
+	m_contTransformAnm.clear();
 }
-
-
-
-BOOL cResourceMng::InsertResource(cResource* in )
-{
-	if( m_mapResource.insert(make_pair(in->GetUniqueKey(),in)).second )
-		return TRUE;
-
-	return FALSE;
-}
-
-void cResourceMng::RestoreAll()
-{
-	std::list<cIRestore*>::iterator it=m_listRestore.begin();	
-	for ( ;it!=m_listRestore.end();++it)
-	{
-		cIRestore* pItem=*it;
-		pItem->Restore();
-	}	
-}
-
-
-
-void cResourceMng::EraseResource(const std::string& strKey )
-{
-	m_mapResource.erase(strKey);
-}
-
 
 
 // 파일명이 찾은후 없으면 생성
@@ -58,7 +33,6 @@ void cResourceMng::GetKeyTexture(std::string& key, const char* filePath )
 {
 	char fileName[256];
 	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
-	key = std::string("TEXTURE_");
 	key += fileName;
 }
 
@@ -68,8 +42,8 @@ cRscTexture* cResourceMng::CreateRscTexture( const char* filePath )
 	std::string strKey;
 	GetKeyTexture(strKey,filePath);	
 
-	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
-	if (it!=m_mapResource.end())
+	std::map<std::string,cResource*>::iterator it=m_contTexture.find(strKey);
+	if (it!=m_contTexture.end())
 	{
 		pItem=static_cast<cRscTexture*>(it->second);
 		return pItem;
@@ -83,15 +57,14 @@ cRscTexture* cResourceMng::CreateRscTexture( const char* filePath )
 		delete pItem;
 		return NULL;
 	}
-	m_mapResource.insert(make_pair(strKey,pItem));
+	m_contTexture.insert(make_pair(strKey,pItem));
 	return pItem;	
 }
 
 
 void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,const char* meshName )
 {
-	key = std::string("VERTEXBUFFER_");
-	key += rootName;
+	key = rootName;
 	key += std::string("_");
 	key += meshName;
 }
@@ -102,8 +75,8 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const
 	std::string strKey;	
 	GetKeyVertexBuffer(strKey,rootName,meshName);
 
-	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
-	if (it!=m_mapResource.end())
+	std::map<std::string,cResource*>::iterator it=m_contVertexBuffer.find(strKey);
+	if (it!=m_contVertexBuffer.end())
 	{
 		pItem=static_cast<cRscVertexBuffer*>(it->second);
 		return pItem;
@@ -118,14 +91,13 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const
 		delete pItem;
 		return NULL;
 	}
-	m_mapResource.insert(make_pair(strKey,pItem));
+	m_contVertexBuffer.insert(make_pair(strKey,pItem));
 	return pItem;
 }
 
 void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,const char* meshName )
 {
-	key = std::string("INDEXBUFFER_");
-	key += rootName;
+	key = rootName;
 	key += std::string("_");
 	key += meshName;
 }
@@ -136,8 +108,8 @@ cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const c
 	std::string strKey;	
 	GetKeyIndexBuffer(strKey,rootName,meshName);
 
-	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
-	if (it!=m_mapResource.end())
+	std::map<std::string,cResource*>::iterator it=m_contIndexBuffer.find(strKey);
+	if (it!=m_contIndexBuffer.end())
 	{
 		pItem=static_cast<cRscIndexBuffer*>(it->second);
 		return pItem;
@@ -152,15 +124,14 @@ cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const c
 		delete pItem;
 		return NULL;
 	}
-	m_mapResource.insert(make_pair(strKey,pItem));
+	m_contIndexBuffer.insert(make_pair(strKey,pItem));
 	return pItem;
 }
 
 
 void cResourceMng::GetKeyTransformAnm( std::string& key,const char* rootName,const char* meshName,const char* anmName )
 {
-	key = std::string("TRANSFORMANM_");
-	key += rootName;
+	key = rootName;
 	key += std::string("_");
 	key += meshName;
 	key += std::string("_");
@@ -177,11 +148,16 @@ cRscTransformAnm* cResourceMng::CreateRscTransformAnm(const char* rootName,const
 	std::string strKey;	
 	GetKeyTransformAnm(strKey,rootName,meshName,anmName);
 
-	std::map<std::string,cResource*>::iterator it=m_mapResource.find(strKey);
-	if (it!=m_mapResource.end())
+	std::map<std::string,cResource*>::iterator it=m_contTransformAnm.find(strKey);
+	if (it!=m_contTransformAnm.end())
 	{
 		pItem=static_cast<cRscTransformAnm*>(it->second);
 		return pItem;
+	}
+
+	if (meshName == std::string("Bone03"))
+	{
+		printf("DD");
 	}
 
 	pItem = new cRscTransformAnm;	
@@ -191,15 +167,36 @@ cRscTransformAnm* cResourceMng::CreateRscTransformAnm(const char* rootName,const
 		delete pItem;
 		return NULL;
 	}
-	m_mapResource.insert(make_pair(strKey,pItem));
+	m_contTransformAnm.insert(make_pair(strKey,pItem));
 	return pItem;		
 }
 
 int cResourceMng::GetCount()
 {
-	return m_mapResource.size();
+	int cnt=0;
+	cnt += m_contTexture.size();
+	cnt += m_contIndexBuffer.size();
+	cnt += m_contVertexBuffer.size();
+	cnt += m_contTransformAnm.size();
+	return cnt;
 }
 
+void cResourceMng::EraseRscTexture( const std::string& strKey )
+{
+	m_contTexture.erase(strKey);
+}
 
+void cResourceMng::EraseRscIndexBuffer( const std::string& strKey )
+{
+	m_contIndexBuffer.erase(strKey);
+}
 
+void cResourceMng::EraseRscVertexBuffer( const std::string& strKey )
+{
+	m_contVertexBuffer.erase(strKey);
+}
 
+void cResourceMng::EraseRscTransformAnm( const std::string& strKey )
+{
+	m_contTransformAnm.erase(strKey);
+}

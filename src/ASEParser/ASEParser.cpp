@@ -363,7 +363,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	D3DXVECTOR3 tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f),tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
-
+	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	SCENENODEINFO stInfo;	
 
@@ -400,8 +400,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);				
-				
+				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;
 		case TOKENR_MESH:
@@ -776,6 +775,9 @@ BOOL cASEParser::Parsing_GeoObject()
 		if (!bSkinned)	pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);		
 		else pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );			
 	}	
+	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+
+
 	return TRUE;
 }
 
@@ -1011,7 +1013,7 @@ BOOL cASEParser::Parsing_MaterialList()
 BOOL cASEParser::Parsing_HelperObject()
 {	
 	SCENENODEINFO stInfo;
-	
+	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1046,7 +1048,7 @@ BOOL cASEParser::Parsing_HelperObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;
 		case	TOKENR_BOUNDINGBOX_MIN:
@@ -1061,12 +1063,14 @@ BOOL cASEParser::Parsing_HelperObject()
 
 
 	cHelperNode* pNewSceneNode = CreateHelperNode(stInfo);
+	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_ShapeObject()
 {
 	SCENENODEINFO stInfo;	
+	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1100,7 +1104,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;		
 		case TOKENR_SHAPE_LINECOUNT:
@@ -1135,15 +1139,14 @@ BOOL cASEParser::Parsing_ShapeObject()
 		m_pSceneRoot->AttachChildNode(pNewSceneNode);
 		pNewSceneNode->SetParentNode(m_pSceneRoot);
 	}	
-
-
-
+	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_LightObject()
 {	
 	SCENENODEINFO stInfo;	
+	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1177,7 +1180,7 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 			}
 			break;		
 		case TOKENR_LIGHT_TYPE:
@@ -1215,7 +1218,6 @@ BOOL cASEParser::Parsing_LightObject()
 	
 	//공통적인 데이터
 	pNewSceneNode->SetNodeInfo(stInfo);
-
 	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
@@ -1227,13 +1229,14 @@ BOOL cASEParser::Parsing_LightObject()
 		m_pSceneRoot->AttachChildNode(pNewSceneNode);
 		pNewSceneNode->SetParentNode(m_pSceneRoot);
 	}	
-	
+	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_CameraObject()
 {
 	SCENENODEINFO stInfo;	
+	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	// {
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
@@ -1289,7 +1292,7 @@ BOOL cASEParser::Parsing_CameraObject()
 		case TOKENR_TM_ANIMATION:		
 			if (bLoadCameraAnmTM==FALSE)
 			{				
-				stInfo.pRscTransform = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				pRscTransformAnm = GetRscTransformAnm(stInfo.strNodeName.c_str(),stInfo.tmLocal);					
 				bLoadCameraAnmTM=TRUE;												
 			}			
 			else
@@ -1351,9 +1354,9 @@ BOOL cASEParser::Parsing_CameraObject()
 		m_pSceneRoot->AttachChildNode(pNewSceneNode);
 		pNewSceneNode->SetParentNode(m_pSceneRoot);
 	}	
-	
-
 	pNewSceneNode->SetFOV(fFov);
+	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+
 	return TRUE;	
 }
 
@@ -1774,7 +1777,10 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* meshName, const D3D
 
 	// 리소스 가 이미 있으면 있는거 전달
 	if( pRscTransformAnm->GetArrayANMKEY().empty() == false)
+	{
+		SkipBlock();
 		return pRscTransformAnm;
+	}
 
 	ANMKEY localTM_anmkey;
 	D3DXMatrixDecompose(

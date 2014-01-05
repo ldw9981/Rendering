@@ -57,7 +57,6 @@ void cMenuView::Enter()
 
 	
 	m_pTank = new cObjTank;
-
 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 	m_pTank->BuildComposite();
@@ -75,6 +74,7 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
 	AttachObject(m_pDragon);	
 	
+
 	
 	m_pAirPlaneBake = new cObjDragon;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);

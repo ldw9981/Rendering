@@ -21,7 +21,7 @@ cRscTexture::~cRscTexture(void)
 
 BOOL cRscTexture::Create()
 {	
-	if (AddRef() > 1)
+	if (m_RefCounter > 0 )
 		return TRUE;
 
 	if (m_filePath.empty())
@@ -41,7 +41,7 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	m_pResourceMng->EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseRscTexture(GetUniqueKey());
 	delete this;
 }
 

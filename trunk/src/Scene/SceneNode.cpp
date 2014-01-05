@@ -32,17 +32,7 @@ cSceneNode::cSceneNode(void)
 
 cSceneNode::~cSceneNode(void)
 {
-	std::list<cSceneNode*>::iterator it = m_listChildNode.begin();
-	std::list<cSceneNode*>::iterator it_end = m_listChildNode.end();
-
-	for ( ;it!=it_end ; it++ )
-	{
-		delete *it;
-	}	
-	m_listChildNode.clear();
-	
-	if( m_pRscTransformAnm !=NULL )
-		m_pRscTransformAnm->Release();
+	Release();
 }
 
 void cSceneNode::SetNodeName( const char* nodename )
@@ -169,6 +159,10 @@ void cSceneNode::FreeChildren()
 
 void cSceneNode::SetRscTransformAnm( cRscTransformAnm* val )
 {
+	if (m_pRscTransformAnm)
+	{
+		m_pRscTransformAnm->Release();
+	}	
 	m_pRscTransformAnm = val; 
 	if (val!=NULL)
 	{
@@ -226,11 +220,6 @@ void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
 	this->SetParentName(stInfo.strParentName.c_str());
 	this->SetLocalTM(stInfo.tmLocal);
 	this->SetWorldTM(stInfo.tmWorld);
-	this->SetRscTransformAnm(stInfo.pRscTransform);
-	if (m_pRscTransformAnm)
-	{
-		m_pRscTransformAnm->AddRef();
-	}	
 }
 
 void cSceneNode::SerializeIn( std::fstream& in )
@@ -302,6 +291,20 @@ void cSceneNode::QueueRendererShadow( cView* pView,bool bTraversal )
 	{
 		(*it)->QueueRendererShadow(pView,bTraversal);
 	}
+}
+
+void cSceneNode::Release()
+{
+	std::list<cSceneNode*>::iterator it = m_listChildNode.begin();
+	std::list<cSceneNode*>::iterator it_end = m_listChildNode.end();
+
+	for ( ;it!=it_end ; it++ )
+	{
+		delete *it;
+	}	
+	m_listChildNode.clear();
+
+	SAFE_RELEASE(m_pRscTransformAnm);
 }
 
 

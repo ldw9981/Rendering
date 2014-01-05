@@ -25,11 +25,7 @@ SkinnedMeshNode::SkinnedMeshNode(void)
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
 {
-	if (m_pArrayMatBoneRef!=NULL)
-	{
-		delete m_pArrayMatBoneRef;
-	}	
-	m_vecBoneRef.clear();	
+	Release();
 }
 
 void SkinnedMeshNode::LinkToBone()
@@ -226,5 +222,19 @@ void SkinnedMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 	{
 		(*it_child)->QueueRendererShadow(pView,bTraversal);
 	}
+}
+
+void SkinnedMeshNode::Release()
+{
+	cMeshNode::Release();
+	if ( m_strNodeName == std::string("Bone03"))
+	{
+		printf("DDD");
+	}
+	if (m_pArrayMatBoneRef!=NULL)
+	{
+		delete m_pArrayMatBoneRef;
+	}	
+	m_vecBoneRef.clear();	
 }
 

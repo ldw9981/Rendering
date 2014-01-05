@@ -19,7 +19,7 @@
 #include "Scene/View.h"
 
 
-cMeshNode::cMeshNode(void):cSceneNode()
+cMeshNode::cMeshNode(void)
 {		
 	m_bIsBone= FALSE;
 
@@ -33,25 +33,7 @@ cMeshNode::cMeshNode(void):cSceneNode()
 
 cMeshNode::~cMeshNode(void)
 {
-	std::vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
-	std::vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
-
-	for ( ;it!=it_end ; it++ )
-	{
-		delete *it;
-	}	
-	m_vecSubMesh.clear();
-
-	if (m_pRscVetextBuffer)
-	{
-		m_pRscVetextBuffer->Release();
-		m_pRscVetextBuffer=NULL;
-	}
-	if (m_pRscIndexBuffer)
-	{
-		m_pRscIndexBuffer->Release();
-		m_pRscIndexBuffer=NULL;
-	}
+	Release();
 }
 
 
@@ -59,10 +41,7 @@ void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
-	if ( m_strNodeName == std::string("Bone03"))
-	{
-		printf("DDD");
-	}
+
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 	
 	if (!m_vecSubMesh.empty())
@@ -410,6 +389,26 @@ void cMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 	{
 		(*it_child)->QueueRendererShadow(pView,bTraversal);
 	}
+}
+
+void cMeshNode::Release()
+{
+	cSceneNode::Release();
+	if ( m_strNodeName == std::string("Bone03"))
+	{
+		printf("DDD");
+	}
+
+	std::vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
+	std::vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
+
+	for ( ;it!=it_end ; it++ )
+	{
+		delete *it;
+	}	
+	m_vecSubMesh.clear();
+	SAFE_RELEASE(m_pRscVetextBuffer);	
+	SAFE_RELEASE(m_pRscIndexBuffer);	
 }
 
 

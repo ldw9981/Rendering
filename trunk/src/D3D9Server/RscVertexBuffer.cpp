@@ -22,7 +22,7 @@ cRscVertexBuffer::~cRscVertexBuffer(void)
 BOOL cRscVertexBuffer::Create()
 {
 	assert(m_RefCounter>=0);
-	if (AddRef()!=1)
+	if (m_RefCounter > 0 )
 		return TRUE;
 
 	HRESULT hResult;
@@ -46,7 +46,7 @@ BOOL cRscVertexBuffer::Create()
 void cRscVertexBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	m_pResourceMng->EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseRscVertexBuffer(GetUniqueKey());
 	delete this;
 }
 

@@ -15,6 +15,9 @@ cRscTransformAnm::~cRscTransformAnm()
 
 BOOL cRscTransformAnm::Create()
 {
+	assert(m_RefCounter>=0);
+	if (m_RefCounter > 0 )
+		return TRUE;
 
 	return TRUE;
 }
@@ -22,7 +25,7 @@ BOOL cRscTransformAnm::Create()
 void cRscTransformAnm::Free()
 {
 //	for_each(m_arrayTransformAnm.begin(),m_arrayTransformAnm.end(),FuncDeleteType<TRANSFORMANM*>);
-	m_pResourceMng->EraseResource(GetUniqueKey());
+	m_pResourceMng->EraseRscTransformAnm(GetUniqueKey());
 	delete this;
 }
 

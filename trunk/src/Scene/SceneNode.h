@@ -113,6 +113,7 @@ public:
 
 	virtual void		QueueRenderer(cView* pView,bool bTraversal);
 	virtual void		QueueRendererShadow(cView* pView,bool bTraversal);
+	virtual void		Release();
 	
 };
 

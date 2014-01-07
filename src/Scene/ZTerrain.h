@@ -1,7 +1,7 @@
 #ifndef _ZTERRAIN_H_
 #define _ZTERRAIN_H_
 
-#include "Scene/SceneNode.h"
+#include "Scene/Entity.h"
 #include "Math/Sphere.h"
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "D3D9Server/RscVertexBuffer.h"
@@ -34,8 +34,8 @@ class Frustum;
 
 */
 class ZTerrain:
-	public cSceneNode,
-	public StaticD3DDEVICE9,
+	public Entity,
+//	public StaticD3DDEVICE9,
 	public cStaticResourceMng
 {
 private:
@@ -81,10 +81,10 @@ private:
 
 public:
 	/// 화면에 지형을 출력한다.
-	virtual void	CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
+	virtual bool	CullRendererIntoRendererQueue( Frustum* pFrustum );
 	virtual void	Render();
 	virtual	void	Update(DWORD elapseTime);
-	virtual	void	QueueRenderer(cView* pView,bool bTraversal);
+	virtual	void	QueueRenderer(Entity* pEntity,bool bTraversal);
 	/// x, z위치의 정점값을 얻어낸다.
 	TERRAINVERTEX*	GetVertex( int x, int z ) { return (m_pvHeightMap+x+z*m_cxDIB); }
 

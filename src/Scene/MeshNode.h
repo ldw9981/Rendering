@@ -46,16 +46,15 @@ public:
 	void					AddMultiSub(cMeshNode* mesh);	
 
 
-	void					CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
-	virtual void			QueueRenderer(cView* pView,bool bTraversal);
-	virtual void			QueueRendererShadow(cView* pView,bool bTraversal);
+
+	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void			QueueRendererShadow(Entity* pEntity,bool bTraversal);
 
 	void					CalculateTangentBinormal();
 	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
 		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
 		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
 		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
-	void					DebugRender(); 
 
 	virtual void			Release();
 };

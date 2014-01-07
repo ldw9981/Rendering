@@ -13,12 +13,23 @@ public:
 	cRendererQueue();
 	~cRendererQueue();
 	
-	D3DXHANDLE			m_hTechnique;// Å×Å©´Ð
 	std::list<IRenderer*>	m_listNode;
 private:
-	std::string			m_strName;
-	
-	
+public:
+	void	Insert(IRenderer* pItem);
+	void	Render();
+	bool	IsEmpty();
+};
+
+class RendererQueue:
+	public IRenderer
+{
+public:
+	RendererQueue();
+	~RendererQueue();
+
+	std::list<IRenderer*>		m_listNode;
+private:
 public:
 	void	Insert(IRenderer* pItem);
 	void	Render();

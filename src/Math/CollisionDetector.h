@@ -37,7 +37,7 @@ public:
 	static cCollision::STATE	IntersectAABBPlane(cAABB& AABB,cPlane& Plane);
 	
 	
-	static cCollision::STATE    CheckWorldFrustum(Frustum& frustum, cSphere& sphere );
+	static cCollision::STATE    CheckWorldFrustum(Frustum& frustum, cSphere& sphere ,float loose=0.0f);
 	static cCollision::STATE	CheckWorldFrustum(Frustum& frustum, cSphere& sphere,WORD plane );
 	static BOOL					InsideWorldFrustum(Frustum& frustum, D3DXVECTOR3& pos );
 	static cCollision::STATE	CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSphere& sphere);

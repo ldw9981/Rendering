@@ -33,6 +33,7 @@ public:
 	LPD3DXBUFFER			m_pError;	
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationNormal;
 	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationBlend;
+	D3DXHANDLE				m_hTLine;// 테크닉
 	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
 	D3DXHANDLE				m_hTerrain;// 테크닉
@@ -67,7 +68,7 @@ public:
 	// 그림자맵 렌더타깃
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
-
+	bool					m_bDebugBound;
 
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	

@@ -22,8 +22,8 @@ struct TERRAINVERTEX;
 class cQuadSpatial;
 class cRscTexture;
 class cTerrainNode:
-	public cSceneNode,	
-	private StaticD3DDEVICE9
+	public cSceneNode	
+//	,private StaticD3DDEVICE9
 {
 public:
 	cTerrainNode();

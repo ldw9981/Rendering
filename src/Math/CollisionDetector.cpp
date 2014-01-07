@@ -214,13 +214,13 @@ int cCollision::IntersectAABBSphere( cAABB& AABB,cSphere& Sphere )
 }
 
 
-cCollision::STATE cCollision::CheckWorldFrustum(Frustum& frustum, cSphere& sphere )
+cCollision::STATE cCollision::CheckWorldFrustum(Frustum& frustum, cSphere& sphere ,float loose)
 {
 	int ret;
 	BOOL bIntersect=false;
 	for (int i=0;i<6;i++)
 	{	
-		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i]);				
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i],NULL,loose);				
 		if (ret==cCollision::OUTSIDE)	
 		{	// ¹Ù±ùÂÊÀÌ¸é ¹«Á¶°Ç ¹Ù±ù
 			return cCollision::OUTSIDE;

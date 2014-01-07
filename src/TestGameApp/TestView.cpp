@@ -60,12 +60,11 @@ void cTestView::Enter()
 	AttachObject(m_pP38);
 
 	m_pTestStateA = new TestStateA;
-	m_pTestStateA->SetParentView(this);
-	GetState().Add(m_pTestStateA,std::string("TestStateA"));	
+	m_pTestStateA->SetParentView(this);	
 
 	m_pTestStateB = new TestStateB;
 	m_pTestStateB->SetParentView(this);
-	GetState().Add(m_pTestStateB,std::string("TestStateB"));	
+	
 	
 	m_pGlobalButtonScene = new cGlobalView;
 	m_pGlobalButtonScene->SetParentView(this);
@@ -79,6 +78,11 @@ void cTestView::Leave()
 	DettachObject(m_pGlobalButtonScene);
 	SAFE_DELETE(m_pGlobalButtonScene);		
 
+	cView* pView = GetState().GetCurr();
+	if (pView)
+	{
+		pView->Leave();
+	}
 	SAFE_DELETE(m_pTestStateB);	
 	SAFE_DELETE(m_pTestStateA);	
 
@@ -97,18 +101,23 @@ void cTestView::Control()
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
 	}
-	if (m_pWinInput->IsCurrDn(VK_OEM_PLUS))
+	if (m_pWinInput->IsTurnDn(VK_OEM_PLUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
 
 	}
 
-	if (m_pWinInput->IsCurrDn(VK_OEM_MINUS))
+	if (m_pWinInput->IsTurnDn(VK_OEM_MINUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
 	}
 
 
+	if (m_pWinInput->IsTurnDn(VK_F12))
+	{
+		D3D9::Server::g_pServer->m_bDebugBound = !D3D9::Server::g_pServer->m_bDebugBound;
+	}
+	
 	m_Camera.Control();
 }
 
@@ -120,16 +129,16 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
 		
-		if (GetState().IsCurr(std::string("TestStateA")))
+		if (GetState().IsCurr(m_pTestStateB))
 		{
-			GetState().Transite(std::string("TestStateB"));
+			GetState().Transite(m_pTestStateA);
 		}
 		else 
 		{
 			DettachObject(m_pP38);
 			SAFE_DELETE(m_pP38);
 
-			GetState().Transite(std::string("TestStateA"));
+			GetState().Transite(m_pTestStateB);
 		}		
 	}
 	else if (pSource == m_pGlobalButtonScene->m_pBtExit)

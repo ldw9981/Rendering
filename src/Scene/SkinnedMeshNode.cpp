@@ -62,7 +62,6 @@ void SkinnedMeshNode::LinkToBone()
 */
 void SkinnedMeshNode::Render()
 {
-	DebugRender();			
 	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
@@ -166,14 +165,14 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 	m_vecBoneRef = vecBoneRef;
 }
 
-void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
+void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	if (m_vecSubMesh.empty())
 	{
 		if (m_bRender)
 		{
 			int i = m_Matrial.index_renderer_queue();
-			pView->m_listRenderQueueSkinned[i].Insert(this);
+			pEntity->m_renderQueueBlend[i].Insert(this);
 		}
 	}
 	else
@@ -181,7 +180,7 @@ void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
 		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 		{
-			(*it_sub)->QueueRenderer(pView,bTraversal);
+			(*it_sub)->QueueRenderer(pEntity,bTraversal);
 		}
 	}
 	
@@ -191,18 +190,18 @@ void SkinnedMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRenderer(pView,bTraversal);
+		(*it_child)->QueueRenderer(pEntity,bTraversal);
 	}
 }
 
 
-void SkinnedMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
+void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 {
 	if (m_vecSubMesh.empty())
 	{
 		if (m_bRender)
 		{
-			pView->m_listShadowBlend.Insert(this);
+			pEntity->m_renderQueueBlendShadow.Insert(this);
 		}
 	}
 	else
@@ -210,7 +209,7 @@ void SkinnedMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
 		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 		{
-			(*it_sub)->QueueRendererShadow(pView,bTraversal);
+			(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
 		}
 	}
 
@@ -220,7 +219,7 @@ void SkinnedMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRendererShadow(pView,bTraversal);
+		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
 	}
 }
 

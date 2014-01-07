@@ -13,11 +13,14 @@
 #include "D3D9Server/RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Framework/EnvironmentVariable.h"
+#include "Scene/Entity.h"
 
 cASEParser::cASEParser()
 {
 	m_CNTOBJECT=0;	
-	m_repeat = 0;
+	m_repeat = 0;	
+	m_tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f);
+	m_tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
 }
 cASEParser::~cASEParser(void)
 {
@@ -198,7 +201,7 @@ BOOL cASEParser::GetIdentifier( LPSTR pOutput )
 	return TRUE;
 }
 
-BOOL cASEParser::Load( const char* strFileName ,cSceneNode* pOutput)
+BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 {	
 	m_repeat++;
 	BOOL bResult;
@@ -323,6 +326,9 @@ BOOL cASEParser::Load( const char* strFileName ,cSceneNode* pOutput)
 	
 	m_vecMaterial.clear();
 
+	cSphere temp;
+	CalculateSphere(m_tempAxisMin,m_tempAxisMax,temp);
+	m_pSceneRoot->GetBoundingSphere() =  temp;
 
 	// *************************************************************
 	// 
@@ -362,7 +368,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::vector<TRIANGLE>					vecTempExtraTFaceIndex;	
 
 	// 정점으로 Sphere를 만들기위한 임시 정보
-	D3DXVECTOR3 tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f),tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
+	
 	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	SCENENODEINFO stInfo;	
@@ -437,38 +443,40 @@ BOOL cASEParser::Parsing_GeoObject()
 										NORMALVERTEX Item;
 										memset(&Item,0,sizeof(Item));
 										int index=GetInt();
-										GetVector3(&Item.vertex);
-										// 원점중심 로컬좌표로 이동
-										D3DXVec3TransformCoord(&Item.vertex,&Item.vertex,&stInfo.tmInvNode);
-										vecNormalVertexForBuffer.push_back(Item);	
+										GetVector3(&Item.vertex);	
 
 										//Bounding Sphere를 위한 최대 최소 얻기
-										tempAxisMin.x= min(Item.vertex.x,tempAxisMin.x);
-										tempAxisMin.y= min(Item.vertex.y,tempAxisMin.y);
-										tempAxisMin.z= min(Item.vertex.z,tempAxisMin.z);
+										m_tempAxisMin.x= min(Item.vertex.x,m_tempAxisMin.x);
+										m_tempAxisMin.y= min(Item.vertex.y,m_tempAxisMin.y);
+										m_tempAxisMin.z= min(Item.vertex.z,m_tempAxisMin.z);
 
-										tempAxisMax.x= max(Item.vertex.x,tempAxisMax.x);
-										tempAxisMax.y= max(Item.vertex.y,tempAxisMax.y);
-										tempAxisMax.z= max(Item.vertex.z,tempAxisMax.z);		
+										m_tempAxisMax.x= max(Item.vertex.x,m_tempAxisMax.x);
+										m_tempAxisMax.y= max(Item.vertex.y,m_tempAxisMax.y);
+										m_tempAxisMax.z= max(Item.vertex.z,m_tempAxisMax.z);		
+
+										// 원점중심 로컬좌표로 이동
+										D3DXVec3TransformCoord(&Item.vertex,&Item.vertex,&stInfo.tmInvNode);
+										vecNormalVertexForBuffer.push_back(Item);
 									}
 									else
 									{
 										BLENDVERTEX Item;
 										memset(&Item,0,sizeof(Item));
 										int index=GetInt();
-										GetVector3(&Item.vertex);		
+										GetVector3(&Item.vertex);			
+
+										//Bounding Sphere를 위한 최대 최소 얻기
+										m_tempAxisMin.x= min(Item.vertex.x,m_tempAxisMin.x);
+										m_tempAxisMin.y= min(Item.vertex.y,m_tempAxisMin.y);
+										m_tempAxisMin.z= min(Item.vertex.z,m_tempAxisMin.z);
+
+										m_tempAxisMax.x= max(Item.vertex.x,m_tempAxisMax.x);
+										m_tempAxisMax.y= max(Item.vertex.y,m_tempAxisMax.y);
+										m_tempAxisMax.z= max(Item.vertex.z,m_tempAxisMax.z);
+
 										// 원점중심 로컬좌표로 이동
 										D3DXVec3TransformCoord(&Item.vertex,&Item.vertex,&stInfo.tmInvNode);
 										vecBlendVertexForBuffer.push_back(Item);	
-
-										//Bounding Sphere를 위한 최대 최소 얻기
-										tempAxisMin.x= min(Item.vertex.x,tempAxisMin.x);
-										tempAxisMin.y= min(Item.vertex.y,tempAxisMin.y);
-										tempAxisMin.z= min(Item.vertex.z,tempAxisMin.z);
-
-										tempAxisMax.x= max(Item.vertex.x,tempAxisMax.x);
-										tempAxisMax.y= max(Item.vertex.y,tempAxisMax.y);
-										tempAxisMax.z= max(Item.vertex.z,tempAxisMax.z);	
 									}						
 									break;
 								}
@@ -740,7 +748,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		stInfo.pParent=m_pSceneRoot;
 	}
 
-	CalculateSphere(tempAxisMin,tempAxisMax,stInfo.boundingSphere);
+	
 		
 	// 이제 버텍스 가공 버텍스,노말 합치기
 	if (!bSkinned) MergeNormalListIntoVertexList(vecNormalVertexForBuffer,vecIndexForBuffer,vecTempVertexNormal);
@@ -2240,7 +2248,8 @@ void cASEParser::Close()
 {
 	cASELexer::Close();
 	m_vecMaterial.clear();
-
+	m_tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f);
+	m_tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
 	m_pSceneRoot = NULL;
 	m_pLastObject = NULL;
 	m_CNTOBJECT = 0;

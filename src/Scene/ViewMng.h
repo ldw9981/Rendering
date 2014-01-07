@@ -19,19 +19,13 @@ public:
 	FiniteStateMachine(void);
 	~FiniteStateMachine(void);
 protected:
-	std::map<std::string,T*> m_container;
 	T*			m_pPrev;
 	T*			m_pCurr;
 	T*			m_pNew;
 public:
-	bool Transite( std::string& strName )
+	void Transite( T* pState)
 	{
-		std::map<std::string,T*>::iterator it = m_container.find(strName);
-		if (it == m_container.end())
-			return false;
-
-		m_pNew = it->second;
-		return true;
+		m_pNew = pState;
 	}
 	void Update( DWORD elapseTime )
 	{
@@ -53,29 +47,17 @@ public:
 			m_pCurr->Update(elapseTime);
 		}
 	}
-	bool Add( T* pFiniteState,std::string& strName )
-	{
-		std::map<std::string,T*>::iterator it = m_container.find(strName);
-		if (it != m_container.end())
-			return false;
 
-		m_container.insert(std::pair<std::string,T*>(strName,pFiniteState));
+	bool IsCurr( T* pState )
+	{
+		if( pState != m_pCurr )
+			return false;
 		return true;
-	}
-	bool Del( std::string& strName )
-	{
-		return false;
-	}
-	bool IsCurr( std::string& strName )
-	{
-		std::map<std::string,T*>::iterator it = m_container.find(strName);
-		if (it == m_container.end())
-			return false;
+	}	
 
-		if( it->second != m_pCurr )
-			return false;
-
-		return true;
+	T* GetCurr()
+	{
+		return m_pCurr;
 	}
 };
 

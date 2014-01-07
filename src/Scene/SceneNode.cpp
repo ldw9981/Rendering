@@ -15,6 +15,9 @@
 #include "Foundation/Define.h"
 #include "ASEParser/ASEParser.h"
 
+#include "D3D9Server/Server.h"
+
+
 // 모든 노드 이름은 초기에 루트가 되며 부모는 없다.
 cSceneNode::cSceneNode(void)
 :m_strNodeName("Root"),m_strParentName("")
@@ -25,7 +28,6 @@ cSceneNode::cSceneNode(void)
 
 	m_bIsActiveAnimation=FALSE;
 	m_pRscTransformAnm=NULL;		
-	m_pCullingSphere=NULL;
 	m_bRender=true;
 	m_animationTime = 0;
 }
@@ -215,7 +217,6 @@ void cSceneNode::BuildComposite()
 
 void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
 {
-	m_BoundingSphere = stInfo.boundingSphere;
 	this->SetNodeName(stInfo.strNodeName.c_str());
 	this->SetParentName(stInfo.strParentName.c_str());
 	this->SetLocalTM(stInfo.tmLocal);
@@ -245,17 +246,14 @@ void cSceneNode::SerializeOut( std::fstream& out )
 	}
 }
 
-void cSceneNode::SetBoundingSphere( cSphere& Sphere )
-{
-	m_BoundingSphere = Sphere;	
-}
 
-void cSceneNode::QueueRenderer(cView* pView,bool bTraversal)
+
+void cSceneNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->QueueRenderer(pView,bTraversal);
+		(*it)->QueueRenderer(pEntity,bTraversal);
 	}
 }
 
@@ -284,12 +282,12 @@ void cSceneNode::RenderShadow()
 	}
 }
 
-void cSceneNode::QueueRendererShadow( cView* pView,bool bTraversal )
+void cSceneNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 {
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->QueueRendererShadow(pView,bTraversal);
+		(*it)->QueueRendererShadow(pEntity,bTraversal);
 	}
 }
 
@@ -306,5 +304,6 @@ void cSceneNode::Release()
 
 	SAFE_RELEASE(m_pRscTransformAnm);
 }
+
 
 

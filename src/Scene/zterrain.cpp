@@ -62,7 +62,7 @@ HRESULT	ZTerrain::Create( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, cons
 	AttachChildNode(m_pQuadTree);
 
 	m_BoundingSphere = m_pQuadTree->GetBoundingSphere();
-
+	QueueRenderer(this,true);
 	return S_OK;
 }
 
@@ -183,7 +183,6 @@ void	ZTerrain::Render()
 
 HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 {
-	cCameraNode* pCamera=cCameraNode::GetActiveCamera();
 	LPDWORD		pI=NULL;
 	pI=(LPDWORD)m_pRscIndexBuffer->Lock();	
 	m_nTriangles=0;
@@ -214,13 +213,20 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-void ZTerrain::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
+bool ZTerrain::CullRendererIntoRendererQueue( Frustum* pFrustum )
 {
+	if (!m_bRender)
+		return false;
+
+	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere);
+	if( retCS == cCollision::OUTSIDE)
+		return false;
+
 	FillIndexBuffer(*pFrustum);
-	QueueRenderer(pView,false);
+	return true;	
 }
 
-void ZTerrain::QueueRenderer( cView* pView,bool bTraversal )
+void ZTerrain::QueueRenderer( Entity* pEntity,bool bTraversal )
 {
-	pView->m_listRenderTerrain.Insert(this);
+	pEntity->m_renderQueueTerrain.Insert(this);
 }

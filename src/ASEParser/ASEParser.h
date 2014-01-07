@@ -15,7 +15,7 @@ class cSceneNode;
 class cMeshNode;
 class SkinnedMeshNode;
 class cHelperNode;
-class cSceneRoot;
+class Entity;
 class cSphere;
 struct BONEREFINFO;
 
@@ -27,7 +27,6 @@ struct SCENENODEINFO
 	D3DXMATRIX tmInvNode;
 	D3DXMATRIX tmWorld;
 	D3DXMATRIX tmLocal;
-	cSphere boundingSphere;
 	cSceneNode* pParent;
 
 	SCENENODEINFO()
@@ -85,8 +84,10 @@ private:
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
 	//std::vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
 	std::vector<std::vector<Material>>		m_vecMaterial;
+	D3DXVECTOR3			m_tempAxisMin;
+	D3DXVECTOR3			m_tempAxisMax;	
 
-	cSceneNode*			m_pSceneRoot;
+	Entity*				m_pSceneRoot;
 	LONG				m_Token;
 	CHAR				m_TokenString[MAX_PARSER_BUFFERSIZE];
 	cSceneNode*			m_pLastObject;
@@ -114,10 +115,10 @@ public:
 		
 		D3DXMATRIX&		GetNodeTM();
 
-		cSceneNode*		GetRootNode() const { return m_pSceneRoot; }
-		void			SetRootNode(cSceneNode* val) { m_pSceneRoot = val; }	
+		Entity*		GetRootNode() const { return m_pSceneRoot; }
+		void			SetRootNode(Entity* val) { m_pSceneRoot = val; }	
 
-		BOOL			Load(const char* strFileName,cSceneNode* pOutput);
+		BOOL			Load(const char* strFileName,Entity* pOutput);
 
 
 		BOOL			Parsing_HelperObject();

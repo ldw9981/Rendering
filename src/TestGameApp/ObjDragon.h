@@ -1,10 +1,10 @@
 #pragma once
-#include "Scene/SceneNode.h"
+#include "Scene/Entity.h"
 #include "Foundation/Interface.h"
 #include "WinInput/WinInput.h"
 
 class cObjDragon :
-	public cSceneNode,
+	public Entity,
 	public cStaticWinInput,
 	public IControlable
 {

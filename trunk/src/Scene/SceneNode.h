@@ -1,16 +1,17 @@
 #pragma once
 #include "Foundation/interface.h"
 #include "Scene/Transformable.h"
-#include "Math/Sphere.h"
+
 
 struct SCENEINFO; 
 class cASEParser; 
 class cRscTransformAnm;
 class cRendererQueue;
-class cSphere;
 class cCameraNode;
 class cView;
 class Frustum;
+class Entity;
+
 struct SCENENODEINFO;
 
 class cSceneNode:
@@ -31,9 +32,7 @@ protected:
 	cSceneNode*				m_pParentNode;
 	cSceneNode*				m_pRootNode;
 
-	// 아래두개는 버텍스 버퍼가 있을때만 만들어진다.
-	cSphere*				m_pCullingSphere;		// 자식의 컬링구 를 모두 포함하는구(위치,볼륨을 매프레임 갱신됨) 
-	cSphere					m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
+
 	
 	// Transform 애니메이션 정보
 	cRscTransformAnm*		m_pRscTransformAnm;	
@@ -88,10 +87,6 @@ public:
 	void				UpdateChildren(DWORD elapseTime);
 	void				RenderChildren();
 	void				FreeChildren();
-
-	void				SetBoundingSphere(cSphere& Sphere);
-	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
-
 	//					순회 하면서 Renderer들을 큐에 넣는다.
 	virtual void		CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	
@@ -111,9 +106,8 @@ public:
 	virtual void		SerializeIn(std::fstream& in);
 	virtual void		SerializeOut(std::fstream& out);
 
-	virtual void		QueueRenderer(cView* pView,bool bTraversal);
-	virtual void		QueueRendererShadow(cView* pView,bool bTraversal);
-	virtual void		Release();
-	
+	virtual void		QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void		QueueRendererShadow(Entity* pEntity,bool bTraversal);
+	virtual void		Release();	
 };
 

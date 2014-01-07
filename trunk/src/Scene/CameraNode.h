@@ -15,7 +15,7 @@ class cRendererQueue;
 class cCameraNode :
 	public cSceneNode,
 	public IControlable,
-	private StaticD3DDEVICE9,
+//	private StaticD3DDEVICE9,
 	private cStaticWinInput
 {
 public:

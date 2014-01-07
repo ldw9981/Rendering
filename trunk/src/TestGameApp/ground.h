@@ -3,8 +3,8 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 
 class cGround:
-	public cSceneNode,
-	private StaticD3DDEVICE9
+	public cSceneNode
+//	,private StaticD3DDEVICE9
 {
 public:
 	cGround();

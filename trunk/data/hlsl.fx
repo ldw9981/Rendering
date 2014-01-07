@@ -66,6 +66,12 @@ float gSpecularPower = 32;
 const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
 float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 
+struct VS_LINE_INPUT
+{
+   float4 mPosition : POSITION;
+   float4 mColor   : COLOR0;
+};
+
 struct VS_TERRAIN_INPUT
 {
    float4 mPosition : POSITION;
@@ -95,7 +101,11 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
    int4   mBlendIndices    : BLENDINDICES; 
 };
 
-
+struct VS_LINE_OUTPUT
+{
+   float4 mPosition : POSITION;
+   float4 mColor   : COLOR0;
+};
 
 struct VS_PHONG_DIFFUSE_OUTPUT
 {
@@ -121,6 +131,15 @@ struct VS_PHONG_DIFFUSE_BUMP_OUTPUT
    float2 mTexCoord1 : TEXCOORD6;
    float4 mClipPosition: TEXCOORD7;
 };
+
+VS_LINE_OUTPUT vs_Line( VS_LINE_INPUT input)
+{
+   VS_LINE_OUTPUT output;
+   float4 worldPosition = mul(input.mPosition , gWorldMatrix);
+   output.mPosition = mul(worldPosition , gViewProjectionMatrix);
+   output.mColor = input.mColor;
+   return output;
+}
 
 
 VS_PHONG_DIFFUSE_OUTPUT vs_Terrain( VS_TERRAIN_INPUT input)
@@ -298,6 +317,11 @@ float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    return float4(color,0.0f);
 }
 
+float4 ps_Line(float4 Color   : COLOR0) : COLOR
+{   
+   return Color;
+}
+
 
 float4 ps_PhongDiffuse(PS_PHONG_DIFFUSE_INPUT input) : COLOR
 {  
@@ -442,8 +466,16 @@ technique TSkinningPhongDiffuse
     }  
 }
 
+technique TLine
+{
+    pass P0
+    {
+        // shaders
+        VertexShader = compile vs_2_0 vs_Line();
+        PixelShader  = compile ps_2_0 ps_Line();
+    }  
+}
 
-// Å×Å©´Ð ¼±¾ð(½¦ÀÌ´õ & ÇÈ¼¿ ½¦ÀÌ´õ »ç¿ë)
 technique TPhong
 {
     pass P0

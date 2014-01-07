@@ -59,6 +59,7 @@ void cMenuView::Enter()
 	m_pTank = new cObjTank;
 	//parser.Load(std::string(strDataPath+"03ik-joe.ASE").c_str(),m_pTank);
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
+	parser.Close();
 	m_pTank->BuildComposite();
 	m_pTank->Init();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
@@ -129,6 +130,7 @@ void cMenuView::Update( DWORD elapseTime )
 	cView::Update(elapseTime);
 	m_Camera.Update(elapseTime);
 	
+	/*
 	if (m_pTank)
 	{
 		D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
@@ -141,6 +143,7 @@ void cMenuView::Update( DWORD elapseTime )
 		pos.y+=50.0f;
 		m_pTank->SetLocalPos(pos);
 	}
+	*/
 	
 }
 
@@ -171,17 +174,21 @@ void cMenuView::Control()
 		}
 	}
 	
-	if (m_pWinInput->IsCurrDn(VK_OEM_PLUS))
+	if (m_pWinInput->IsTurnDn(VK_OEM_PLUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
-		DettachObject(m_pDragon);
-		SAFE_DELETE(m_pDragon);
+
 	}
 
-	if (m_pWinInput->IsCurrDn(VK_OEM_MINUS))
+	if (m_pWinInput->IsTurnDn(VK_OEM_MINUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
 	}
 
+
+	if (m_pWinInput->IsTurnDn(VK_F12))
+	{
+		D3D9::Server::g_pServer->m_bDebugBound = !D3D9::Server::g_pServer->m_bDebugBound;
+	}
 			
 }

@@ -2,6 +2,12 @@
 extern D3DVERTEXELEMENT9 declNormal[];
 extern D3DVERTEXELEMENT9 declBlend[];
 
+struct LINEVERTEX 
+{ 
+	D3DXVECTOR3 pos; 
+	D3DCOLOR color; 
+}; 
+
 struct TEXCOORD
 {
 	float u;

@@ -3,7 +3,7 @@
 
 #include "Math/Sphere.h"
 #include "Math/Plane.h"
-#include "Scene/SceneNode.h"
+#include "Scene/Entity.h"
 
 #define	CELL_MAX	2
 
@@ -20,7 +20,7 @@ struct TERRAINVERTEX;
 
 */
 class ZQuadTree:
-	public cSceneNode
+	public Entity
 {
 	///    TopLeft(TL)      TopRight(TR)
 	///              0-+-1
@@ -60,7 +60,7 @@ public:
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);
-	virtual void		CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
+	virtual void		CullRendererIntoRendererQueue(Entity* pEntity,Frustum* pFrustum );
 	virtual void		Render();
 };
 

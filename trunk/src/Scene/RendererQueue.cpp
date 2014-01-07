@@ -11,7 +11,7 @@ cRendererQueue::cRendererQueue()
 
 cRendererQueue::~cRendererQueue()
 {
-
+	
 }
 
 
@@ -27,7 +27,6 @@ void cRendererQueue::Render()
  	{
  		(*it)->Render();
  	}
-	m_listNode.clear();
 }
 
 bool cRendererQueue::IsEmpty()

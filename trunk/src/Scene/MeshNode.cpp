@@ -5,7 +5,6 @@
 
 #include "Foundation/Trace.h"
 #include "Math/Sphere.h"
-#include "Math/CollisionDetector.h"
 #include "D3D9Server/RscTexture.h"
 #include "D3D9Server/Server.h"
 
@@ -40,10 +39,7 @@ cMeshNode::~cMeshNode(void)
 void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
-
-	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
-	
+	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);	
 	if (!m_vecSubMesh.empty())
 	{
 		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
@@ -62,7 +58,6 @@ void cMeshNode::Update(DWORD elapseTime)
 */
 void cMeshNode::Render()
 {			
-	DebugRender();
 	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
 	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
@@ -138,25 +133,9 @@ void cMeshNode::BuildComposite()
 
 /*
 	겹치면 자식까지 그냥 다 그린다. 밖이면 자식검사
+	* 논리적오류! 자식이라고해서 원 안에 항상있을까..
 */
-void cMeshNode::CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum  )
-{
-	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere);
-	if( retCS != cCollision::OUTSIDE)
-	{			
-		if (m_bRender)
-		{
-			QueueRenderer(pView,true);
-			return;
-		}
-	}	
 
-	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
-	{
-		(*it_child)->CullRendererIntoRendererQueue(pView,pFrustum);
-	}
-}
 
 void cMeshNode::AddMultiSub( cMeshNode* mesh )
 {
@@ -182,12 +161,12 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 	}
 }
 
-void cMeshNode::QueueRenderer(cView* pView,bool bTraversal)
+void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	if (m_bRender)
 	{
 		int i = m_Matrial.index_renderer_queue();
-		pView->m_listRenderQueue[i].Insert(this);
+		pEntity->m_renderQueueNormal[i].Insert(this);
 	}
 
 	if (!bTraversal)
@@ -196,13 +175,13 @@ void cMeshNode::QueueRenderer(cView* pView,bool bTraversal)
 	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
 	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 	{
-		(*it_sub)->QueueRenderer(pView,bTraversal);
+		(*it_sub)->QueueRenderer(pEntity,bTraversal);
 	}
 
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRenderer(pView,bTraversal);
+		(*it_child)->QueueRenderer(pEntity,bTraversal);
 	}
 }
 
@@ -274,105 +253,12 @@ void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& ve
 
 }
 
-void cMeshNode::DebugRender() 
-{ 
-	int LineCount=16;
-	float fScale=m_BoundingSphere.GetRadius();
-	D3DCOLOR color=D3DCOLOR_RGBA(255,0,255,0);	
 
-	// 최소한의 다각형을 그리기위한 
-	if( LineCount < 6 ) 
-		LineCount = 6; 
-
-	float fRotationAngleAverage = ( D3DX_PI * 2) / LineCount; 
-
-	struct sDrawCircle 
-	{ 
-		D3DXVECTOR3 pos; 
-		D3DCOLOR color; 
-	}; 
-
-	sDrawCircle CircleLine[2]; 
-	D3DXVECTOR3 NewPos, Pos; 
-	D3DXMATRIXA16 matRot; 
-	
-	//mat.m[3][0] = GetWorldTM().[3][0];
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&GetWorldTM());
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
-
-	// m_vtCircleCenter : Circle의 중심점 
-	m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE ); 
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE); 
-
-	Pos = D3DXVECTOR3( 1.f, 0.f, 0.f )* fScale; 
-	CircleLine[1].pos = Pos;// + m_pBoundingSphere->GetCenterPos(); 
-	CircleLine[1].color = CircleLine[0].color = color; 
-	for ( int i = 1; i < LineCount + 1; i++ ) 
-	{ 
-		CircleLine[0].pos = CircleLine[1].pos; 
-
-		// 회전하고자 하는 축에 따라 마음대로 
-		D3DXMatrixRotationY( &matRot, i * fRotationAngleAverage ); 
-		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
-
-		CircleLine[1].pos = (NewPos);// + m_pBoundingSphere->GetCenterPos() ); 
-
-		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
-		
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
-	} 
-	
-	
-	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
-	CircleLine[1].pos = Pos; 
-	CircleLine[1].color = CircleLine[0].color = color; 
-	for ( int i = 1; i < LineCount + 1; i++ ) 
-	{ 
-		CircleLine[0].pos = CircleLine[1].pos; 
-
-		// 회전하고자 하는 축에 따라 마음대로 
-		D3DXMatrixRotationX( &matRot, i * fRotationAngleAverage ); 
-		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
-
-		CircleLine[1].pos = (NewPos); 
-
-		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
-	} 
-
-	/*
-	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
-	CircleLine[1].pos = Pos + m_pBoundingSphere->GetCenterPos(); 
-	CircleLine[1].color = CircleLine[0].color = color; 
-	for ( int i = 1; i < LineCount + 1; i++ ) 
-	{ 
-		CircleLine[0].pos = CircleLine[1].pos; 
-
-		// 회전하고자 하는 축에 따라 마음대로 
-		D3DXMatrixRotationZ( &matRot, i * fRotationAngleAverage ); 
-		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
-
-		CircleLine[1].pos = (NewPos + m_pBoundingSphere->GetCenterPos() ); 
-
-		m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( sDrawCircle ) ); 
-	} 
-	*/
-
-	m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, TRUE ); 
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE ); 
-	m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE ); 
-	
-
-}
-
-
-void cMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
+void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 {
 	if (m_bRender)
 	{
-		pView->m_listShadowNormal.Insert(this);
+		pEntity->m_renderQueueNormalShadow.Insert(this);
 	}
 
 	if (!bTraversal)
@@ -381,23 +267,19 @@ void cMeshNode::QueueRendererShadow( cView* pView,bool bTraversal )
 	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
 	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 	{
-		(*it_sub)->QueueRendererShadow(pView,bTraversal);
+		(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
 	}
 
 	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRendererShadow(pView,bTraversal);
+		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
 	}
 }
 
 void cMeshNode::Release()
 {
 	cSceneNode::Release();
-	if ( m_strNodeName == std::string("Bone03"))
-	{
-		printf("DDD");
-	}
 
 	std::vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
 	std::vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
@@ -410,5 +292,3 @@ void cMeshNode::Release()
 	SAFE_RELEASE(m_pRscVetextBuffer);	
 	SAFE_RELEASE(m_pRscIndexBuffer);	
 }
-
-

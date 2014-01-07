@@ -4,6 +4,7 @@
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "Scene/CameraNode.h"
 #include "D3D9Server/Server.h"
+#include "Math/CollisionDetector.h"
 
 cView::cView(void)
 :m_pParentView(NULL)
@@ -29,10 +30,12 @@ void cView::AttachObject( IUnknownObject* pIUnknownObject )
 		pIC->m_ItControlable = --m_ControlableList.end();	
 	}
 
-	cSceneNode* pSceneGraphNode = dynamic_cast<cSceneNode*>(pIUnknownObject);
-	if (pSceneGraphNode !=NULL)
+	Entity* pEntity = dynamic_cast<Entity*>(pIUnknownObject);
+	if (pEntity !=NULL)
 	{
-		m_listScene.AttachChildNode(pSceneGraphNode);
+		//m_listEntity.AttachChildNode(pSceneGraphNode);
+		m_listEntity.push_back(pEntity);
+		pEntity->m_itEntityList = --m_listEntity.end();	
 		return;
 	}
 
@@ -61,10 +64,10 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 		m_ControlableList.erase(pIC->m_ItControlable);
 	}	
 
-	cSceneNode* pSceneGraphNode = dynamic_cast<cSceneNode*>(pIUnknownObject);
-	if (pSceneGraphNode !=NULL)
+	Entity* pEntity = dynamic_cast<Entity*>(pIUnknownObject);
+	if (pEntity !=NULL)
 	{
-		m_listScene.DettachChildNode(pSceneGraphNode);
+		m_listEntity.erase(pEntity->m_itEntityList);
 		return;
 	}
 
@@ -83,7 +86,11 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 
 void cView::Update( DWORD elapseTime )
 {	
-	m_listScene.Update(elapseTime);		// SceneGraph는 계층트리구조 부모우선 순회가 이루어져야한다.
+	auto itEntity = m_listEntity.begin();
+	for ( ;itEntity!=m_listEntity.end() ; ++itEntity )
+	{
+		(*itEntity)->Update(elapseTime);
+	}	
 
 	std::list<IUpdatable*>::iterator it=m_ProgressableList.begin();
 	for ( ;it!=m_ProgressableList.end() ; ++it )
@@ -112,13 +119,12 @@ void cView::ProcessRender()
 		return;
 	
 	// scene 
-	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
-	if (pActiveCamera)
-	{
-		m_listScene.QueueRendererShadow(this,true);
-		m_listScene.CullRendererIntoRendererQueue(this,&pActiveCamera->GetFrustum());
-	}		
-	D3D9::Server::g_pServer->Render(this);
+	CullFrustum(m_listEntity,m_listEntityShadow,500.0f);
+	CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
+
+	D3D9::Server::g_pServer->Render(this);	
+	m_listEntityRender.clear();
+	m_listEntityShadow.clear();
 
 	// gui 
 	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
@@ -165,10 +171,37 @@ void cView::Enter()
 
 void cView::Leave()
 {
-
+	
 }
 
 void cView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 
+}
+
+void cView::DebugRender()
+{
+	auto itEntity = m_listEntity.begin();
+	for ( ;itEntity!=m_listEntity.end() ; ++itEntity )
+	{
+		(*itEntity)->RenderBound();
+	}	
+}
+
+void cView::CullFrustum( std::list<Entity*>& in , std::list<Entity*>& out,float loose )
+{
+	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
+	if (!pActiveCamera)
+		return;
+
+	Frustum& frustum = pActiveCamera->GetFrustum();
+
+	auto itIn = in.begin();
+	for ( ;itIn!=in.end() ; ++itIn )
+	{
+		if( (*itIn)->CullRendererIntoRendererQueue(&frustum) == false )
+			continue;	
+		
+		out.push_back(*itIn);
+	}
 }

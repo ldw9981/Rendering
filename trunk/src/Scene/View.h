@@ -5,6 +5,8 @@
 #include "WinInput/WinInput.h"
 #include "TopRenderable.h"
 #include "Scene/ViewMng.h"
+#include "Scene/Entity.h"
+
 
 class cCameraNode;
 class cView:
@@ -34,15 +36,10 @@ protected:
 	D3DVIEWPORT9			m_ViewPortInfo;	
 	std::string				m_strName;
 public:
-	cRendererQueue			m_listRenderQueue[16];
-	cRendererQueue			m_listRenderQueueSkinned[16];
-	cRendererQueue			m_listRenderTerrain;
-	cRendererQueue			m_listRenderGUI;
-
-	cRendererQueue			m_listShadowNormal;
-	cRendererQueue			m_listShadowBlend;
 	cViewMng				m_ViewState;
-	cSceneNode				m_listScene;				// Transform 있는것들
+	std::list<Entity*>		m_listEntity;
+	std::list<Entity*>		m_listEntityShadow;
+	std::list<Entity*>		m_listEntityRender;
 public:
 	cViewMng& GetState() { return m_ViewState; }
 	cView* GetParentView() const { return m_pParentView; }
@@ -69,4 +66,7 @@ public:
 	virtual void			Render();
 
 	virtual void			Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
+	void					DebugRender();
+
+	void					CullFrustum(std::list<Entity*>& in , std::list<Entity*>& out,float loose);
 };

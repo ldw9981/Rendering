@@ -51,6 +51,7 @@ Server::Server(void)
 
 	m_pShadowRenderTarget = NULL;
 	m_pShadowDepthStencil = NULL;
+	m_bDebugBound = false;
 }
 
 Server::~Server(void)
@@ -215,7 +216,8 @@ void Server::LoadHLSL(const char* szFileName)
 	
 	D3DXEFFECT_DESC desc;
 	hr = m_pEffect->GetDesc(&desc);
-	
+
+	m_hTLine = m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain = m_pEffect->GetTechniqueByName( _T("TTerrain") );
 	m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
 	m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
@@ -336,14 +338,22 @@ void Server::Render(cView* pView)
 	m_pEffect->SetTechnique(m_hTCreateShadowNormal);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);
-	pView->m_listShadowNormal.Render();
+	auto itEntityShadow = pView->m_listEntityShadow.begin();
+	for ( ;itEntityShadow != pView->m_listEntityShadow.end() ; ++itEntityShadow )
+	{
+		(*itEntityShadow)->m_renderQueueNormalShadow.Render();
+	}		
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
 	m_pEffect->SetTechnique(m_hTCreateShadowBlend);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);
-	pView->m_listShadowBlend.Render();
+	itEntityShadow = pView->m_listEntityShadow.begin();
+	for ( ;itEntityShadow != pView->m_listEntityShadow.end() ; ++itEntityShadow )
+	{
+		(*itEntityShadow)->m_renderQueueBlendShadow.Render();
+	}	
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
@@ -363,44 +373,70 @@ void Server::Render(cView* pView)
 	pHWDepthStencilBuffer = NULL;
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
-	
 
 	for (int i=0;i<16;i++)
 	{
-		if(pView->m_listRenderQueue[i].IsEmpty())
-			continue;
-
 		m_pEffect->SetTechnique(m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 		m_pEffect->BeginPass(0);	
-		pView->m_listRenderQueue[i].Render();
+
+		auto itEntityRender = pView->m_listEntityRender.begin();
+		for ( ;itEntityRender != pView->m_listEntityRender.end() ; ++itEntityRender )
+		{
+			(*itEntityRender)->m_renderQueueNormal[i].Render();
+		}	
+
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-	
+
 	for (int i=0;i<16;i++)
 	{
-		if(pView->m_listRenderQueueSkinned[i].IsEmpty())
-			continue;
-
 		m_pEffect->SetTechnique(m_hTBlend[i]);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		pView->m_listRenderQueueSkinned[i].Render();
+		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->BeginPass(0);	
+
+		auto itEntityRender = pView->m_listEntityRender.begin();
+		for ( ;itEntityRender != pView->m_listEntityRender.end() ; ++itEntityRender )
+		{
+			(*itEntityRender)->m_renderQueueBlend[i].Render();
+		}	
+
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-	
+
 	m_pEffect->SetTechnique(m_hTerrain);
 	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-	m_pEffect->BeginPass(0);
-	pView->m_listRenderTerrain.Render();
+	m_pEffect->BeginPass(0);	
+
+	auto itEntityRender = pView->m_listEntityRender.begin();
+	for ( ;itEntityRender != pView->m_listEntityRender.end() ; ++itEntityRender )
+	{
+		(*itEntityRender)->m_renderQueueTerrain.Render();
+	}	
+
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
+	if (m_bDebugBound)
+	{
+		m_pEffect->SetTechnique(m_hTLine);
+		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->BeginPass(0);
+		itEntityRender = pView->m_listEntityRender.begin();
+		for ( ;itEntityRender != pView->m_listEntityRender.end() ; ++itEntityRender )
+		{
+			(*itEntityRender)->RenderBound();
+		}	
+		m_pEffect->EndPass();
+		m_pEffect->End();	
+	}
+	
 	m_pD3DDevice->SetTexture (0, m_pShadowRenderTarget );
 	m_pD3DDevice->SetFVF(FVF_GUIVERTEX);
 	m_pD3DDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &g_vertices[0], sizeof(GUIVERTEX));
+
 }
 
 void Server::Begin()
@@ -415,5 +451,7 @@ void Server::End()
 	m_pD3DDevice->EndScene();
 	m_pD3DDevice->Present( NULL, NULL, NULL, NULL );	
 }
+
+
 
 }

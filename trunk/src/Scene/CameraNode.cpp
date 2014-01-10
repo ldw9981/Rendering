@@ -161,42 +161,56 @@ void cCameraNode::Control()
 	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
 	if (m_bProcessInput)
 	{
-		if (m_pWinInput->IsCurrDn('W'))
+		
+		if (m_pWinInput->IsCurrDn(DIK_W))
 		{
 			vecPos.z = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('S'))
+		else if (m_pWinInput->IsCurrDn(DIK_S))
 		{
 			vecPos.z = -200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn('A'))
+		if (m_pWinInput->IsCurrDn(DIK_A))
 		{
 			vecPos.x = -200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('D'))
+		else if (m_pWinInput->IsCurrDn(DIK_D))
 		{
 			vecPos.x = 200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn('R'))
+		if (m_pWinInput->IsCurrDn(DIK_R))
 		{
 			vecPos.y = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('F'))
+		else if (m_pWinInput->IsCurrDn(DIK_F))
 		{
 			vecPos.y = -200.0f;
 		}	
-
-
-		if (m_pWinInput->IsCurrDn('Q'))
+		
+		if(m_pWinInput->Mouse_IsCurrDn(0))
 		{
-			vecRot.y = -45.0f;
-		}
-		else if (m_pWinInput->IsCurrDn('E'))
-		{
-			vecRot.y = 45.0f;
-		}
+			LONG deltaX,deltaY;
 
+			m_pWinInput->GetMouseDelta(deltaX,deltaY);
 
+			if ( deltaX > 0)
+			{
+				vecRot.y = 10.0f * float(deltaX);
+			}
+			else if ( deltaX < 0)
+			{
+				vecRot.y = 10.0f * deltaX ;
+			}
+
+			if ( deltaY > 0)
+			{
+				vecRot.x = 10.0f * deltaY;
+			}
+			else if ( deltaY < 0)
+			{
+				vecRot.x = 10.0f * deltaY;
+			}
+		}		
 	}	
 
 	SetVelocityPosition(vecPos);	

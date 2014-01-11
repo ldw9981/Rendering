@@ -7,6 +7,7 @@
 #include "MaterialEx.h"
 #include "Scene/View.h"
 #include "Framework/D3DFramework.h"
+#include "Framework/Window.h"
 
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)							// ½Ã¾ß°¢
@@ -128,7 +129,7 @@ bool Server::Init(bool bWindowed,int width,int height)
 	HRESULT hr= m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
-		g_pApp->m_hWnd,
+		g_pApp->GetWindow()->m_hWnd,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
 		&m_pD3DDevice );
@@ -182,7 +183,7 @@ bool Server::Init(bool bWindowed,int width,int height)
 	return true;
 }
 
-void Server::Uninit()
+void Server::Finalize()
 {
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);

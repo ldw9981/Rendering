@@ -10,10 +10,8 @@ public:
 	TestGameApp(const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight);
 	virtual ~TestGameApp(void);
 public:
-
-public:
-	virtual bool Open();
-	virtual	void Close();	
+	virtual bool Initialize();
+	virtual	void Finalize();	
 
 	virtual BOOL OnWM_Keyboard(MSG& msg);
 	virtual BOOL OnWM_Mouse(MSG& msg);

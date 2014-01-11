@@ -1,10 +1,8 @@
 #pragma once
 #include "D3D9Server/StaticD3DDevice9.h"
-#include "Framework/StaticHWND.h"
 
 class cGUIFont:
 	private StaticD3DDEVICE9
-	,private StaticHWND
 {
 public:
 	cGUIFont(void);

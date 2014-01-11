@@ -1,9 +1,7 @@
 #pragma once
-#include "Framework/StaticHWND.h"
+
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "Scene/RendererQueue.h"
-
-
 
 class cGUIFont;
 class cView;
@@ -13,8 +11,7 @@ namespace D3D9
 
 	
 class Server:
-		public StaticD3DDEVICE9,
-		public StaticHWND
+		public StaticD3DDEVICE9
 {
 public:
 	Server(void);

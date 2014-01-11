@@ -1,5 +1,4 @@
 #pragma once
-#include "StaticHWND.h"
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "./Framework/EnvironmentVariable.h"
 #include "FpsMng.h"
@@ -24,8 +23,7 @@ class cViewMng;
 class cView;
 
 class cD3DFramework :	
-	private StaticD3DDEVICE9,
-	private StaticHWND
+	private StaticD3DDEVICE9
 {
 public:
 	cD3DFramework(const char* szTitleName,BOOL m_bFullScreen,int nWidth,int nHeight);
@@ -34,7 +32,7 @@ public:
 public:
 
 	HINSTANCE				m_hInstance;		 	 
-
+	HWND					m_hWnd;
 protected:	
 	
 	WNDCLASS				m_wndclass;			// 메인 윈도우 클래스

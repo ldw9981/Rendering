@@ -2,8 +2,8 @@
 #include "GUIFont.h"
 
 #include "D3D9Server/StaticD3DDevice9.h"
-
 #include "Foundation/Define.h"
+#include "Framework/D3DFramework.h"
 
 cGUIFont::cGUIFont(void)
 {
@@ -55,7 +55,7 @@ void cGUIFont::Create()
 	int nHeight;
 	int nPointSize = 12;
 
-	hDC = GetDC( StaticHWND::m_hWnd );
+	hDC = GetDC( g_pApp->m_hWnd );
 
 	nHeight = -( MulDiv( nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72 ) );
 

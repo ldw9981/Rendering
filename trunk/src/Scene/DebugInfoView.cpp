@@ -3,6 +3,7 @@
 #include "GUI/GUIFont.h"
 #include "Framework/D3DFramework.h"
 #include "Foundation/Define.h"
+#include "WinInput/WinInput.h"
 
 cDebugInfoView* cDebugInfoView::m_pInstance=0;
 
@@ -33,7 +34,7 @@ void cDebugInfoView::Leave()
 
 void cDebugInfoView::Control()
 {
-	if (m_pWinInput->IsTurnDn(DIK_I))
+	if (g_pInput->IsTurnDn(DIK_I))
 	{
 		m_bRender = !m_bRender;
 	}

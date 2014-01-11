@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ObjTank.h"
+#include "WinInput/WinInput.h"
 
 cObjTank::cObjTank(void)
 {	
@@ -30,37 +31,37 @@ void cObjTank::Control()
 	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
 	if (m_bControl)
 	{
-		if (m_pWinInput->IsCurrDn('W'))
+		if (g_pInput->IsCurrDn('W'))
 		{
 			vecPos.z = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('S'))
+		else if (g_pInput->IsCurrDn('S'))
 		{
 			vecPos.z = -200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn('A'))
+		if (g_pInput->IsCurrDn('A'))
 		{
 			vecPos.x = -200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('D'))
+		else if (g_pInput->IsCurrDn('D'))
 		{
 			vecPos.x = 200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn('R'))
+		if (g_pInput->IsCurrDn('R'))
 		{
 			vecPos.y = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('F'))
+		else if (g_pInput->IsCurrDn('F'))
 		{
 			vecPos.y = -200.0f;
 		}	
 
 
-		if (m_pWinInput->IsCurrDn('Q'))
+		if (g_pInput->IsCurrDn('Q'))
 		{
 			vecRot.y = -45.0f;
 		}
-		else if (m_pWinInput->IsCurrDn('E'))
+		else if (g_pInput->IsCurrDn('E'))
 		{
 			vecRot.y = 45.0f;
 		}

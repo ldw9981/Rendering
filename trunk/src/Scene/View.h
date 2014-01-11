@@ -2,7 +2,6 @@
 #include "Foundation/Interface.h"
 #include "Scene/CameraNode.h"
 #include "D3D9Server/StaticD3DDevice9.h"
-#include "WinInput/WinInput.h"
 #include "TopRenderable.h"
 #include "Scene/ViewMng.h"
 #include "Scene/Entity.h"
@@ -17,7 +16,6 @@ class cView:
 	public IControlable,
 	public INotifiable,
 	private StaticD3DDEVICE9,
-	public cStaticWinInput,
 	public FiniteState
 {
 public:

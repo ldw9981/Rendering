@@ -1,12 +1,10 @@
 #pragma once
 #include "Scene/Entity.h"
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
 
 
 class cObjTank:
 	public Entity,
-	public cStaticWinInput,
 	public IControlable
 {
 public:

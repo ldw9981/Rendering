@@ -2,7 +2,6 @@
 
 #include "View.h"
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
 
 class cGUIFont;
 class cDebugInfoView:

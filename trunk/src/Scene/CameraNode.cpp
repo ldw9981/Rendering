@@ -1,6 +1,4 @@
 #include "StdAfx.h"
-
-
 #include "DebugInfoView.h"
 #include "Framework/D3DFramework.h"
 #include "Math/CollisionDetector.h"
@@ -9,6 +7,7 @@
 #include "CameraNode.h"
 #include "Foundation/Define.h"
 #include "D3D9Server/Server.h"
+#include "WinInput/WinInput.h"
 
 cCameraNode*	cCameraNode::m_pActiveCamera=NULL;
 
@@ -162,36 +161,36 @@ void cCameraNode::Control()
 	if (m_bProcessInput)
 	{
 		
-		if (m_pWinInput->IsCurrDn(DIK_W))
+		if (g_pInput->IsCurrDn(DIK_W))
 		{
 			vecPos.z = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn(DIK_S))
+		else if (g_pInput->IsCurrDn(DIK_S))
 		{
 			vecPos.z = -200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn(DIK_A))
+		if (g_pInput->IsCurrDn(DIK_A))
 		{
 			vecPos.x = -200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn(DIK_D))
+		else if (g_pInput->IsCurrDn(DIK_D))
 		{
 			vecPos.x = 200.0f;
 		}	
-		if (m_pWinInput->IsCurrDn(DIK_R))
+		if (g_pInput->IsCurrDn(DIK_R))
 		{
 			vecPos.y = 200.0f;
 		}
-		else if (m_pWinInput->IsCurrDn(DIK_F))
+		else if (g_pInput->IsCurrDn(DIK_F))
 		{
 			vecPos.y = -200.0f;
 		}	
 		
-		if(m_pWinInput->Mouse_IsCurrDn(0))
+		if(g_pInput->Mouse_IsCurrDn(0))
 		{
 			LONG deltaX,deltaY;
 
-			m_pWinInput->GetMouseDelta(deltaX,deltaY);
+			g_pInput->GetMouseDelta(deltaX,deltaY);
 
 			if ( deltaX > 0)
 			{

@@ -6,6 +6,7 @@
 #include "D3D9Server/Server.h"
 #include "Math/CollisionDetector.h"
 
+
 cView::cView(void)
 :m_pParentView(NULL)
 {

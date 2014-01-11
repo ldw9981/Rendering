@@ -71,7 +71,7 @@ public:
 public:	
 
 	bool Init(bool bWindowed,int width,int height);
-	void Uninit();
+	void Finalize();
 	
 	void LoadHLSL(const char* szFileName);
 	

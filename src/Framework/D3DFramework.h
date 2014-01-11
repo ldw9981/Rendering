@@ -21,6 +21,7 @@ class cResourceMng;
 class Input;
 class cViewMng;
 class cView;
+class Window;
 
 class cD3DFramework :	
 	private StaticD3DDEVICE9
@@ -30,17 +31,10 @@ public:
 	virtual ~cD3DFramework(void);
 
 public:
-
-	HINSTANCE				m_hInstance;		 	 
-	HWND					m_hWnd;
+	HINSTANCE				m_hInstance;	
 protected:	
-	
-	WNDCLASS				m_wndclass;			// 메인 윈도우 클래스
-	const char*				m_szClassName;		// 윈도우 클래스 등록 이름
-	const char*				m_szTitleName;		// 윈도우 타이틀 이름
+
 	RECT					m_RequestRect;
-	RECT					m_AdjustRect;
-	
 
 	BOOL					m_bFullScreen;
 	BOOL					m_bQuitLoop;
@@ -60,6 +54,7 @@ protected:
 	Input*					m_pInput;
 
 	// Manager
+	Window*					m_pWindow;
 	cResourceMng*			m_pResourceMng;
 	CFpsMng					m_FpsMng;
 	cView*					m_pView;
@@ -69,24 +64,20 @@ protected:
 
 public:	
 
-	void					InitWindow();
+	
 
 	void					QuitLoop() { m_bQuitLoop = TRUE; }
 	// 일반함수
-	BOOL					ProcessWindowMessage();		//윈도우 메시지 루프
+	
 	
 	void					AttachObject(IUnknownObject* pIUnknownObject);
 	void					DettachObject(IUnknownObject* pIUnknownObject);
 
 
-	// Window관련
-	void					SetTitleName( const char* lpszString );
-	void					ScreenToClient(LPRECT lpRect) const;
-	void					ClientToScreen(LPRECT lpRect) const;
-	void					MoveWindow(int x,int y,int nWidth,int nHeight,BOOL bRepaint = TRUE );
-	void					MoveWindow(LPCRECT lpRect,BOOL bRepaint = TRUE );	
-	DWORD					GetStyle() const;
-	DWORD					GetExStyle() const;
+
+	const RECT&				GetRequestRect()  { return m_RequestRect; }
+	int						GetRequestRectWidth() const { return m_RequestRect.right-m_RequestRect.left; }
+	int						GetRequestRectHeight() const { return m_RequestRect.bottom-m_RequestRect.top; }
 
 	// Tick관련
 	DWORD					GetCurrFrameTime() const { return m_CurrFrameTime; }
@@ -97,10 +88,8 @@ public:
 	cView*					GetView() const { return m_pView; }
 	//cResourceMng*			GetResourceMng() const { return m_pResourceMng; }
 	Input*					GetInput() const { return m_pInput; }
+	Window*					GetWindow() const { return m_pWindow; }
 
-	const RECT&				GetRequestRect()  { return m_RequestRect; }
-	int						GetRequestRectWidth() const { return m_RequestRect.right-m_RequestRect.left; }
-	int						GetRequestRectHeight() const { return m_RequestRect.bottom-m_RequestRect.top; }
 
 
 
@@ -112,9 +101,9 @@ public:
 
 
 	//cFramework 구현
-	virtual bool 			Open();
+	virtual bool 			Initialize();
 	virtual void 			Run();	
-	virtual void 			Close();
+	virtual void 			Finalize();
 
 	//cD3DFramework
 	virtual void			Control();

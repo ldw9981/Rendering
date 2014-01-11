@@ -25,9 +25,9 @@ TestGameApp::~TestGameApp(void)
 {
 }
 
-bool TestGameApp::Open()
+bool TestGameApp::Initialize()
 {
-	if(!cD3DFramework::Open())
+	if(!cD3DFramework::Initialize())
 		return false;
 	
 	std::string Path;
@@ -57,12 +57,12 @@ bool TestGameApp::Open()
 	return true;
 }
 
-void TestGameApp::Close()
+void TestGameApp::Finalize()
 {
 	m_pView->Leave();
 	DettachObject(m_pView);
 	SAFE_DELETE(m_pView);
-	cD3DFramework::Close();
+	cD3DFramework::Finalize();
 }
 
 
@@ -104,18 +104,13 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   int       nCmdShow)
 {
 	HeapValidator::SetDbgFlag();
-	//HeapValidator::SetBreakAlloc(53612);	
-	
-	char buffer[256];
-	::GetCurrentDirectory(256,buffer);
-	OutputDebugString(buffer);
 
 	TestGameApp TestGameApp("TestGameApp",false,1024,768);
-	if(TestGameApp.Open())
+	if(TestGameApp.Initialize())
 	{
 		TestGameApp.Run();
 	}
-	TestGameApp.Close();
+	TestGameApp.Finalize();
 	
 	HeapValidator::CheckMemory();
 	return 0;

@@ -6,6 +6,7 @@
 #include "Vertex.h"
 #include "MaterialEx.h"
 #include "Scene/View.h"
+#include "Framework/D3DFramework.h"
 
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)							// ½Ã¾ß°¢
@@ -127,7 +128,7 @@ bool Server::Init(bool bWindowed,int width,int height)
 	HRESULT hr= m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
-		m_hWnd,
+		g_pApp->m_hWnd,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
 		&m_pD3DDevice );

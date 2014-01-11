@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Foundation/Interface.h"
-#include "Framework/StaticHWND.h"
 
 #define VK_MAX 256		// 전체 가상 키의 수
 

@@ -95,25 +95,25 @@ void cTestView::Control()
 {	
 	cView::Control();
 
-	if (m_pWinInput->IsTurnDn(DIK_SPACE))
+	if (g_pInput->IsTurnDn(DIK_SPACE))
 	{
 		TestGameApp* p=(TestGameApp*)g_pApp;
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
 	}
-	if (m_pWinInput->IsTurnDn(DIK_EQUALS))
+	if (g_pInput->IsTurnDn(DIK_EQUALS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
 
 	}
 
-	if (m_pWinInput->IsTurnDn(DIK_MINUS))
+	if (g_pInput->IsTurnDn(DIK_MINUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
 	}
 
 
-	if (m_pWinInput->IsTurnDn(DIK_F12))
+	if (g_pInput->IsTurnDn(DIK_F12))
 	{
 		D3D9::Server::g_pServer->m_bDebugBound = !D3D9::Server::g_pServer->m_bDebugBound;
 	}

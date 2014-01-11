@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ObjDragon.h"
 #include "Scene/SceneNode.h"
+#include "WinInput/WinInput.h"
 
 cObjDragon::cObjDragon()
 {	
@@ -32,20 +33,20 @@ void cObjDragon::Control()
 		return;
 	}
 
-	if (m_pWinInput->IsCurrDn('W'))
+	if (g_pInput->IsCurrDn('W'))
 	{
 		SetVelocityPosition(0.0f,0.0f,100.0f);
 	}
-	else if (m_pWinInput->IsCurrDn('S'))
+	else if (g_pInput->IsCurrDn('S'))
 	{
 		SetVelocityPosition(0.0f,0.0f,-100.0f);
 	}	
 
-	if (m_pWinInput->IsCurrDn('A'))
+	if (g_pInput->IsCurrDn('A'))
 	{
 		SetVelocityRotation(0.0f,10.0f,0.0f);
 	}
-	else if (m_pWinInput->IsCurrDn('D'))
+	else if (g_pInput->IsCurrDn('D'))
 	{
 		SetVelocityRotation(0.0f,-10.0f,0.0f);
 	}

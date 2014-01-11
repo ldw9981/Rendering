@@ -160,7 +160,7 @@ void cMenuView::Control()
 	cCameraNode* pActiveCamera=cCameraNode::GetActiveCamera();
 	pActiveCamera->Control();
 	
-	if (m_pWinInput->IsTurnDn(DIK_TAB))
+	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
 		if(m_Camera.GetProcessInput())
 		{
@@ -174,19 +174,19 @@ void cMenuView::Control()
 		}
 	}
 	
-	if (m_pWinInput->IsTurnDn(DIK_EQUALS))
+	if (g_pInput->IsTurnDn(DIK_EQUALS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
 
 	}
 
-	if (m_pWinInput->IsTurnDn(DIK_MINUS))
+	if (g_pInput->IsTurnDn(DIK_MINUS))
 	{
 		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
 	}
 
 
-	if (m_pWinInput->IsTurnDn(DIK_F12))
+	if (g_pInput->IsTurnDn(DIK_F12))
 	{
 		D3D9::Server::g_pServer->m_bDebugBound = !D3D9::Server::g_pServer->m_bDebugBound;
 	}

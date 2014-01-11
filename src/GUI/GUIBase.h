@@ -9,8 +9,7 @@ class cGUIBase:
 	public IRenderer,
 	public IUpdatable,
 	public IControlable,
-	public StaticD3DDEVICE9,
-	public cStaticWinInput
+	public StaticD3DDEVICE9
 {
 public:
 	cGUIBase(void);

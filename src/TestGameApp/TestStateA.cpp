@@ -110,7 +110,7 @@ void TestStateA::ProcessRender()
 
 void TestStateA::Control()
 {
-	if (m_pWinInput->IsTurnDn(DIK_TAB))
+	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
 		if(m_bControlCamera)
 		{
@@ -132,39 +132,39 @@ void TestStateA::Control()
 	}
 
 	D3DXVECTOR3 vecPos(0.0f,0.0f,0.0f);
-	if (m_pWinInput->IsCurrDn(DIK_W))
+	if (g_pInput->IsCurrDn(DIK_W))
 	{
 		vecPos.z = 200.0f;
 	}
-	else if (m_pWinInput->IsCurrDn(DIK_S))
+	else if (g_pInput->IsCurrDn(DIK_S))
 	{
 		vecPos.z = -200.0f;
 	}	
-	if (m_pWinInput->IsCurrDn(DIK_A))
+	if (g_pInput->IsCurrDn(DIK_A))
 	{
 		vecPos.x = -200.0f;
 	}
-	else if (m_pWinInput->IsCurrDn(DIK_D))
+	else if (g_pInput->IsCurrDn(DIK_D))
 	{
 		vecPos.x = 200.0f;
 	}	
 	m_Camera.SetVelocityPosition(vecPos);	
 
 	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
-	if (m_pWinInput->IsCurrDn(DIK_Q))
+	if (g_pInput->IsCurrDn(DIK_Q))
 	{
 		vecRot.y = -45.0f;
 	}
-	else if (m_pWinInput->IsCurrDn(DIK_E))
+	else if (g_pInput->IsCurrDn(DIK_E))
 	{
 		vecRot.y = 45.0f;
 	}
 
-	if (m_pWinInput->IsCurrDn(DIK_R))
+	if (g_pInput->IsCurrDn(DIK_R))
 	{
 		vecRot.x = -45.0f;
 	}
-	else if (m_pWinInput->IsCurrDn(DIK_F))
+	else if (g_pInput->IsCurrDn(DIK_F))
 	{
 		vecRot.x = 45.0f;
 	}	

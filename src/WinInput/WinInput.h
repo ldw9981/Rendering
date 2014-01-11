@@ -30,20 +30,10 @@
 //////////////
 #include <dinput.h>
 class Input;
-class cStaticWinInput
-{
-public:
-	cStaticWinInput() {};
-	~cStaticWinInput() {};
-protected:
-	static Input* m_pWinInput;	
-
-};
 
 class Input:
 	public IUpdatable,
-	public IUnknownObject,
-	private cStaticWinInput
+	public IUnknownObject
 {
 public:
 	Input(void);
@@ -89,3 +79,4 @@ private:
 	LONG m_mouseX, m_mouseY;
 };
 
+extern Input* g_pInput;

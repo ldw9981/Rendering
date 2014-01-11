@@ -1,11 +1,9 @@
 #pragma once
 #include "Scene/Entity.h"
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
 
 class cObjDragon :
 	public Entity,
-	public cStaticWinInput,
 	public IControlable
 {
 public:

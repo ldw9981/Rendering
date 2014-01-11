@@ -2,7 +2,6 @@
 #include "SceneNode.h"
 #include "D3D9Server/StaticD3DDevice9.h"
 #include "Math/CollisionDetector.h"
-#include "WinInput/WinInput.h"
 #include "Math/Frustum.h"
 
 
@@ -14,9 +13,7 @@ class cSphere;
 class cRendererQueue;
 class cCameraNode :
 	public cSceneNode,
-	public IControlable,
-//	private StaticD3DDEVICE9,
-	private cStaticWinInput
+	public IControlable
 {
 public:
 	cCameraNode();

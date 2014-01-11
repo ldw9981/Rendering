@@ -1,12 +1,11 @@
 #include "stdafx.h"
 #include "WinInput.h"
 
-Input* cStaticWinInput::m_pWinInput=NULL;
-
+Input* g_pInput=NULL;
 
 Input::Input(void)
 {
-	m_pWinInput=this;
+	g_pInput=this;
 	m_directInput = 0;
 	m_keyboard = 0;
 	m_mouse = 0;

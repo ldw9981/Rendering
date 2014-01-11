@@ -33,7 +33,7 @@ void cDebugInfoView::Leave()
 
 void cDebugInfoView::Control()
 {
-	if (m_pWinInput->IsTurnDn('I'))
+	if (m_pWinInput->IsTurnDn(DIK_I))
 	{
 		m_bRender = !m_bRender;
 	}

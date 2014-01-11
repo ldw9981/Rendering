@@ -24,16 +24,18 @@ cGUIButton::~cGUIButton(void)
 
 void cGUIButton::Update( DWORD elapsetime )
 {
-	POINT pt=m_pWinInput->GetMousePoint();
+	POINT pt;
+	m_pWinInput->GetMouseLocation(pt.x,pt.y);
 	if (!PtInRect(&m_Rect,pt))	m_ImageIndex=0;
 	else m_ImageIndex=1;	
 }
 
 void cGUIButton::Control()
 {
-	if(m_pWinInput->IsTurnDn(VK_LBUTTON))
+	if(m_pWinInput->Mouse_IsTurnDn(0))
 	{		
-		POINT pt=m_pWinInput->GetMousePoint();
+		POINT pt;
+		m_pWinInput->GetMouseLocation(pt.x,pt.y);
 		if (PtInRect(&m_Rect,pt))
 		{
 			GetMediator()->Notify(this,WM_LBUTTONDOWN,0,0);				

@@ -59,7 +59,13 @@ bool cD3DFramework::Open()
 	
 	m_pD3D9Server->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
-	m_pInput = new cWinInput;
+	m_pInput = new Input;
+	if(!m_pInput->Initialize(m_hInstance,m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
+	{
+		MessageBox(m_hWnd, "Could not initialize the input object.", "Error", MB_OK);
+		return false;
+	}
+
 	m_pResourceMng = new cResourceMng;
 
 	AttachObject(m_pInput);
@@ -261,6 +267,8 @@ void cD3DFramework::MoveWindow(LPCRECT lpRect, BOOL bRepaint /*= TRUE*/)
 void cD3DFramework::InitWindow()
 {
 	//	m_wndclass.cbSize = sizeof(WNDCLASSEX);
+	m_hInstance = GetModuleHandle(NULL);
+
 	m_wndclass.style		= CS_HREDRAW | CS_VREDRAW;
 	m_wndclass.lpfnWndProc	= WndProc;
 	m_wndclass.cbClsExtra	= 0;

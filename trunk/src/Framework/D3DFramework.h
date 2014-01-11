@@ -19,7 +19,7 @@ namespace D3D9
 }	
 
 class cResourceMng;
-class cWinInput;
+class Input;
 class cViewMng;
 class cView;
 
@@ -59,7 +59,7 @@ protected:
 
 	// Server
 	D3D9::Server*			m_pD3D9Server;
-	cWinInput*				m_pInput;
+	Input*					m_pInput;
 
 	// Manager
 	cResourceMng*			m_pResourceMng;
@@ -98,7 +98,7 @@ public:
 	// get/set
 	cView*					GetView() const { return m_pView; }
 	//cResourceMng*			GetResourceMng() const { return m_pResourceMng; }
-	cWinInput*				GetInput() const { return m_pInput; }
+	Input*					GetInput() const { return m_pInput; }
 
 	const RECT&				GetRequestRect()  { return m_RequestRect; }
 	int						GetRequestRectWidth() const { return m_RequestRect.right-m_RequestRect.left; }

@@ -62,7 +62,7 @@ void TestStateB::Leave()
 
 void TestStateB::Control()
 {
-	if (m_pWinInput->IsTurnDn(VK_TAB))
+	if (m_pWinInput->IsTurnDn(DIK_TAB))
 	{
 		if(m_bControlCamera)
 		{
@@ -83,29 +83,29 @@ void TestStateB::Control()
 		return;
 	}
 
-	if (m_pWinInput->IsCurrDn('W'))
+	if (m_pWinInput->IsCurrDn(DIK_W))
 	{
 		m_Camera.SetVelocityPosition(0.0f,0.0f,200.0f);
 	}
-	else if (m_pWinInput->IsCurrDn('S'))
+	else if (m_pWinInput->IsCurrDn(DIK_S))
 	{
 		m_Camera.SetVelocityPosition(0.0f,0.0f,-200.0f);
 	}	
 
 
-	if (m_pWinInput->IsCurrDn('A'))
+	if (m_pWinInput->IsCurrDn(DIK_A))
 	{
 		m_Camera.SetVelocityRotation(0.0f,-45.0f,0.0f);
 	}
-	else if (m_pWinInput->IsCurrDn('D'))
+	else if (m_pWinInput->IsCurrDn(DIK_D))
 	{
 		m_Camera.SetVelocityRotation(0.0f,45.0f,0.0f);
 	}
-	if (m_pWinInput->IsCurrDn('E'))
+	if (m_pWinInput->IsCurrDn(DIK_E))
 	{
 		m_Camera.SetVelocityRotation(-45.0f,0.0f,0.0f);
 	}
-	else if (m_pWinInput->IsCurrDn('C'))
+	else if (m_pWinInput->IsCurrDn(DIK_C))
 	{
 		m_Camera.SetVelocityRotation(45.0f,0.0f,0.0f);
 	}	

@@ -6,7 +6,6 @@
 
 class cGUIButton;
 class cObjTank;
-class cTerrainNode;
 class cObjDragon;
 class cMenuView :
 	public cView	
@@ -16,8 +15,6 @@ public:
 	virtual ~cMenuView(void);
 private:
 	cCameraNode	m_Camera;
-	cTerrainNode* m_pTerrain;
-	
 	cObjTank*	m_pTank;
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;

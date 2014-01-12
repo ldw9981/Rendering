@@ -67,8 +67,6 @@ ZQuadTree::ZQuadTree(ZTerrain* pTerrain,int tl,int tr,int bl,int br )
 	if(m_bIsLeafNode)
 	{		
 		CreateCellTriangle();	
-		// LeafNode에만 3차원 바운드 스피어가있다.
-		m_BoundingSphere.Make(tempAxisMin,tempAxisMax);	
 	}
 	else
 	{		
@@ -133,43 +131,51 @@ void	ZQuadTree::DevideSelf()
 	AttachChildNode(m_pChild[CORNER_BR]);
 }
 
-// 출력할 폴리곤의 인덱스를 생성한다.
-void ZQuadTree::GenTriIndex(Frustum& frustum,int& nTris, LPVOID pIndex )
-{
-	if( !m_bIsLeafNode )
-	{	// 그룹노드일때는 2차원 구로 컬링
-		if ( cCollision::CheckWorldFrustumWithoutYAxis(frustum,m_BoundingSphere) == cCollision::OUTSIDE)
-		{
-			return;
-		}		
-	}
-	else
-	{
-		// 리프노드일때는 3차원구로 컬링
-		if ( cCollision::CheckWorldFrustum(frustum,m_BoundingSphere) == cCollision::OUTSIDE)
-		{
-			return;
-		}		
 
+
+void ZQuadTree::GenTriIndex(Frustum& frustum,int& nTris, LPVOID pIndex ,bool bTraverse )
+{
+	if (m_bIsLeafNode)
+	{
 		LPWORD p = ((LPWORD)pIndex) + nTris * 3;
 
-		*p++ = m_nCorner[0];
-		*p++ = m_nCorner[1];
-		*p++ = m_nCorner[2];
+		*p++ = m_nCorner[CORNER_TL];			// + - +
+		*p++ = m_nCorner[CORNER_TR];			// | /
+		*p++ = m_nCorner[CORNER_BL];            // +
 		nTris++;		
 
-		*p++ = m_nCorner[2];
-		*p++ = m_nCorner[1];
-		*p++ = m_nCorner[3];
+		*p++ = m_nCorner[CORNER_BL];			//      +
+		*p++ = m_nCorner[CORNER_TR];			//    / |
+		*p++ = m_nCorner[CORNER_BR];			//  + - +
 		nTris++;
 		return;
 	}
 
-	// 자식 노드들 검색
-	if( m_pChild[CORNER_TL] ) m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex );
-	if( m_pChild[CORNER_TR] ) m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex );
-	if( m_pChild[CORNER_BL] ) m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex );
-	if( m_pChild[CORNER_BR] ) m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex );
+	if (bTraverse)
+	{
+		m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,true);
+		m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,true);
+		m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,true);
+		m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,true);		
+	}
+	else
+	{
+		cCollision::STATE state = cCollision::CheckWorldFrustumWithoutYAxis(frustum,m_BoundingSphere);
+		if ( state == cCollision::INSIDE)
+		{
+			m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,true);
+			m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,true);
+			m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,true);
+			m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,true);	
+		}
+		else if ( state == cCollision::INTERSECT)
+		{
+			m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,false);
+		}		
+	}
 }
 
 void ZQuadTree::CreateCellTriangle()

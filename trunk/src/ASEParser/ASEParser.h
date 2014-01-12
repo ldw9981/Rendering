@@ -74,8 +74,7 @@ struct VNORMAL
 
 
 class cASEParser:
-	public cASELexer,
-	private cStaticResourceMng
+	public cASELexer
 {
 public:
 	cASEParser();

@@ -1,15 +1,14 @@
 #pragma once
 #include "Foundation/Interface.h"
 #include "Input/Input.h"
-#include "Graphics/StaticD3DDevice9.h"
+
 
 class cGUIBase:
 	public IUnknownObject,
 	public IRenderable,
 	public IRenderer,
 	public IUpdatable,
-	public IControlable,
-	public StaticD3DDEVICE9
+	public IControlable
 {
 public:
 	cGUIBase(void);

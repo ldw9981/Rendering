@@ -1,8 +1,6 @@
 #pragma once
-#include "Graphics/StaticD3DDevice9.h"
 
-class cBackWall :
-	private StaticD3DDEVICE9
+class cBackWall 
 {
 public:
 	cBackWall();

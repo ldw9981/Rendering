@@ -3,12 +3,10 @@
 #include "Resource/Resource.h"
 #include "Resource/ResourceMng.h"
 #include "Resource/Restore.h"
-#include "Graphics/StaticD3DDevice9.h"
 
 class cRscTexture:
 	public cResource,
-	public cIRestore,
-	private StaticD3DDEVICE9
+	public cIRestore
 {
 public:	
 	cRscTexture(void);

@@ -3,11 +3,9 @@
 
 #include "Scene/Entity.h"
 #include "Math/Sphere.h"
-#include "Graphics/StaticD3DDevice9.h"
 #include "Graphics/RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 #include "ZQuadTree.h"
-#include "Resource/ResourceMng.h"
 
 struct TERRAINVERTEX
 {
@@ -34,9 +32,7 @@ class Frustum;
 
 */
 class ZTerrain:
-	public Entity,
-//	public StaticD3DDEVICE9,
-	public cStaticResourceMng
+	public Entity
 {
 private:
 	int						m_cxDIB;		/// DIB의 가로픽셀수

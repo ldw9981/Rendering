@@ -1,10 +1,8 @@
 #pragma once
 #include "Scene/SceneNode.h"
-#include "Graphics/StaticD3DDevice9.h"
 
 class cGround:
 	public cSceneNode
-//	,private StaticD3DDEVICE9
 {
 public:
 	cGround();

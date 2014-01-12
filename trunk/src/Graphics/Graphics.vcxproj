@@ -94,7 +94,6 @@
     <ClInclude Include="RscTexture.h" />
     <ClInclude Include="RscTransformAnm.h" />
     <ClInclude Include="RscVertexBuffer.h" />
-    <ClInclude Include="StaticD3DDevice9.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
@@ -105,7 +104,6 @@
     <ClCompile Include="RscTexture.cpp" />
     <ClCompile Include="RscTransformAnm.cpp" />
     <ClCompile Include="RscVertexBuffer.cpp" />
-    <ClCompile Include="StaticD3DDevice9.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

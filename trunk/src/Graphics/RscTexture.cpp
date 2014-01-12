@@ -3,6 +3,7 @@
 #include "Foundation/Trace.h"
 #include "Resource/ResourceMng.h"
 #include "Foundation/Define.h"
+#include "Graphics/Graphics.h"
 
 cRscTexture::cRscTexture(void)
 :m_pD3DTexture(NULL)
@@ -27,7 +28,7 @@ BOOL cRscTexture::Create()
 	if (m_filePath.empty())
 		return FALSE;
 
-	HRESULT hResult=D3DXCreateTextureFromFile(m_pD3DDevice,m_filePath.c_str(),&m_pD3DTexture);
+	HRESULT hResult=D3DXCreateTextureFromFile(Graphics::m_pDevice,m_filePath.c_str(),&m_pD3DTexture);
 	return SUCCEEDED(hResult);		
 }
 
@@ -41,17 +42,17 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	m_pResourceMng->EraseRscTexture(GetUniqueKey());
+	cResourceMng::m_pResourceMng->EraseRscTexture(GetUniqueKey());
 	delete this;
 }
 
 void cRscTexture::SetTexture( UINT stage )
 {
-	m_pD3DDevice->SetTexture(stage,m_pD3DTexture);
+	Graphics::m_pDevice->SetTexture(stage,m_pD3DTexture);
 }
 
 
 void cRscTexture::SetNullTexture( UINT stage )
 {
-	m_pD3DDevice->SetTexture(stage,NULL);
+	Graphics::m_pDevice->SetTexture(stage,NULL);
 }

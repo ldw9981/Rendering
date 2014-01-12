@@ -9,7 +9,7 @@
 #include "Scene/CameraNode.h"
 #include "Scene/LightNode.h"
 #include "Scene/SkinnedMeshNode.h"
-#include "Framework/D3DFramework.h"
+#include "Resource/ResourceMng.h"
 #include "Graphics/RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Framework/EnvironmentVariable.h"
@@ -931,7 +931,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;					
 
-							cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapNormal(pRscTexture);
@@ -963,7 +963,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
-							cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapDiffuse(pRscTexture);
@@ -1767,7 +1767,7 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 
 cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* rootName,const char* meshName, const D3DXMATRIX& localTM )
 {
-	cRscTransformAnm* pRscTransformAnm = m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
+	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
 
 	// 리소스 가 이미 있으면 있는거 전달
 	if( pRscTransformAnm->GetArrayANMKEY().empty() == false)
@@ -2188,7 +2188,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 	if (!arrVertex.empty())
 	{
 		DWORD nCount=(DWORD)arrVertex.size();
-		pVertexBuffer = m_pResourceMng->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
+		pVertexBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
 
 		T* pVertices=(T*)pVertexBuffer->Lock();
 		for (UINT i=0;i< nCount;i++)
@@ -2208,7 +2208,7 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 	if (!arrIndex.empty())
 	{
 		DWORD nCount=(DWORD)arrIndex.size();
-		pIndexBuffer = m_pResourceMng->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
+		pIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
 			sizeof(TRIANGLE)*nCount);
 
 		TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
@@ -2362,7 +2362,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapNormal(pRscTexture);
@@ -2392,7 +2392,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapDiffuse(pRscTexture);

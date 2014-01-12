@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "GUIFont.h"
-
-#include "Graphics/StaticD3DDevice9.h"
+#include "Graphics/Graphics.h"
 #include "Foundation/Define.h"
 #include "Framework/D3DFramework.h"
 #include "Framework/Window.h"
@@ -63,7 +62,7 @@ void cGUIFont::Create()
 	ReleaseDC( NULL, hDC );
 
 	// Create a font for statistics and help output
-	hr = D3DXCreateFont( m_pD3DDevice, nHeight, 0, FW_BOLD, 0, FALSE, 
+	hr = D3DXCreateFont( Graphics::m_pDevice, nHeight, 0, FW_BOLD, 0, FALSE, 
 		DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, 
 		DEFAULT_PITCH | FF_DONTCARE, TEXT("Aria"), 
 		&m_pD3DXFont );

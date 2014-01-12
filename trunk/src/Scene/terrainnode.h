@@ -1,7 +1,6 @@
 #pragma once
 #include "SceneNode.h"
 #include "Math/Sphere.h"
-#include "Graphics/StaticD3DDevice9.h"
 #include "Graphics/RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 /*
@@ -21,9 +20,10 @@ struct TERRAININDEX
 struct TERRAINVERTEX;
 class cQuadSpatial;
 class cRscTexture;
+class cRscIndexBuffer;
+
 class cTerrainNode:
 	public cSceneNode	
-//	,private StaticD3DDEVICE9
 {
 public:
 	cTerrainNode();

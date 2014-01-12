@@ -1,5 +1,4 @@
 #pragma once
-#include "Graphics/StaticD3DDevice9.h"
 #include "./Framework/EnvironmentVariable.h"
 #include "FpsMng.h"
 #include "Scene/RendererQueue.h"
@@ -20,8 +19,7 @@ class cViewMng;
 class cView;
 class Window;
 
-class cD3DFramework :	
-	private StaticD3DDEVICE9
+class cD3DFramework 
 {
 public:
 	cD3DFramework(const char* szTitleName,BOOL m_bFullScreen,int nWidth,int nHeight);
@@ -53,6 +51,7 @@ protected:
 	// Manager
 	Window*					m_pWindow;
 	cResourceMng*			m_pResourceMng;
+	
 	CFpsMng					m_FpsMng;
 	cView*					m_pView;
 	
@@ -106,8 +105,6 @@ public:
 	virtual void			Control();
 	virtual void 			Update(DWORD elapseTime);
 	virtual void 			Render();
-
-
 };
 
 extern cD3DFramework*	g_pApp;

@@ -39,7 +39,7 @@ cD3DFramework::~cD3DFramework(void)
 	m_listProgressable.clear();
 
 
-//	SAFE_RELEASE(m_pD3DDevice);
+//	SAFE_RELEASE(Graphics::m_pDevice);
 //	SAFE_RELEASE(m_pD3D9);
 }
 

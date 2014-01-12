@@ -17,6 +17,7 @@ class cResourceMng:
 public:
 	cResourceMng(void);
 	~cResourceMng(void);
+	static cResourceMng* m_pResourceMng;
 private:
 	std::map<std::string,cResource*>					m_contTexture;
 	std::map<std::string,cResource*>					m_contIndexBuffer;
@@ -45,14 +46,4 @@ public:
 
 	int					GetCount();
 };
-
-class cStaticResourceMng
-{
-public:
-	cStaticResourceMng(void){};
-	~cStaticResourceMng(void){};
-public:
-	static cResourceMng* m_pResourceMng;
-};
-
 

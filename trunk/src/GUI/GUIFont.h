@@ -1,8 +1,7 @@
 #pragma once
-#include "Graphics/StaticD3DDevice9.h"
 
-class cGUIFont:
-	private StaticD3DDEVICE9
+
+class cGUIFont
 {
 public:
 	cGUIFont(void);

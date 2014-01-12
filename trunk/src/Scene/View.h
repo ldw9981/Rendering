@@ -1,7 +1,6 @@
 #pragma once
 #include "Foundation/Interface.h"
 #include "Scene/CameraNode.h"
-#include "Graphics/StaticD3DDevice9.h"
 #include "TopRenderable.h"
 #include "Scene/ViewMng.h"
 #include "Scene/Entity.h"
@@ -15,7 +14,6 @@ class cView:
 	public IRenderer,
 	public IControlable,
 	public INotifiable,
-	private StaticD3DDEVICE9,
 	public FiniteState
 {
 public:

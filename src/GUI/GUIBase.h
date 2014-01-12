@@ -1,7 +1,7 @@
 #pragma once
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Input/Input.h"
+#include "Graphics/StaticD3DDevice9.h"
 
 class cGUIBase:
 	public IUnknownObject,

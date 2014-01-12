@@ -3,7 +3,7 @@
 #include "GUI/GUIFont.h"
 #include "Framework/D3DFramework.h"
 #include "Foundation/Define.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 
 cDebugInfoView* cDebugInfoView::m_pInstance=0;
 

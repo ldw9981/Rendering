@@ -1,25 +1,20 @@
 #pragma once
 
-#include "D3D9Server/Vertex.h"
+#include "Graphics/Vertex.h"
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 #include "GUIBase.h"
 #include "Resource/ResourceMng.h"
 
-struct GUIVERTEX
-{
-	//x,y,z
-	D3DXVECTOR4	vertex;
-	D3DCOLOR	color;	
-	TEXCOORD	tex;
-};
+
+
 
 struct BUTTONFAN
 {
 	GUIVERTEX vertices[4];
 };
 
-#define FVF_GUIVERTEX (D3DFVF_XYZRHW|D3DFVF_DIFFUSE|D3DFVF_TEX1)  
+
 
 class cRscTexture;
 class INotifiable;

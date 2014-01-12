@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "D3DFramework.h"
 #include "Foundation//Interface.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 #include "Resource/ResourceMng.h"
 #include "Scene/ViewMng.h"
 #include "Scene/DebugInfoView.h"
 #include "Foundation/Define.h"
 #include "EnvironmentVariable.h"	
-#include "D3D9Server/Server.h"
+#include "Graphics/Graphics.h"
 #include "Window.h"
 
 
@@ -56,8 +56,8 @@ bool cD3DFramework::Initialize()
 	m_pWindow = new Window;
 	m_pWindow->Initialize(m_RequestRect);
 
-	m_pD3D9Server = new D3D9::Server;	
-	m_pD3D9Server->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
+	m_pGraphics = new Graphics;	
+	m_pGraphics->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new Input;
 	if(!m_pInput->Initialize(m_hInstance,m_pWindow->m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
@@ -77,8 +77,8 @@ void cD3DFramework::Finalize()
 	SAFE_DELETE( m_pResourceMng );
 	SAFE_DELETE( m_pInput );
 
-	m_pD3D9Server->Finalize();
-	SAFE_DELETE( m_pD3D9Server);
+	m_pGraphics->Finalize();
+	SAFE_DELETE( m_pGraphics);
 
 
 }
@@ -124,15 +124,15 @@ void cD3DFramework::Update(DWORD elapseTime)
 
 void cD3DFramework::Render()
 {
-	D3D9::Server::g_pServer->Begin();
+	Graphics::g_pGraphics->Begin();
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
 	stream << "FPS " << temp << " ";
-	stream << "LIGHT" << D3D9::Server::g_pServer->m_WorldLightPosition.x << " ";
-	stream << D3D9::Server::g_pServer->m_WorldLightPosition.y << " "; 
-	stream << D3D9::Server::g_pServer->m_WorldLightPosition.z << " ";
+	stream << "LIGHT" << Graphics::g_pGraphics->m_WorldLightPosition.x << " ";
+	stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
+	stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
 	stream << "RESOUCE " << m_pResourceMng->GetCount() << " ";
-	D3D9::Server::g_pServer->RenderDebugString(0,0,stream.str().c_str());
+	Graphics::g_pGraphics->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
@@ -140,7 +140,7 @@ void cD3DFramework::Render()
 		(*it)->ProcessRender();	
 	}
 
-	D3D9::Server::g_pServer->End();
+	Graphics::g_pGraphics->End();
 }
 
 

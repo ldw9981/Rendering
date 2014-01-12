@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ObjTank.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 
 cObjTank::cObjTank(void)
 {	

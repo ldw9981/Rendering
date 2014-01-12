@@ -1,7 +1,7 @@
 #pragma once
 #include "Scene/View.h"
 #include "Foundation/Interface.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 #include "Scene/CameraNode.h"
 
 class cObjDragon;

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "GUIFont.h"
 
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 #include "Foundation/Define.h"
 #include "Framework/D3DFramework.h"
 #include "Framework/Window.h"

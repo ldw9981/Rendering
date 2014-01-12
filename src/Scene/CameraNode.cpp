@@ -6,8 +6,8 @@
 #include "Math/Line.h"
 #include "CameraNode.h"
 #include "Foundation/Define.h"
-#include "D3D9Server/Server.h"
-#include "WinInput/WinInput.h"
+#include "Graphics/Graphics.h"
+#include "Input/Input.h"
 
 cCameraNode*	cCameraNode::m_pActiveCamera=NULL;
 
@@ -44,20 +44,20 @@ cCameraNode::~cCameraNode(void)
 void cCameraNode::Render()
 {			
 	D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmView,&m_matView);
+	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmView,&m_matView);
 	D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
-	D3D9::Server::g_pServer->GetEffect()->SetVector(D3D9::Server::g_pServer->m_hvWorldCameraPosition,&pos);
+	Graphics::g_pGraphics->GetEffect()->SetVector(Graphics::g_pGraphics->m_hvWorldCameraPosition,&pos);
 
 	if (m_bProjectionModified)
 	{
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
-		D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmProjection,&m_matProjection);
+		Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmProjection,&m_matProjection);
 		m_bProjectionModified = false;
 	}		
 
 	m_matViewProjection = m_matView * m_matProjection;				
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmViewProjection,&m_matViewProjection);
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmViewProjection,&m_matViewProjection);
+	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
 	m_frustum.Make(m_matViewProjection);
 }

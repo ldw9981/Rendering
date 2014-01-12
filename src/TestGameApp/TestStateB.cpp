@@ -5,7 +5,7 @@
 #include "Framework/EnvironmentVariable.h"
 #include "ObjTank.h"
 #include "TestGameApp.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 
 TestStateB::TestStateB(void)
 	:m_pDragon(NULL),m_pTank(NULL),m_pAirPlaneBake(NULL)

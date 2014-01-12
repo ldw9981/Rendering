@@ -1,5 +1,5 @@
 #pragma once
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 
 class cBackWall :
 	private StaticD3DDEVICE9

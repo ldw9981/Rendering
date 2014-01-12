@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "Entity.h"
-#include "D3D9Server/Server.h"
-#include "D3D9Server/Vertex.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/Vertex.h"
 #include "Scene/View.h"
 #include "Math/CollisionDetector.h"
 
@@ -36,8 +36,8 @@ void Entity::RenderBound()
 	D3DXMATRIX world;
 	D3DXMatrixIdentity(&world);
 
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&GetWorldTM());
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&GetWorldTM());
+	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 	m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
 
 	Pos = D3DXVECTOR3( 1.f, 0.f, 0.f )* fScale; 

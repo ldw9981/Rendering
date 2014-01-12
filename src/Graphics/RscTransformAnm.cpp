@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "RscTransformAnm.h"
 #include "Foundation/Define.h"
+#include "Resource/ResourceMng.h"
 
 cRscTransformAnm::cRscTransformAnm()
 :m_dwTimeLength(0)
@@ -25,7 +26,7 @@ BOOL cRscTransformAnm::Create()
 void cRscTransformAnm::Free()
 {
 //	for_each(m_arrayTransformAnm.begin(),m_arrayTransformAnm.end(),FuncDeleteType<TRANSFORMANM*>);
-	m_pResourceMng->EraseRscTransformAnm(GetUniqueKey());
+	cResourceMng::m_pResourceMng->EraseRscTransformAnm(GetUniqueKey());
 	delete this;
 }
 

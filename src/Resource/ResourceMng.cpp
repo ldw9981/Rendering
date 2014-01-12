@@ -8,12 +8,11 @@
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/RscTransformAnm.h"
 
-
-cResourceMng* cStaticResourceMng::m_pResourceMng;
+cResourceMng* cResourceMng::m_pResourceMng;
 
 cResourceMng::cResourceMng( void )
 {
-	cStaticResourceMng::m_pResourceMng = this;
+	m_pResourceMng = this;
 }
 
 cResourceMng::~cResourceMng( void )
@@ -200,3 +199,5 @@ void cResourceMng::EraseRscTransformAnm( const std::string& strKey )
 {
 	m_contTransformAnm.erase(strKey);
 }
+
+

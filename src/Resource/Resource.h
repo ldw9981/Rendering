@@ -1,5 +1,4 @@
 #pragma once
-#include "ResourceMng.h"
 /*
 	리소스가 될수 있는것들?
 	텍스쳐,인덱스버퍼,버텍스버퍼,애니메이션정보,씬(텍스쳐+인덱스버퍼+인덱스버퍼+애니메이션정보)
@@ -25,8 +24,7 @@ public:
 };
 
 class cResource:
-	public cReferenceCounter,
-	public cStaticResourceMng
+	public cReferenceCounter
 {
 public:
 	cResource(void);

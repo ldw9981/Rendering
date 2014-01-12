@@ -1,6 +1,5 @@
 #pragma once
 #include "MaterialEx.h"
-#include "StaticD3DDevice9.h"
 #include "Resource/Resource.h"
 #include "Resource/Restore.h"
 
@@ -28,8 +27,7 @@ struct TRIANGLE_SUBMATERIAL
 
 class cRscIndexBuffer:
 	public cResource,
-	public cIRestore,
-	public StaticD3DDEVICE9
+	public cIRestore
 {
 public:
 	cRscIndexBuffer(void);

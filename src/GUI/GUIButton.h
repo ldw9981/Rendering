@@ -4,7 +4,6 @@
 #include "Foundation/Interface.h"
 #include "Input/Input.h"
 #include "GUIBase.h"
-#include "Resource/ResourceMng.h"
 
 
 
@@ -19,8 +18,7 @@ struct BUTTONFAN
 class cRscTexture;
 class INotifiable;
 class cGUIButton:
-	public cGUIBase,
-	private cStaticResourceMng
+	public cGUIBase
 
 {
 public:

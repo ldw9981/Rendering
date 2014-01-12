@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "RscVertexBuffer.h"
 #include "Foundation/Define.h"
-
+#include "Resource/ResourceMng.h"
+#include "Graphics/Graphics.h"
 
 cRscVertexBuffer::cRscVertexBuffer(void)
 {
@@ -29,7 +30,7 @@ BOOL cRscVertexBuffer::Create()
 	
 	// ! VertexBuffer
 	// 1) FVF를 설정해서 필요한크기만큼 VertexBuffer를 만든다.	^
-	hResult=m_pD3DDevice->CreateVertexBuffer( 
+	hResult=Graphics::m_pDevice->CreateVertexBuffer( 
 			m_BufferSize,
 			0,
 			0,
@@ -46,7 +47,7 @@ BOOL cRscVertexBuffer::Create()
 void cRscVertexBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	m_pResourceMng->EraseRscVertexBuffer(GetUniqueKey());
+	cResourceMng::m_pResourceMng->EraseRscVertexBuffer(GetUniqueKey());
 	delete this;
 }
 
@@ -73,6 +74,6 @@ void cRscVertexBuffer::Unlock()
 
 void cRscVertexBuffer::SetStreamSource( UINT stride )
 {
-	m_pD3DDevice->SetStreamSource( 0, m_pD3DVertexBuffer, 0,  stride );	
+	Graphics::m_pDevice->SetStreamSource( 0, m_pD3DVertexBuffer, 0,  stride );	
 }
 

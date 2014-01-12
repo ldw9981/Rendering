@@ -82,7 +82,7 @@ HRESULT	ZTerrain::_Destroy()
 /// 지형객체에서 사용할 텍스처를 읽어들인다.
 HRESULT	ZTerrain::_LoadTextures( const char* lpTexFilename )
 {	
-	D3DXCreateTextureFromFile( m_pD3DDevice, lpTexFilename, &m_pTex );
+	D3DXCreateTextureFromFile( Graphics::m_pDevice, lpTexFilename, &m_pTex );
 
 	return S_OK;
 }
@@ -137,7 +137,7 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 /// 정점, 인덱스 버퍼를 생성한다.
 HRESULT	ZTerrain::_CreateVIB()
 {
- 	m_pRscVertexBuffer = m_pResourceMng->CreateRscVertexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
+ 	m_pRscVertexBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
 	m_pRscVertexBuffer->AddRef();
 
  	if (m_pRscVertexBuffer == NULL)
@@ -155,7 +155,7 @@ HRESULT	ZTerrain::_CreateVIB()
 	memcpy( pVertices, m_pvHeightMap, m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX) );
 	m_pRscVertexBuffer->Unlock();
 
-	m_pRscIndexBuffer = m_pResourceMng->CreateRscIndexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),(m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
+	m_pRscIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),(m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
 	m_pRscIndexBuffer->AddRef();
 
 	if (m_pRscIndexBuffer == NULL)
@@ -169,7 +169,7 @@ HRESULT	ZTerrain::_CreateVIB()
 /// 화면에 지형을 출력한다.
 void	ZTerrain::Render()
 {	
-	m_pD3DDevice->SetFVF( TERRAINVERTEX::FVF );
+	Graphics::m_pDevice->SetFVF( TERRAINVERTEX::FVF );
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
@@ -177,7 +177,7 @@ void	ZTerrain::Render()
 	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
-	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 
 }
 

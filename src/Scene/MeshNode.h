@@ -11,8 +11,7 @@ class cMeshNode;
 class cView;
 
 class cMeshNode:
-	public cSceneNode,
-	protected StaticD3DDEVICE9
+	public cSceneNode
 {
 public:
 	cMeshNode(void);

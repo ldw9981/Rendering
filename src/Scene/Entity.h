@@ -1,12 +1,10 @@
 #pragma once
 #include "scenenode.h"
 #include "Math/Sphere.h"
-#include "Graphics/StaticD3DDevice9.h"
 #include "Scene/RendererQueue.h"
 
 class Entity :
 	public cSceneNode
-	,protected StaticD3DDEVICE9
 {
 public:
 	Entity(void);

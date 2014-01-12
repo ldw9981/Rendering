@@ -1,7 +1,6 @@
 #include "StdAfx.h"
 #include "View.h"
 #include "TopRenderable.h"
-#include "Graphics/StaticD3DDevice9.h"
 #include "Scene/CameraNode.h"
 #include "Graphics/Graphics.h"
 #include "Math/CollisionDetector.h"
@@ -157,7 +156,7 @@ void cView::SetViewPortInfo( UINT x,UINT y,UINT width,UINT height )
 
 void cView::SetViewPort()
 {
-	m_pD3DDevice->SetViewport(&m_ViewPortInfo);				
+	Graphics::m_pDevice->SetViewport(&m_ViewPortInfo);				
 }
 
 void cView::Render()

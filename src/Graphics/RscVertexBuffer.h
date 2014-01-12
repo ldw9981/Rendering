@@ -1,14 +1,12 @@
 #pragma once
 #include "Resource/Resource.h"
 #include "Resource/Restore.h"
-#include "Graphics/StaticD3DDevice9.h"
 
 
 // 블렌드 버텍스랑 나뉠스도있지만 일단 때려박는다.
 class cRscVertexBuffer:
 		public cResource,
-		public cIRestore,
-		private StaticD3DDEVICE9
+		public cIRestore
 {
 public:
 	cRscVertexBuffer(void);

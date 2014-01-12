@@ -59,7 +59,7 @@ void cMeshNode::Update(DWORD elapseTime)
 void cMeshNode::Render()
 {			
 	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
-	m_pD3DDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationNormal);
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
@@ -73,7 +73,7 @@ void cMeshNode::Render()
 		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
 	
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
-	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 			0,  
 			0, 
 			m_pRscVetextBuffer->GetCount(),

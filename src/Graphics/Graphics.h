@@ -1,13 +1,11 @@
 #pragma once
 
-#include "Graphics/StaticD3DDevice9.h"
 #include "Scene/RendererQueue.h"
 
 class cGUIFont;
 class cView;
 
-class Graphics:
-	public StaticD3DDEVICE9
+class Graphics
 {
 public:
 	Graphics(void);
@@ -15,7 +13,7 @@ public:
 
 public:
 	static Graphics* g_pGraphics;
-
+	static LPDIRECT3DDEVICE9	m_pDevice;
 	// D3D 변수추가	
 	D3DVIEWPORT9			m_viewPortInfo;
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

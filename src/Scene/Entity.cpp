@@ -38,7 +38,7 @@ void Entity::RenderBound()
 
 	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&GetWorldTM());
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
-	m_pD3DDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
+	Graphics::m_pDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
 
 	Pos = D3DXVECTOR3( 1.f, 0.f, 0.f )* fScale; 
 	CircleLine[1].pos = Pos;
@@ -49,7 +49,7 @@ void Entity::RenderBound()
 		D3DXMatrixRotationY( &matRot, i * fRotationAngleAverage ); 
 		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
 		CircleLine[1].pos = (NewPos);
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
+		Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
 	} 
 
 	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
@@ -61,7 +61,7 @@ void Entity::RenderBound()
 		D3DXMatrixRotationX( &matRot, i * fRotationAngleAverage ); 
 		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
 		CircleLine[1].pos = (NewPos); 
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
+		Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
 	} 	
 
 	Pos = D3DXVECTOR3( 0.f, 1.f, 0.f )* fScale; 
@@ -73,7 +73,7 @@ void Entity::RenderBound()
 		D3DXMatrixRotationZ( &matRot, i * fRotationAngleAverage ); 
 		D3DXVec3TransformCoord( &NewPos, &Pos, &matRot ); 
 		CircleLine[1].pos = (NewPos); 		
-		m_pD3DDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
+		Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_LINELIST, 1, CircleLine, sizeof( LINEVERTEX ) ); 
 	} 
 }
 

@@ -1,8 +1,9 @@
 #include "StdAfx.h"
 #include "GUIButton.h"
 #include "GUIBase.h"
+#include "Graphics/Graphics.h"
 #include "Graphics/RscTexture.h"
-#include "Framework/D3DFramework.h"
+#include "Resource/ResourceMng.h"
 #include "Foundation/Define.h"
 #include "Input/Input.h"
 
@@ -46,16 +47,16 @@ void cGUIButton::Control()
 
 void cGUIButton::Render()
 {
-	m_pD3DDevice->SetTexture (0, m_pImage->GetD3DTexture() );
-	m_pD3DDevice->SetFVF(FVF_GUIVERTEX);
-	m_pD3DDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &m_pButtonFan[m_ImageIndex], sizeof(GUIVERTEX));
+	Graphics::m_pDevice->SetTexture (0, m_pImage->GetD3DTexture() );
+	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
+	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &m_pButtonFan[m_ImageIndex], sizeof(GUIVERTEX));
 }
 
 void cGUIButton::Create( const char* strImageFile)
 {	
 	m_ImageNumber=2;
 
-	m_pImage=m_pResourceMng->CreateRscTexture(strImageFile);
+	m_pImage= cResourceMng::m_pResourceMng->CreateRscTexture(strImageFile);
 	m_pImage->AddRef();
 
 	D3DSURFACE_DESC desc;
@@ -79,7 +80,7 @@ void cGUIButton::SetPos( UINT x,UINT y )
 {
 	// ViewPort영역에서 시작
  	D3DVIEWPORT9 ViewPort;
- 	m_pD3DDevice->GetViewport(&ViewPort);
+ 	Graphics::m_pDevice->GetViewport(&ViewPort);
  	m_Rect.left = ViewPort.X;
  	m_Rect.top = ViewPort.Y;
  	m_Rect.right = ViewPort.X;

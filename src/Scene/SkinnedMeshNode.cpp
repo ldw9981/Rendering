@@ -62,7 +62,7 @@ void SkinnedMeshNode::LinkToBone()
 */
 void SkinnedMeshNode::Render()
 {
-	m_pD3DDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -104,7 +104,7 @@ void SkinnedMeshNode::Render()
 	}
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
-	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),

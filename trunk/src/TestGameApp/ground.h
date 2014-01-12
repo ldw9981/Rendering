@@ -1,6 +1,6 @@
 #pragma once
 #include "Scene/SceneNode.h"
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 
 class cGround:
 	public cSceneNode

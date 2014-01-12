@@ -20,7 +20,7 @@
 #include "TestStateB.h"
 #include "GlobalView.h"
 #include "ObjTank.h"
-#include "D3D9Server/Server.h"
+#include "Graphics/Graphics.h"
 
 cTestView::cTestView(void)
 {
@@ -103,19 +103,19 @@ void cTestView::Control()
 	}
 	if (g_pInput->IsTurnDn(DIK_EQUALS))
 	{
-		D3D9::Server::g_pServer->m_WorldLightPosition.y += 50;
+		Graphics::g_pGraphics->m_WorldLightPosition.y += 50;
 
 	}
 
 	if (g_pInput->IsTurnDn(DIK_MINUS))
 	{
-		D3D9::Server::g_pServer->m_WorldLightPosition.y -= 50;
+		Graphics::g_pGraphics->m_WorldLightPosition.y -= 50;
 	}
 
 
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
-		D3D9::Server::g_pServer->m_bDebugBound = !D3D9::Server::g_pServer->m_bDebugBound;
+		Graphics::g_pGraphics->m_bDebugBound = !Graphics::g_pGraphics->m_bDebugBound;
 	}
 	
 	m_Camera.Control();

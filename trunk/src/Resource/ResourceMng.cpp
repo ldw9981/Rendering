@@ -3,10 +3,10 @@
 #include "Foundation/Trace.h"
 #include "ResourceMng.h"
 #include "Resource.h"
-#include "D3D9Server/RscTexture.h"
-#include "D3D9Server/RscVertexBuffer.h"
-#include "D3D9Server/RscIndexBuffer.h"
-#include "D3D9Server/RscTransformAnm.h"
+#include "Graphics/RscTexture.h"
+#include "Graphics/RscVertexBuffer.h"
+#include "Graphics/RscIndexBuffer.h"
+#include "Graphics/RscTransformAnm.h"
 
 
 cResourceMng* cStaticResourceMng::m_pResourceMng;

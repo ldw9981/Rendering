@@ -10,8 +10,8 @@
 #include "Foundation/Trace.h"
 #include "Math/Sphere.h"
 #include "Math/CollisionDetector.h"
-#include "D3D9Server/RscTexture.h"
-#include "D3D9Server/Server.h"
+#include "Graphics/RscTexture.h"
+#include "Graphics/Graphics.h"
 
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
@@ -62,7 +62,7 @@ void SkinnedMeshNode::LinkToBone()
 */
 void SkinnedMeshNode::Render()
 {
-	m_pD3DDevice->SetVertexDeclaration(D3D9::Server::g_pServer->m_pVertexDeclationBlend);
+	m_pD3DDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -84,25 +84,25 @@ void SkinnedMeshNode::Render()
 
 	if (nBoneRefSize>0)
 	{
-		D3D9::Server::g_pServer->GetEffect()->SetMatrixArray(D3D9::Server::g_pServer->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
+		Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
 	}	
 	
 
 	if( m_Matrial.GetMapDiffuse() != NULL )
 	{
-		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
 	}
 
 	if( m_Matrial.GetMapNormal() != NULL )
 	{
-		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
 	}
 
 	if( m_Matrial.GetMapLight() != NULL )
 	{
-		D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
 	}
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  

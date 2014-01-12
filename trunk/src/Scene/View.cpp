@@ -1,9 +1,9 @@
 #include "StdAfx.h"
 #include "View.h"
 #include "TopRenderable.h"
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 #include "Scene/CameraNode.h"
-#include "D3D9Server/Server.h"
+#include "Graphics/Graphics.h"
 #include "Math/CollisionDetector.h"
 
 
@@ -123,7 +123,7 @@ void cView::ProcessRender()
 	CullFrustum(m_listEntity,m_listEntityShadow,500.0f);
 	CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
 
-	D3D9::Server::g_pServer->Render(this);	
+	Graphics::g_pGraphics->Render(this);	
 	m_listEntityRender.clear();
 	m_listEntityShadow.clear();
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ObjDragon.h"
 #include "Scene/SceneNode.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 
 cObjDragon::cObjDragon()
 {	

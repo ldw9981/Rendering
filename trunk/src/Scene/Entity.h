@@ -1,7 +1,7 @@
 #pragma once
 #include "scenenode.h"
 #include "Math/Sphere.h"
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 #include "Scene/RendererQueue.h"
 
 class Entity :

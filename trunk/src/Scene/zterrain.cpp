@@ -5,11 +5,11 @@
 #include "DebugInfoView.h"
 
 #include "Resource/ResourceMng.h"
-#include "D3D9Server/RscIndexBuffer.h"
+#include "Graphics/RscIndexBuffer.h"
 #include "Math/CollisionDetector.h"
 #include "Math/Frustum.h"
 #include "Foundation/Define.h"
-#include "D3D9Server/Server.h"
+#include "Graphics/Graphics.h"
 
 
 /// 생성자
@@ -173,9 +173,9 @@ void	ZTerrain::Render()
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
-	D3D9::Server::g_pServer->GetEffect()->SetTexture("Tex0",m_pTex);	
-	D3D9::Server::g_pServer->GetEffect()->SetMatrix(D3D9::Server::g_pServer->m_hmWorld,&m_matWorld);
-	D3D9::Server::g_pServer->GetEffect()->CommitChanges();
+	Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",m_pTex);	
+	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
+	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
 	m_pD3DDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 
@@ -191,7 +191,7 @@ HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 
 	char temp[256];
 	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
-	D3D9::Server::g_pServer->RenderDebugString(0,20,temp);
+	Graphics::g_pGraphics->RenderDebugString(0,20,temp);
 
 	return S_OK;
 }

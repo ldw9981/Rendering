@@ -1,10 +1,10 @@
 #include "StdAfx.h"
 #include "GUIButton.h"
 #include "GUIBase.h"
-#include "D3D9Server/RscTexture.h"
+#include "Graphics/RscTexture.h"
 #include "Framework/D3DFramework.h"
 #include "Foundation/Define.h"
-#include "WinInput/WinInput.h"
+#include "Input/Input.h"
 
 cGUIButton::cGUIButton(INotifiable* pMediator)
 {
@@ -95,22 +95,18 @@ void cGUIButton::SetPos( UINT x,UINT y )
 	for(UINT i=0;i<m_ImageNumber;i++)
 	{
 		m_pButtonFan[i].vertices[0].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.top,0.0f,1.0f);		
-		m_pButtonFan[i].vertices[0].color = 0xFFFFFFFF;
 		m_pButtonFan[i].vertices[0].tex.u = i*m_TWidth + 0.0f;
 		m_pButtonFan[i].vertices[0].tex.v = 0.0f;
 
 		m_pButtonFan[i].vertices[1].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.top,0.0f,1.0f);		
-		m_pButtonFan[i].vertices[1].color = 0xFFFFFFFF;
 		m_pButtonFan[i].vertices[1].tex.u = i*m_TWidth + m_TWidth;
 		m_pButtonFan[i].vertices[1].tex.v = 0.0f;
 
 		m_pButtonFan[i].vertices[2].vertex = D3DXVECTOR4( (float)m_Rect.right,(float)m_Rect.bottom,0.0f,1.0f);		
-		m_pButtonFan[i].vertices[2].color = 0xFFFFFFFF;
 		m_pButtonFan[i].vertices[2].tex.u = i*m_TWidth + m_TWidth;
 		m_pButtonFan[i].vertices[2].tex.v = 1.0f;
 
 		m_pButtonFan[i].vertices[3].vertex = D3DXVECTOR4( (float)m_Rect.left,(float)m_Rect.bottom,0.0f,1.0f);		
-		m_pButtonFan[i].vertices[3].color = 0xFFFFFFFF;
 		m_pButtonFan[i].vertices[3].tex.u = i*m_TWidth + 0.0f;
 		m_pButtonFan[i].vertices[3].tex.v = 1.0f;				
 	}

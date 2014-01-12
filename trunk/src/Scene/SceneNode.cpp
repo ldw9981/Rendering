@@ -15,7 +15,7 @@
 #include "Foundation/Define.h"
 #include "ASEParser/ASEParser.h"
 
-#include "D3D9Server/Server.h"
+#include "Graphics/Graphics.h"
 
 
 // 모든 노드 이름은 초기에 루트가 되며 부모는 없다.

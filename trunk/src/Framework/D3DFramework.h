@@ -1,5 +1,5 @@
 #pragma once
-#include "D3D9Server/StaticD3DDevice9.h"
+#include "Graphics/StaticD3DDevice9.h"
 #include "./Framework/EnvironmentVariable.h"
 #include "FpsMng.h"
 #include "Scene/RendererQueue.h"
@@ -12,11 +12,8 @@ class		IRenderable;
 class		IUpdatable;
 class		IControlable;
 
-namespace D3D9
-{
-	class Server;
-}	
 
+class Graphics;
 class cResourceMng;
 class Input;
 class cViewMng;
@@ -50,7 +47,7 @@ protected:
 	DWORD					m_DeltaFrameTime;
 
 	// Server
-	D3D9::Server*			m_pD3D9Server;
+	Graphics*				m_pGraphics;
 	Input*					m_pInput;
 
 	// Manager

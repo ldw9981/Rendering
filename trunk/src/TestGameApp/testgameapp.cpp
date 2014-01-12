@@ -2,17 +2,16 @@
 #include "TestGameApp.h"
 
 #include "Resource/ResourceMng.h"
-#include "D3D9Server/RscTexture.h"
+#include "Graphics/RscTexture.h"
 
 #include "Scene/ViewMng.h"
 #include "TestView.h"
 #include "MenuView.h"
 #include "Framework/D3DFramework.h"
-#include "D3D9Server/Server.h"
-#include "D3D9Server/MaterialEx.h"
+#include "Graphics/Graphics.h"
+#include "Graphics/MaterialEx.h"
 #include "Foundation/HeapValidator.h"
 
-using namespace D3D9;
 
 TestGameApp::TestGameApp( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight)
 :cD3DFramework(szTitleName,bFullScreen,nWidth,nHeight)
@@ -46,7 +45,7 @@ bool TestGameApp::Initialize()
 
 	std::string strHLSL=Path;
 	strHLSL+= "hlsl.fx";
-	m_pD3D9Server->LoadHLSL(strHLSL.c_str());
+	m_pGraphics->LoadHLSL(strHLSL.c_str());
 	
 	m_pView = new cMenuView;
 	m_pView->SetViewPortInfo(0,0,GetRequestRectWidth(),GetRequestRectHeight());

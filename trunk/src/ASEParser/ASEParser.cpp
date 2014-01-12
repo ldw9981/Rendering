@@ -10,7 +10,7 @@
 #include "Scene/LightNode.h"
 #include "Scene/SkinnedMeshNode.h"
 #include "Framework/D3DFramework.h"
-#include "D3D9Server/RscTransformAnm.h"
+#include "Graphics/RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Framework/EnvironmentVariable.h"
 #include "Scene/Entity.h"

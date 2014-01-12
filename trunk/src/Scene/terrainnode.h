@@ -1,8 +1,8 @@
 #pragma once
 #include "SceneNode.h"
 #include "Math/Sphere.h"
-#include "D3D9Server/StaticD3DDevice9.h"
-#include "D3D9Server/RscVertexBuffer.h"
+#include "Graphics/StaticD3DDevice9.h"
+#include "Graphics/RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 /*
 

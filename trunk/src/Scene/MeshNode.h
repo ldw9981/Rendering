@@ -1,11 +1,11 @@
 #pragma once
 #include "Foundation/interface.h"
 #include "Math/Sphere.h"
-#include "D3D9Server/RscVertexBuffer.h"
-#include "D3D9Server/RscIndexBuffer.h"
+#include "Graphics/RscVertexBuffer.h"
+#include "Graphics/RscIndexBuffer.h"
 #include "SceneNode.h"
-#include "D3D9Server/MaterialEx.h"
-#include "D3D9Server/Vertex.h"
+#include "Graphics/MaterialEx.h"
+#include "Graphics/Vertex.h"
 
 class cMeshNode;
 class cView;

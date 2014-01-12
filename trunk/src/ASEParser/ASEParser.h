@@ -2,10 +2,10 @@
 
 
 #include "ASELexer.h"
-#include "D3D9Server/RscIndexBuffer.h"
-#include "D3D9Server/RscVertexBuffer.h"
-#include "D3D9Server/RscTransformAnm.h"
-#include "D3D9Server/Vertex.h"
+#include "Graphics/RscIndexBuffer.h"
+#include "Graphics/RscVertexBuffer.h"
+#include "Graphics/RscTransformAnm.h"
+#include "Graphics/Vertex.h"
 #include "Resource/ResourceMng.h"
 #include "Math/Sphere.h"
 

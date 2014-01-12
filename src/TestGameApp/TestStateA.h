@@ -1,7 +1,6 @@
 #pragma once
 #include "Scene/View.h"
 #include "Scene/CameraNode.h"
-#include "Scene/TerrainNode.h"
 #include "Scene/ZTerrain.h"
 
 class cGUIButton;

@@ -20,7 +20,7 @@ struct TERRAINVERTEX;
 
 */
 class ZQuadTree:
-	public Entity
+	public cSceneNode
 {
 	///    TopLeft(TL)      TopRight(TR)
 	///              0-+-1
@@ -40,7 +40,7 @@ private:
 
 	cPlane*				m_pEdgePlane[4];		// 각 4면
 	float				m_InsideRadius;			//내부로 들어갈수있는 원의 반지름
-	
+	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	
 private:	
 	
@@ -53,8 +53,9 @@ public:
 
 	virtual void		Update(DWORD elapseTime);
 
-	void				GenTriIndex(Frustum& frustum, int& nTris, LPVOID pIndex ); /// 출력할 인덱스를 생성한다.	
-	
+	void				GenTriIndex(Frustum& frustum, int& nTris, LPVOID pIndex ,bool bTraverse); /// 출력할 인덱스를 생성한다.	
+	void				SetBoundingSphere(cSphere& Sphere);
+	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
 
 	BOOL				CheckInside(D3DXVECTOR3& pos,float loose=0.0f);
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);

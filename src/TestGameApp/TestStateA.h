@@ -6,7 +6,6 @@
 
 class cGUIButton;
 class cObjTank;
-class cTerrainNode;
 class TestStateA :
 	public cView	
 {
@@ -15,8 +14,6 @@ public:
 	virtual ~TestStateA(void);
 private:
 	cCameraNode	m_Camera;
-	cTerrainNode* m_pTerrain;
-
 	cObjTank*	m_pTank;
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;

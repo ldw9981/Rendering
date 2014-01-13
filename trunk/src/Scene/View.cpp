@@ -119,7 +119,7 @@ void cView::ProcessRender()
 		return;
 	
 	// scene 
-	CullFrustum(m_listEntity,m_listEntityShadow,500.0f);
+	CullFrustum(m_listEntity,m_listEntityShadow,1000.0f);
 	CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
 
 	Graphics::g_pGraphics->Render(this);	

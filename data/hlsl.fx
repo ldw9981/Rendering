@@ -321,6 +321,43 @@ float4 ps_Line(float4 Color   : COLOR0) : COLOR
 {   
    return Color;
 }
+float4 ps_Terrain(PS_PHONG_DIFFUSE_INPUT input) : COLOR
+{  
+   float3 color;
+   float3 lambert = saturate(input.mLambert);
+   float3 worldNormal = normalize(input.mNormal);
+   float3 cameraDir = normalize(input.mCameraDir);
+   float3 reflectDir = normalize(input.mReflect);
+   float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
+   float3 specular = 0;
+   specular = dot(reflectDir,-cameraDir);
+   specular = saturate(specular);
+   specular = pow(specular, gSpecularPower);
+  
+//   float4 specularIntensity = tex2D(gSpecularSampler,input.mTexCoord);
+//   specular = specular * specularIntensity.xyz;
+  
+   color = diffuseSample * gAmbientColor.xyz * gAmbientIntensity;
+   color += diffuseSample * 1.0f;
+  
+   
+   float currentDepth = input.mClipPosition.z / input.mClipPosition.w;   
+   float2 uv = input.mClipPosition.xy / input.mClipPosition.w;
+   uv.y = -uv.y;
+   uv = uv * 0.5 + 0.5;   
+   
+   float shadowDepth = tex2D(ShadowSampler, uv).r;   
+   if (currentDepth > shadowDepth + 0.00125f)
+   {
+      color *= 0.5f;
+   } 
+   else
+   {
+      //color += gSpecularColor.xyz * specular;
+   }
+   
+   return float4(color,0.0f);
+}
 
 
 float4 ps_PhongDiffuse(PS_PHONG_DIFFUSE_INPUT input) : COLOR
@@ -492,7 +529,7 @@ technique TTerrain
     {
         // shaders
         VertexShader = compile vs_2_0 vs_Terrain();
-        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+        PixelShader  = compile ps_2_0 ps_Terrain();
     }  
 }
 

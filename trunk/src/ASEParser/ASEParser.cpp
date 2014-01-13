@@ -329,6 +329,7 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	cSphere temp;
 	CalculateSphere(m_tempAxisMin,m_tempAxisMax,temp);
 	m_pSceneRoot->GetBoundingSphere() =  temp;
+	m_pSceneRoot->SetNodeName(m_SceneTime.FILENAME.c_str());
 
 	// *************************************************************
 	// 

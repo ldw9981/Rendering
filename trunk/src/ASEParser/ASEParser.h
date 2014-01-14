@@ -133,7 +133,7 @@ public:
 		BOOL			Parsing_Group();
 		BOOL			Parsing_Scene();
 
-
+		void			SetNodeInfo(cSceneNode* pNode,SCENENODEINFO& stInfo);
 		template <typename T>
 		void			MergeNormalListIntoVertexList(std::vector<T>& arrVertex,
 			std::vector<TRIANGLE_SUBMATERIAL>& arrFaceIndex,

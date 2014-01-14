@@ -2060,7 +2060,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			cMeshNode* pSubNode= new cMeshNode;
 			pNewSceneNode->AddMultiSub(pSubNode);
 			
-			SetNodeInfo(pNewSceneNode,stInfo);
+			SetNodeInfo(pSubNode,stInfo);
 			pSubNode->SetRootNode(m_pSceneRoot);
 			if (stInfo.pParent!=NULL)
 			{				
@@ -2155,7 +2155,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			SkinnedMeshNode* pSubNode= new SkinnedMeshNode;
 			pNewSceneNode->AddMultiSub(pSubNode);
 
-			SetNodeInfo(pNewSceneNode,stInfo);
+			SetNodeInfo(pSubNode,stInfo);
 			pSubNode->SetRootNode(m_pSceneRoot);
 			if (stInfo.pParent!=NULL)
 			{				

@@ -39,14 +39,14 @@ void TestStateB::Enter()
 	m_pDragon = new cObjDragon;
 	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
 	parser.Close();
-	m_pDragon->BuildComposite();
+	m_pDragon->Build();
 	m_pDragon->Init();
 	AttachObject(m_pDragon);	
 
 	m_pAirPlaneBake = new cObjTank;	
 	parser.Load(std::string(strDataPath+"AirPlaneBake.ase").c_str(),m_pAirPlaneBake);
 	parser.Close();
-	m_pAirPlaneBake->BuildComposite();
+	m_pAirPlaneBake->Build();
 	m_pAirPlaneBake->Init();
 	AttachObject(m_pAirPlaneBake);	
 	

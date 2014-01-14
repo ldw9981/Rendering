@@ -28,9 +28,8 @@ SkinnedMeshNode::~SkinnedMeshNode(void)
 	Release();
 }
 
-void SkinnedMeshNode::LinkToBone()
+void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 {
-	assert(GetRootNode()!=NULL);
 	D3DXMATRIX tmWorldInv,tmBoneOffset;
 	D3DXMatrixInverse(&tmWorldInv,NULL,&GetWorldTM());			
 
@@ -39,7 +38,7 @@ void SkinnedMeshNode::LinkToBone()
 	{
 		BONEREFINFO* pBoneRefInfo=&(*iter);		
 		//이름,타입 같으면 캐스팅 MESH확인
-		pBoneRefInfo->pRefBoneMesh = dynamic_cast<cMeshNode*>(GetRootNode()->FindNode(pBoneRefInfo->strNodeName));
+		pBoneRefInfo->pRefBoneMesh = dynamic_cast<cMeshNode*>(pEntity->FindNode(pBoneRefInfo->strNodeName));
 		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
 		pBoneRefInfo->pRefBoneMesh->SetIsBone(true);
 
@@ -113,9 +112,9 @@ void SkinnedMeshNode::Render()
 	
 }
 
-void SkinnedMeshNode::BuildComposite()
+void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 {	
-	LinkToBone();
+	LinkToBone(pEntity);
 
 	if (m_vecSubMesh.empty())
 	{
@@ -129,7 +128,7 @@ void SkinnedMeshNode::BuildComposite()
 		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
-			(*it)->BuildComposite();
+			(*it)->BuildComposite(pEntity);
 		}
 	}
 
@@ -157,7 +156,10 @@ void SkinnedMeshNode::BuildComposite()
 		m_pRscVetextBuffer->Unlock();
 	}
 
-	cSceneNode::BuildComposite();	
+	QueueRenderer(pEntity,false);
+	QueueRendererShadow(pEntity,false);
+
+	cSceneNode::BuildComposite(pEntity);	
 }
 
 void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )

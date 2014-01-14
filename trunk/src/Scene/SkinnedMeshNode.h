@@ -40,11 +40,11 @@ protected:
 
 public:
 	virtual void			Render();	
-	virtual void			BuildComposite();
+	virtual void			BuildComposite(Entity* pEntity);
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);
 	std::vector<BONEREFINFO>&	GetArrayBoneRef()  { return m_vecBoneRef; }
-	void					LinkToBone();
+	void					LinkToBone(Entity* pEntity);
 
 
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);

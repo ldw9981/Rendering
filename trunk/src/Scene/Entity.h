@@ -30,6 +30,12 @@ public:
 	virtual bool		CullRendererIntoRendererQueue(Frustum* pFrustum );
 	void				RenderBound();
 	virtual void		Update(DWORD elapseTime);
-	virtual	void		BuildComposite();
+	virtual	void		Build();
+
+	bool	Save(const char* fileName);
+	bool	Load(const char* fileName);
+
+	virtual void SerializeIn(std::ifstream& stream);
+	virtual void SerializeOut(std::ofstream& stream);
 };
 

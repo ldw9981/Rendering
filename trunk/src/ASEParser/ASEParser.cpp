@@ -1135,8 +1135,6 @@ BOOL cASEParser::Parsing_ShapeObject()
 
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);
@@ -1226,7 +1224,6 @@ BOOL cASEParser::Parsing_LightObject()
 	
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);
@@ -1350,8 +1347,6 @@ BOOL cASEParser::Parsing_CameraObject()
 
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);
@@ -2017,8 +2012,6 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);
@@ -2061,7 +2054,6 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			pNewSceneNode->AddMultiSub(pSubNode);
 			
 			SetNodeInfo(pSubNode,stInfo);
-			pSubNode->SetRootNode(m_pSceneRoot);
 			if (stInfo.pParent!=NULL)
 			{				
 				pSubNode->SetParentNode(stInfo.pParent);
@@ -2112,8 +2104,6 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);
@@ -2156,7 +2146,6 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			pNewSceneNode->AddMultiSub(pSubNode);
 
 			SetNodeInfo(pSubNode,stInfo);
-			pSubNode->SetRootNode(m_pSceneRoot);
 			if (stInfo.pParent!=NULL)
 			{				
 				pSubNode->SetParentNode(stInfo.pParent);
@@ -2230,8 +2219,6 @@ cHelperNode* cASEParser::CreateHelperNode(SCENENODEINFO& stInfo)
 
 	//공통적인 데이터
 	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetRootNode(m_pSceneRoot);
 	if (stInfo.pParent!=NULL)
 	{
 		stInfo.pParent->AttachChildNode(pNewSceneNode);

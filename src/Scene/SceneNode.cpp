@@ -213,16 +213,6 @@ void cSceneNode::BuildComposite()
 	}	
 }
 
-
-
-void cSceneNode::SetNodeInfo( SCENENODEINFO& stInfo )
-{
-	this->SetNodeName(stInfo.strNodeName.c_str());
-	this->SetParentName(stInfo.strParentName.c_str());
-	this->SetLocalTM(stInfo.tmLocal);
-	this->SetWorldTM(stInfo.tmWorld);
-}
-
 void cSceneNode::SerializeIn( std::fstream& in )
 {
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();

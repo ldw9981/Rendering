@@ -45,7 +45,6 @@ protected:
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 
 public:	
-	void				SetNodeInfo(SCENENODEINFO& stInfo);
 	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
 	void				SetRscTransformAnm(cRscTransformAnm* val);
 		

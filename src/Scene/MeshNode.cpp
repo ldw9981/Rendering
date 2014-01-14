@@ -81,7 +81,7 @@ void cMeshNode::Render()
 			m_nPrimitiveCount );	
 }
 
-void cMeshNode::BuildComposite()
+void cMeshNode::BuildComposite(Entity* pEntity)
 {
 	if (m_bIsBone || m_Matrial.GetMapDiffuse() == NULL)
 	{
@@ -100,7 +100,7 @@ void cMeshNode::BuildComposite()
 		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
-			(*it)->BuildComposite();
+			(*it)->BuildComposite(pEntity);
 		}
 	}
 
@@ -128,7 +128,10 @@ void cMeshNode::BuildComposite()
 		m_pRscVetextBuffer->Unlock();
 	}
 
-	cSceneNode::BuildComposite();	
+	QueueRenderer(pEntity,false);
+	QueueRendererShadow(pEntity,false);
+
+	cSceneNode::BuildComposite(pEntity);	
 }
 
 /*

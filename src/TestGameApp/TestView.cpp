@@ -54,7 +54,7 @@ void cTestView::Enter()
 	m_pP38 = new cObjTank;	
 	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pP38);
 	parser.Close();
-	m_pP38->BuildComposite();
+	m_pP38->Build();
 	m_pP38->Init();
 	m_pP38->GetVelRotPerSec().y = D3DXToRadian(-45);
 	AttachObject(m_pP38);

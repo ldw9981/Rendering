@@ -27,7 +27,7 @@ protected:
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render();
-	virtual	void			BuildComposite();
+	virtual	void			BuildComposite(Entity* pEntity);
 
 	void					SetStartIndex(WORD val) { m_nStartIndex = val; }
 	void					SetPrimitiveCount(WORD val) { m_nPrimitiveCount = val; }	

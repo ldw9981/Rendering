@@ -5,6 +5,9 @@
 #include "Scene/View.h"
 #include "Math/CollisionDetector.h"
 
+#define VER_LASTEST 1
+
+
 Entity::Entity(void)
 {
 }
@@ -95,10 +98,35 @@ bool Entity::CullRendererIntoRendererQueue( Frustum* pFrustum )
 	return true;	
 }
 
-void Entity::BuildComposite()
+void Entity::Build()
 {
-	cSceneNode::BuildComposite();
-	// 일단 Render포인터를 모아둔다.
-	QueueRenderer(this,true);
-	QueueRendererShadow(this,true);
+	cSceneNode::BuildComposite(this);
 }
+
+void Entity::SerializeIn( std::ifstream& stream )
+{
+
+}
+
+void Entity::SerializeOut( std::ofstream& stream )
+{
+
+}
+
+bool Entity::Save( const char* fileName )
+{
+	std::ofstream ofs;
+	ofs.open (fileName, std::ofstream::out | std::ofstream::app);
+	ofs << unsigned short(VER_LASTEST);
+
+	ofs.close();
+
+	return true;
+}
+
+bool Entity::Load( const char* fileName )
+{
+	return true;
+}
+
+

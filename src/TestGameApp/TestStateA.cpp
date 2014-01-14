@@ -53,7 +53,7 @@ void TestStateA::Enter()
 	parser.Load(std::string(strDataPath+"TigerTank.ase").c_str(),m_pTank);
 
 
-	m_pTank->BuildComposite();
+	m_pTank->Build();
 	m_pTank->Init();
 	AttachObject(m_pTank);
 }

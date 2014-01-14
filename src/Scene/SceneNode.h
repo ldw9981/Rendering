@@ -99,7 +99,7 @@ public:
 	/*
 		빌드란 씬노드구성후 작동하기전에 노드의 후처리 작업으로 완성시킴을 의미한다.
 	*/
-	virtual	void		BuildComposite();
+	virtual	void		BuildComposite(Entity* pEntity);
 
 	// ISerialize
 	virtual void		SerializeIn(std::fstream& in);

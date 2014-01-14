@@ -202,14 +202,14 @@ void cSceneNode::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
 
 
 
-void cSceneNode::BuildComposite()
+void cSceneNode::BuildComposite(Entity* pEntity)
 {
 	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pNode=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{
 		pNode=*iter;
-		pNode->BuildComposite();
+		pNode->BuildComposite(pEntity);
 	}	
 }
 

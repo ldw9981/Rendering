@@ -157,7 +157,7 @@ public:
 		void  ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY> outRefMapAnmKey);
 		cMeshNode*  CreateMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef);
 		SkinnedMeshNode* CreateSkinnedMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef,std::vector<BONEREFINFO>& boneRef);
-		cHelperNode* CreateHelperNode(SCENENODEINFO& stInfo);
+		cSceneNode* CreateSceneNode(SCENENODEINFO& stInfo);
 
 		template <typename T>
 		cRscVertexBuffer* CreateRscVertexBuffer(const char* meshName,std::vector<T>& arrVertex);

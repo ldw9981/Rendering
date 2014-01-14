@@ -1,7 +1,6 @@
 #pragma once
 #include "Foundation/Interface.h"
 #include "Scene/CameraNode.h"
-#include "TopRenderable.h"
 #include "Scene/ViewMng.h"
 #include "Scene/Entity.h"
 

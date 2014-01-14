@@ -259,7 +259,7 @@ void cSceneNode::Render()
 void cSceneNode::Update( DWORD elapseTime )
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),GetParentNode());
+	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
 	UpdateChildren(elapseTime);
 }
 

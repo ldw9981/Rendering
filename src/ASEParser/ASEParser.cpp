@@ -4,10 +4,7 @@
 #include "ASELexer.h"
 #include "Lexer.h"
 #include "Scene/MeshNode.h"
-#include "Scene/HelperNode.h"
-#include "Scene/ShapeNode.h"
 #include "Scene/CameraNode.h"
-#include "Scene/LightNode.h"
 #include "Scene/SkinnedMeshNode.h"
 #include "Resource/ResourceMng.h"
 #include "Graphics/RscTransformAnm.h"
@@ -776,7 +773,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	cSceneNode* pNewSceneNode=NULL;
 	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL)
 	{
-		pNewSceneNode = CreateHelperNode(stInfo);		
+		pNewSceneNode = CreateSceneNode(stInfo);		
 	}
 	else
 	{
@@ -1066,11 +1063,9 @@ BOOL cASEParser::Parsing_HelperObject()
 			GetVector3(NULL);
 			break;		
 		}		
-	}				
+	}
 
-
-
-	cHelperNode* pNewSceneNode = CreateHelperNode(stInfo);
+	cSceneNode* pNewSceneNode = CreateSceneNode(stInfo);
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
@@ -1130,7 +1125,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 		}
 	}
 
-	cShapeNode*	pNewSceneNode=new cShapeNode;
+	cSceneNode*	pNewSceneNode=new cSceneNode;
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
@@ -1219,7 +1214,7 @@ BOOL cASEParser::Parsing_LightObject()
 		}		
 	}	
 
-	cLightNode* pNewSceneNode=new cLightNode;	
+	cSceneNode* pNewSceneNode=new cSceneNode;	
 	m_pLastObject = pNewSceneNode;
 	
 	//공통적인 데이터
@@ -1342,7 +1337,7 @@ BOOL cASEParser::Parsing_CameraObject()
 		}
 	}	
 
-	cCameraNode* pNewSceneNode=new cCameraNode;
+	cSceneNode* pNewSceneNode=new cSceneNode;
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
@@ -1357,7 +1352,7 @@ BOOL cASEParser::Parsing_CameraObject()
 		m_pSceneRoot->AttachChildNode(pNewSceneNode);
 		pNewSceneNode->SetParentNode(m_pSceneRoot);
 	}	
-	pNewSceneNode->SetFOV(fFov);
+	//pNewSceneNode->SetFOV(fFov);
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
 	return TRUE;	
@@ -2212,9 +2207,9 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 	return pIndexBuffer;
 }
 
-cHelperNode* cASEParser::CreateHelperNode(SCENENODEINFO& stInfo)
+cSceneNode* cASEParser::CreateSceneNode(SCENENODEINFO& stInfo)
 {
-	cHelperNode* pNewSceneNode=new cHelperNode;	
+	cSceneNode* pNewSceneNode=new cSceneNode;	
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터

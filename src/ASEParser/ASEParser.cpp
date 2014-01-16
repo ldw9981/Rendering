@@ -1992,6 +1992,8 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 		stInfo.pParent = m_pSceneRoot;
 
 	SetNodeInfo(pNewSceneNode,stInfo);
+	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
+
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
 	int nPrimitiveCount=0,nStartIndex=0;
@@ -2023,6 +2025,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			pNewSceneNode->AddMultiSub(pSubNode);
 			
 			SetNodeInfo(pSubNode,stInfo);		
+			pSubNode->GetWorldReference() = stInfo.tmWorld;
 
 			pSubNode->SetPrimitiveCount(nPrimitiveCount);
 			pSubNode->SetStartIndex(nStartIndex);		
@@ -2067,6 +2070,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 		stInfo.pParent = m_pSceneRoot;
 
 	SetNodeInfo(pNewSceneNode,stInfo);
+	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
 
@@ -2101,6 +2105,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			pNewSceneNode->AddMultiSub(pSubNode);
 
 			SetNodeInfo(pSubNode,stInfo);
+			pSubNode->GetWorldReference() = stInfo.tmWorld;
 
 			pSubNode->SetPrimitiveCount(nPrimitiveCount);
 			pSubNode->SetStartIndex(nStartIndex);		

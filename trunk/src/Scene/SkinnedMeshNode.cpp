@@ -31,7 +31,7 @@ SkinnedMeshNode::~SkinnedMeshNode(void)
 void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 {
 	assert(!m_vecBoneRef.empty());
-	D3DXMATRIX tmBoneWorldInv;
+	D3DXMATRIX tmBoneWorldReferenceInv;
 
 	std::vector<BONEREFINFO>::iterator iter;
 	for ( iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; ++iter)
@@ -40,8 +40,8 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		pBoneRefInfo->pMesh = dynamic_cast<cMeshNode*>(pEntity->FindNode(pBoneRefInfo->strNodeName));	
 		pBoneRefInfo->pMesh->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
 	
-		D3DXMatrixInverse(&tmBoneWorldInv,NULL,&pBoneRefInfo->pMesh->GetWorldTM());
-		pBoneRefInfo->SkinOffset = GetWorldTM() * tmBoneWorldInv;
+		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pMesh->GetWorldReference());
+		pBoneRefInfo->SkinOffset = GetWorldReference() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
 	}	
 	m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];	
 }
@@ -61,7 +61,7 @@ void SkinnedMeshNode::Render()
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pMesh->GetWorldTM();
+		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pMesh->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
 	}	
 
 	Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	

@@ -17,6 +17,7 @@ public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
 protected:	
+	D3DXMATRIX				m_worldReference;
 	BOOL					m_bIsBone;
 	int						m_nStartIndex;
 	int						m_nPrimitiveCount;
@@ -56,6 +57,8 @@ public:
 		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
 
 	virtual void			Release();
+
+	D3DXMATRIX&				GetWorldReference();
 };
 
 

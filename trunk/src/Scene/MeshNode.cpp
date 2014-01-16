@@ -295,3 +295,8 @@ void cMeshNode::Release()
 	SAFE_RELEASE(m_pRscVetextBuffer);	
 	SAFE_RELEASE(m_pRscIndexBuffer);	
 }
+
+D3DXMATRIX& cMeshNode::GetWorldReference()
+{
+	return m_worldReference;
+}

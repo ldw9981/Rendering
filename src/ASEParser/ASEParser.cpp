@@ -651,7 +651,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 								BONEREFINFO NewItem;
 								NewItem.strNodeName=GetString();
-								NewItem.pRefBoneMesh=NULL;
+								NewItem.pMesh=NULL;
 								vecBoneRef.push_back(NewItem);
 
 								if (!FindToken(TOKEND_BLOCK_END))
@@ -1129,17 +1129,11 @@ BOOL cASEParser::Parsing_ShapeObject()
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
@@ -1218,17 +1212,11 @@ BOOL cASEParser::Parsing_LightObject()
 	m_pLastObject = pNewSceneNode;
 	
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
@@ -1341,18 +1329,12 @@ BOOL cASEParser::Parsing_CameraObject()
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
-	//pNewSceneNode->SetFOV(fFov);
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
 	return TRUE;	
@@ -2006,19 +1988,11 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	cMeshNode* pNewSceneNode= new cMeshNode;
 
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
-
-
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
 	int nPrimitiveCount=0,nStartIndex=0;
 	if ( m_vecMaterial[nMaterialRef].size() == 1)
@@ -2048,16 +2022,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			cMeshNode* pSubNode= new cMeshNode;
 			pNewSceneNode->AddMultiSub(pSubNode);
 			
-			SetNodeInfo(pSubNode,stInfo);
-			if (stInfo.pParent!=NULL)
-			{				
-				pSubNode->SetParentNode(stInfo.pParent);
-			}
-			else
-			{						
-				pSubNode->SetParentNode(m_pSceneRoot);
-			}	
-
+			SetNodeInfo(pSubNode,stInfo);		
 
 			pSubNode->SetPrimitiveCount(nPrimitiveCount);
 			pSubNode->SetStartIndex(nStartIndex);		
@@ -2098,17 +2063,12 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	SkinnedMeshNode* pNewSceneNode= new SkinnedMeshNode;
 
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+
 
 	int nPrimitiveCount=0,nStartIndex=0;
 	if (m_vecMaterial[nMaterialRef].size()==1)
@@ -2141,14 +2101,6 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			pNewSceneNode->AddMultiSub(pSubNode);
 
 			SetNodeInfo(pSubNode,stInfo);
-			if (stInfo.pParent!=NULL)
-			{				
-				pSubNode->SetParentNode(stInfo.pParent);
-			}
-			else
-			{						
-				pSubNode->SetParentNode(m_pSceneRoot);
-			}				
 
 			pSubNode->SetPrimitiveCount(nPrimitiveCount);
 			pSubNode->SetStartIndex(nStartIndex);		
@@ -2213,17 +2165,12 @@ cSceneNode* cASEParser::CreateSceneNode(SCENENODEINFO& stInfo)
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
 	SetNodeInfo(pNewSceneNode,stInfo);
-	if (stInfo.pParent!=NULL)
-	{
-		stInfo.pParent->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(stInfo.pParent);
-	}
-	else
-	{		
-		m_pSceneRoot->AttachChildNode(pNewSceneNode);
-		pNewSceneNode->SetParentNode(m_pSceneRoot);
-	}	
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+
 	return pNewSceneNode;
 }
 
@@ -2448,4 +2395,5 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 	pNode->SetParentName(stInfo.strParentName.c_str());
 	pNode->SetLocalTM(stInfo.tmLocal);
 	pNode->SetWorldTM(stInfo.tmWorld);
+	pNode->SetParentNode(stInfo.pParent);
 }

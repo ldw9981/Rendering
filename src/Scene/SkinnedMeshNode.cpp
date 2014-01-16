@@ -30,29 +30,20 @@ SkinnedMeshNode::~SkinnedMeshNode(void)
 
 void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 {
-	D3DXMATRIX tmWorldInv,tmBoneOffset;
-	D3DXMatrixInverse(&tmWorldInv,NULL,&GetWorldTM());			
+	assert(!m_vecBoneRef.empty());
+	D3DXMATRIX tmBoneWorldInv;
 
 	std::vector<BONEREFINFO>::iterator iter;
 	for ( iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; ++iter)
 	{
-		BONEREFINFO* pBoneRefInfo=&(*iter);		
-		//이름,타입 같으면 캐스팅 MESH확인
-		pBoneRefInfo->pRefBoneMesh = dynamic_cast<cMeshNode*>(pEntity->FindNode(pBoneRefInfo->strNodeName));
-		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
-		pBoneRefInfo->pRefBoneMesh->SetIsBone(true);
-
-		tmBoneOffset = pBoneRefInfo->pRefBoneMesh->GetWorldTM() * tmWorldInv;
-		D3DXMatrixInverse(&pBoneRefInfo->BoneOffSetTM_INV,NULL,&tmBoneOffset);	
+		BONEREFINFO* pBoneRefInfo=&(*iter);				
+		pBoneRefInfo->pMesh = dynamic_cast<cMeshNode*>(pEntity->FindNode(pBoneRefInfo->strNodeName));	
+		pBoneRefInfo->pMesh->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
+	
+		D3DXMatrixInverse(&tmBoneWorldInv,NULL,&pBoneRefInfo->pMesh->GetWorldTM());
+		pBoneRefInfo->SkinOffset = GetWorldTM() * tmBoneWorldInv;
 	}	
-
-	
-	if(!m_vecBoneRef.empty())
-	{
-		m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];
-	}
-	
-		
+	m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];	
 }
 
 /*
@@ -70,22 +61,10 @@ void SkinnedMeshNode::Render()
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-		
-		D3DXMATRIX BlendMat,BoneWorldTM;	
-
-		BoneWorldTM = refItem.pRefBoneMesh->GetWorldTM();				// BoneWorldTM		
-
-		BlendMat = refItem.BoneOffSetTM_INV * BoneWorldTM;
-
-		m_pArrayMatBoneRef[iBoneRef] = BlendMat;
-
-	}
-
-	if (nBoneRefSize>0)
-	{
-		Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);
+		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pMesh->GetWorldTM();
 	}	
-	
+
+	Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
 
 	if( m_Matrial.GetMapDiffuse() != NULL )
 	{

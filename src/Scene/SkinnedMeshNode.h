@@ -4,13 +4,13 @@
 struct BONEREFINFO
 {
 	std::string strNodeName;
-	cMeshNode* pRefBoneMesh;		//본은 무조건 메쉬이다	
-	D3DXMATRIX	BoneOffSetTM_INV;
+	cMeshNode* pMesh;		//본은 무조건 메쉬이다	
+	D3DXMATRIX	SkinOffset;
 
 	BONEREFINFO()
 	{
-		pRefBoneMesh=NULL;
-		D3DXMatrixIdentity(&BoneOffSetTM_INV);
+		pMesh=NULL;
+		D3DXMatrixIdentity(&SkinOffset);
 	}
 };
 

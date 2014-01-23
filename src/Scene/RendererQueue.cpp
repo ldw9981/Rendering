@@ -15,17 +15,17 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::Insert( IRenderer* pItem )
+void cRendererQueue::Insert( IRenderer* pItem ,unsigned char index)
 {
-	m_listNode.push_back(pItem);
+	m_listNode.push_back(std::make_pair(pItem,index));
 }
 
 void cRendererQueue::Render()
 {
- 	std::list<IRenderer*>::iterator it=m_listNode.begin();
+ 	auto it=m_listNode.begin();
  	for ( ; it!=m_listNode.end(); ++it )
- 	{
- 		(*it)->Render();
+ 	{		
+ 		(*it).first->Render( (*it).second);
  	}
 }
 

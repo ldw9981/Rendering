@@ -96,7 +96,7 @@ void cMenuView::Enter()
 	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pHouse);
-	
+
 	
 	
 }

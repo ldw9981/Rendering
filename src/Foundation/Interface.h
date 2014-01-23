@@ -15,7 +15,8 @@ public:
 class IRenderer
 {
 public:
-	virtual void Render()=0;
+	virtual void Render(){};
+	virtual void Render(unsigned char multiSubIndex){};
 };
 
 class IRenderable

@@ -1,6 +1,6 @@
 #pragma once
 #include "Foundation/interface.h"
-typedef WORD SUBMATINDEX;
+typedef unsigned char SUBMATINDEX;
 
 /*
 노드는 아직 아니다.

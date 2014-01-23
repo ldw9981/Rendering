@@ -167,7 +167,7 @@ HRESULT	ZTerrain::_CreateVIB()
 }
 
 /// 화면에 지형을 출력한다.
-void	ZTerrain::Render()
+void	ZTerrain::Render(unsigned char multiSubIndex)
 {	
 	Graphics::m_pDevice->SetFVF( TERRAINVERTEX::FVF );
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
@@ -228,5 +228,5 @@ bool ZTerrain::CullRendererIntoRendererQueue( Frustum* pFrustum )
 
 void ZTerrain::QueueRenderer( Entity* pEntity,bool bTraversal )
 {
-	pEntity->m_renderQueueTerrain.Insert(this);
+	pEntity->m_renderQueueTerrain.Insert(this,0);
 }

@@ -50,8 +50,11 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 
 일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
-void SkinnedMeshNode::Render()
+void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 {
+	MultiSub& temp = m_vecMultiSub[multiSubIndex];
+	Material& material = m_vecMaterial[temp.materialIndex];
+
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
@@ -66,19 +69,19 @@ void SkinnedMeshNode::Render()
 
 	Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
 
-	if( m_Matrial.GetMapDiffuse() != NULL )
+	if( material.GetMapDiffuse() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
 	}
 
-	if( m_Matrial.GetMapNormal() != NULL )
+	if( material.GetMapNormal() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
 	}
 
-	if( m_Matrial.GetMapLight() != NULL )
+	if( material.GetMapLight() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
 	}
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 
@@ -86,28 +89,15 @@ void SkinnedMeshNode::Render()
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),
-		m_nStartIndex,
-		m_nPrimitiveCount );			
+		temp.startIndex,
+		temp.primitiveCount );			
 	
 }
 
 void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 {	
-	if (!m_vecSubMesh.empty())
-	{
-		auto it=m_vecSubMesh.begin();
-		for ( ;it!=m_vecSubMesh.end();++it )
-		{
-			(*it)->BuildComposite(pEntity);
-		}
-		cSceneNode::BuildComposite(pEntity);	
-		return;
-
-	}
-
 	LinkToBone(pEntity);		
-	if (m_Matrial.GetMapNormal() != NULL )
-	{
+
 		assert(m_pRscVetextBuffer!=NULL);
 		assert(m_pRscIndexBuffer!=NULL);
 		long vertexCount = m_pRscVetextBuffer->GetCount();
@@ -130,7 +120,7 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 		}
 		m_pRscIndexBuffer->Unlock();
 		m_pRscVetextBuffer->Unlock();
-	}
+
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
@@ -144,20 +134,17 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 
 void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
-	if (m_vecSubMesh.empty())
-	{
-		if (m_bRender)
+	if (m_bRender)
+	{	
+		unsigned char multiSubIndex=0;
+		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			int i = m_Matrial.index_renderer_queue();
-			pEntity->m_renderQueueBlend[i].Insert(this);
-		}
-	}
-	else
-	{
-		auto it_sub=m_vecSubMesh.begin();
-		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
-		{
-			(*it_sub)->QueueRenderer(pEntity,bTraversal);
+			MultiSub& temp = (*it_sub);
+			Material& material = m_vecMaterial[temp.materialIndex];		
+
+			int i = material.index_renderer_queue();
+			pEntity->m_renderQueueBlend[i].Insert(this,multiSubIndex);
+			multiSubIndex++;
 		}
 	}
 	
@@ -173,18 +160,17 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 {
-	if (m_vecSubMesh.empty())
-	{
-		if (m_bRender)
+	if (m_bRender)
+	{	
+		unsigned char multiSubIndex=0;
+		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			pEntity->m_renderQueueBlendShadow.Insert(this);
-		}
-	}
-	else
-	{		
-		for ( auto it_sub=m_vecSubMesh.begin() ;it_sub!=m_vecSubMesh.end();++it_sub )
-		{
-			(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
+			MultiSub& temp = (*it_sub);
+			Material& material = m_vecMaterial[temp.materialIndex];		
+
+			int i = material.index_renderer_queue();
+			pEntity->m_renderQueueBlendShadow.Insert(this,multiSubIndex);
+			multiSubIndex++;
 		}
 	}
 

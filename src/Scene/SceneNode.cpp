@@ -8,6 +8,7 @@
 #include "DebugInfoView.h"
 #include "Math/Sphere.h"
 #include "Scene/MeshNode.h"
+#include "Scene/SkinnedMeshNode.h"
 #include "Scene/CameraNode.h"
 #include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
@@ -17,10 +18,11 @@
 
 #include "Graphics/Graphics.h"
 
+#define SCENENODE_LASTEST 1
 
 // 모든 노드 이름은 초기에 루트가 되며 부모는 없다.
 cSceneNode::cSceneNode(void)
-:m_strNodeName("Root"),m_strParentName("")
+:m_strNodeName(""),m_strParentName("")
 {	
 	m_pRootNode=this;
 	m_pParentNode=NULL;
@@ -213,26 +215,35 @@ void cSceneNode::BuildComposite(Entity* pEntity)
 	}	
 }
 
-void cSceneNode::SerializeIn( std::fstream& in )
+void cSceneNode::SerializeIn( std::ifstream& stream )
 {
+	// 이미 앞에서 타입은 읽었다.
+	unsigned short ver = 0;
+	stream >> ver;
+	ReadString(stream,m_strNodeName);
+	ReadString(stream,m_strParentName);
+	ReadMatrix(stream,m_worldReference);
+
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->SerializeIn(in);
+		(*it)->SerializeIn(stream);
 	}
 }
 
-void cSceneNode::SerializeOut( std::fstream& out )
+void cSceneNode::SerializeOut( std::ofstream& stream )
 {
-//	out.write((char*)m_strNodeName.c_str(),m_strNodeName.length());
-//	out.write((char*)m_strParentName.c_str(),m_strParentName.length());
-
-//	out << m_strNodeName;
+	stream << m_type;
+	unsigned short ver = SCENENODE_LASTEST;
+	stream << ver;
+	WriteString(stream,m_strNodeName);
+	WriteString(stream,m_strParentName);
+	WriteMatrix(stream,m_worldReference);
 
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
-		(*it)->SerializeIn(out);
+		(*it)->SerializeOut(stream);
 	}
 }
 
@@ -297,3 +308,27 @@ void cSceneNode::Release()
 
 
 
+D3DXMATRIX& cSceneNode::GetWorldReference()
+{
+	return m_worldReference;
+}
+
+
+cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
+{
+	cSceneNode* ret = NULL;
+	switch(type)
+	{
+	case TYPE_SCENE:
+		ret = new cSceneNode;
+		break;
+	case TYPE_MESH:
+		ret = new cMeshNode;
+		break;
+	case TYPE_SKINNEDMESH:
+		ret = new SkinnedMeshNode;
+		break;
+	}
+	assert(ret!=NULL);
+	return ret;
+}

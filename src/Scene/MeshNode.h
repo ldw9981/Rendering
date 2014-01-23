@@ -17,14 +17,14 @@ public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
 protected:	
-	D3DXMATRIX				m_worldReference;
+
 	BOOL					m_bIsBone;
 	int						m_nStartIndex;
 	int						m_nPrimitiveCount;
 	Material				m_Matrial;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
-	std::vector<cMeshNode*>		m_vecSubMesh;
+	std::vector<cSceneNode*>		m_vecSubMesh;
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render();
@@ -43,7 +43,7 @@ public:
 	void					SetMatrial(Material& val) { m_Matrial = val; }	
 
 
-	void					AddMultiSub(cMeshNode* mesh);	
+	void					AddMultiSub(cSceneNode* mesh);	
 
 
 
@@ -58,7 +58,10 @@ public:
 
 	virtual void			Release();
 
-	D3DXMATRIX&				GetWorldReference();
+	// ISerialize
+	virtual void		SerializeIn(std::ifstream& stream);
+	virtual void		SerializeOut(std::ofstream& stream);
+	
 };
 
 

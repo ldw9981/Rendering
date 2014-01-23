@@ -4,7 +4,6 @@
 #define SAFE_DELETE(p) if (p) { delete p; (p) = NULL; }
 #define SAFE_DELETEARRAY(p) if (p) { delete[] p; (p) = NULL; }
 
-
 template <typename T>
 void FuncDeleteType(T p)
 {

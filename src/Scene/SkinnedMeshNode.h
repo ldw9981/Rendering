@@ -4,7 +4,7 @@
 struct BONEREFINFO
 {
 	std::string strNodeName;
-	cMeshNode* pMesh;		//본은 무조건 메쉬이다	
+	cSceneNode* pMesh;		//본은 무조건 메쉬이다	
 	D3DXMATRIX	SkinOffset;
 
 	BONEREFINFO()

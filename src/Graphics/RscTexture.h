@@ -14,6 +14,7 @@ public:
 protected:	
 	LPDIRECT3DTEXTURE9		m_pD3DTexture;			
 	std::string				m_filePath;
+	
 public:		
 	// cResource
 	virtual	BOOL			Create();	
@@ -26,4 +27,5 @@ public:
 	void					SetTexture(UINT stage);
 	static void				SetNullTexture(UINT stage);
 	void SetFilePath(const char* filePath) { m_filePath = filePath; }
+	const char* GetFilePath() const { return m_filePath.c_str(); }
 };

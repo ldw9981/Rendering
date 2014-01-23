@@ -17,6 +17,7 @@
 #include "Framework/D3DFramework.h"
 #include "Scene/View.h"
 
+#define MESHNODE_LASTEST 1
 
 cMeshNode::cMeshNode(void)
 {		
@@ -42,7 +43,7 @@ void cMeshNode::Update(DWORD elapseTime)
 	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);	
 	if (!m_vecSubMesh.empty())
 	{
-		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		auto it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
 			(*it)->Update(elapseTime);
@@ -83,29 +84,22 @@ void cMeshNode::Render()
 
 void cMeshNode::BuildComposite(Entity* pEntity)
 {
-	if (m_bIsBone || m_Matrial.GetMapDiffuse() == NULL)
+	if (!m_vecSubMesh.empty())
 	{
-		m_bRender=false;
-	}
-
-	if (m_vecSubMesh.empty())
-	{
-		if ((m_pRscIndexBuffer==NULL)||(m_pRscVetextBuffer==NULL))
-		{
-			m_bRender=false;
-		}
-	}
-	else
-	{
-		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		auto it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
 			(*it)->BuildComposite(pEntity);
 		}
+		cSceneNode::BuildComposite(pEntity);	
+		return;
 	}
 
-	if (m_Matrial.GetMapNormal() != NULL && m_pRscVetextBuffer !=NULL && m_pRscIndexBuffer != NULL)
+
+	if (m_Matrial.GetMapNormal() != NULL )
 	{
+		assert(m_pRscVetextBuffer!=NULL);
+		assert(m_pRscIndexBuffer!=NULL);
 		long vertexCount = m_pRscVetextBuffer->GetCount();
 		long triangleCount = m_pRscIndexBuffer->GetCount();
 		NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
@@ -130,7 +124,6 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
-
 	cSceneNode::BuildComposite(pEntity);	
 }
 
@@ -140,7 +133,7 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 */
 
 
-void cMeshNode::AddMultiSub( cMeshNode* mesh )
+void cMeshNode::AddMultiSub( cSceneNode* mesh )
 {
 	m_vecSubMesh.push_back(mesh);
 }
@@ -175,13 +168,13 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	if (!bTraversal)
 		return;
 
-	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+	auto it_sub=m_vecSubMesh.begin();
 	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 	{
 		(*it_sub)->QueueRenderer(pEntity,bTraversal);
 	}
 
-	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	auto it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
 		(*it_child)->QueueRenderer(pEntity,bTraversal);
@@ -267,13 +260,13 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 	if (!bTraversal)
 		return;
 
-	std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+	auto it_sub=m_vecSubMesh.begin();
 	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 	{
 		(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
 	}
 
-	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
+	auto it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
 		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
@@ -284,8 +277,8 @@ void cMeshNode::Release()
 {
 	cSceneNode::Release();
 
-	std::vector<cMeshNode*>::iterator it = m_vecSubMesh.begin();
-	std::vector<cMeshNode*>::iterator it_end = m_vecSubMesh.end();
+	auto it = m_vecSubMesh.begin();
+	auto it_end = m_vecSubMesh.end();
 
 	for ( ;it!=it_end ; it++ )
 	{
@@ -296,7 +289,76 @@ void cMeshNode::Release()
 	SAFE_RELEASE(m_pRscIndexBuffer);	
 }
 
-D3DXMATRIX& cMeshNode::GetWorldReference()
+void cMeshNode::SerializeIn( std::ifstream& stream )
 {
-	return m_worldReference;
+	// 이미 앞에서 타입은 읽었다.
+	unsigned short ver = 0;
+	stream >> ver;
+	ReadString(stream,m_strNodeName);
+	ReadString(stream,m_strParentName);
+	ReadMatrix(stream,m_worldReference);	
+
+	// multisub
+	unsigned char count = 0;
+	stream >> count;
+	for ( int i=0 ; i<count ; i++ )
+	{
+		SCENETYPE type;
+		stream >> type;
+		cSceneNode* pNode = CreateNode(type);
+		AddMultiSub(pNode);
+		pNode->SerializeIn(stream);		
+	}
+	/*
+	if (m_vecSubMesh.empty())
+	{
+		m_Matrial.SerializeIn(stream);
+	}
+	*/
+	// child
+	count = 0;
+	stream >> count;
+	for ( int i=0 ; i<count ; i++ )
+	{
+		SCENETYPE type;
+		stream >> type;
+		cSceneNode* pNode = CreateNode(type);
+		AttachChildNode(pNode);
+		pNode->SerializeIn(stream);		
+	}
+}
+
+void cMeshNode::SerializeOut( std::ofstream& stream )
+{
+	stream << m_type;
+	unsigned short ver = MESHNODE_LASTEST;
+	stream << ver;
+	WriteString(stream,m_strNodeName);
+	WriteString(stream,m_strParentName);
+	WriteMatrix(stream,m_worldReference);	
+
+	// multisub
+	unsigned char count = m_vecSubMesh.size();
+	stream << count;
+	auto it_subMesh = m_vecSubMesh.begin();
+	for ( ;it_subMesh!=m_vecSubMesh.end();++it_subMesh )
+	{
+		(*it_subMesh)->SerializeOut(stream);
+	}
+
+	/*
+	if (m_vecSubMesh.empty())
+	{
+		m_Matrial.SerializeOut(stream);
+	}
+	*/
+
+	// child
+	count = m_listChildNode.size();
+	stream << count;
+	auto it_child = m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->SerializeOut(stream);
+	}	
 }

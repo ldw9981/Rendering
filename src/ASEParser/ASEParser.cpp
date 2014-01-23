@@ -9,6 +9,7 @@
 #include "Resource/ResourceMng.h"
 #include "Graphics/RscTransformAnm.h"
 #include "Foundation/Define.h"
+#include "Foundation/StringUtil.h"
 #include "Framework/EnvironmentVariable.h"
 #include "Scene/Entity.h"
 
@@ -203,9 +204,7 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	m_repeat++;
 	BOOL bResult;
 	
-	char filename[256];
-	_splitpath_s(strFileName,NULL,0,NULL,0,filename,256,NULL,0);
-	m_SceneTime.FILENAME = filename;
+	StringUtil::SplitPath(std::string(strFileName),NULL,NULL,&m_SceneTime.FILENAME,NULL);
 
 	m_pSceneRoot = pOutput;
 
@@ -771,14 +770,27 @@ BOOL cASEParser::Parsing_GeoObject()
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
 	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(stInfo.strNodeName.c_str(),vecIndexForBuffer);
 	cSceneNode* pNewSceneNode=NULL;
-	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL)
+	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL )
 	{
 		pNewSceneNode = CreateSceneNode(stInfo);		
 	}
 	else
 	{
-		if (!bSkinned)	pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);		
-		else pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );			
+		if (!bSkinned)	
+		{
+			if (( m_vecMaterial[nMaterialRef].size() == 1)&&(m_vecMaterial[nMaterialRef][0].index_renderer_queue() == 0))
+			{
+				pNewSceneNode = CreateSceneNode(stInfo);		// Bone일때는 그냥...
+			}
+			else
+			{
+				pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);	
+			}
+		}
+		else 
+		{
+			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );		
+		}		
 	}	
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
@@ -2174,7 +2186,8 @@ cSceneNode* cASEParser::CreateSceneNode(SCENENODEINFO& stInfo)
 		stInfo.pParent = m_pSceneRoot;
 
 	SetNodeInfo(pNewSceneNode,stInfo);
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
+	stInfo.pParent->AttachChildNode(pNewSceneNode);	
+	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
 
 	return pNewSceneNode;
 }

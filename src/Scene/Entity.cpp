@@ -5,16 +5,18 @@
 #include "Scene/View.h"
 #include "Math/CollisionDetector.h"
 
-#define VER_LASTEST 1
+#define ENTITY_LASTEST 1
 
 
 Entity::Entity(void)
 {
+	m_strNodeName="Entity";
 }
 
 
 Entity::~Entity(void)
 {
+
 }
 void Entity::SetBoundingSphere( cSphere& Sphere )
 {
@@ -105,22 +107,45 @@ void Entity::Build()
 
 void Entity::SerializeIn( std::ifstream& stream )
 {
-
+	unsigned short ver = 0;
+	stream >> ver;
+	ReadString(stream,m_strNodeName);
+	float radius = 0.0f;
+	stream >> radius;
+	m_BoundingSphere.SetRadius(radius);
+	unsigned char count = 0;
+	stream >> count;
+	for ( int i=0 ; i<count ; i++ )
+	{
+		SCENETYPE type;
+		stream >> type;
+		cSceneNode* pNode = CreateNode(type);
+		AttachChildNode(pNode);
+		pNode->SerializeIn(stream);		
+	}	
 }
 
 void Entity::SerializeOut( std::ofstream& stream )
 {
-
+	unsigned short ver = ENTITY_LASTEST;
+	stream << ver;
+	WriteString(stream,m_strNodeName);
+	float radius = m_BoundingSphere.GetRadius(); 
+	stream << radius;
+	unsigned char count = m_listChildNode.size();
+	stream << count;
+	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
+	for ( ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->SerializeOut(stream);
+	}	
 }
 
 bool Entity::Save( const char* fileName )
 {
-	std::ofstream ofs;
-	ofs.open (fileName, std::ofstream::out | std::ofstream::app);
-	ofs << unsigned short(VER_LASTEST);
-
-	ofs.close();
-
+	std::ofstream stream;
+	stream.open(fileName, std::ios::out | std::ios::binary);
+	SerializeOut(stream);
 	return true;
 }
 

@@ -37,8 +37,8 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 	for ( iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; ++iter)
 	{
 		BONEREFINFO* pBoneRefInfo=&(*iter);				
-		pBoneRefInfo->pMesh = dynamic_cast<cMeshNode*>(pEntity->FindNode(pBoneRefInfo->strNodeName));	
-		pBoneRefInfo->pMesh->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
+		pBoneRefInfo->pMesh = pEntity->FindNode(pBoneRefInfo->strNodeName);	
+		//pBoneRefInfo->pMesh->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
 	
 		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pMesh->GetWorldReference());
 		pBoneRefInfo->SkinOffset = GetWorldReference() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
@@ -93,26 +93,23 @@ void SkinnedMeshNode::Render()
 
 void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 {	
-	LinkToBone(pEntity);
-
-	if (m_vecSubMesh.empty())
+	if (!m_vecSubMesh.empty())
 	{
-		if ((m_pRscIndexBuffer==NULL)||(m_pRscVetextBuffer==NULL))
-		{
-			m_bRender=false;
-		}
-	}
-	else
-	{
-		std::vector<cMeshNode*>::iterator it=m_vecSubMesh.begin();
+		auto it=m_vecSubMesh.begin();
 		for ( ;it!=m_vecSubMesh.end();++it )
 		{
 			(*it)->BuildComposite(pEntity);
 		}
+		cSceneNode::BuildComposite(pEntity);	
+		return;
+
 	}
 
-	if (m_Matrial.GetMapNormal() != NULL && m_pRscVetextBuffer !=NULL && m_pRscIndexBuffer != NULL)
+	LinkToBone(pEntity);		
+	if (m_Matrial.GetMapNormal() != NULL )
 	{
+		assert(m_pRscVetextBuffer!=NULL);
+		assert(m_pRscIndexBuffer!=NULL);
 		long vertexCount = m_pRscVetextBuffer->GetCount();
 		long triangleCount = m_pRscIndexBuffer->GetCount();
 		BLENDVERTEX* vertex=(BLENDVERTEX*)m_pRscVetextBuffer->Lock();
@@ -137,8 +134,7 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
-
-	cSceneNode::BuildComposite(pEntity);	
+	cSceneNode::BuildComposite(pEntity);
 }
 
 void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
@@ -158,7 +154,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	}
 	else
 	{
-		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
+		auto it_sub=m_vecSubMesh.begin();
 		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
 		{
 			(*it_sub)->QueueRenderer(pEntity,bTraversal);
@@ -168,8 +164,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	if (!bTraversal)
 		return;
 
-	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
+	for ( auto it_child=m_listChildNode.begin() ;it_child!=m_listChildNode.end();++it_child )
 	{
 		(*it_child)->QueueRenderer(pEntity,bTraversal);
 	}
@@ -186,9 +181,8 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 		}
 	}
 	else
-	{
-		std::vector<cMeshNode*>::iterator it_sub=m_vecSubMesh.begin();
-		for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
+	{		
+		for ( auto it_sub=m_vecSubMesh.begin() ;it_sub!=m_vecSubMesh.end();++it_sub )
 		{
 			(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
 		}
@@ -196,9 +190,8 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 
 	if (!bTraversal)
 		return;
-
-	std::list<cSceneNode*>::iterator it_child=m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
+	
+	for (auto it_child=m_listChildNode.begin() ; it_child!=m_listChildNode.end();++it_child )
 	{
 		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
 	}

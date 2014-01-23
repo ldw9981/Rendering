@@ -13,10 +13,10 @@ public:
 	cRendererQueue();
 	~cRendererQueue();
 	
-	std::list<IRenderer*>	m_listNode;
+	std::list<std::pair<IRenderer*,unsigned char>>	m_listNode;
 private:
 public:
-	void	Insert(IRenderer* pItem);
+	void	Insert(IRenderer* pItem,unsigned char index);
 	void	Render();
 	bool	IsEmpty();
 };
@@ -28,10 +28,10 @@ public:
 	RendererQueue();
 	~RendererQueue();
 
-	std::list<IRenderer*>		m_listNode;
+	std::list<std::pair<IRenderer*,unsigned char>>		m_listNode;
 private:
 public:
-	void	Insert(IRenderer* pItem);
+	void	Insert(IRenderer* pItem,unsigned char index);
 	void	Render();
 	bool	IsEmpty();
 };

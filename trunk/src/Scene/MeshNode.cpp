@@ -22,13 +22,8 @@
 cMeshNode::cMeshNode(void)
 {		
 	m_bIsBone= FALSE;
-
-
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
-
-	m_nStartIndex=0;
-	m_nPrimitiveCount=0;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -41,15 +36,6 @@ void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);	
-	if (!m_vecSubMesh.empty())
-	{
-		auto it=m_vecSubMesh.begin();
-		for ( ;it!=m_vecSubMesh.end();++it )
-		{
-			(*it)->Update(elapseTime);
-		}
-	}	
-	
 	UpdateChildren(elapseTime);
 }
 
@@ -57,70 +43,60 @@ void cMeshNode::Update(DWORD elapseTime)
 
 	일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
-void cMeshNode::Render()
-{			
+
+void cMeshNode::Render(unsigned char multiSubIndex)
+{
+	MultiSub& temp = m_vecMultiSub[multiSubIndex];
+	Material& material = m_vecMaterial[temp.materialIndex];
+
 	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
-	if( m_Matrial.GetMapDiffuse() != NULL )	
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",m_Matrial.GetMapDiffuse()->GetD3DTexture());
+	if( material.GetMapDiffuse() != NULL )	
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
 
-	if( m_Matrial.GetMapNormal() != NULL )	
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",m_Matrial.GetMapNormal()->GetD3DTexture());
-	
-	if( m_Matrial.GetMapLight() != NULL )
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",m_Matrial.GetMapLight()->GetD3DTexture());
-	
+	if( material.GetMapNormal() != NULL )	
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
+
+	if( material.GetMapLight() != NULL )
+		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
+
 	Graphics::g_pGraphics->GetEffect()->CommitChanges();
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
-			0,  
-			0, 
-			m_pRscVetextBuffer->GetCount(),
-			m_nStartIndex,
-			m_nPrimitiveCount );	
+		0,  
+		0, 
+		m_pRscVetextBuffer->GetCount(),
+		temp.startIndex,
+		temp.primitiveCount );
 }
 
 void cMeshNode::BuildComposite(Entity* pEntity)
 {
-	if (!m_vecSubMesh.empty())
+	assert(m_pRscVetextBuffer!=NULL);
+	assert(m_pRscIndexBuffer!=NULL);
+	long vertexCount = m_pRscVetextBuffer->GetCount();
+	long triangleCount = m_pRscIndexBuffer->GetCount();
+	NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
+	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock();
+
+	for (long a = 0; a < triangleCount; a++)
 	{
-		auto it=m_vecSubMesh.begin();
-		for ( ;it!=m_vecSubMesh.end();++it )
-		{
-			(*it)->BuildComposite(pEntity);
-		}
-		cSceneNode::BuildComposite(pEntity);	
-		return;
+		long i1 = triangle->index[0];
+		long i2 = triangle->index[1];
+		long i3 = triangle->index[2];
+
+		CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
+			vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
+			vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
+			vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
+
+		triangle++;
 	}
-
-
-	if (m_Matrial.GetMapNormal() != NULL )
-	{
-		assert(m_pRscVetextBuffer!=NULL);
-		assert(m_pRscIndexBuffer!=NULL);
-		long vertexCount = m_pRscVetextBuffer->GetCount();
-		long triangleCount = m_pRscIndexBuffer->GetCount();
-		NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
-		TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock();
-
-		for (long a = 0; a < triangleCount; a++)
-		{
-			long i1 = triangle->index[0];
-			long i2 = triangle->index[1];
-			long i3 = triangle->index[2];
-
-			CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
-				vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
-				vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
-				vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
-
-			triangle++;
-		}
-		m_pRscIndexBuffer->Unlock();
-		m_pRscVetextBuffer->Unlock();
-	}
+	m_pRscIndexBuffer->Unlock();
+	m_pRscVetextBuffer->Unlock();
+	
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
@@ -132,10 +108,13 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	* 논리적오류! 자식이라고해서 원 안에 항상있을까..
 */
 
-
-void cMeshNode::AddMultiSub( cSceneNode* mesh )
+void cMeshNode::AddMultiSub( WORD startIndex,WORD primitiveCount,unsigned char materialIndex )
 {
-	m_vecSubMesh.push_back(mesh);
+	MultiSub temp;
+	temp.startIndex = startIndex;
+	temp.primitiveCount = primitiveCount;
+	temp.materialIndex = materialIndex;
+	m_vecMultiSub.push_back(temp);
 }
 
 
@@ -160,19 +139,21 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	if (m_bRender)
-	{
-		int i = m_Matrial.index_renderer_queue();
-		pEntity->m_renderQueueNormal[i].Insert(this);
+	{	
+		unsigned char multiSubIndex=0;
+		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
+		{
+			MultiSub& temp = (*it_sub);
+			Material& material = m_vecMaterial[temp.materialIndex];		
+
+			int i = material.index_renderer_queue();
+			pEntity->m_renderQueueNormal[i].Insert(this,multiSubIndex);
+			multiSubIndex++;
+		}
 	}
 
 	if (!bTraversal)
 		return;
-
-	auto it_sub=m_vecSubMesh.begin();
-	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
-	{
-		(*it_sub)->QueueRenderer(pEntity,bTraversal);
-	}
 
 	auto it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
@@ -254,17 +235,20 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 {
 	if (m_bRender)
 	{
-		pEntity->m_renderQueueNormalShadow.Insert(this);
+		unsigned char multiSubIndex=0;
+		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
+		{
+			MultiSub& temp = (*it_sub);
+			Material& material = m_vecMaterial[temp.materialIndex];		
+
+			int i = material.index_renderer_queue();
+			pEntity->m_renderQueueNormalShadow.Insert(this,multiSubIndex);
+			multiSubIndex++;
+		}
 	}
 
 	if (!bTraversal)
 		return;
-
-	auto it_sub=m_vecSubMesh.begin();
-	for ( ;it_sub!=m_vecSubMesh.end();++it_sub )
-	{
-		(*it_sub)->QueueRendererShadow(pEntity,bTraversal);
-	}
 
 	auto it_child=m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
@@ -277,14 +261,6 @@ void cMeshNode::Release()
 {
 	cSceneNode::Release();
 
-	auto it = m_vecSubMesh.begin();
-	auto it_end = m_vecSubMesh.end();
-
-	for ( ;it!=it_end ; it++ )
-	{
-		delete *it;
-	}	
-	m_vecSubMesh.clear();
 	SAFE_RELEASE(m_pRscVetextBuffer);	
 	SAFE_RELEASE(m_pRscIndexBuffer);	
 }
@@ -297,26 +273,9 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_worldReference);	
-
-	// multisub
-	unsigned char count = 0;
-	stream >> count;
-	for ( int i=0 ; i<count ; i++ )
-	{
-		SCENETYPE type;
-		stream >> type;
-		cSceneNode* pNode = CreateNode(type);
-		AddMultiSub(pNode);
-		pNode->SerializeIn(stream);		
-	}
-	/*
-	if (m_vecSubMesh.empty())
-	{
-		m_Matrial.SerializeIn(stream);
-	}
-	*/
+	
 	// child
-	count = 0;
+	unsigned char count =0 ;
 	stream >> count;
 	for ( int i=0 ; i<count ; i++ )
 	{
@@ -337,22 +296,8 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_worldReference);	
 
-	// multisub
-	unsigned char count = m_vecSubMesh.size();
-	stream << count;
-	auto it_subMesh = m_vecSubMesh.begin();
-	for ( ;it_subMesh!=m_vecSubMesh.end();++it_subMesh )
-	{
-		(*it_subMesh)->SerializeOut(stream);
-	}
-
-	/*
-	if (m_vecSubMesh.empty())
-	{
-		m_Matrial.SerializeOut(stream);
-	}
-	*/
-
+	unsigned char count;
+	
 	// child
 	count = m_listChildNode.size();
 	stream << count;
@@ -361,4 +306,9 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	{
 		(*it_child)->SerializeOut(stream);
 	}	
+}
+
+void cMeshNode::SetMaterial( std::vector<Material>& vecMaterial )
+{
+	m_vecMaterial = vecMaterial;
 }

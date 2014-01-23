@@ -2003,64 +2003,37 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	if(stInfo.pParent == NULL)
 		stInfo.pParent = m_pSceneRoot;
 
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
 	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
+	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
+	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
 
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
-
-	int nPrimitiveCount=0,nStartIndex=0;
+	int primitiveCount=0,startIndex=0;
+	SUBMATINDEX matIndex=0;
 	if ( m_vecMaterial[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
 			int nCount = (*it).second;
-			nPrimitiveCount += nCount;			
-		}			
-
-		pNewSceneNode->SetPrimitiveCount(nPrimitiveCount);
-		pNewSceneNode->SetStartIndex(0);		
-
-		pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
-		pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
-		pNewSceneNode->SetMatrial(m_vecMaterial[nMaterialRef][0]);				
+			primitiveCount += nCount;			
+		}		
+		pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);	
 	}
 	else
-	{
+	{		
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
-			int nSubMaterialIndex = (*it).first;
-			nPrimitiveCount= (*it).second;			
-
-			cMeshNode* pSubNode= new cMeshNode;
-			pNewSceneNode->AddMultiSub(pSubNode);
-			
-			SetNodeInfo(pSubNode,stInfo);		
-			pSubNode->GetWorldReference() = stInfo.tmWorld;
-
-			pSubNode->SetPrimitiveCount(nPrimitiveCount);
-			pSubNode->SetStartIndex(nStartIndex);		
-
-			pSubNode->SetRscVertextBuffer(pVertexBuffer);		
-			pSubNode->SetRscIndexBuffer(pIndexBuffer);
-
-			std::vector<Material>& refSubMaterial=m_vecMaterial[nMaterialRef];
-			
-			if ( (size_t)nSubMaterialIndex >= refSubMaterial.size()  )
-			{
-				pSubNode->SetMatrial(refSubMaterial[0]);
-			}
-			else
-			{
-				pSubNode->SetMatrial(refSubMaterial[nSubMaterialIndex]);
-			}
-			
-
-			nStartIndex+=nPrimitiveCount*3; //cnt
+			matIndex = (*it).first;
+			primitiveCount = (*it).second;			
+			pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);
+			startIndex += primitiveCount*3; //cnt
 		}			
-
 	}
+
 	return pNewSceneNode;
 }
 
@@ -2081,55 +2054,38 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	if(stInfo.pParent == NULL)
 		stInfo.pParent = m_pSceneRoot;
 
+	
 	SetNodeInfo(pNewSceneNode,stInfo);
-	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
+	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
+	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
+	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
+	pNewSceneNode->SetBoneRef(boneRef);
+	
 
-	int nPrimitiveCount=0,nStartIndex=0;
-	if (m_vecMaterial[nMaterialRef].size()==1)
+	int primitiveCount=0,startIndex=0;
+	SUBMATINDEX matIndex=0;
+	if ( m_vecMaterial[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
-			nPrimitiveCount=(*it).second;
-			nStartIndex+=nPrimitiveCount*3; //cnt
-		}			
-
-		pNewSceneNode->SetPrimitiveCount(nPrimitiveCount);
-		pNewSceneNode->SetStartIndex(nStartIndex);		
-
-		pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
-		pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
-
-		pNewSceneNode->SetMatrial(m_vecMaterial[nMaterialRef][0]);
-		pNewSceneNode->SetBoneRef(boneRef);
+			int nCount = (*it).second;
+			primitiveCount += nCount;			
+		}		
+		pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);	
 	}
 	else
-	{
+	{		
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
-			int nSubMaterialIndex = (*it).first;
-			nPrimitiveCount= (*it).second;			
-
-			SkinnedMeshNode* pSubNode= new SkinnedMeshNode;
-			pNewSceneNode->AddMultiSub(pSubNode);
-
-			SetNodeInfo(pSubNode,stInfo);
-			pSubNode->GetWorldReference() = stInfo.tmWorld;
-
-			pSubNode->SetPrimitiveCount(nPrimitiveCount);
-			pSubNode->SetStartIndex(nStartIndex);		
-
-			pSubNode->SetRscVertextBuffer(pVertexBuffer);		
-			pSubNode->SetRscIndexBuffer(pIndexBuffer);		
-
-			pSubNode->SetMatrial(m_vecMaterial[nMaterialRef][nSubMaterialIndex]);
-			pSubNode->SetBoneRef(boneRef);
-
-			nStartIndex+=nPrimitiveCount*3; //cnt
-
+			matIndex = (*it).first;
+			primitiveCount = (*it).second;			
+			pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);
+			startIndex += primitiveCount*3; //cnt
 		}			
 	}
 	return pNewSceneNode;

@@ -10,41 +10,41 @@
 class cMeshNode;
 class cView;
 
+
 class cMeshNode:
 	public cSceneNode
 {
 public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
+
+	typedef struct {
+		WORD	primitiveCount;
+		WORD	startIndex;
+		unsigned char materialIndex;
+	} MultiSub;
 protected:	
 
 	BOOL					m_bIsBone;
-	int						m_nStartIndex;
-	int						m_nPrimitiveCount;
-	Material				m_Matrial;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
-	std::vector<cSceneNode*>		m_vecSubMesh;
+	std::vector<MultiSub>	m_vecMultiSub;
+	std::vector<Material>	m_vecMaterial;
 public:
 	virtual void			Update(DWORD elapseTime);
-	virtual void			Render();
+	virtual void			Render(unsigned char multiSubIndex);
 	virtual	void			BuildComposite(Entity* pEntity);
 
-	void					SetStartIndex(WORD val) { m_nStartIndex = val; }
-	void					SetPrimitiveCount(WORD val) { m_nPrimitiveCount = val; }	
-	
-	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 
+	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 
 	BOOL					GetIsBone() const { return m_bIsBone; }
 	void					SetIsBone(BOOL val) { m_bIsBone = val; }		
 
-	void					SetMatrial(Material& val) { m_Matrial = val; }	
+	void					SetMaterial(std::vector<Material>& vecMaterial);
 
-
-	void					AddMultiSub(cSceneNode* mesh);	
-
+	void					AddMultiSub(WORD startIndex,WORD primitiveCount,unsigned char materialIndex);	
 
 
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);

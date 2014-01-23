@@ -776,11 +776,15 @@ BOOL cASEParser::Parsing_GeoObject()
 	}
 	else
 	{
+		pNewRscVertexBuffer->AddRef();
+		pNewRscIndexBuffer->AddRef();
 		if (!bSkinned)	
 		{
+			// 멀티서브도 아닌데,, 맵핑소스가 없으면 그냥 Scene으로 대체
 			if (( m_vecMaterial[nMaterialRef].size() == 1)&&(m_vecMaterial[nMaterialRef][0].index_renderer_queue() == 0))
 			{
 				pNewSceneNode = CreateSceneNode(stInfo);		// Bone일때는 그냥...
+	
 			}
 			else
 			{
@@ -791,6 +795,8 @@ BOOL cASEParser::Parsing_GeoObject()
 		{
 			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );		
 		}		
+		SAFE_RELEASE(pNewRscIndexBuffer);
+		SAFE_RELEASE(pNewRscVertexBuffer);
 	}	
 	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
@@ -2157,6 +2163,7 @@ void cASEParser::Close()
 	m_pSceneRoot = NULL;
 	m_pLastObject = NULL;
 	m_CNTOBJECT = 0;
+	m_SceneTime.FILENAME.clear();
 }
 
 bool cASEParser::GetSubMaterial( Material& material)

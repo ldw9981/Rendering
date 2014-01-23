@@ -165,12 +165,14 @@ void cMenuView::Control()
 		if(m_Camera.GetProcessInput())
 		{
 			m_Camera.SetProcessInput(false);
-			m_pTank->m_bControl=TRUE;
+			if(m_pTank)
+				m_pTank->m_bControl=TRUE;
 		}
 		else
 		{
 			m_Camera.SetProcessInput(true);
-			m_pTank->m_bControl=FALSE;			
+			if(m_pTank)
+				m_pTank->m_bControl=FALSE;			
 		}
 	}
 	
@@ -191,4 +193,8 @@ void cMenuView::Control()
 		Graphics::g_pGraphics->m_bDebugBound = !Graphics::g_pGraphics->m_bDebugBound;
 	}
 			
+	if (g_pInput->IsTurnDn(DIK_F11))
+	{
+		m_pDragon->Save("Dragon.chr");
+	}
 }

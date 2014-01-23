@@ -11,7 +11,8 @@
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
-
+#include <d3dx9.h>
+#include <d3dx9math.h>
 #include <Windows.h>
 #include <memory.h>
 #include <crtdbg.h>
@@ -19,8 +20,9 @@
 
 #include <list>
 #include <vector>
-#include <iostream>
+#include <fstream>
 #include <stdio.h>
 #include <assert.h>
-
+#include <string>
+#include <bitset>
 // TODO: reference additional headers your program requires here

@@ -28,4 +28,18 @@
 #include <algorithm>
 #include <bitset>
 
+
+#include <Windows.h>
+#include <memory.h>
+#include <crtdbg.h>
+#include <tchar.h>
+
+#include <list>
+#include <vector>
+#include <fstream>
+#include <stdio.h>
+
+
+
+
 // TODO: reference additional headers your program requires here

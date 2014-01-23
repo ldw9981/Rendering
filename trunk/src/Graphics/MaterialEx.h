@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Foundation/interface.h"
 typedef WORD SUBMATINDEX;
 
 /*
@@ -8,6 +8,7 @@ typedef WORD SUBMATINDEX;
 
 class cRscTexture;
 class Material
+	: ISerializable
 {
 public:
 	enum MAP
@@ -53,6 +54,9 @@ public:
 // 	void					SetMapRefract(cRscTexture* val);
 	cRscTexture*			GetMapLight() const;
 	void					SetMapLight(cRscTexture* val);
+
+	virtual void SerializeIn(std::ifstream& stream);
+	virtual void SerializeOut(std::ofstream& stream);
 };
 
 

@@ -9,6 +9,15 @@ Input::Input(void)
 	m_directInput = 0;
 	m_keyboard = 0;
 	m_mouse = 0;
+
+	memset(&m_keyboardStatePrev,0,256);	
+	memset(&m_keyboardState,0,256);	
+	memset(&m_keyboardStateTurnDn,0,256);	
+	memset(&m_keyboardStateTurnUp,0,256);	
+
+	memset(&m_mouseButtonPrev,0,4);	
+	memset(&m_mouseButtonTurnDn,0,4);	
+	memset(&m_mouseButtonTurnUp,0,4);	
 }
 
 Input::~Input(void)

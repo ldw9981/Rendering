@@ -50,6 +50,12 @@ public:
 class ISerializable
 {
 public:
-	virtual void SerializeIn(std::fstream& in)=0;
-	virtual void SerializeOut(std::fstream& out)=0;
+	virtual void SerializeIn(std::ifstream& stream)=0;
+	virtual void SerializeOut(std::ofstream& stream)=0;
+
+	void ReadString( std::ifstream& stream,std::string& str );
+	void WriteString( std::ofstream& stream,std::string& str );
+
+	void ReadMatrix(std::ifstream& stream,D3DXMATRIX& mat);
+	void WriteMatrix(std::ofstream& stream,D3DXMATRIX& mat);
 };

@@ -2,6 +2,12 @@
 #include "MaterialEx.h"
 #include "Graphics/RscTexture.h"
 #include "Foundation/Define.h"
+#include "Foundation/StringUtil.h"
+#include "Resource/ResourceMng.h"
+#include "Framework/EnvironmentVariable.h"
+
+#define MATERIAL_LASTEST 1
+
 
 Material::Material(void)
 {
@@ -147,6 +153,96 @@ void Material::SetMapLight( cRscTexture* val )
 		index_renderer_queue_.reset(LIGHT);	
 	}
 }
+
+void Material::SerializeIn( std::ifstream& stream )
+{
+	unsigned short ver = 0;
+	stream >> ver;
+
+	unsigned char type = 0;
+	std::string fileName;
+	type = 0;
+	stream >> type;
+	fileName.clear();
+	ReadString(stream,fileName);
+
+	if (fileName.length()!=0)
+	{
+		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		std::string strFullPath = strDataPath;
+		strFullPath += fileName;
+		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		assert(pRscTexture!=NULL);
+		if(pRscTexture)
+			SetMapDiffuse(pRscTexture);
+	}
+
+	type = 0;
+	stream >> type;
+	fileName.clear();
+	ReadString(stream,fileName);
+	if (fileName.length()!=0)
+	{
+		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		std::string strFullPath = strDataPath;
+		strFullPath += fileName;
+		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		assert(pRscTexture!=NULL);
+		if(pRscTexture)
+			SetMapNormal(pRscTexture);
+	}
+
+	type = 0;
+	stream >> type;
+	fileName.clear();	
+	ReadString(stream,fileName);	
+	if (fileName.length()!=0)
+	{
+		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		std::string strFullPath = strDataPath;
+		strFullPath += fileName;
+		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		assert(pRscTexture!=NULL);
+		if(pRscTexture)
+			SetMapLight(pRscTexture);
+	}
+}
+
+void Material::SerializeOut( std::ofstream& stream )
+{
+	unsigned short ver = MATERIAL_LASTEST;
+	stream << ver;
+	
+	unsigned char type = 0;
+	std::string fileName;
+	type = DIFFUSE;
+	stream << type;
+	fileName.clear();
+	if (m_pMapDiffuse)
+	{
+		StringUtil::SplitPath(std::string(m_pMapDiffuse->GetFilePath()),NULL,NULL,&fileName,&fileName);
+	}
+	WriteString(stream,fileName);
+
+	type = NORMAL;
+	stream << type;
+	fileName.clear();
+	if (m_pMapNormal)
+	{
+		StringUtil::SplitPath(std::string(m_pMapNormal->GetFilePath()),NULL,NULL,&fileName,&fileName);
+	}
+	WriteString(stream,fileName);
+
+	type = LIGHT;
+	stream << type;
+	fileName.clear();
+	if (m_pMapLight)
+	{
+		StringUtil::SplitPath(std::string(m_pMapLight->GetFilePath()),NULL,NULL,&fileName,&fileName);
+	}
+	WriteString(stream,fileName);	
+}
+
 /*
 cRscTexture* Material::GetMapRefract() const
 {

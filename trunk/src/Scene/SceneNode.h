@@ -13,7 +13,7 @@ class Frustum;
 class Entity;
 
 struct SCENENODEINFO;
-
+typedef unsigned char SCENETYPE;
 class cSceneNode:
 	public IUnknownObject,
 	public IUpdatable,	
@@ -25,7 +25,9 @@ public:
 	cSceneNode(void);
 	virtual ~cSceneNode(void);
 	
+	enum TYPE { TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH};
 protected:
+	SCENETYPE 					m_type;
 	std::string					m_strNodeName;			
 	std::string					m_strParentName;		
 	std::list<cSceneNode*>		m_listChildNode;		
@@ -43,8 +45,9 @@ protected:
 	DWORD					m_animationTime;
 
 	std::list<cSceneNode*>::iterator m_ParentListIt;
-
 public:	
+	D3DXMATRIX				m_worldReference;
+	D3DXMATRIX&				GetWorldReference();
 	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
 	void				SetRscTransformAnm(cRscTransformAnm* val);
 		
@@ -102,11 +105,13 @@ public:
 	virtual	void		BuildComposite(Entity* pEntity);
 
 	// ISerialize
-	virtual void		SerializeIn(std::fstream& in);
-	virtual void		SerializeOut(std::fstream& out);
+	virtual void		SerializeIn(std::ifstream& stream);
+	virtual void		SerializeOut(std::ofstream& stream);
 
 	virtual void		QueueRenderer(Entity* pEntity,bool bTraversal);
 	virtual void		QueueRendererShadow(Entity* pEntity,bool bTraversal);
 	virtual void		Release();	
+
+	cSceneNode*		CreateNode(SCENETYPE type);
 };
 

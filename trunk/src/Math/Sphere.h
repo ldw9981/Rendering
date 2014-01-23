@@ -8,7 +8,7 @@ public:
 	
 	virtual ~cSphere(void);
 
-protected:
+public:
 	D3DXVECTOR3		m_CenterPos;		//중점
 
 	float			m_Radius;		//반지름

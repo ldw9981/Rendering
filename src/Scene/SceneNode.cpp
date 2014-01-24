@@ -28,10 +28,12 @@ cSceneNode::cSceneNode(void)
 	m_pParentNode=NULL;
 //	m_NodeType=ROOT;	
 
-	m_bIsActiveAnimation=FALSE;
-	m_pRscTransformAnm=NULL;		
-	m_bRender=true;
+	m_bIsActiveAnimation = FALSE;
+	m_pRscTransformAnm = NULL;		
+	m_bRender = true;
 	m_animationTime = 0;
+	m_bIsBone = false;
+	m_type = TYPE_SCENE;
 }
 
 cSceneNode::~cSceneNode(void)
@@ -206,6 +208,19 @@ void cSceneNode::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
 
 void cSceneNode::BuildComposite(Entity* pEntity)
 {
+	/*
+	if (m_pParentNode == NULL)
+	{
+		m_matLocal = m_worldReference;
+	}
+	else
+	{
+		D3DXMATRIX worldParentReferenceInv;
+		D3DXMatrixInverse(&worldParentReferenceInv,NULL,&m_pParentNode->GetWorldReference());
+		m_matLocal = m_worldReference * worldParentReferenceInv;
+	}
+	*/
+
 	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pNode=NULL;
 	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
@@ -219,32 +234,48 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 {
 	// 이미 앞에서 타입은 읽었다.
 	unsigned short ver = 0;
-	stream >> ver;
+	unsigned char count =0 ;
+
+	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_worldReference);
 
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
+	//child
+	stream.read((char*)&count,sizeof(count));
+	for ( int i=0 ; i<count ; i++ )
 	{
-		(*it)->SerializeIn(stream);
-	}
+		SCENETYPE type;
+		stream.read((char*)&type,sizeof(type));
+		cSceneNode* pNode = CreateNode(type);
+		pNode->SetRootNode(m_pRootNode);
+		pNode->SetParentNode(this);
+		pNode->SetParentName(m_strNodeName.c_str());
+
+		AttachChildNode(pNode);
+		pNode->SerializeIn(stream);		
+	}	
 }
 
 void cSceneNode::SerializeOut( std::ofstream& stream )
 {
-	stream << m_type;
+	stream.write((char*)&m_type,sizeof(m_type));
 	unsigned short ver = SCENENODE_LASTEST;
-	stream << ver;
+	unsigned char count =0 ;
+
+	stream.write((char*)&ver,sizeof(ver));
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_worldReference);
 
+	//child
+	count = m_listChildNode.size();
+	stream.write((char*)&count,sizeof(count));
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->SerializeOut(stream);
-	}
+	}	
 }
 
 
@@ -317,18 +348,14 @@ D3DXMATRIX& cSceneNode::GetWorldReference()
 cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 {
 	cSceneNode* ret = NULL;
-	switch(type)
-	{
-	case TYPE_SCENE:
+	if(type == TYPE_SCENE)
 		ret = new cSceneNode;
-		break;
-	case TYPE_MESH:
+	else if(type == TYPE_MESH)
 		ret = new cMeshNode;
-		break;
-	case TYPE_SKINNEDMESH:
+	else if(type == TYPE_SKINNEDMESH)
 		ret = new SkinnedMeshNode;
-		break;
-	}
+
+
 	assert(ret!=NULL);
 	return ret;
 }

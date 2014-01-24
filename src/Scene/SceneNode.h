@@ -33,7 +33,7 @@ protected:
 	std::list<cSceneNode*>		m_listChildNode;		
 	cSceneNode*				m_pParentNode;
 	cSceneNode*				m_pRootNode;
-
+	bool					m_bIsBone;
 
 	
 	// Transform 애니메이션 정보
@@ -47,7 +47,9 @@ protected:
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
 	D3DXMATRIX				m_worldReference;
-	D3DXMATRIX&				GetWorldReference();
+
+	void				SetWorldReference(D3DXMATRIX& val) { m_worldReference = val; }
+	D3DXMATRIX&			GetWorldReference();
 	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
 	void				SetRscTransformAnm(cRscTransformAnm* val);
 		
@@ -78,7 +80,8 @@ public:
 
 	cSceneNode*			GetRootNode() const { return m_pRootNode; }
 	void				SetRootNode(cSceneNode* val) { m_pRootNode = val; }
-
+	bool				GetIsBone() const { return m_bIsBone; }
+	void				SetIsBone(bool val) { m_bIsBone = val; }	
 
 
 	BOOL				GetIsActiveAnimation() const { return m_bIsActiveAnimation; }

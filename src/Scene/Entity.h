@@ -35,6 +35,7 @@ public:
 	bool	Save(const char* fileName);
 	bool	Load(const char* fileName);
 
+
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
 };

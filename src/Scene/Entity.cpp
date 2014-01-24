@@ -108,18 +108,26 @@ void Entity::Build()
 void Entity::SerializeIn( std::ifstream& stream )
 {
 	unsigned short ver = 0;
-	stream >> ver;
+	unsigned char count = 0;
+	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	float radius = 0.0f;
-	stream >> radius;
+	stream.read((char*)&radius,sizeof(radius));
 	m_BoundingSphere.SetRadius(radius);
-	unsigned char count = 0;
-	stream >> count;
+	
+	stream.read((char*)&count,sizeof(count));
 	for ( int i=0 ; i<count ; i++ )
 	{
 		SCENETYPE type;
-		stream >> type;
+		stream.read((char*)&type,sizeof(type));
 		cSceneNode* pNode = CreateNode(type);
+		if (pNode==NULL)
+		{
+			return;
+		}
+		pNode->SetRootNode(this);
+		pNode->SetParentNode(this);
+		pNode->SetParentName(m_strNodeName.c_str());
 		AttachChildNode(pNode);
 		pNode->SerializeIn(stream);		
 	}	
@@ -128,12 +136,15 @@ void Entity::SerializeIn( std::ifstream& stream )
 void Entity::SerializeOut( std::ofstream& stream )
 {
 	unsigned short ver = ENTITY_LASTEST;
-	stream << ver;
+	unsigned char count = 0;
+	stream.write((char*)&ver,sizeof(ver));
 	WriteString(stream,m_strNodeName);
 	float radius = m_BoundingSphere.GetRadius(); 
-	stream << radius;
-	unsigned char count = m_listChildNode.size();
-	stream << count;
+	stream.write((char*)&radius,sizeof(radius));
+
+	//child
+	count = m_listChildNode.size();
+	stream.write((char*)&count,sizeof(count));
 	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
 	for ( ;it!=m_listChildNode.end();++it )
 	{
@@ -151,6 +162,9 @@ bool Entity::Save( const char* fileName )
 
 bool Entity::Load( const char* fileName )
 {
+	std::ifstream stream;
+	stream.open(fileName, std::ios::in | std::ios::binary);
+	SerializeIn(stream);
 	return true;
 }
 

@@ -18,9 +18,12 @@
 #include "Framework/D3DFramework.h"
 #include "Scene/View.h"
 
+#define SKINNEDMESH_LASTEST 1
+
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
 	m_pArrayMatBoneRef = NULL;
+	m_type = TYPE_SKINNEDMESH;
 }
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
@@ -33,16 +36,16 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 	assert(!m_vecBoneRef.empty());
 	D3DXMATRIX tmBoneWorldReferenceInv;
 
-	std::vector<BONEREFINFO>::iterator iter;
-	for ( iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; ++iter)
+	for (auto iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; iter++)
 	{
 		BONEREFINFO* pBoneRefInfo=&(*iter);				
-		pBoneRefInfo->pMesh = pEntity->FindNode(pBoneRefInfo->strNodeName);	
-		//pBoneRefInfo->pMesh->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
-	
-		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pMesh->GetWorldReference());
+		pBoneRefInfo->pNode = pEntity->FindNode(pBoneRefInfo->strNodeName);	
+		assert(pBoneRefInfo->pNode!=NULL);	
+		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로
+		pBoneRefInfo->pNode->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
+		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetWorldReference());
 		pBoneRefInfo->SkinOffset = GetWorldReference() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
-	}	
+	}			
 	m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];	
 }
 
@@ -64,7 +67,7 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pMesh->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
 	}	
 
 	Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
@@ -195,5 +198,147 @@ void SkinnedMeshNode::Release()
 		delete m_pArrayMatBoneRef;
 	}	
 	m_vecBoneRef.clear();	
+}
+
+void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
+{
+	// 이미 앞에서 타입은 읽었다.
+	unsigned short ver = 0;
+	unsigned char count =0 ;
+
+	//scene
+	stream.read((char*)&ver,sizeof(ver));
+	ReadString(stream,m_strNodeName);
+	ReadString(stream,m_strParentName);
+	ReadMatrix(stream,m_worldReference);	
+
+	// multisub
+	stream.read((char*)&count,sizeof(count));
+	for ( unsigned char i = 0; i<count ; i++ )
+	{
+		MultiSub data;
+		stream.read((char*)&data.primitiveCount,sizeof(data.primitiveCount));
+		stream.read((char*)&data.startIndex,sizeof(data.startIndex));
+		stream.read((char*)&data.materialIndex,sizeof(data.materialIndex));
+		m_vecMultiSub.push_back(data);
+	}
+
+	// mesh
+	SerializeInMesh(stream);
+
+	// material
+	SerializeInMaterial(stream);
+
+	// child	
+	stream.read((char*)&count,sizeof(count));
+	for ( int i=0 ; i<count ; i++ )
+	{
+		SCENETYPE type;
+		stream.read((char*)&type,sizeof(type));
+		cSceneNode* pNode = CreateNode(type);
+		pNode->SetRootNode(m_pRootNode);
+		pNode->SetParentNode(this);
+		pNode->SetParentName(m_strNodeName.c_str());
+		AttachChildNode(pNode);
+		pNode->SerializeIn(stream);		
+	}
+}
+
+void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
+{
+	unsigned short ver = SKINNEDMESH_LASTEST;
+	unsigned char count =0 ;
+
+	//scene
+	stream.write((char*)&m_type,sizeof(m_type));
+	stream.write((char*)&ver,sizeof(ver));
+
+	WriteString(stream,m_strNodeName);
+	WriteString(stream,m_strParentName);
+	WriteMatrix(stream,m_worldReference);	
+
+	// multi/sub
+	count = m_vecMultiSub.size();
+	stream.write((char*)&count,sizeof(count));
+	for ( auto it = m_vecMultiSub.begin(); it!=m_vecMultiSub.end();++it )
+	{
+		MultiSub& data = (*it);
+		stream.write((char*)&data.primitiveCount,sizeof(data.primitiveCount));
+		stream.write((char*)&data.startIndex,sizeof(data.startIndex));
+		stream.write((char*)&data.materialIndex,sizeof(data.materialIndex));
+	}
+
+	// mesh 
+	SerializeOutMesh(stream);
+	// material
+	SerializeOutMaterial(stream);
+
+	// child
+	count = m_listChildNode.size();
+	stream.write((char*)&count,sizeof(count));
+	auto it_child = m_listChildNode.begin();
+	for ( ;it_child!=m_listChildNode.end();++it_child )
+	{
+		(*it_child)->SerializeOut(stream);
+	}	
+}
+
+void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
+{
+	// index
+	DWORD bufferSize =0;
+	bufferSize = m_pRscIndexBuffer->GetBufferSize();
+	stream.write((char*)&bufferSize,sizeof(bufferSize));
+
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
+	stream.write((char*)pIndices,bufferSize);
+	m_pRscIndexBuffer->Unlock();		
+
+	//vertex
+	bufferSize = m_pRscVetextBuffer->GetBufferSize();
+	stream.write((char*)&bufferSize,sizeof(bufferSize));
+	BLENDVERTEX* pVertices=(BLENDVERTEX*)m_pRscVetextBuffer->Lock();
+	stream.write((char*)pVertices,bufferSize);
+	m_pRscVetextBuffer->Unlock();	
+
+	// bone info
+	unsigned char count;
+	count = m_vecBoneRef.size();
+	stream.write((char*)&count,sizeof(count));
+	for ( int i=0 ; i<count ; i++ )
+	{
+		BONEREFINFO& info = m_vecBoneRef[i];
+		WriteString(stream,info.strNodeName); 
+	}
+}
+
+void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
+{
+	// index
+	DWORD bufferSize =0;
+	unsigned char count;
+	stream.read((char*)&bufferSize,sizeof(bufferSize));
+	SetRscIndexBuffer(cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
+	stream.read((char*)pIndices,bufferSize);
+	m_pRscIndexBuffer->Unlock();		
+	m_pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+
+	// vertex
+	stream.read((char*)&bufferSize,sizeof(bufferSize));
+	SetRscVertextBuffer(cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
+	BLENDVERTEX* pVertices=(BLENDVERTEX*)m_pRscVetextBuffer->Lock();
+	stream.read((char*)pVertices,bufferSize);
+	m_pRscVetextBuffer->Unlock();		
+	m_pRscVetextBuffer->SetCount(bufferSize/sizeof(BLENDVERTEX));
+
+	// bone info
+	stream.read((char*)&count,sizeof(count));
+	for ( int i=0 ; i<count ; i++ )
+	{
+		BONEREFINFO info;
+		ReadString(stream,info.strNodeName); 
+		m_vecBoneRef.push_back(info);
+	}
 }
 

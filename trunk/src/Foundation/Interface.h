@@ -59,4 +59,7 @@ public:
 
 	void ReadMatrix(std::ifstream& stream,D3DXMATRIX& mat);
 	void WriteMatrix(std::ofstream& stream,D3DXMATRIX& mat);
+
+	void ReadFloat(std::ifstream& stream,float& var);
+	void WriteFloat(std::ofstream& stream,float& var);
 };

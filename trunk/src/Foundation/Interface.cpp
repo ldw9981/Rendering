@@ -5,43 +5,41 @@
 void ISerializable::ReadString( std::ifstream& stream,std::string& str )
 {
 	unsigned char textLength = 0;
-	char buffer[256];
-	stream >> (unsigned char) textLength;
+	char buffer[256]={0,};
+	stream.read((char*)&textLength,sizeof(textLength));
 	if (textLength == 0)
 		return;
 
-	stream.read(buffer,textLength); 
+	stream.read(&buffer[0],textLength); 
 	str = buffer;
 }
 
 void ISerializable::WriteString( std::ofstream& stream,std::string& str )
 {
 	unsigned char textLength = str.length();	
-	stream << textLength;
+	stream.write((char*)&textLength,sizeof(textLength));
 	if (textLength == 0)
 		return;
 
-	stream << str;
+	stream.write(str.c_str(),textLength);
 }
 
 void ISerializable::ReadMatrix( std::ifstream& stream,D3DXMATRIX& mat )
 {
-	for (int row=0;row<4;row++)
-	{
-		for (int column=0;column<4;column++)
-		{
-			stream >> (float)mat.m[row][column];
-		}
-	}
+	stream.read((char*)&mat,sizeof(D3DXMATRIX));
 }
 
 void ISerializable::WriteMatrix( std::ofstream& stream,D3DXMATRIX& mat )
 {
-	for (int row=0;row<4;row++)
-	{
-		for (int column=0;column<4;column++)
-		{
-			stream << (float)mat.m[row][column];
-		}
-	}
+	stream.write((char*)&mat,sizeof(D3DXMATRIX));
+}
+
+void ISerializable::ReadFloat( std::ifstream& stream,float& var )
+{
+	stream.read((char*)&var,sizeof(float));
+}
+
+void ISerializable::WriteFloat( std::ofstream& stream,float& var )
+{
+	stream.write((char*)&var,sizeof(float));
 }

@@ -157,12 +157,12 @@ void Material::SetMapLight( cRscTexture* val )
 void Material::SerializeIn( std::ifstream& stream )
 {
 	unsigned short ver = 0;
-	stream >> ver;
+	stream.read((char*)&ver,sizeof(ver));
 
 	unsigned char type = 0;
 	std::string fileName;
 	type = 0;
-	stream >> type;
+	stream.read((char*)&type,sizeof(type));
 	fileName.clear();
 	ReadString(stream,fileName);
 
@@ -178,7 +178,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	}
 
 	type = 0;
-	stream >> type;
+	stream.read((char*)&type,sizeof(type));
 	fileName.clear();
 	ReadString(stream,fileName);
 	if (fileName.length()!=0)
@@ -193,7 +193,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	}
 
 	type = 0;
-	stream >> type;
+	stream.read((char*)&type,sizeof(type));
 	fileName.clear();	
 	ReadString(stream,fileName);	
 	if (fileName.length()!=0)
@@ -211,12 +211,12 @@ void Material::SerializeIn( std::ifstream& stream )
 void Material::SerializeOut( std::ofstream& stream )
 {
 	unsigned short ver = MATERIAL_LASTEST;
-	stream << ver;
+	stream.write((char*)&ver,sizeof(ver));
 	
 	unsigned char type = 0;
 	std::string fileName;
 	type = DIFFUSE;
-	stream << type;
+	stream.write((char*)&type,sizeof(type));
 	fileName.clear();
 	if (m_pMapDiffuse)
 	{
@@ -225,7 +225,7 @@ void Material::SerializeOut( std::ofstream& stream )
 	WriteString(stream,fileName);
 
 	type = NORMAL;
-	stream << type;
+	stream.write((char*)&type,sizeof(type));
 	fileName.clear();
 	if (m_pMapNormal)
 	{
@@ -234,7 +234,7 @@ void Material::SerializeOut( std::ofstream& stream )
 	WriteString(stream,fileName);
 
 	type = LIGHT;
-	stream << type;
+	stream.write((char*)&type,sizeof(type));
 	fileName.clear();
 	if (m_pMapLight)
 	{

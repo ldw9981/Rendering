@@ -24,6 +24,7 @@ cMeshNode::cMeshNode(void)
 	m_bIsBone= FALSE;
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
+	m_type = TYPE_MESH;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -269,19 +270,41 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 {
 	// 이미 앞에서 타입은 읽었다.
 	unsigned short ver = 0;
-	stream >> ver;
+	unsigned char count =0 ;
+
+	//scene
+	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_worldReference);	
-	
-	// child
-	unsigned char count =0 ;
-	stream >> count;
+
+	// multisub
+	stream.read((char*)&count,sizeof(count));
+	for ( unsigned char i = 0; i<count ; i++ )
+	{
+		MultiSub data;
+		stream.read((char*)&data.primitiveCount,sizeof(data.primitiveCount));
+		stream.read((char*)&data.startIndex,sizeof(data.startIndex));
+		stream.read((char*)&data.materialIndex,sizeof(data.materialIndex));
+		m_vecMultiSub.push_back(data);
+	}
+
+	// mesh
+	SerializeInMesh(stream);
+
+	// material
+	SerializeInMaterial(stream);
+
+	// child	
+	stream.read((char*)&count,sizeof(count));
 	for ( int i=0 ; i<count ; i++ )
 	{
 		SCENETYPE type;
-		stream >> type;
+		stream.read((char*)&type,sizeof(type));
 		cSceneNode* pNode = CreateNode(type);
+		pNode->SetRootNode(m_pRootNode);
+		pNode->SetParentNode(this);
+		pNode->SetParentName(m_strNodeName.c_str());
 		AttachChildNode(pNode);
 		pNode->SerializeIn(stream);		
 	}
@@ -289,18 +312,35 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 
 void cMeshNode::SerializeOut( std::ofstream& stream )
 {
-	stream << m_type;
 	unsigned short ver = MESHNODE_LASTEST;
-	stream << ver;
+	unsigned char count =0 ;
+
+	//scene
+	stream.write((char*)&m_type,sizeof(m_type));	
+	stream.write((char*)&ver,sizeof(ver));	
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_worldReference);	
 
-	unsigned char count;
+	// multi/sub
+	count = m_vecMultiSub.size();
+	stream.write((char*)&count,sizeof(count));	
+	for ( auto it = m_vecMultiSub.begin(); it!=m_vecMultiSub.end();++it )
+	{
+		MultiSub& data = (*it);
+		stream.write((char*)&data.primitiveCount,sizeof(data.primitiveCount));	
+		stream.write((char*)&data.startIndex,sizeof(data.startIndex));	
+		stream.write((char*)&data.materialIndex,sizeof(data.materialIndex));	
+	}
+
+	// mesh 
+	SerializeOutMesh(stream);
+	// material
+	SerializeOutMaterial(stream);
 	
 	// child
 	count = m_listChildNode.size();
-	stream << count;
+	stream.write((char*)&count,sizeof(count));	
 	auto it_child = m_listChildNode.begin();
 	for ( ;it_child!=m_listChildNode.end();++it_child )
 	{
@@ -311,4 +351,67 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 void cMeshNode::SetMaterial( std::vector<Material>& vecMaterial )
 {
 	m_vecMaterial = vecMaterial;
+}
+
+void cMeshNode::SerializeOutMesh( std::ofstream& stream )
+{
+	// index
+	DWORD bufferSize =0;
+	bufferSize = m_pRscIndexBuffer->GetBufferSize();
+	stream.write((char*)&bufferSize,sizeof(bufferSize));
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
+	stream.write((char*)pIndices,bufferSize);
+	m_pRscIndexBuffer->Unlock();		
+
+	//vertex
+	bufferSize = m_pRscVetextBuffer->GetBufferSize();
+	stream.write((char*)&bufferSize,sizeof(bufferSize));
+	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
+	stream.write((char*)pVertices,bufferSize);
+	m_pRscVetextBuffer->Unlock();	
+
+}
+
+void cMeshNode::SerializeInMesh( std::ifstream& stream )
+{
+	// index
+	DWORD bufferSize =0;
+	stream.read((char*)&bufferSize,sizeof(bufferSize));
+	SetRscIndexBuffer(cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
+	stream.read((char*)pIndices,bufferSize);
+	m_pRscIndexBuffer->Unlock();		
+	m_pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+
+	// vertex
+	stream.read((char*)&bufferSize,sizeof(bufferSize));
+	SetRscVertextBuffer(cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
+	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
+	stream.read((char*)pVertices,bufferSize);
+	m_pRscVetextBuffer->Unlock();		
+	m_pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));
+}
+
+void cMeshNode::SerializeOutMaterial( std::ofstream& stream )
+{
+	unsigned char count;
+	count = (unsigned char)m_vecMaterial.size();
+	stream.write((char*)&count,sizeof(count));
+	for ( auto it = m_vecMaterial.begin();it!=m_vecMaterial.end();++it )
+	{
+		Material& data = (*it);
+		data.SerializeOut(stream);
+	}	
+}
+
+void cMeshNode::SerializeInMaterial( std::ifstream& stream )
+{
+	unsigned char count;
+	stream.read((char*)&count,sizeof(count));
+	for ( unsigned char i = 0; i<count ; i++ )
+	{
+		Material data;
+		data.SerializeIn(stream);
+		m_vecMaterial.push_back(data);
+	}
 }

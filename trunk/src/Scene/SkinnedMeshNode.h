@@ -4,12 +4,12 @@
 struct BONEREFINFO
 {
 	std::string strNodeName;
-	cSceneNode* pMesh;		//본은 무조건 메쉬이다	
+	cSceneNode* pNode;		//본은 무조건 메쉬이다	
 	D3DXMATRIX	SkinOffset;
 
 	BONEREFINFO()
 	{
-		pMesh=NULL;
+		pNode=NULL;
 		D3DXMatrixIdentity(&SkinOffset);
 	}
 };
@@ -50,4 +50,11 @@ public:
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
 	virtual void			QueueRendererShadow(Entity* pEntity,bool bTraversal);
 	virtual	void			Release();
+
+	// ISerialize
+	virtual void		SerializeIn(std::ifstream& stream);
+	virtual void		SerializeOut(std::ofstream& stream);
+
+	virtual void SerializeOutMesh(std::ofstream& stream);
+	virtual void SerializeInMesh(std::ifstream& stream);
 };

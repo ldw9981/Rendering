@@ -19,13 +19,11 @@ public:
 	virtual ~cMeshNode(void);
 
 	typedef struct {
-		WORD	primitiveCount;
-		WORD	startIndex;
+		unsigned short primitiveCount;
+		unsigned short startIndex;
 		unsigned char materialIndex;
 	} MultiSub;
 protected:	
-
-	BOOL					m_bIsBone;
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
 	std::vector<MultiSub>	m_vecMultiSub;
@@ -39,8 +37,7 @@ public:
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 
-	BOOL					GetIsBone() const { return m_bIsBone; }
-	void					SetIsBone(BOOL val) { m_bIsBone = val; }		
+	
 
 	void					SetMaterial(std::vector<Material>& vecMaterial);
 
@@ -61,7 +58,12 @@ public:
 	// ISerialize
 	virtual void		SerializeIn(std::ifstream& stream);
 	virtual void		SerializeOut(std::ofstream& stream);
-	
+
+	virtual void SerializeOutMesh(std::ofstream& stream);
+	virtual void SerializeInMesh(std::ifstream& stream);
+
+	void SerializeOutMaterial(std::ofstream& stream);
+	void SerializeInMaterial(std::ifstream& stream);
 };
 
 

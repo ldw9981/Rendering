@@ -2011,7 +2011,6 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
-	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
 	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
@@ -2064,7 +2063,6 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
 	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
@@ -2149,8 +2147,6 @@ cSceneNode* cASEParser::CreateSceneNode(SCENENODEINFO& stInfo)
 
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);	
-	pNewSceneNode->GetWorldReference() = stInfo.tmWorld;
-
 	return pNewSceneNode;
 }
 
@@ -2377,4 +2373,5 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 	pNode->SetLocalTM(stInfo.tmLocal);
 	pNode->SetWorldTM(stInfo.tmWorld);
 	pNode->SetParentNode(stInfo.pParent);
+	pNode->SetWorldReference(stInfo.tmNode);
 }

@@ -386,8 +386,7 @@ BOOL cASEParser::Parsing_GeoObject()
 			break;
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
-			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			stInfo.tmWorld = stInfo.tmNode;				
+			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);			
 
 			if (stInfo.pParent==NULL)
 			{					
@@ -395,9 +394,9 @@ BOOL cASEParser::Parsing_GeoObject()
 			}
 			else
 			{					
-				D3DXMATRIX tmInvParentWorld;
-				D3DXMatrixInverse(&tmInvParentWorld,NULL,&stInfo.pParent->GetWorldTM());
-				stInfo.tmLocal = stInfo.tmWorld * tmInvParentWorld ;
+				D3DXMATRIX matNodeInv;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
+				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
 			}			
 			break;
 
@@ -1055,17 +1054,16 @@ BOOL cASEParser::Parsing_HelperObject()
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
 			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			stInfo.tmWorld = stInfo.tmNode;				
-
+			
 			if (stInfo.pParent==NULL)
 			{					
 				stInfo.tmLocal = stInfo.tmNode;
 			}
 			else
 			{					
-				D3DXMATRIX tmInvParentWorld;
-				D3DXMatrixInverse(&tmInvParentWorld,NULL,&stInfo.pParent->GetWorldTM());
-				stInfo.tmLocal = stInfo.tmWorld * tmInvParentWorld ;
+				D3DXMATRIX matNodeInv;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
+				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
 			}			
 			break;
 
@@ -1110,17 +1108,16 @@ BOOL cASEParser::Parsing_ShapeObject()
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
 			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			stInfo.tmWorld = stInfo.tmNode;				
-
+			
 			if (stInfo.pParent==NULL)
 			{					
 				stInfo.tmLocal = stInfo.tmNode;
 			}
 			else
 			{					
-				D3DXMATRIX tmInvParentWorld;
-				D3DXMatrixInverse(&tmInvParentWorld,NULL,&stInfo.pParent->GetWorldTM());
-				stInfo.tmLocal = stInfo.tmWorld * tmInvParentWorld ;
+				D3DXMATRIX matNodeInv;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
+				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
 			}			
 			break;
 		case TOKENR_TM_ANIMATION:
@@ -1178,17 +1175,16 @@ BOOL cASEParser::Parsing_LightObject()
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
 			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			stInfo.tmWorld = stInfo.tmNode;				
-
+			
 			if (stInfo.pParent==NULL)
 			{					
 				stInfo.tmLocal = stInfo.tmNode;
 			}
 			else
 			{					
-				D3DXMATRIX tmInvParentWorld;
-				D3DXMatrixInverse(&tmInvParentWorld,NULL,&stInfo.pParent->GetWorldTM());
-				stInfo.tmLocal = stInfo.tmWorld * tmInvParentWorld ;
+				D3DXMATRIX matNodeInv;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
+				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
 			}			
 			break;
 		case TOKENR_TM_ANIMATION:
@@ -1274,17 +1270,16 @@ BOOL cASEParser::Parsing_CameraObject()
 
 				stInfo.tmNode = nodeTM;
 				D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-				stInfo.tmWorld = stInfo.tmNode;				
-
+				
 				if (stInfo.pParent==NULL)
 				{					
 					stInfo.tmLocal = stInfo.tmNode;
 				}
 				else
 				{					
-					D3DXMATRIX tmInvParentWorld;
-					D3DXMatrixInverse(&tmInvParentWorld,NULL,&stInfo.pParent->GetWorldTM());
-					stInfo.tmLocal = stInfo.tmWorld * tmInvParentWorld ;
+					D3DXMATRIX matNodeInv;
+					D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
+					stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
 				}			
 
 				bLoadCameraNodeTM=TRUE;
@@ -2370,8 +2365,8 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 {
 	pNode->SetNodeName(stInfo.strNodeName.c_str());
 	pNode->SetParentName(stInfo.strParentName.c_str());
-	pNode->SetLocalTM(stInfo.tmLocal);
-	pNode->SetWorldTM(stInfo.tmWorld);
+	//pNode->SetLocalTM(stInfo.tmLocal);
+	//pNode->SetWorldTM(stInfo.tmWorld);
 	pNode->SetParentNode(stInfo.pParent);
-	pNode->SetWorldReference(stInfo.tmNode);
+	pNode->SetNodeTM(stInfo.tmNode);
 }

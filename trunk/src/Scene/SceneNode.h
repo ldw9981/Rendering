@@ -46,10 +46,10 @@ protected:
 
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
-	D3DXMATRIX				m_worldReference;
+	D3DXMATRIX				m_nodeTM;
 
-	void				SetWorldReference(D3DXMATRIX& val) { m_worldReference = val; }
-	D3DXMATRIX&			GetWorldReference();
+	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
+	D3DXMATRIX&			GetNodeTM();
 	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
 	void				SetRscTransformAnm(cRscTransformAnm* val);
 		

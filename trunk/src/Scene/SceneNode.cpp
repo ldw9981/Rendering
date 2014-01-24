@@ -34,6 +34,7 @@ cSceneNode::cSceneNode(void)
 	m_animationTime = 0;
 	m_bIsBone = false;
 	m_type = TYPE_SCENE;
+	D3DXMatrixIdentity(&m_nodeTM);
 }
 
 cSceneNode::~cSceneNode(void)
@@ -208,18 +209,17 @@ void cSceneNode::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
 
 void cSceneNode::BuildComposite(Entity* pEntity)
 {
-	/*
+	D3DXMATRIX temp;
 	if (m_pParentNode == NULL)
 	{
-		m_matLocal = m_worldReference;
+		m_matLocal = m_nodeTM;
 	}
 	else
 	{
 		D3DXMATRIX worldParentReferenceInv;
-		D3DXMatrixInverse(&worldParentReferenceInv,NULL,&m_pParentNode->GetWorldReference());
-		m_matLocal = m_worldReference * worldParentReferenceInv;
+		D3DXMatrixInverse(&worldParentReferenceInv,NULL,&m_pParentNode->GetNodeTM());
+		m_matLocal = m_nodeTM * worldParentReferenceInv;
 	}
-	*/
 
 	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pNode=NULL;
@@ -239,7 +239,7 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
-	ReadMatrix(stream,m_worldReference);
+	ReadMatrix(stream,m_nodeTM);
 
 	//child
 	stream.read((char*)&count,sizeof(count));
@@ -266,7 +266,7 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&ver,sizeof(ver));
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
-	WriteMatrix(stream,m_worldReference);
+	WriteMatrix(stream,m_nodeTM);
 
 	//child
 	count = m_listChildNode.size();
@@ -339,9 +339,9 @@ void cSceneNode::Release()
 
 
 
-D3DXMATRIX& cSceneNode::GetWorldReference()
+D3DXMATRIX& cSceneNode::GetNodeTM()
 {
-	return m_worldReference;
+	return m_nodeTM;
 }
 
 

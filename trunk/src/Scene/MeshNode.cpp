@@ -276,7 +276,7 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
-	ReadMatrix(stream,m_worldReference);	
+	ReadMatrix(stream,m_nodeTM);	
 
 	// multisub
 	stream.read((char*)&count,sizeof(count));
@@ -320,7 +320,7 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&ver,sizeof(ver));	
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
-	WriteMatrix(stream,m_worldReference);	
+	WriteMatrix(stream,m_nodeTM);	
 
 	// multi/sub
 	count = m_vecMultiSub.size();

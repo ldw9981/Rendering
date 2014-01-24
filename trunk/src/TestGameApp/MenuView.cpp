@@ -65,7 +65,7 @@ void cMenuView::Enter()
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pTank);
 	*/
-	
+	/*
 	m_pDragon = new cObjDragon;
 	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
 	parser.Close();
@@ -74,7 +74,7 @@ void cMenuView::Enter()
 	//m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
 	AttachObject(m_pDragon);	
-	
+	*/
 
 	/*
 	m_pAirPlaneBake = new cObjDragon;	
@@ -87,7 +87,7 @@ void cMenuView::Enter()
 	AttachObject(m_pAirPlaneBake);	
 	*/
 	
-	/*
+	
 	m_pHouse = new cObjDragon;	
 	m_pHouse->Load("Dragon.chr");
 	m_pHouse->Build();
@@ -96,7 +96,7 @@ void cMenuView::Enter()
 	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pHouse);
 
-	*/
+	
 	
 }
 

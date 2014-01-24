@@ -25,7 +25,6 @@ struct SCENENODEINFO
 	std::string strParentName;
 	D3DXMATRIX tmNode;
 	D3DXMATRIX tmInvNode;
-	D3DXMATRIX tmWorld;
 	D3DXMATRIX tmLocal;
 	cSceneNode* pParent;
 
@@ -33,7 +32,6 @@ struct SCENENODEINFO
 	{
 		D3DXMatrixIsIdentity(&tmNode);
 		D3DXMatrixIsIdentity(&tmInvNode);
-		D3DXMatrixIsIdentity(&tmWorld);
 		D3DXMatrixIsIdentity(&tmLocal);
 		pParent=NULL;
 	}

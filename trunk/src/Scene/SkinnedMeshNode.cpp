@@ -43,8 +43,8 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		assert(pBoneRefInfo->pNode!=NULL);	
 		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로
 		pBoneRefInfo->pNode->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
-		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetWorldReference());
-		pBoneRefInfo->SkinOffset = GetWorldReference() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
+		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetNodeTM());
+		pBoneRefInfo->SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
 	}			
 	m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];	
 }
@@ -210,7 +210,7 @@ void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
 	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
-	ReadMatrix(stream,m_worldReference);	
+	ReadMatrix(stream,m_nodeTM);	
 
 	// multisub
 	stream.read((char*)&count,sizeof(count));
@@ -255,7 +255,7 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
-	WriteMatrix(stream,m_worldReference);	
+	WriteMatrix(stream,m_nodeTM);	
 
 	// multi/sub
 	count = m_vecMultiSub.size();

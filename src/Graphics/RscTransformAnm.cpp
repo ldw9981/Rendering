@@ -99,3 +99,43 @@ float cRscTransformAnm::GetInterpolateValue( int start_time,int end_time,int int
 	ret=(float)offset_time / (float)delta_time;	
 	return ret;
 }
+
+void cRscTransformAnm::SerializeIn( std::ifstream& stream )
+{
+	unsigned short count = 0;
+	stream.read((char*)&count,sizeof(count));
+	if (count==0)
+		return;
+
+	if (GetRefCounter()==0)
+	{
+		for (unsigned short i=0;i<count;i++)
+		{
+			ANMKEY item;
+			stream.read((char*)&item,sizeof(item));
+			m_arrayANMKEY.push_back(item);
+		}
+	}
+	else
+	{
+		stream.seekg( count*sizeof(ANMKEY),std::ios_base::cur);
+	}
+
+	stream.read((char*)&m_dwTimeLength,sizeof(m_dwTimeLength));	
+}
+
+void cRscTransformAnm::SerializeOut( std::ofstream& stream )
+{
+	unsigned short count = 0;
+	count = m_arrayANMKEY.size();
+	stream.write((char*)&count,sizeof(count));
+	if (count==0)
+		return;
+
+	for (unsigned short i=0;i<count;i++)
+	{
+		ANMKEY& item = m_arrayANMKEY[i];
+		stream.write((char*)&item,sizeof(item));
+	}
+	stream.write((char*)&m_dwTimeLength,sizeof(m_dwTimeLength));
+}

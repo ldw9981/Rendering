@@ -16,9 +16,10 @@ public:
 	~cReferenceCounter(void) {}
 
 	UINT	m_RefCounter;
+	
 public:
 	UINT	AddRef();
-	
+	UINT	GetRefCounter() const { return m_RefCounter; }
 	UINT	Release();	
 	virtual void Free()=0;	
 };

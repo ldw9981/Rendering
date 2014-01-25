@@ -1,5 +1,6 @@
 #pragma once
 #include "Resource/Resource.h"
+#include "Foundation/Interface.h"
 
 struct TRANSFORMANM
 {
@@ -44,7 +45,8 @@ struct ANMKEY
 
 
 class cRscTransformAnm:
-	public cResource
+	public cResource,
+	public ISerializable
 {
 public:
 	cRscTransformAnm();
@@ -66,4 +68,7 @@ public:
 	// cResource
 	virtual	BOOL			Create();	
 	virtual	void			Free();
+
+	virtual void SerializeIn(std::ifstream& stream);
+	virtual void SerializeOut(std::ofstream& stream);
 };

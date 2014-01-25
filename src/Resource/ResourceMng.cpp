@@ -154,11 +154,6 @@ cRscTransformAnm* cResourceMng::CreateRscTransformAnm(const char* rootName,const
 		return pItem;
 	}
 
-	if (meshName == std::string("Bone03"))
-	{
-		printf("DD");
-	}
-
 	pItem = new cRscTransformAnm;	
 	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	

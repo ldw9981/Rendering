@@ -241,6 +241,13 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);
 
+	std::string resourceKey;	
+	ReadString(stream,resourceKey);
+	if (!resourceKey.empty())
+	{
+		SerializeInAnm(stream);
+	}
+
 	//child
 	stream.read((char*)&count,sizeof(count));
 	for ( int i=0 ; i<count ; i++ )
@@ -267,6 +274,18 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);
+
+	// animation
+	std::string resourceKey;
+	if(m_pRscTransformAnm)
+	{
+		resourceKey = m_pRscTransformAnm->GetUniqueKey();
+	}
+	WriteString(stream,resourceKey);
+	if (!resourceKey.empty())
+	{
+		SerializeOutAnm(stream);
+	}
 
 	//child
 	count = m_listChildNode.size();
@@ -358,4 +377,18 @@ cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 
 	assert(ret!=NULL);
 	return ret;
+}
+
+void cSceneNode::SerializeInAnm( std::ifstream& stream )
+{
+	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(
+		m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),"DEFAULT");	
+
+	pRscTransformAnm->SerializeIn(stream);
+	SetRscTransformAnm(pRscTransformAnm);	
+}
+
+void cSceneNode::SerializeOutAnm( std::ofstream& stream )
+{
+	m_pRscTransformAnm->SerializeOut(stream);
 }

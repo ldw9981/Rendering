@@ -277,6 +277,14 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);	
+	
+	// animation
+	std::string resourceKey;	
+	ReadString(stream,resourceKey);
+	if (!resourceKey.empty())
+	{
+		SerializeInAnm(stream);
+	}
 
 	// multisub
 	stream.read((char*)&count,sizeof(count));
@@ -321,6 +329,18 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);	
+	
+	// animation
+	std::string resourceKey;
+	if(m_pRscTransformAnm)
+	{
+		resourceKey = m_pRscTransformAnm->GetUniqueKey();
+	}
+	WriteString(stream,resourceKey);
+	if (!resourceKey.empty())
+	{
+		SerializeOutAnm(stream);
+	}
 
 	// multi/sub
 	count = m_vecMultiSub.size();
@@ -377,19 +397,35 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	// index
 	DWORD bufferSize =0;
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	SetRscIndexBuffer(cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
-	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
-	stream.read((char*)pIndices,bufferSize);
-	m_pRscIndexBuffer->Unlock();		
-	m_pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	if(pRscIndexBuffer->GetRefCounter() == 0)
+	{
+		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock();
+		stream.read((char*)pIndices,bufferSize);
+		pRscIndexBuffer->Unlock();		
+		pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+	}
+	else
+	{
+		stream.seekg( bufferSize,std::ios_base::cur);
+	}
+	SetRscIndexBuffer(pRscIndexBuffer);
 
 	// vertex
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	SetRscVertextBuffer(cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize));
-	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
-	stream.read((char*)pVertices,bufferSize);
-	m_pRscVetextBuffer->Unlock();		
-	m_pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));
+	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	if(pRscVetextBuffer->GetRefCounter() == 0)
+	{
+		NORMALVERTEX* pVertices=(NORMALVERTEX*)pRscVetextBuffer->Lock();
+		stream.read((char*)pVertices,bufferSize);
+		pRscVetextBuffer->Unlock();		
+		pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));
+	}
+	else
+	{
+		stream.seekg( bufferSize,std::ios_base::cur);
+	}
+	SetRscVertextBuffer(pRscVetextBuffer);
 }
 
 void cMeshNode::SerializeOutMaterial( std::ofstream& stream )

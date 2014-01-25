@@ -1756,7 +1756,7 @@ cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* rootName,const char
 	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
 
 	// 리소스 가 이미 있으면 있는거 전달
-	if( pRscTransformAnm->GetArrayANMKEY().empty() == false)
+	if( pRscTransformAnm->GetRefCounter() != 0)
 	{
 		SkipBlock();
 		return pRscTransformAnm;
@@ -2099,13 +2099,16 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 		DWORD nCount=(DWORD)arrVertex.size();
 		pVertexBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
 
-		T* pVertices=(T*)pVertexBuffer->Lock();
-		for (UINT i=0;i< nCount;i++)
+		if (pVertexBuffer->GetRefCounter()==0)
 		{
-			memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
-		}	
-		pVertexBuffer->Unlock();			
-		pVertexBuffer->SetCount(nCount);
+			T* pVertices=(T*)pVertexBuffer->Lock();
+			for (UINT i=0;i< nCount;i++)
+			{
+				memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
+			}	
+			pVertexBuffer->Unlock();			
+			pVertexBuffer->SetCount(nCount);
+		}
 	}
 	return pVertexBuffer;
 }
@@ -2120,13 +2123,16 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 		pIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
 			sizeof(TRIANGLE)*nCount);
 
-		TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
-		for (UINT i=0;i< nCount;i++)
+		if (pIndexBuffer->GetRefCounter()==0)
 		{
-			memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
+			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
+			for (UINT i=0;i< nCount;i++)
+			{
+				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
+			}
+			pIndexBuffer->Unlock();		
+			pIndexBuffer->SetCount(nCount);
 		}
-		pIndexBuffer->Unlock();		
-		pIndexBuffer->SetCount(nCount);
 	}			
 	return pIndexBuffer;
 }

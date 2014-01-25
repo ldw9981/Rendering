@@ -116,5 +116,8 @@ public:
 	virtual void		Release();	
 
 	cSceneNode*		CreateNode(SCENETYPE type);
+
+	void		SerializeInAnm(std::ifstream& stream);
+	void		SerializeOutAnm(std::ofstream& stream);
 };
 

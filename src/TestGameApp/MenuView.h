@@ -19,7 +19,7 @@ private:
 	BOOL		m_bControlCamera;
 	cObjDragon*			m_pDragon;
 	cObjDragon*			m_pAirPlaneBake;
-	cObjDragon*			m_pHouse;
+	cObjDragon*			m_pHouse[10];
 public:	
 	virtual void Enter();
 	virtual void Leave();

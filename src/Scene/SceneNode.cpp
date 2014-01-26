@@ -127,13 +127,9 @@ D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime
 
 void cSceneNode::UpdateChildren(DWORD elapseTime)
 {
-	std::list<cSceneNode*>::iterator iter;	
-	cSceneNode* pItem=NULL;
-	cSceneNode* pFoundItem=NULL;
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
-	{
-		pItem=*iter;
-		pItem->Update(elapseTime);
+	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	{		
+		(*iter)->Update(elapseTime);
 	}	
 }
 
@@ -321,7 +317,10 @@ void cSceneNode::Update( DWORD elapseTime )
 {
 	cTransformable::Update(elapseTime);
 	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
-	UpdateChildren(elapseTime);
+	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	{		
+		(*iter)->Update(elapseTime);
+	}	
 }
 
 void cSceneNode::RenderShadow()

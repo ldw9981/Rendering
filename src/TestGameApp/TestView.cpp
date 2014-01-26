@@ -56,7 +56,7 @@ void cTestView::Enter()
 	parser.Close();
 	m_pP38->Build();
 	m_pP38->Init();
-	m_pP38->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pP38->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	AttachObject(m_pP38);
 
 	m_pTestStateA = new TestStateA;

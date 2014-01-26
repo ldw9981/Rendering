@@ -18,8 +18,9 @@ protected:
 	
 //	BOOL					m_bModifiedMatLocal;
 //	BOOL					m_bModifiedMatWorld;
-	BOOL					m_bModifiedVelocityPos;
-	BOOL					m_bModifiedVelocityRot;
+
+	bool					m_bNoVelocityPos;
+	bool					m_bNoVelocityRot;
 	D3DXVECTOR3				m_velPosPerSec;
 
 	D3DXVECTOR3				m_velRotPerSec;
@@ -52,8 +53,8 @@ public:
 	void					UpdateWorldMatrix(D3DXMATRIX* pRepLocalTM=NULL,cTransformable* pParent=NULL);
 	void					Update(DWORD dwElapseMS);
 
-	D3DXVECTOR3&			GetVelPosPerSec()  { return m_velPosPerSec; }
-	D3DXVECTOR3&			GetVelRotPerSec()  { return m_velRotPerSec; }
+	D3DXVECTOR3				GetVelPosPerSec()  { return m_velPosPerSec; }
+	D3DXVECTOR3				GetVelRotPerSec()  { return m_velRotPerSec; }
 	void					SetVelocityPosition( float x,float y,float z );
 	void					SetVelocityPosition( D3DXVECTOR3& pos );
 	void					SetVelocityRotation( float x,float y,float z );

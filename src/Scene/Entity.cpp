@@ -88,12 +88,12 @@ void Entity::Update( DWORD elapseTime )
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 }
 
-bool Entity::CullRendererIntoRendererQueue( Frustum* pFrustum )
+bool Entity::CullRendererIntoRendererQueue( Frustum* pFrustum ,float loose)
 {
 	if (!m_bRender)
 		return false;
 
-	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere);
+	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere,loose);
 	if( retCS == cCollision::OUTSIDE)
 		return false;
 

@@ -87,7 +87,7 @@ void cMenuView::Enter()
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = new cObjDragon;	
-		m_pHouse[i]->Load("dragon.chr");
+		m_pHouse[i]->Load(std::string(strDataPath+"dragon.chr").c_str());
 		m_pHouse[i]->Build();
 		m_pHouse[i]->Init();
 		m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
@@ -198,7 +198,8 @@ void cMenuView::Control()
 			
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		m_pTank->Save("Tank.chr");
+		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		m_pTank->Save(std::string(strDataPath+"tank.chr").c_str());
 	}
 	
 }

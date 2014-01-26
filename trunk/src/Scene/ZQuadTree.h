@@ -60,8 +60,7 @@ public:
 	BOOL				CheckInside(D3DXVECTOR3& pos,float loose=0.0f);
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
-	BOOL				GetCellIntersection(D3DXVECTOR3& pos);
-	virtual void		CullRendererIntoRendererQueue(Entity* pEntity,Frustum* pFrustum );
+	BOOL				GetCellIntersection(D3DXVECTOR3& pos);	
 	virtual void		Render();
 };
 

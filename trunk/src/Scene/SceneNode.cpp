@@ -186,23 +186,6 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 	m_listChildNode.erase(pItem->m_ParentListIt);
 }
 
-/*
-부모 중에 BS인 노드를 찾아 자신을 포함하는 BS로 갱신한다. 
-*/
-
-// 기본적기능
-// bRender체크후 자식만 돌자.
-void cSceneNode::CullRendererIntoRendererQueue( cView* pView,Frustum* pFrustum )
-{				
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->CullRendererIntoRendererQueue(pView,pFrustum);
-	}
-}
-
-
-
 void cSceneNode::BuildComposite(Entity* pEntity)
 {
 	D3DXMATRIX temp;

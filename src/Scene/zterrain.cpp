@@ -213,12 +213,12 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 	return FALSE;
 }
 
-bool ZTerrain::CullRendererIntoRendererQueue( Frustum* pFrustum )
+bool ZTerrain::Cull(  Frustum* pFrustum ,float loose )
 {
 	if (!m_bRender)
 		return false;
 
-	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere);
+	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere,0.0f);
 	if( retCS == cCollision::OUTSIDE)
 		return false;
 

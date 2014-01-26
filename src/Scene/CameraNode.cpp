@@ -198,16 +198,15 @@ void cCameraNode::Control()
 			}
 			else if ( deltaX < 0)
 			{
-				vecRot.y = 10.0f * deltaX ;
+				vecRot.y = 10.0f * float(deltaX) ;
 			}
-
 			if ( deltaY > 0)
 			{
-				vecRot.x = 10.0f * deltaY;
+				vecRot.x = 10.0f * float(deltaY);
 			}
 			else if ( deltaY < 0)
 			{
-				vecRot.x = 10.0f * deltaY;
+				vecRot.x = 10.0f * float(deltaY);
 			}
 		}		
 	}	

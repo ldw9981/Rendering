@@ -88,7 +88,7 @@ void Entity::Update( DWORD elapseTime )
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 }
 
-bool Entity::CullRendererIntoRendererQueue( Frustum* pFrustum ,float loose)
+bool Entity::Cull( Frustum* pFrustum ,float loose)
 {
 	if (!m_bRender)
 		return false;

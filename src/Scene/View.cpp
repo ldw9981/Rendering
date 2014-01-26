@@ -198,13 +198,13 @@ void cView::CullFrustum()
 
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
-		if( (*itIn)->CullRendererIntoRendererQueue(&frustum,500.0f) == false )
+		if( (*itIn)->Cull(&frustum,500.0f) == false )
 			continue;	
 		
 
 		m_listEntityShadow.push_back(*itIn);
 
-		if( (*itIn)->CullRendererIntoRendererQueue(&frustum,0.0f) == false )
+		if( (*itIn)->Cull(&frustum,0.0f) == false )
 			continue;	
 
 		m_listEntityRender.push_back(*itIn);

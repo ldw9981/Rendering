@@ -306,30 +306,6 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 	return FALSE;
 }
 
-/*
-	CheckWorldFrustumForQuadTree를 사용한다
-*/
-
-void ZQuadTree::CullRendererIntoRendererQueue(Entity* pEntity,Frustum* pFrustum)
-{
-	int ret= cCollision::CheckWorldFrustumWithoutYAxis(*pFrustum,m_BoundingSphere);
-	if( ret == cCollision::OUTSIDE)
-	{	//  밖에 있는것이면 노드순회 없음	
-		return;
-	}
-	else if (ret == cCollision::INSIDE)
-	{	// 완전히 내부면 순회하며 자식은 모두 TOP,BOTTON플랜만 테스한후 큐에 넣는다.
-		QueueRenderer(pEntity,true);
-		return;
-	}			
-	
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-	//	(*it)->CullRendererIntoRendererQueue(pEntity,pFrustum);
-	}
-}
-
 
 
 void ZQuadTree::Update( DWORD elapseTime )

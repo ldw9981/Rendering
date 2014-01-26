@@ -92,8 +92,6 @@ public:
 	void				UpdateChildren(DWORD elapseTime);
 	void				RenderChildren();
 	void				FreeChildren();
-	//					순회 하면서 Renderer들을 큐에 넣는다.
-	virtual void		CullRendererIntoRendererQueue(cView* pView,Frustum* pFrustum );
 	
 	cSceneNode&	operator=(const cSceneNode& other);
 

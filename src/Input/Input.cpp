@@ -105,7 +105,7 @@ bool Input::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int scre
 }
 
 
-void Input::Shutdown()
+void Input::Finalize()
 {
 	// Release the mouse.
 	if(m_mouse)

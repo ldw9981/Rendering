@@ -106,7 +106,7 @@ BOOL Window::ProcessWindowMessage()
 	return true;
 }
 
-void Window::Shutdown()
+void Window::Finalize()
 {
 
 }

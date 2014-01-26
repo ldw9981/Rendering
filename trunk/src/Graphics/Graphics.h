@@ -73,6 +73,7 @@ public:
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
 
 	void Render(cView* pView);
+	void RenderEX(cView* pView);
 	void Begin();
 	void End();
 };

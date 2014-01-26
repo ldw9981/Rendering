@@ -35,6 +35,15 @@ public:
 	std::list<Entity*>		m_listEntity;
 	std::list<Entity*>		m_listEntityShadow;
 	std::list<Entity*>		m_listEntityRender;
+
+	cRendererQueue			m_renderQueueNormal[16];
+	cRendererQueue			m_renderQueueBlend[16];
+	cRendererQueue			m_renderQueueTerrain;
+	cRendererQueue			m_renderQueueGUI;
+
+	cRendererQueue			m_renderQueueNormalShadow;
+	cRendererQueue			m_renderQueueBlendShadow;
+
 public:
 	cViewMng& GetState() { return m_ViewState; }
 	cView* GetParentView() const { return m_pParentView; }
@@ -53,6 +62,8 @@ public:
 
 	// cIRenderable
 	virtual void			ProcessRender();
+	void					ProcessRenderEx();
+
 	// cIUpdatable
 	virtual void			Update(DWORD elapseTime);
 
@@ -63,5 +74,5 @@ public:
 	virtual void			Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 	void					DebugRender();
 
-	void					CullFrustum(std::list<Entity*>& in , std::list<Entity*>& out,float loose);
+	void					CullFrustum();
 };

@@ -118,12 +118,13 @@ void cView::ProcessRender()
 		return;
 	
 	// scene 
-	CullFrustum(m_listEntity,m_listEntityShadow,1000.0f);
-	CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
-
+	CullFrustum();
+	
 	Graphics::g_pGraphics->Render(this);	
-	m_listEntityRender.clear();
+
 	m_listEntityShadow.clear();
+	m_listEntityRender.clear();
+
 
 	// gui 
 	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
@@ -187,7 +188,7 @@ void cView::DebugRender()
 	}	
 }
 
-void cView::CullFrustum( std::list<Entity*>& in , std::list<Entity*>& out,float loose )
+void cView::CullFrustum()
 {
 	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
 	if (!pActiveCamera)
@@ -195,12 +196,76 @@ void cView::CullFrustum( std::list<Entity*>& in , std::list<Entity*>& out,float 
 
 	Frustum& frustum = pActiveCamera->GetFrustum();
 
-	auto itIn = in.begin();
-	for ( ;itIn!=in.end() ; ++itIn )
+	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
-		if( (*itIn)->CullRendererIntoRendererQueue(&frustum) == false )
+		if( (*itIn)->CullRendererIntoRendererQueue(&frustum,500.0f) == false )
 			continue;	
 		
-		out.push_back(*itIn);
+
+		m_listEntityShadow.push_back(*itIn);
+
+		if( (*itIn)->CullRendererIntoRendererQueue(&frustum,0.0f) == false )
+			continue;	
+
+		m_listEntityRender.push_back(*itIn);
 	}
+}
+
+void cView::ProcessRenderEx()
+{
+	if (m_bHide)
+		return;
+
+	// scene 
+	//CullFrustum(m_listEntity,m_listEntityShadow,100.0f);
+	//CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
+
+	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
+	if (pActiveCamera)
+	{
+		Frustum& frustum = pActiveCamera->GetFrustum();
+
+		cCollision::STATE retCS;
+		for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
+		{
+			retCS = cCollision::CheckWorldFrustumWithoutYAxis(frustum, (*itIn)->GetBoundingSphere() ,500.0f);
+			if( retCS == cCollision::OUTSIDE)
+				continue;
+
+			// gather shadow Render
+			m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
+			m_renderQueueBlendShadow.Insert((*itIn)->m_renderQueueBlendShadow);
+
+			retCS = cCollision::CheckWorldFrustum(frustum, (*itIn)->GetBoundingSphere());
+			if( retCS == cCollision::OUTSIDE)
+				continue;
+
+			// gather model Render
+			for(int i=0;i<16;i++)
+			{
+				m_renderQueueNormal[i].Insert((*itIn)->m_renderQueueNormal[i]);
+				m_renderQueueBlend[i].Insert((*itIn)->m_renderQueueBlend[i]);
+			}	
+		}
+	}
+
+	Graphics::g_pGraphics->Render(this);	
+
+	m_renderQueueNormalShadow.Clear();
+	m_renderQueueBlendShadow.Clear();
+	for(int i=0;i<16;i++)
+	{
+		m_renderQueueNormal[i].Clear();
+		m_renderQueueBlend[i].Clear();
+	}
+
+	// gui 
+	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
+	for ( ;it!=m_RenderableList.end() ; ++it )
+	{
+		(*it)->ProcessRender();	
+	}
+
+	// state 
+	m_ViewState.ProcessRender();
 }

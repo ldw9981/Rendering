@@ -310,7 +310,7 @@ BOOL cCollision::InsideWorldFrustum(Frustum& frustum, D3DXVECTOR3& pos )
 /*
 	PLANE_TOP , PLANE_BOTTOM을 검사안한다.
 */
-cCollision::STATE cCollision::CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSphere& sphere)
+cCollision::STATE cCollision::CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSphere& sphere,float loose)
 {
 	cCollision::STATE ret;
 	BOOL bInside=TRUE;
@@ -321,7 +321,7 @@ cCollision::STATE cCollision::CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSp
 			continue;
 		}
 
-		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i]);				
+		ret=cCollision::IntersectSpherePlane(sphere,frustum.m_plane[i],NULL,loose);				
 		if (ret==cCollision::OUTSIDE)	
 		{	// 바깥쪽이면 무조건 바깥
 			return cCollision::OUTSIDE;

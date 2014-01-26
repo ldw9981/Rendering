@@ -27,7 +27,7 @@ public:
 	void				SetBoundingSphere(cSphere& Sphere);
 	cSphere&			GetBoundingSphere()  { return m_BoundingSphere; }
 
-	virtual bool		CullRendererIntoRendererQueue(Frustum* pFrustum );
+	virtual bool		CullRendererIntoRendererQueue(Frustum* pFrustum ,float loose);
 	void				RenderBound();
 	virtual void		Update(DWORD elapseTime);
 	virtual	void		Build();

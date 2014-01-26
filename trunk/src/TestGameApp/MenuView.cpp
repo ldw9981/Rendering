@@ -20,7 +20,7 @@ cMenuView::cMenuView(void)
 	m_bControlCamera=FALSE;
 
 	m_pZTerrain=NULL;
-	m_pHouse=NULL;
+	
 	m_pTank=NULL;
 	m_pAirPlaneBake=NULL;
 	m_pDragon=NULL;
@@ -44,6 +44,7 @@ void cMenuView::Enter()
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
+	/*
 	m_pZTerrain = new ZTerrain;	
 
 	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
@@ -51,7 +52,7 @@ void cMenuView::Enter()
 		std::string(strDataPath+"ground.bmp").c_str()
 		);
 	AttachObject(m_pZTerrain);
-
+	*/
 
 	cASEParser parser;
 
@@ -65,15 +66,19 @@ void cMenuView::Enter()
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	AttachObject(m_pTank);
 	
-	m_pHouse = new cObjDragon;	
-	m_pHouse->Load("Dragon.chr");
-	m_pHouse->Build();
-	m_pHouse->Init();
-	m_pHouse->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pHouse->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	AttachObject(m_pHouse);	
+	for (int i=0;i<10;i++)
+	{
+		m_pHouse[i] = new cObjDragon;	
+		m_pHouse[i]->Load("Tank.chr");
+		m_pHouse[i]->Build();
+		m_pHouse[i]->Init();
+		m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f+ i*300,300.0f,-100.0f));
+		AttachObject(m_pHouse[i]);	
+	}
 
-	
+
+	/*
 	m_pDragon = new cObjDragon;
 	parser.Load(std::string(strDataPath+"Dragon2.ase").c_str(),m_pDragon);
 	parser.Close();
@@ -82,7 +87,7 @@ void cMenuView::Enter()
 	//m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
 	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
 	AttachObject(m_pDragon);	
-	
+	*/
 
 	
 	m_pAirPlaneBake = new cObjDragon;	
@@ -90,7 +95,7 @@ void cMenuView::Enter()
 	parser.Close();
 	m_pAirPlaneBake->Build();
 	m_pAirPlaneBake->Init();
-	m_pAirPlaneBake->GetVelRotPerSec().y = D3DXToRadian(-45);
+	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	AttachObject(m_pAirPlaneBake);	
 	
@@ -104,8 +109,14 @@ void cMenuView::Leave()
 	DettachObject(m_pZTerrain);
 	SAFE_DELETE(m_pZTerrain);
 
-	DettachObject(m_pHouse);
-	SAFE_DELETE(m_pHouse);	
+
+	for (int i=0;i<10;i++)
+	{
+		DettachObject(m_pHouse[i]);
+		SAFE_DELETE(m_pHouse[i]);	
+	}
+
+
 
 	DettachObject(m_pTank);
 	SAFE_DELETE(m_pTank);	
@@ -193,7 +204,7 @@ void cMenuView::Control()
 			
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		m_pDragon->Save("Dragon.chr");
+		m_pTank->Save("Tank.chr");
 	}
 	
 }

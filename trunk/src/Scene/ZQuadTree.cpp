@@ -334,7 +334,10 @@ void ZQuadTree::CullRendererIntoRendererQueue(Entity* pEntity,Frustum* pFrustum)
 
 void ZQuadTree::Update( DWORD elapseTime )
 {
-	UpdateChildren(elapseTime);
+	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	{		
+		(*iter)->Update(elapseTime);
+	}	
 }
 
 void ZQuadTree::Render()

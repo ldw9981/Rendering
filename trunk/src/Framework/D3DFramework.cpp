@@ -27,9 +27,12 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 
 	g_pApp = this;	
 
-	m_bQuitLoop=FALSE;	
+	m_bQuitLoop = FALSE;	
 
-
+	m_pWindow = NULL;
+	m_pGraphics = NULL;
+	m_pInput = NULL;
+	m_pResourceMng = NULL;
 
 }
 cD3DFramework::~cD3DFramework(void)
@@ -60,27 +63,30 @@ bool cD3DFramework::Initialize()
 	m_pGraphics->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new Input;
+	AttachObject(m_pInput);
 	if(!m_pInput->Initialize(m_hInstance,m_pWindow->m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
 	{
 		MessageBox(m_pWindow->m_hWnd, "Could not initialize the input object.", "Error", MB_OK);
 		return false;
 	}
+	
 
-	m_pResourceMng = new cResourceMng;
-
-	AttachObject(m_pInput);
+	m_pResourceMng = new cResourceMng;	
 	return true;
 }
 
 void cD3DFramework::Finalize()
 {		
-	SAFE_DELETE( m_pResourceMng );
+	SAFE_DELETE(m_pResourceMng);
+	DettachObject(m_pInput);
+	m_pInput->Finalize();
 	SAFE_DELETE( m_pInput );
 
 	m_pGraphics->Finalize();
 	SAFE_DELETE( m_pGraphics);
 
-
+	m_pWindow->Finalize();
+	SAFE_DELETE( m_pWindow);
 }
 
 void cD3DFramework::Run()

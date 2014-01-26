@@ -30,7 +30,7 @@ public:
 	virtual ~Input(void);
 
 	bool Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight);
-	void Shutdown();
+	void Finalize();
 	virtual void Update(DWORD elapseTime);
 
 	bool IsEscapePressed();

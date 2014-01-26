@@ -58,8 +58,11 @@ bool TestGameApp::Initialize()
 
 void TestGameApp::Finalize()
 {
-	m_pView->Leave();
-	DettachObject(m_pView);
+	if (m_pView)
+	{
+		m_pView->Leave();
+		DettachObject(m_pView);
+	}		
 	SAFE_DELETE(m_pView);
 	cD3DFramework::Finalize();
 }
@@ -103,6 +106,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   int       nCmdShow)
 {
 	HeapValidator::SetDbgFlag();
+	//HeapValidator::SetBreakAlloc(169);
 
 	TestGameApp TestGameApp("TestGameApp",false,1024,768);
 	if(TestGameApp.Initialize())

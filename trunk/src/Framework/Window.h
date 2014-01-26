@@ -21,6 +21,6 @@ public:
 	void					MoveWindow(LPCRECT lpRect,BOOL bRepaint = TRUE );	
 	DWORD					GetStyle() const;
 	DWORD					GetExStyle() const;
-	void					Shutdown();
+	void					Finalize();
 };
 

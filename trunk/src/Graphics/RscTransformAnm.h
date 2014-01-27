@@ -53,7 +53,6 @@ public:
 	~cRscTransformAnm();
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
-	D3DXMATRIX m_tmAnm;
 	DWORD	m_dwTimeLength;
 	
 protected:

@@ -56,7 +56,7 @@ void cGUIButton::Create( const char* strImageFile)
 {	
 	m_ImageNumber=2;
 
-	m_pImage= cResourceMng::m_pResourceMng->CreateRscTexture(strImageFile);
+	m_pImage= cResourceMng::m_pInstance->CreateRscTexture(strImageFile);
 	m_pImage->AddRef();
 
 	D3DSURFACE_DESC desc;

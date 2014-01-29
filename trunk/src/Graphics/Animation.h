@@ -1,8 +1,7 @@
 #pragma once
 #include "Resource/Resource.h"
 #include "Foundation/Interface.h"
-#include "Animation.h"
-/*
+
 struct POSKEY
 {
 	DWORD AnmTick;
@@ -37,28 +36,33 @@ struct ANMKEY
 
 	}
 };
-*/
 
-class cRscTransformAnm:
-	public cResource,
-	public ISerializable
+struct SceneAnimation
 {
-public:
-	cRscTransformAnm();
-	~cRscTransformAnm();
-public:
 	std::vector<ANMKEY> m_arrayANMKEY;
 	DWORD	m_dwTimeLength;
-	
-protected:
-	float					GetInterpolateValue( int start_time,int end_time,int inter_time );
-public:
-	DWORD					GetTimeLength() const { return m_dwTimeLength; }
-	void					SetTimeLength(DWORD val) { m_dwTimeLength = val; }
-	std::vector<ANMKEY>&	GetArrayANMKEY()  { return m_arrayANMKEY; }
-	void					GetTransform(D3DXMATRIX& out,DWORD& animationTime, DWORD dwTimeDelta);	
-	
 
+	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
+	void	GetTransform(D3DXMATRIX& out,DWORD& animationTime, DWORD dwTimeDelta);	
+	void	SerializeIn(std::ifstream& stream);
+	void	SerializeOut(std::ofstream& stream);
+};
+
+
+class Animation:
+	public cResource
+	,public ISerializable
+{
+public:
+	Animation(void);
+	~Animation(void);
+protected:
+	// SceneNodeName/ArrayAnmKey
+	std::map<std::string,SceneAnimation*> m_container;
+
+public:
+	SceneAnimation* GetSceneAnimtion(std::string& nodeNAme);
+	SceneAnimation* CreateSceneAnimation(std::string& nodeName);
 	// cResource
 	virtual	BOOL			Create();	
 	virtual	void			Free();
@@ -66,3 +70,6 @@ public:
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
 };
+
+
+

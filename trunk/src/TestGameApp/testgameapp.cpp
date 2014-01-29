@@ -106,7 +106,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 					   int       nCmdShow)
 {
 	HeapValidator::SetDbgFlag();
-	//HeapValidator::SetBreakAlloc(169);
+	//HeapValidator::SetBreakAlloc(762074);
 
 	TestGameApp TestGameApp("TestGameApp",false,1024,768);
 	if(TestGameApp.Initialize())

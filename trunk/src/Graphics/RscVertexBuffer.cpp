@@ -47,7 +47,7 @@ BOOL cRscVertexBuffer::Create()
 void cRscVertexBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	cResourceMng::m_pResourceMng->EraseRscVertexBuffer(GetUniqueKey());
+	cResourceMng::m_pInstance->EraseRscVertexBuffer(GetUniqueKey());
 	delete this;
 }
 

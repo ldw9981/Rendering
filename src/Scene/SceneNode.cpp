@@ -15,7 +15,7 @@
 #include "ZQuadTree.h"
 #include "Foundation/Define.h"
 #include "ASEParser/ASEParser.h"
-
+#include "Graphics/Animation.h"
 #include "Graphics/Graphics.h"
 
 #define SCENENODE_LASTEST 1
@@ -28,8 +28,7 @@ cSceneNode::cSceneNode(void)
 	m_pParentNode=NULL;
 //	m_NodeType=ROOT;	
 
-	m_bIsActiveAnimation = FALSE;
-	m_pRscTransformAnm = NULL;		
+	m_bIsActiveAnimation = true;
 	m_bRender = true;
 	m_animationTime = 0;
 	m_bIsBone = false;
@@ -113,15 +112,19 @@ BOOL cSceneNode::IsRootNode()
 	return TRUE;
 }
 
-D3DXMATRIX* cSceneNode::UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime)
+D3DXMATRIX* cSceneNode::UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTime)
 {	
-	if ( m_pRscTransformAnm==NULL)
-		return NULL;
-
 	if (!m_bIsActiveAnimation)
 		return NULL;
 
-	m_pRscTransformAnm->GetTransform(m_AnimationTM,animationTime,elapseTime);
+	if ( m_vecSceneAnimation.empty())
+		return NULL;
+
+	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[0];
+	if (!pSceneAnimation)
+		return NULL;
+
+	pSceneAnimation->GetTransform(m_AnimationTM,animationTime,elapseTime);		
 	return &m_AnimationTM;
 }
 
@@ -160,19 +163,6 @@ void cSceneNode::FreeChildren()
 
 }
 
-void cSceneNode::SetRscTransformAnm( cRscTransformAnm* val )
-{
-	if (m_pRscTransformAnm)
-	{
-		m_pRscTransformAnm->Release();
-	}	
-	m_pRscTransformAnm = val; 
-	if (val!=NULL)
-	{
-		m_pRscTransformAnm->AddRef();
-		m_bIsActiveAnimation = TRUE;
-	}
-}
 
 
 cSceneNode& cSceneNode::operator =(const cSceneNode& other)
@@ -220,13 +210,6 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);
 
-	std::string resourceKey;	
-	ReadString(stream,resourceKey);
-	if (!resourceKey.empty())
-	{
-		SerializeInAnm(stream);
-	}
-
 	//child
 	stream.read((char*)&count,sizeof(count));
 	for ( int i=0 ; i<count ; i++ )
@@ -253,18 +236,6 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);
-
-	// animation
-	std::string resourceKey;
-	if(m_pRscTransformAnm)
-	{
-		resourceKey = m_pRscTransformAnm->GetUniqueKey();
-	}
-	WriteString(stream,resourceKey);
-	if (!resourceKey.empty())
-	{
-		SerializeOutAnm(stream);
-	}
 
 	//child
 	count = m_listChildNode.size();
@@ -299,7 +270,7 @@ void cSceneNode::Render()
 void cSceneNode::Update( DWORD elapseTime )
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateTransformAnm(m_animationTime,elapseTime),m_pParentNode);
+	UpdateWorldMatrix(UpdateSceneAnimation(m_animationTime,elapseTime),m_pParentNode);
 	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);
@@ -334,8 +305,6 @@ void cSceneNode::Release()
 		delete *it;
 	}	
 	m_listChildNode.clear();
-
-	SAFE_RELEASE(m_pRscTransformAnm);
 }
 
 
@@ -363,14 +332,31 @@ cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 
 void cSceneNode::SerializeInAnm( std::ifstream& stream )
 {
-	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(
-		m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),"DEFAULT");	
 
-	pRscTransformAnm->SerializeIn(stream);
-	SetRscTransformAnm(pRscTransformAnm);	
 }
 
 void cSceneNode::SerializeOutAnm( std::ofstream& stream )
 {
-	m_pRscTransformAnm->SerializeOut(stream);
+	
+}
+
+void cSceneNode::PushAnimation( Animation* pAnimation )
+{
+	SceneAnimation* pSceneAnimation = pAnimation->GetSceneAnimtion(m_strNodeName);
+	m_vecSceneAnimation.push_back(pSceneAnimation);
+
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->PushAnimation(pAnimation);
+	}
+}
+
+void cSceneNode::PopAnimation()
+{
+	m_vecSceneAnimation.pop_back();
+
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->PopAnimation();
+	}
 }

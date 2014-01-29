@@ -42,7 +42,7 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	cResourceMng::m_pResourceMng->EraseRscTexture(GetUniqueKey());
+	cResourceMng::m_pInstance->EraseRscTexture(GetUniqueKey());
 	delete this;
 }
 

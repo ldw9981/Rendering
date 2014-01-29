@@ -1,9 +1,11 @@
 #include "StdAfx.h"
 #include "Entity.h"
 #include "Graphics/Graphics.h"
+#include "Graphics/Animation.h"
 #include "Graphics/Vertex.h"
 #include "Scene/View.h"
 #include "Math/CollisionDetector.h"
+#include "Resource/ResourceMng.h"
 
 #define ENTITY_LASTEST 1
 
@@ -16,7 +18,11 @@ Entity::Entity(void)
 
 Entity::~Entity(void)
 {
-
+	for (auto it=m_vecAnimation.begin();it!=m_vecAnimation.end();++it )
+	{
+		Animation* pAnimation = *it;
+		pAnimation->Release();
+	}	
 }
 void Entity::SetBoundingSphere( cSphere& Sphere )
 {
@@ -145,14 +151,14 @@ void Entity::SerializeOut( std::ofstream& stream )
 	//child
 	count = m_listChildNode.size();
 	stream.write((char*)&count,sizeof(count));
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
+	
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
 	{
 		(*it)->SerializeOut(stream);
 	}	
 }
 
-bool Entity::Save( const char* fileName )
+bool Entity::SaveScene( const char* fileName )
 {
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);
@@ -160,12 +166,81 @@ bool Entity::Save( const char* fileName )
 	return true;
 }
 
-bool Entity::Load( const char* fileName )
+bool Entity::LoadScene( const char* fileName )
 {
 	std::ifstream stream;
 	stream.open(fileName, std::ios::in | std::ios::binary);
 	SerializeIn(stream);
 	return true;
+}
+
+void Entity::PushAnimation( Animation* pAnimation )
+{
+	pAnimation->AddRef();
+	m_vecAnimation.push_back(pAnimation);
+
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->PushAnimation(pAnimation);
+	}	
+}
+
+void Entity::PopAnimation()
+{
+	if (m_vecAnimation.empty())
+		return;
+
+	Animation* pAnimation = m_vecAnimation[m_vecAnimation.size()-1];
+	m_vecAnimation.pop_back();
+	pAnimation->Release();
+
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->PopAnimation();
+	}	
+}
+
+bool Entity::SaveAnimation( const char* fileName ,int index)
+{
+	if (index >= (int)m_vecAnimation.size())
+		return false;
+
+	std::ofstream stream;
+	stream.open(fileName, std::ios::out | std::ios::binary);	
+
+	Animation* pAnimation = m_vecAnimation[index];
+	pAnimation->SerializeOut(stream);
+	
+	return true;
+}
+
+bool Entity::LoadAnimation( const char* fileName )
+{
+	Animation* pAnimation = cResourceMng::m_pInstance->CreateAnimation(fileName);
+	if (pAnimation->GetRefCounter()==0)
+	{
+		std::ifstream stream;
+		stream.open(fileName, std::ios::in | std::ios::binary);
+		pAnimation->SerializeIn(stream);
+	}
+	
+	PushAnimation(pAnimation);
+	return true;
+}
+
+bool Entity::SaveMaterial( const char* fileName )
+{
+	std::ofstream stream;
+	stream.open(fileName, std::ios::out | std::ios::binary);	
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->SerializeOut(stream);
+	}	
+}
+
+bool Entity::LoadMaterial( const char* fileName )
+{
+
 }
 
 

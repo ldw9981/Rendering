@@ -47,7 +47,7 @@ void cRscIndexBuffer::Restore()
 void cRscIndexBuffer::Free()
 {	
 	SAFE_RELEASE(m_pD3DIndexBuffer);
-	cResourceMng::m_pResourceMng->EraseRscIndexBuffer(m_strUniqeKey);
+	cResourceMng::m_pInstance->EraseRscIndexBuffer(m_strUniqeKey);
 	delete this;
 }
 

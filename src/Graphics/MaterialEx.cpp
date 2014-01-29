@@ -171,7 +171,7 @@ void Material::SerializeIn( std::ifstream& stream )
 		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
-		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 		assert(pRscTexture!=NULL);
 		if(pRscTexture)
 			SetMapDiffuse(pRscTexture);
@@ -186,7 +186,7 @@ void Material::SerializeIn( std::ifstream& stream )
 		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
-		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 		assert(pRscTexture!=NULL);
 		if(pRscTexture)
 			SetMapNormal(pRscTexture);
@@ -201,7 +201,7 @@ void Material::SerializeIn( std::ifstream& stream )
 		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
-		cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 		assert(pRscTexture!=NULL);
 		if(pRscTexture)
 			SetMapLight(pRscTexture);

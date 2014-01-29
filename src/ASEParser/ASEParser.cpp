@@ -212,6 +212,8 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	{
 		return FALSE;
 	}
+	m_pAnimation = cResourceMng::m_pInstance->CreateAnimation(m_SceneTime.FILENAME.c_str());
+	m_pAnimation->AddRef();
 
 	m_Token =  GetToken(m_TokenString);
 	if(m_Token == TOKENR_3DSMAX_ASCIIEXPORT)
@@ -325,7 +327,9 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	cSphere temp;
 	CalculateSphere(m_tempAxisMin,m_tempAxisMax,temp);
 	m_pSceneRoot->GetBoundingSphere() =  temp;
-	m_pSceneRoot->SetNodeName(m_SceneTime.FILENAME.c_str());
+	m_pSceneRoot->SetNodeName(m_SceneTime.FILENAME.c_str());	
+	m_pSceneRoot->PushAnimation(m_pAnimation);
+	SAFE_RELEASE(m_pAnimation);
 
 	// *************************************************************
 	// 
@@ -367,6 +371,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	
 	cRscTransformAnm* pRscTransformAnm = NULL;
+	SceneAnimation* pSceneAnimation = NULL;
 
 	SCENENODEINFO stInfo;	
 
@@ -402,7 +407,8 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
+				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;
 		case TOKENR_MESH:
@@ -797,7 +803,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		SAFE_RELEASE(pNewRscIndexBuffer);
 		SAFE_RELEASE(pNewRscVertexBuffer);
 	}	
-	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
 
 	return TRUE;
@@ -946,7 +952,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;					
 
-							cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapNormal(pRscTexture);
@@ -978,7 +984,7 @@ BOOL cASEParser::Parsing_MaterialList()
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
 
-							cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 							if(pRscTexture==NULL)
 								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 							material.SetMapDiffuse(pRscTexture);
@@ -1069,7 +1075,8 @@ BOOL cASEParser::Parsing_HelperObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;
 		case	TOKENR_BOUNDINGBOX_MIN:
@@ -1082,7 +1089,7 @@ BOOL cASEParser::Parsing_HelperObject()
 	}
 
 	cSceneNode* pNewSceneNode = CreateSceneNode(stInfo);
-	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
@@ -1122,7 +1129,8 @@ BOOL cASEParser::Parsing_ShapeObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
+				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
 		case TOKENR_SHAPE_LINECOUNT:
@@ -1149,7 +1157,7 @@ BOOL cASEParser::Parsing_ShapeObject()
 
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
-	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
@@ -1189,7 +1197,8 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
+				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
 		case TOKENR_LIGHT_TYPE:
@@ -1231,7 +1240,7 @@ BOOL cASEParser::Parsing_LightObject()
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
@@ -1293,7 +1302,8 @@ BOOL cASEParser::Parsing_CameraObject()
 		case TOKENR_TM_ANIMATION:		
 			if (bLoadCameraAnmTM==FALSE)
 			{				
-				pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);					
+				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);				
+				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 				bLoadCameraAnmTM=TRUE;												
 			}			
 			else
@@ -1348,7 +1358,7 @@ BOOL cASEParser::Parsing_CameraObject()
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
+	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 
 	return TRUE;	
 }
@@ -1753,7 +1763,7 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 
 cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* rootName,const char* meshName, const D3DXMATRIX& localTM )
 {
-	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
+	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pInstance->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
 
 	// 리소스 가 이미 있으면 있는거 전달
 	if( pRscTransformAnm->GetRefCounter() != 0)
@@ -2097,7 +2107,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 	if (!arrVertex.empty())
 	{
 		DWORD nCount=(DWORD)arrVertex.size();
-		pVertexBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
+		pVertexBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
 
 		if (pVertexBuffer->GetRefCounter()==0)
 		{
@@ -2120,7 +2130,7 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 	if (!arrIndex.empty())
 	{
 		DWORD nCount=(DWORD)arrIndex.size();
-		pIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
+		pIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
 			sizeof(TRIANGLE)*nCount);
 
 		if (pIndexBuffer->GetRefCounter()==0)
@@ -2270,7 +2280,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapNormal(pRscTexture);
@@ -2300,7 +2310,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
 
-						cRscTexture* pRscTexture= cResourceMng::m_pResourceMng->CreateRscTexture(strFullPath.c_str());
+						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
 						if(pRscTexture==NULL)
 							TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
 						material.SetMapDiffuse(pRscTexture);
@@ -2375,4 +2385,184 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 	//pNode->SetWorldTM(stInfo.tmWorld);
 	pNode->SetParentNode(stInfo.pParent);
 	pNode->SetNodeTM(stInfo.tmNode);
+}
+
+SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMATRIX& localTM )
+{
+	/*
+	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
+
+	// 리소스 가 이미 있으면 있는거 전달
+	if( pRscTransformAnm->GetRefCounter() != 0)
+	{
+		SkipBlock();
+		return pRscTransformAnm;
+	}
+	*/
+	SceneAnimation* pSceneAnimation = m_pAnimation->CreateSceneAnimation(std::string(meshName));
+	if ( !pSceneAnimation->m_arrayANMKEY.empty() )
+	{
+		SkipBlock();
+		return pSceneAnimation;	
+	}
+
+	ANMKEY localTM_anmkey;
+	D3DXMatrixDecompose(
+		&localTM_anmkey.ScaleAccum,
+		&localTM_anmkey.RotationAccum,
+		&localTM_anmkey.TranslationAccum,
+		&localTM);	
+
+	// time - AnmKey
+	DWORD dwTimeKey=0;
+
+	std::map<DWORD,ANMKEY> mapAnmKey;
+
+	mapAnmKey[0].AnmTick=0;
+	mapAnmKey[0].TranslationAccum=localTM_anmkey.TranslationAccum;
+	mapAnmKey[0].RotationAccum=localTM_anmkey.RotationAccum;
+	mapAnmKey[0].ScaleAccum=localTM_anmkey.ScaleAccum;
+
+
+	m_Token=GetToken(m_TokenString);
+	if (m_Token!=TOKEND_BLOCK_START)
+		return FALSE;
+
+	while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+	{
+		switch(m_Token)
+		{
+		case TOKENR_NODE_NAME:
+			{
+
+			}
+			break;
+		case TOKENR_CONTROL_POS_TRACK:
+			{
+				if(GetToken(m_TokenString)!=TOKEND_BLOCK_START)
+					return FALSE;	
+
+				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+				{
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
+					if(m_Token!=TOKENR_CONTROL_POS_SAMPLE)
+						return FALSE;										
+
+					dwTimeKey = GetInt() / m_SceneTime.EX_TICKSPERMS;			
+
+					D3DXVECTOR3 vecTranslationAccum;
+					GetVector3(&vecTranslationAccum);
+
+					mapAnmKey[dwTimeKey].AnmTick = dwTimeKey;
+					mapAnmKey[dwTimeKey].TranslationAccum = vecTranslationAccum;
+				}
+			}
+			break;
+		case TOKENR_CONTROL_ROT_TRACK:
+			{
+				std::vector<std::pair<DWORD,D3DXQUATERNION>> arrayROTKEY;
+
+				if(GetToken(m_TokenString)!=TOKEND_BLOCK_START)
+					return FALSE;
+
+				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+				{	
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
+					if(m_Token!=TOKENR_CONTROL_ROT_SAMPLE)
+						return FALSE;	
+
+					float ang;
+					D3DXVECTOR3 axis;
+					dwTimeKey =  GetInt() / m_SceneTime.EX_TICKSPERMS;	
+					GetVector3(&axis);
+
+					std::pair<DWORD,D3DXQUATERNION> ItemDelta;
+					ItemDelta.first = dwTimeKey;
+					ang = GetFloat();					
+					D3DXQuaternionRotationAxis(&ItemDelta.second,&axis,ang);
+					arrayROTKEY.push_back(ItemDelta);
+				}		
+
+				// 회전 변화량 값을 누적 회전데이터로 바꾼다.
+				D3DXQUATERNION curr_q, prev_q, accum_q;
+				D3DXQuaternionIdentity(&curr_q);
+				D3DXQuaternionIdentity(&prev_q);
+				D3DXQuaternionIdentity(&accum_q);
+
+				std::vector<std::pair<DWORD,D3DXQUATERNION>>::iterator rot_it=arrayROTKEY.begin();
+				for ( ; rot_it!=arrayROTKEY.end() ; rot_it++)
+				{
+					std::pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
+
+					if(rot_it == arrayROTKEY.begin())
+					{
+						Item.second = localTM_anmkey.RotationAccum;			
+					}
+					curr_q = Item.second;				
+					D3DXQuaternionMultiply(&accum_q,&accum_q,&curr_q);//쿼터니언 누적
+					Item.second=accum_q;
+
+					mapAnmKey[Item.first].AnmTick = Item.first;
+					mapAnmKey[Item.first].RotationAccum = Item.second;
+
+					prev_q=accum_q;
+				}
+
+			}
+			break;
+		case TOKENR_CONTROL_SCALE_TRACK:
+			{				
+				if( GetToken(m_TokenString)!=TOKEND_BLOCK_START)
+					return FALSE;
+
+				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+				{
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
+				}
+			}
+			break;
+		}
+	} 
+
+	//pRscTransformAnm->SetTimeLength(dwTimeKey);
+	pSceneAnimation->m_dwTimeLength = dwTimeKey;
+	std::vector<ANMKEY>& refArrAnmKey=pSceneAnimation->m_arrayANMKEY;
+
+	ANMKEY prevItem=localTM_anmkey;
+	std::map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
+	for ( ; iter != mapAnmKey.end() ;iter++ )
+	{	
+		ANMKEY& currItem = iter->second;
+		// Scale
+		if (D3DXVec3LengthSq(&currItem.ScaleAccum)==0.0f)
+		{	
+			currItem.ScaleAccum = prevItem.ScaleAccum;
+		}
+
+		// Rotate
+		if ( (currItem.RotationAccum.x==0.0f)||(currItem.RotationAccum.y==0.0f)||(currItem.RotationAccum.z==0.0f)||(currItem.RotationAccum.w==0.0f))
+		{
+			currItem.RotationAccum = prevItem.RotationAccum;		
+		}
+
+		// POSTM
+		if (D3DXVec3Length(&currItem.TranslationAccum)==0.0f)
+		{
+			currItem.TranslationAccum = prevItem.TranslationAccum;		
+		}	
+
+		refArrAnmKey.push_back(currItem);
+		prevItem=currItem;
+	}
+
+	/*
+	// 생성된 애니메이션 정보가 없으면 리소스해제후 NULL리턴
+	if( refArrAnmKey.empty() )
+	{
+		pRscTransformAnm->Release();
+		pRscTransformAnm=NULL;
+	}			
+	*/
+
+	return pSceneAnimation;
 }

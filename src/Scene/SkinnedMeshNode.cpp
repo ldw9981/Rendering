@@ -211,14 +211,6 @@ void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);	
-	
-	//animation
-	std::string resourceKey;	
-	ReadString(stream,resourceKey);
-	if (!resourceKey.empty())
-	{
-		SerializeInAnm(stream);
-	}
 
 	// multisub
 	stream.read((char*)&count,sizeof(count));
@@ -264,18 +256,6 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);	
 	
-	// animation
-	std::string resourceKey;
-	if(m_pRscTransformAnm)
-	{
-		resourceKey = m_pRscTransformAnm->GetUniqueKey();
-	}
-	WriteString(stream,resourceKey);
-	if (!resourceKey.empty())
-	{
-		SerializeOutAnm(stream);
-	}
-
 	// multi/sub
 	count = m_vecMultiSub.size();
 	stream.write((char*)&count,sizeof(count));
@@ -336,7 +316,7 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	// index
 	DWORD bufferSize =0;
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pResourceMng->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
 		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock();
@@ -352,7 +332,7 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 
 	// vertex
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pResourceMng->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
 		BLENDVERTEX* pVertices=(BLENDVERTEX*)pRscVetextBuffer->Lock();

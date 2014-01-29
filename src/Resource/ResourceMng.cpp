@@ -7,12 +7,13 @@
 #include "Graphics/RscVertexBuffer.h"
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/RscTransformAnm.h"
+#include "Graphics/Animation.h"
 
-cResourceMng* cResourceMng::m_pResourceMng;
+cResourceMng* cResourceMng::m_pInstance;
 
 cResourceMng::cResourceMng( void )
 {
-	m_pResourceMng = this;
+	m_pInstance = this;
 }
 
 cResourceMng::~cResourceMng( void )
@@ -172,6 +173,7 @@ int cResourceMng::GetCount()
 	cnt += m_contIndexBuffer.size();
 	cnt += m_contVertexBuffer.size();
 	cnt += m_contTransformAnm.size();
+	cnt += m_contAnimation.size();
 	return cnt;
 }
 
@@ -193,6 +195,43 @@ void cResourceMng::EraseRscVertexBuffer( const std::string& strKey )
 void cResourceMng::EraseRscTransformAnm( const std::string& strKey )
 {
 	m_contTransformAnm.erase(strKey);
+}
+
+void cResourceMng::GetKeyAnimation( std::string& key,const char* filePath )
+{
+	char fileName[256];
+	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
+	key += fileName;
+}
+
+Animation* cResourceMng::CreateAnimation( const char* filePath )
+{
+	Animation* pItem=NULL;
+	std::string strKey;
+	GetKeyAnimation(strKey,filePath);	
+
+	auto it=m_contAnimation.find(strKey);
+	if (it!=m_contAnimation.end())
+	{
+		pItem=static_cast<Animation*>(it->second);
+		return pItem;
+	}
+
+	pItem = new Animation;
+	pItem->SetUniqueKey(strKey);
+	//pItem->SetFilePath(filePath);
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contAnimation.insert(make_pair(strKey,pItem));
+	return pItem;	
+}
+
+void cResourceMng::EraseAnimation( const std::string& strKey )
+{
+	m_contAnimation.erase(strKey);
 }
 
 

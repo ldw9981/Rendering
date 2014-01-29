@@ -90,6 +90,7 @@ private:
 	cSceneNode*			m_pLastObject;
 	int					m_CNTOBJECT;
 	int					m_repeat;
+	Animation*			m_pAnimation;
 public:	
 	virtual void		Close();
 		BOOL			SkipBlock();
@@ -108,7 +109,7 @@ public:
 		BOOL			Getstring(LPWSTR pOutput);
 		BOOL			GetIdentifier(LPSTR pOutput);
 	cRscTransformAnm*	GetRscTransformAnm(const char* rootName,const char* meshName,const D3DXMATRIX& localTM);
-	
+	SceneAnimation*		GetSceneAnimation(const char* meshName,const D3DXMATRIX& localTM);
 		
 		D3DXMATRIX&		GetNodeTM();
 

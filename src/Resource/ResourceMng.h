@@ -9,6 +9,7 @@ class cRscVertexBuffer;
 class cRscIndexBuffer;
 class cResourceMng;
 class cRscTransformAnm;
+class Animation;
 
 
 class cResourceMng:
@@ -17,13 +18,13 @@ class cResourceMng:
 public:
 	cResourceMng(void);
 	~cResourceMng(void);
-	static cResourceMng* m_pResourceMng;
+	static cResourceMng* m_pInstance;
 private:
 	std::map<std::string,cResource*>					m_contTexture;
 	std::map<std::string,cResource*>					m_contIndexBuffer;
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contTransformAnm;
-	
+	std::map<std::string,cResource*>					m_contAnimation;
 public:		
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
@@ -43,6 +44,10 @@ public:
 	void				GetKeyTransformAnm( std::string& key, const  char* rootName, const char* meshName, const char* anmName );
 	cRscTransformAnm*	CreateRscTransformAnm(const char* rootName,const char* meshName, const char* anmName);
 	void				EraseRscTransformAnm( const std::string& strKey );
+
+	void				GetKeyAnimation(std::string& key,const  char* filePath );
+	Animation*			CreateAnimation(const char* filePath);
+	void				EraseAnimation(const std::string& strKey);	
 
 	int					GetCount();
 };

@@ -11,6 +11,8 @@ class cCameraNode;
 class cView;
 class Frustum;
 class Entity;
+struct SceneAnimation;
+class Animation;
 
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
@@ -37,23 +39,21 @@ protected:
 
 	
 	// Transform 애니메이션 정보
-	cRscTransformAnm*		m_pRscTransformAnm;	
+	std::vector<SceneAnimation*>	m_vecSceneAnimation;
 
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bRender;
 	DWORD					m_animationTime;
-
+	
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
 	D3DXMATRIX				m_nodeTM;
 
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
 	D3DXMATRIX&			GetNodeTM();
-	cRscTransformAnm*	GetRscTransformAnm() const { return m_pRscTransformAnm; }
-	void				SetRscTransformAnm(cRscTransformAnm* val);
 		
-	D3DXMATRIX*			UpdateTransformAnm(DWORD& animationTime,DWORD elapseTime);
+	D3DXMATRIX*			UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTime);
 	D3DXMATRIX&			GetAnimationTM();
 			
 
@@ -117,5 +117,8 @@ public:
 
 	void		SerializeInAnm(std::ifstream& stream);
 	void		SerializeOutAnm(std::ofstream& stream);
+
+	virtual void PushAnimation(Animation* pAnimation);
+	virtual void PopAnimation();
 };
 

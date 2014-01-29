@@ -88,6 +88,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="MaterialEx.h" />
     <ClInclude Include="RscIndexBuffer.h" />
@@ -98,6 +99,7 @@
     <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="MaterialEx.cpp" />
     <ClCompile Include="RscIndexBuffer.cpp" />

@@ -19,10 +19,10 @@ cResourceMng::cResourceMng( void )
 cResourceMng::~cResourceMng( void )
 {
 	assert(GetCount()==0);
+	m_contMaterial.clear();
 	m_contTexture.clear();
 	m_contIndexBuffer.clear();
-	m_contVertexBuffer.clear();
-	m_contTransformAnm.clear();
+	m_contVertexBuffer.clear();	
 }
 
 
@@ -128,52 +128,14 @@ cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const c
 	return pItem;
 }
 
-
-void cResourceMng::GetKeyTransformAnm( std::string& key,const char* rootName,const char* meshName,const char* anmName )
-{
-	key = rootName;
-	key += std::string("_");
-	key += meshName;
-	key += std::string("_");
-	key += anmName;
-}
-
-cRscTransformAnm* cResourceMng::CreateRscTransformAnm(const char* rootName,const char* meshName,const char* anmName)
-{
-	assert(rootName!=NULL);
-	assert(meshName!=NULL);
-	assert(anmName!=NULL);
-
-	cRscTransformAnm* pItem=NULL;
-	std::string strKey;	
-	GetKeyTransformAnm(strKey,rootName,meshName,anmName);
-
-	std::map<std::string,cResource*>::iterator it=m_contTransformAnm.find(strKey);
-	if (it!=m_contTransformAnm.end())
-	{
-		pItem=static_cast<cRscTransformAnm*>(it->second);
-		return pItem;
-	}
-
-	pItem = new cRscTransformAnm;	
-	pItem->SetUniqueKey(strKey);
-	if(!pItem->Create())	
-	{
-		delete pItem;
-		return NULL;
-	}
-	m_contTransformAnm.insert(make_pair(strKey,pItem));
-	return pItem;		
-}
-
 int cResourceMng::GetCount()
 {
 	int cnt=0;
 	cnt += m_contTexture.size();
 	cnt += m_contIndexBuffer.size();
 	cnt += m_contVertexBuffer.size();
-	cnt += m_contTransformAnm.size();
 	cnt += m_contAnimation.size();
+	cnt += m_contMaterial.size();
 	return cnt;
 }
 
@@ -192,32 +154,27 @@ void cResourceMng::EraseRscVertexBuffer( const std::string& strKey )
 	m_contVertexBuffer.erase(strKey);
 }
 
-void cResourceMng::EraseRscTransformAnm( const std::string& strKey )
-{
-	m_contTransformAnm.erase(strKey);
-}
-
-void cResourceMng::GetKeyAnimation( std::string& key,const char* filePath )
+void cResourceMng::GetKeyEntityAnimation( std::string& key,const char* filePath )
 {
 	char fileName[256];
 	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
 	key += fileName;
 }
 
-Animation* cResourceMng::CreateAnimation( const char* filePath )
+EntityAnimation* cResourceMng::CreateEntityAnimation( const char* filePath )
 {
-	Animation* pItem=NULL;
+	EntityAnimation* pItem=NULL;
 	std::string strKey;
-	GetKeyAnimation(strKey,filePath);	
+	GetKeyEntityAnimation(strKey,filePath);	
 
 	auto it=m_contAnimation.find(strKey);
 	if (it!=m_contAnimation.end())
 	{
-		pItem=static_cast<Animation*>(it->second);
+		pItem=static_cast<EntityAnimation*>(it->second);
 		return pItem;
 	}
 
-	pItem = new Animation;
+	pItem = new EntityAnimation;
 	pItem->SetUniqueKey(strKey);
 	//pItem->SetFilePath(filePath);
 	if(!pItem->Create())	
@@ -229,9 +186,46 @@ Animation* cResourceMng::CreateAnimation( const char* filePath )
 	return pItem;	
 }
 
-void cResourceMng::EraseAnimation( const std::string& strKey )
+void cResourceMng::EraseEntityAnimation( const std::string& strKey )
 {
 	m_contAnimation.erase(strKey);
+}
+
+void cResourceMng::GetKeyEntityMaterial( std::string& key,const char* filePath )
+{
+	char fileName[256];
+	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
+	key += fileName;
+}
+
+EntityMaterial* cResourceMng::CreateEntityMaterial( const char* filePath )
+{
+	EntityMaterial* pItem=NULL;
+	std::string strKey;
+	GetKeyEntityMaterial(strKey,filePath);	
+
+	auto it=m_contMaterial.find(strKey);
+	if (it!=m_contMaterial.end())
+	{
+		pItem=static_cast<EntityMaterial*>(it->second);
+		return pItem;
+	}
+
+	pItem = new EntityMaterial;
+	pItem->SetUniqueKey(strKey);
+	//pItem->SetFilePath(filePath);
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contMaterial.insert(make_pair(strKey,pItem));
+	return pItem;	
+}
+
+void cResourceMng::EraseEntityMaterial( const std::string& strKey )
+{
+	m_contMaterial.erase(strKey);
 }
 
 

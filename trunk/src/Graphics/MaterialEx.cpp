@@ -243,31 +243,115 @@ void Material::SerializeOut( std::ofstream& stream )
 	WriteString(stream,fileName);	
 }
 
-/*
-cRscTexture* Material::GetMapRefract() const
+void SceneMaterial::SerializeIn( std::ifstream& stream )
 {
-	return m_pMapRefract;
-}
+	unsigned char count = 0;
+	stream.read((char*)&count,sizeof(count));
+	if (count==0)
+		return;
 
-void Material::SetMapRefract( cRscTexture* val )
-{
-	if (m_pMapRefract)
+	for (unsigned short i=0;i<count;i++)
 	{
-		m_pMapRefract->Release();
-	}	
-	m_pMapRefract = val;
-	if (m_pMapRefract)
-	{		
-		m_pMapRefract->AddRef();
-	}	
-
-	if (m_pMapRefract)
-	{
-		index_renderer_queue_.set(REFRACT);
-	}
-	else
-	{
-		index_renderer_queue_.reset(REFRACT);	
+		Material item;
+		item.SerializeIn(stream);
+		m_container.push_back(item);
 	}
 }
-*/
+
+void SceneMaterial::SerializeOut( std::ofstream& stream )
+{
+	unsigned char count = 0;
+	count = m_container.size();
+	stream.write((char*)&count,sizeof(count));
+	if (count==0)
+		return;
+
+	for (unsigned char i=0;i<count;i++)
+	{
+		m_container[i].SerializeOut(stream);		
+	}
+}
+
+
+EntityMaterial::EntityMaterial(void)
+{
+
+}
+
+EntityMaterial::~EntityMaterial(void)
+{
+	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
+	{
+		delete it->second;
+	}
+	m_container.clear();
+}
+
+
+BOOL EntityMaterial::Create()
+{
+	assert(m_RefCounter>=0);
+	if (m_RefCounter > 0 )
+		return TRUE;
+
+	return TRUE;
+}
+
+void EntityMaterial::Free()
+{
+	cResourceMng::m_pInstance->EraseEntityMaterial(GetUniqueKey());
+	delete this;
+}
+
+SceneMaterial* EntityMaterial::CreateSceneMaterial( std::string& nodeName )
+{
+	SceneMaterial* pSceneMaterial = new SceneMaterial;
+
+	auto pairIB = m_container.insert(make_pair(nodeName,pSceneMaterial));
+	assert(pairIB.second!=false);
+	return pSceneMaterial;
+}
+
+SceneMaterial* EntityMaterial::GetSceneMaterial( std::string& nodeNAme )
+{
+	SceneMaterial* pSceneMaterial = NULL;
+	auto it = m_container.find(nodeNAme);
+	if (it != m_container.end())
+	{
+		pSceneMaterial = it->second;
+	}
+	return pSceneMaterial;
+}
+
+void EntityMaterial::SerializeIn( std::ifstream& stream )
+{
+	unsigned short count = 0;
+	stream.read((char*)&count,sizeof(count));
+	if (count==0)
+		return;
+
+	for ( unsigned short i=0 ; i<count ; i++)
+	{
+		std::string nodeName;
+		ReadString(stream,nodeName);
+		SceneMaterial* pSceneMaterial = CreateSceneMaterial(nodeName);
+		pSceneMaterial->SerializeIn(stream);
+	}
+}
+
+void EntityMaterial::SerializeOut( std::ofstream& stream )
+{
+	unsigned short count = 0;
+	count = m_container.size();
+	stream.write((char*)&count,sizeof(count));
+	if (count==0)
+		return;
+
+	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
+	{
+		WriteString(stream,std::string(it->first));
+		(it->second)->SerializeOut(stream);
+	}
+}
+
+

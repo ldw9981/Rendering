@@ -22,7 +22,7 @@ struct SCLKEY
 	D3DXVECTOR3 ScaleAccum;
 };
 
-
+// 순수 에니메이션 데이터
 struct ANMKEY
 {
 	DWORD AnmTick;
@@ -37,8 +37,14 @@ struct ANMKEY
 	}
 };
 
-struct SceneAnimation
+// 하나의 씬노드에 해당하는 시간을 포함한 연속적인 에니메이션 데이터 
+class SceneAnimation:
+	public ISerializable
 {
+public:
+	SceneAnimation(void);
+	~SceneAnimation(void);
+public:
 	std::vector<ANMKEY> m_arrayANMKEY;
 	DWORD	m_dwTimeLength;
 
@@ -48,14 +54,14 @@ struct SceneAnimation
 	void	SerializeOut(std::ofstream& stream);
 };
 
-
-class Animation:
+// 엔티티 즉 전체 씬을 에니메이션하는 데이터
+class EntityAnimation:
 	public cResource
 	,public ISerializable
 {
 public:
-	Animation(void);
-	~Animation(void);
+	EntityAnimation(void);
+	~EntityAnimation(void);
 protected:
 	// SceneNodeName/ArrayAnmKey
 	std::map<std::string,SceneAnimation*> m_container;

@@ -56,7 +56,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 {
 	MultiSub& temp = m_vecMultiSub[multiSubIndex];
-	Material& material = m_vecMaterial[temp.materialIndex];
+	Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
@@ -99,6 +99,7 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 
 void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 {	
+	cSceneNode::BuildComposite(pEntity);
 	LinkToBone(pEntity);		
 
 		assert(m_pRscVetextBuffer!=NULL);
@@ -127,7 +128,7 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
-	cSceneNode::BuildComposite(pEntity);
+	
 }
 
 void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
@@ -143,7 +144,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
 			MultiSub& temp = (*it_sub);
-			Material& material = m_vecMaterial[temp.materialIndex];		
+			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 			int i = material.index_renderer_queue();
 			pEntity->m_renderQueueBlend[i].Insert(this,multiSubIndex);
@@ -169,7 +170,7 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
 			MultiSub& temp = (*it_sub);
-			Material& material = m_vecMaterial[temp.materialIndex];		
+			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 			int i = material.index_renderer_queue();
 			pEntity->m_renderQueueBlendShadow.Insert(this,multiSubIndex);
@@ -189,10 +190,6 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 void SkinnedMeshNode::Release()
 {
 	cMeshNode::Release();
-	if ( m_strNodeName == std::string("Bone03"))
-	{
-		printf("DDD");
-	}
 	if (m_pArrayMatBoneRef!=NULL)
 	{
 		delete m_pArrayMatBoneRef;
@@ -225,9 +222,6 @@ void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
 
 	// mesh
 	SerializeInMesh(stream);
-
-	// material
-	SerializeInMaterial(stream);
 
 	// child	
 	stream.read((char*)&count,sizeof(count));
@@ -269,8 +263,6 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 
 	// mesh 
 	SerializeOutMesh(stream);
-	// material
-	SerializeOutMaterial(stream);
 
 	// child
 	count = m_listChildNode.size();

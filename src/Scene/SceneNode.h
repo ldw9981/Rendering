@@ -11,8 +11,10 @@ class cCameraNode;
 class cView;
 class Frustum;
 class Entity;
-struct SceneAnimation;
-class Animation;
+class SceneAnimation;
+class EntityAnimation;
+class EntityMaterial;
+class SceneMaterial;
 
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
@@ -34,12 +36,13 @@ protected:
 	std::string					m_strParentName;		
 	std::list<cSceneNode*>		m_listChildNode;		
 	cSceneNode*				m_pParentNode;
-	cSceneNode*				m_pRootNode;
+	Entity*					m_pRootNode;
 	bool					m_bIsBone;
 
 	
 	// Transform 애니메이션 정보
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;
+	
 
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
@@ -78,8 +81,8 @@ public:
 	void				SetParentNode(cSceneNode* val) { m_pParentNode = val; }
 
 
-	cSceneNode*			GetRootNode() const { return m_pRootNode; }
-	void				SetRootNode(cSceneNode* val) { m_pRootNode = val; }
+	Entity*				GetRootNode() const { return m_pRootNode; }
+	void				SetRootNode(Entity* val) { m_pRootNode = val; }
 	bool				GetIsBone() const { return m_bIsBone; }
 	void				SetIsBone(bool val) { m_bIsBone = val; }	
 
@@ -118,7 +121,9 @@ public:
 	void		SerializeInAnm(std::ifstream& stream);
 	void		SerializeOutAnm(std::ofstream& stream);
 
-	virtual void PushAnimation(Animation* pAnimation);
+	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();
+	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
+	virtual void PopMaterial();
 };
 

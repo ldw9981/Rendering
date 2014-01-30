@@ -88,11 +88,13 @@ void cMenuView::Enter()
 	AttachObject(m_pAirPlaneBake);	
 	
 	
+	
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = new cObjDragon;	
 		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pHouse[i]->LoadAnimation(std::string(strDataPath+"dragon.ani").c_str());
+		m_pHouse[i]->LoadAnimation(std::string(strDataPath+"dragon.animation").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 		m_pHouse[i]->Build();
 		m_pHouse[i]->Init();
 		
@@ -100,6 +102,7 @@ void cMenuView::Enter()
 		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f+ i*300));
 		AttachObject(m_pHouse[i]);	
 	}
+	
 	
 	
 
@@ -205,14 +208,18 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-		m_pDragon->SaveAnimation(std::string(strDataPath+"dragon.ani").c_str(),0);
+		if( m_pDragon->m_indexAnimation == -1 ) m_pDragon->m_indexAnimation = 0;
+		else if( m_pDragon->m_indexAnimation == 0 ) m_pDragon->m_indexAnimation = -1;
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))
 	{
 		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 		m_pDragon->SaveScene(std::string(strDataPath+"dragon.scene").c_str());
-	}
+		m_pDragon->SaveAnimation(std::string(strDataPath+"dragon.animation").c_str(),0);		
+		m_pDragon->SaveMaterial(std::string(strDataPath+"dragon.material").c_str(),0);
+	}	
+
+
 	
 }

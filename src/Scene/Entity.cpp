@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/Animation.h"
+#include "Graphics/MaterialEx.h"
 #include "Graphics/Vertex.h"
 #include "Scene/View.h"
 #include "Math/CollisionDetector.h"
@@ -13,6 +14,8 @@
 Entity::Entity(void)
 {
 	m_strNodeName="Entity";
+	m_indexAnimation = -1;
+	m_indexMaterial = -1;
 }
 
 
@@ -20,8 +23,14 @@ Entity::~Entity(void)
 {
 	for (auto it=m_vecAnimation.begin();it!=m_vecAnimation.end();++it )
 	{
-		Animation* pAnimation = *it;
+		EntityAnimation* pAnimation = *it;
 		pAnimation->Release();
+	}	
+
+	for (auto it=m_vecMaterial.begin();it!=m_vecMaterial.end();++it )
+	{
+		EntityMaterial* pEntityMaterial = *it;
+		pEntityMaterial->Release();
 	}	
 }
 void Entity::SetBoundingSphere( cSphere& Sphere )
@@ -108,6 +117,10 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 
 void Entity::Build()
 {
+	if (!m_vecMaterial.empty())
+	{
+		m_indexMaterial = 0;	
+	}
 	cSceneNode::BuildComposite(this);
 }
 
@@ -174,7 +187,7 @@ bool Entity::LoadScene( const char* fileName )
 	return true;
 }
 
-void Entity::PushAnimation( Animation* pAnimation )
+void Entity::PushAnimation( EntityAnimation* pAnimation )
 {
 	pAnimation->AddRef();
 	m_vecAnimation.push_back(pAnimation);
@@ -190,7 +203,7 @@ void Entity::PopAnimation()
 	if (m_vecAnimation.empty())
 		return;
 
-	Animation* pAnimation = m_vecAnimation[m_vecAnimation.size()-1];
+	EntityAnimation* pAnimation = m_vecAnimation[m_vecAnimation.size()-1];
 	m_vecAnimation.pop_back();
 	pAnimation->Release();
 
@@ -208,7 +221,7 @@ bool Entity::SaveAnimation( const char* fileName ,int index)
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);	
 
-	Animation* pAnimation = m_vecAnimation[index];
+	EntityAnimation* pAnimation = m_vecAnimation[index];
 	pAnimation->SerializeOut(stream);
 	
 	return true;
@@ -216,31 +229,69 @@ bool Entity::SaveAnimation( const char* fileName ,int index)
 
 bool Entity::LoadAnimation( const char* fileName )
 {
-	Animation* pAnimation = cResourceMng::m_pInstance->CreateAnimation(fileName);
-	if (pAnimation->GetRefCounter()==0)
+	EntityAnimation* pEntityAnimation = cResourceMng::m_pInstance->CreateEntityAnimation(fileName);
+	if (pEntityAnimation->GetRefCounter()==0)
 	{
 		std::ifstream stream;
 		stream.open(fileName, std::ios::in | std::ios::binary);
-		pAnimation->SerializeIn(stream);
+		pEntityAnimation->SerializeIn(stream);
 	}
 	
-	PushAnimation(pAnimation);
+	PushAnimation(pEntityAnimation);
 	return true;
 }
 
-bool Entity::SaveMaterial( const char* fileName )
+bool Entity::SaveMaterial( const char* fileName ,int index)
 {
+	if (index >= (int)m_vecMaterial.size())
+		return false;
+
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);	
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
-	{
-		(*it)->SerializeOut(stream);
-	}	
+
+	EntityMaterial* pEntityMaterial = m_vecMaterial[index];
+	pEntityMaterial->SerializeOut(stream);
+	return true;
 }
 
 bool Entity::LoadMaterial( const char* fileName )
 {
+	EntityMaterial* pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(fileName);
+	if (pEntityMaterial->GetRefCounter()==0)
+	{
+		std::ifstream stream;
+		stream.open(fileName, std::ios::in | std::ios::binary);
+		pEntityMaterial->SerializeIn(stream);
+	}
 
+	PushMaterial(pEntityMaterial);
+	return true;
+}
+
+void Entity::PushMaterial( EntityMaterial* pEntityMaterial )
+{
+	pEntityMaterial->AddRef();
+	m_vecMaterial.push_back(pEntityMaterial);
+
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->PushMaterial(pEntityMaterial);
+	}	
+}
+
+void Entity::PopMaterial()
+{
+	if (m_vecMaterial.empty())
+		return;
+
+	EntityMaterial* pEntityMaterial = m_vecMaterial[m_vecMaterial.size()-1];
+	m_vecMaterial.pop_back();
+	pEntityMaterial->Release();
+
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->PopMaterial();
+	}	
 }
 
 

@@ -50,8 +50,11 @@ void cMeshNode::Update(DWORD elapseTime)
 
 void cMeshNode::Render(unsigned char multiSubIndex)
 {
-	MultiSub& temp = m_vecMultiSub[multiSubIndex];
-	Material& material = m_vecMaterial[temp.materialIndex];
+	MultiSub& multiSub = m_vecMultiSub[multiSubIndex];
+	Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[multiSub.materialIndex];
+		//m_vecMaterial[temp.materialIndex];
+	
+
 
 	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationNormal);
@@ -72,12 +75,13 @@ void cMeshNode::Render(unsigned char multiSubIndex)
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),
-		temp.startIndex,
-		temp.primitiveCount );
+		multiSub.startIndex,
+		multiSub.primitiveCount );
 }
 
 void cMeshNode::BuildComposite(Entity* pEntity)
 {
+	cSceneNode::BuildComposite(pEntity);	
 	assert(m_pRscVetextBuffer!=NULL);
 	assert(m_pRscIndexBuffer!=NULL);
 	long vertexCount = m_pRscVetextBuffer->GetCount();
@@ -103,8 +107,7 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	
 
 	QueueRenderer(pEntity,false);
-	QueueRendererShadow(pEntity,false);
-	cSceneNode::BuildComposite(pEntity);	
+	QueueRendererShadow(pEntity,false);	
 }
 
 /*
@@ -148,7 +151,7 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
 			MultiSub& temp = (*it_sub);
-			Material& material = m_vecMaterial[temp.materialIndex];		
+			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 			int i = material.index_renderer_queue();
 			pEntity->m_renderQueueNormal[i].Insert(this,multiSubIndex);
@@ -243,7 +246,7 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
 			MultiSub& temp = (*it_sub);
-			Material& material = m_vecMaterial[temp.materialIndex];		
+			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 			int i = material.index_renderer_queue();
 			pEntity->m_renderQueueNormalShadow.Insert(this,multiSubIndex);
@@ -295,9 +298,6 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	// mesh
 	SerializeInMesh(stream);
 
-	// material
-	SerializeInMaterial(stream);
-
 	// child	
 	stream.read((char*)&count,sizeof(count));
 	for ( int i=0 ; i<count ; i++ )
@@ -338,9 +338,7 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 
 	// mesh 
 	SerializeOutMesh(stream);
-	// material
-	SerializeOutMaterial(stream);
-	
+
 	// child
 	count = m_listChildNode.size();
 	stream.write((char*)&count,sizeof(count));	
@@ -349,11 +347,6 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	{
 		(*it_child)->SerializeOut(stream);
 	}	
-}
-
-void cMeshNode::SetMaterial( std::vector<Material>& vecMaterial )
-{
-	m_vecMaterial = vecMaterial;
 }
 
 void cMeshNode::SerializeOutMesh( std::ofstream& stream )
@@ -411,26 +404,18 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	SetRscVertextBuffer(pRscVetextBuffer);
 }
 
-void cMeshNode::SerializeOutMaterial( std::ofstream& stream )
+
+void cMeshNode::PushMaterial( EntityMaterial* pEntityMaterial )
 {
-	unsigned char count;
-	count = (unsigned char)m_vecMaterial.size();
-	stream.write((char*)&count,sizeof(count));
-	for ( auto it = m_vecMaterial.begin();it!=m_vecMaterial.end();++it )
-	{
-		Material& data = (*it);
-		data.SerializeOut(stream);
-	}	
+	SceneMaterial* pSceneMaterial = pEntityMaterial->GetSceneMaterial(m_strNodeName);
+	m_vecSceneMaterial.push_back(pSceneMaterial);
+
+	cSceneNode::PushMaterial(pEntityMaterial);	
 }
 
-void cMeshNode::SerializeInMaterial( std::ifstream& stream )
+void cMeshNode::PopMaterial()
 {
-	unsigned char count;
-	stream.read((char*)&count,sizeof(count));
-	for ( unsigned char i = 0; i<count ; i++ )
-	{
-		Material data;
-		data.SerializeIn(stream);
-		m_vecMaterial.push_back(data);
-	}
+	m_vecSceneMaterial.pop_back();
+
+	cSceneNode::PopMaterial();
 }

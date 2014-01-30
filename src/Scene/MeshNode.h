@@ -27,7 +27,7 @@ protected:
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
 	std::vector<MultiSub>	m_vecMultiSub;
-	std::vector<Material>	m_vecMaterial;
+	std::vector<SceneMaterial*>		m_vecSceneMaterial;
 public:
 	virtual void			Update(DWORD elapseTime);
 	virtual void			Render(unsigned char multiSubIndex);
@@ -36,10 +36,6 @@ public:
 
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
-
-	
-
-	void					SetMaterial(std::vector<Material>& vecMaterial);
 
 	void					AddMultiSub(WORD startIndex,WORD primitiveCount,unsigned char materialIndex);	
 
@@ -62,8 +58,8 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
-	void SerializeOutMaterial(std::ofstream& stream);
-	void SerializeInMaterial(std::ifstream& stream);
+	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
+	virtual void PopMaterial();
 };
 
 

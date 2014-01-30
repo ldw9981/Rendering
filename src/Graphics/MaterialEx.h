@@ -1,5 +1,6 @@
 #pragma once
 #include "Foundation/interface.h"
+#include "Resource/Resource.h"
 typedef unsigned char SUBMATINDEX;
 
 /*
@@ -59,5 +60,34 @@ public:
 	virtual void SerializeOut(std::ofstream& stream);
 };
 
+class SceneMaterial:
+	public ISerializable
+{
+public:
+	std::vector<Material> m_container;
 
+	virtual void SerializeIn(std::ifstream& stream);
+	virtual void SerializeOut(std::ofstream& stream);
+};
 
+class EntityMaterial:
+	public cResource
+	,public ISerializable
+{
+public:
+	EntityMaterial(void);
+	~EntityMaterial(void);
+public:
+	// SceneNodeName/SceneMaterial
+	std::map<std::string,SceneMaterial*> m_container;	// 노드 이름별 보관
+
+public:
+	SceneMaterial* GetSceneMaterial(std::string& nodeNAme);
+	SceneMaterial* CreateSceneMaterial(std::string& nodeName);
+	// cResource
+	virtual	BOOL			Create();	
+	virtual	void			Free();
+
+	virtual void SerializeIn(std::ifstream& stream);
+	virtual void SerializeOut(std::ofstream& stream);
+};

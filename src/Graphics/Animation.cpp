@@ -3,6 +3,16 @@
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
 
+SceneAnimation::SceneAnimation( void )
+{
+
+}
+
+SceneAnimation::~SceneAnimation( void )
+{
+
+}
+
 float SceneAnimation::GetInterpolateValue( int start_time,int end_time,int inter_time )
 {
 	float ret;
@@ -103,12 +113,14 @@ void SceneAnimation::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&m_dwTimeLength,sizeof(m_dwTimeLength));
 }
 
-Animation::Animation(void)
+
+
+EntityAnimation::EntityAnimation(void)
 {
 
 }
 
-Animation::~Animation(void)
+EntityAnimation::~EntityAnimation(void)
 {
 	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
 	{
@@ -118,7 +130,7 @@ Animation::~Animation(void)
 }
 
 
-BOOL Animation::Create()
+BOOL EntityAnimation::Create()
 {
 	assert(m_RefCounter>=0);
 	if (m_RefCounter > 0 )
@@ -127,13 +139,13 @@ BOOL Animation::Create()
 	return TRUE;
 }
 
-void Animation::Free()
+void EntityAnimation::Free()
 {
-	cResourceMng::m_pInstance->EraseAnimation(GetUniqueKey());
+	cResourceMng::m_pInstance->EraseEntityAnimation(GetUniqueKey());
 	delete this;
 }
 
-SceneAnimation* Animation::CreateSceneAnimation( std::string& nodeName )
+SceneAnimation* EntityAnimation::CreateSceneAnimation( std::string& nodeName )
 {
 	SceneAnimation* pSceneAnimation = new SceneAnimation;
 
@@ -142,7 +154,7 @@ SceneAnimation* Animation::CreateSceneAnimation( std::string& nodeName )
 	return pSceneAnimation;
 }
 
-SceneAnimation* Animation::GetSceneAnimtion( std::string& nodeNAme )
+SceneAnimation* EntityAnimation::GetSceneAnimtion( std::string& nodeNAme )
 {
 	SceneAnimation* pSceneAnimation = NULL;
 	auto it = m_container.find(nodeNAme);
@@ -153,7 +165,7 @@ SceneAnimation* Animation::GetSceneAnimtion( std::string& nodeNAme )
 	return pSceneAnimation;
 }
 
-void Animation::SerializeIn( std::ifstream& stream )
+void EntityAnimation::SerializeIn( std::ifstream& stream )
 {
 	unsigned short count = 0;
 	stream.read((char*)&count,sizeof(count));
@@ -169,7 +181,7 @@ void Animation::SerializeIn( std::ifstream& stream )
 	}
 }
 
-void Animation::SerializeOut( std::ofstream& stream )
+void EntityAnimation::SerializeOut( std::ofstream& stream )
 {
 	unsigned short count = 0;
 	count = m_container.size();

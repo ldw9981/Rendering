@@ -24,7 +24,7 @@
 cSceneNode::cSceneNode(void)
 :m_strNodeName(""),m_strParentName("")
 {	
-	m_pRootNode=this;
+	m_pRootNode=NULL;
 	m_pParentNode=NULL;
 //	m_NodeType=ROOT;	
 
@@ -120,7 +120,10 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTi
 	if ( m_vecSceneAnimation.empty())
 		return NULL;
 
-	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[0];
+	if ( m_pRootNode->m_indexAnimation == -1 )
+		return NULL;
+
+	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_indexAnimation];
 	if (!pSceneAnimation)
 		return NULL;
 
@@ -178,6 +181,7 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 
 void cSceneNode::BuildComposite(Entity* pEntity)
 {
+	m_pRootNode = pEntity;
 	D3DXMATRIX temp;
 	if (m_pParentNode == NULL)
 	{
@@ -340,7 +344,7 @@ void cSceneNode::SerializeOutAnm( std::ofstream& stream )
 	
 }
 
-void cSceneNode::PushAnimation( Animation* pAnimation )
+void cSceneNode::PushAnimation( EntityAnimation* pAnimation )
 {
 	SceneAnimation* pSceneAnimation = pAnimation->GetSceneAnimtion(m_strNodeName);
 	m_vecSceneAnimation.push_back(pSceneAnimation);
@@ -358,5 +362,21 @@ void cSceneNode::PopAnimation()
 	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->PopAnimation();
+	}
+}
+
+void cSceneNode::PushMaterial( EntityMaterial* pEntityMaterial )
+{
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->PushMaterial(pEntityMaterial);
+	}
+}
+
+void cSceneNode::PopMaterial()
+{
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->PopMaterial();
 	}
 }

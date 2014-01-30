@@ -195,7 +195,7 @@ BOOL cASEParser::GetIdentifier( LPSTR pOutput )
 	{
 		memcpy(pOutput,m_TokenString,strlen(m_TokenString));
 	}
-	
+
 	return TRUE;
 }
 
@@ -212,8 +212,9 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	{
 		return FALSE;
 	}
-	m_pAnimation = cResourceMng::m_pInstance->CreateAnimation(m_SceneTime.FILENAME.c_str());
-	m_pAnimation->AddRef();
+	m_pEntityAnimation = cResourceMng::m_pInstance->CreateEntityAnimation(m_SceneTime.FILENAME.c_str());
+	m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
+	
 
 	m_Token =  GetToken(m_TokenString);
 	if(m_Token == TOKENR_3DSMAX_ASCIIEXPORT)
@@ -328,8 +329,9 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	CalculateSphere(m_tempAxisMin,m_tempAxisMax,temp);
 	m_pSceneRoot->GetBoundingSphere() =  temp;
 	m_pSceneRoot->SetNodeName(m_SceneTime.FILENAME.c_str());	
-	m_pSceneRoot->PushAnimation(m_pAnimation);
-	SAFE_RELEASE(m_pAnimation);
+	m_pSceneRoot->PushAnimation(m_pEntityAnimation);
+	m_pSceneRoot->PushMaterial(m_pEntityMaterial);
+
 
 	// *************************************************************
 	// 
@@ -814,6 +816,7 @@ BOOL cASEParser::Parsing_GeoObject()
 BOOL cASEParser::Parsing_MaterialList()
 {
 	BOOL bRet=TRUE;
+
 	std::string strMaterialClass;
 	int nMaterialCount,nMaterialIndex;
 	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;	
@@ -1761,176 +1764,6 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 
 
 
-cRscTransformAnm* cASEParser::GetRscTransformAnm(const char* rootName,const char* meshName, const D3DXMATRIX& localTM )
-{
-	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pInstance->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
-
-	// 리소스 가 이미 있으면 있는거 전달
-	if( pRscTransformAnm->GetRefCounter() != 0)
-	{
-		SkipBlock();
-		return pRscTransformAnm;
-	}
-
-	ANMKEY localTM_anmkey;
-	D3DXMatrixDecompose(
-		&localTM_anmkey.ScaleAccum,
-		&localTM_anmkey.RotationAccum,
-		&localTM_anmkey.TranslationAccum,
-		&localTM);	
-
-	// time - AnmKey
-	DWORD dwTimeKey=0;
-	
-	std::map<DWORD,ANMKEY> mapAnmKey;
-
-	mapAnmKey[0].AnmTick=0;
-	mapAnmKey[0].TranslationAccum=localTM_anmkey.TranslationAccum;
-	mapAnmKey[0].RotationAccum=localTM_anmkey.RotationAccum;
-	mapAnmKey[0].ScaleAccum=localTM_anmkey.ScaleAccum;
-
-
-	m_Token=GetToken(m_TokenString);
-	if (m_Token!=TOKEND_BLOCK_START)
-		return FALSE;
-
-	while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-	{
-		switch(m_Token)
-		{
-		case TOKENR_NODE_NAME:
-			{
-
-			}
-			break;
-		case TOKENR_CONTROL_POS_TRACK:
-			{
-				if(GetToken(m_TokenString)!=TOKEND_BLOCK_START)
-					return FALSE;	
-
-				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-					if(m_Token!=TOKENR_CONTROL_POS_SAMPLE)
-						return FALSE;										
-
-					dwTimeKey = GetInt() / m_SceneTime.EX_TICKSPERMS;			
-
-					D3DXVECTOR3 vecTranslationAccum;
-					GetVector3(&vecTranslationAccum);
-
-					mapAnmKey[dwTimeKey].AnmTick = dwTimeKey;
-					mapAnmKey[dwTimeKey].TranslationAccum = vecTranslationAccum;
-				}
-			}
-			break;
-		case TOKENR_CONTROL_ROT_TRACK:
-			{
-				std::vector<std::pair<DWORD,D3DXQUATERNION>> arrayROTKEY;
-
-				if(GetToken(m_TokenString)!=TOKEND_BLOCK_START)
-					return FALSE;
-
-				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{	
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-					if(m_Token!=TOKENR_CONTROL_ROT_SAMPLE)
-						return FALSE;	
-
-					float ang;
-					D3DXVECTOR3 axis;
-					dwTimeKey =  GetInt() / m_SceneTime.EX_TICKSPERMS;	
-					GetVector3(&axis);
-
-					std::pair<DWORD,D3DXQUATERNION> ItemDelta;
-					ItemDelta.first = dwTimeKey;
-					ang = GetFloat();					
-					D3DXQuaternionRotationAxis(&ItemDelta.second,&axis,ang);
-					arrayROTKEY.push_back(ItemDelta);
-				}		
-
-				// 회전 변화량 값을 누적 회전데이터로 바꾼다.
-				D3DXQUATERNION curr_q, prev_q, accum_q;
-				D3DXQuaternionIdentity(&curr_q);
-				D3DXQuaternionIdentity(&prev_q);
-				D3DXQuaternionIdentity(&accum_q);
-
-				std::vector<std::pair<DWORD,D3DXQUATERNION>>::iterator rot_it=arrayROTKEY.begin();
-				for ( ; rot_it!=arrayROTKEY.end() ; rot_it++)
-				{
-					std::pair<DWORD,D3DXQUATERNION>& Item = *rot_it;
-
-					if(rot_it == arrayROTKEY.begin())
-					{
-						Item.second = localTM_anmkey.RotationAccum;			
-					}
-					curr_q = Item.second;				
-					D3DXQuaternionMultiply(&accum_q,&accum_q,&curr_q);//쿼터니언 누적
-					Item.second=accum_q;
-
-					mapAnmKey[Item.first].AnmTick = Item.first;
-					mapAnmKey[Item.first].RotationAccum = Item.second;
-
-					prev_q=accum_q;
-				}
-
-			}
-			break;
-		case TOKENR_CONTROL_SCALE_TRACK:
-			{				
-				if( GetToken(m_TokenString)!=TOKEND_BLOCK_START)
-					return FALSE;
-
-				while(m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-				}
-			}
-			break;
-		}
-	} 
-
-	pRscTransformAnm->SetTimeLength(dwTimeKey);
-	std::vector<ANMKEY>& refArrAnmKey=pRscTransformAnm->GetArrayANMKEY();
-
-	ANMKEY prevItem=localTM_anmkey;
-	std::map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
-	for ( ; iter != mapAnmKey.end() ;iter++ )
-	{	
-		ANMKEY& currItem = iter->second;
-		// Scale
-		if (D3DXVec3LengthSq(&currItem.ScaleAccum)==0.0f)
-		{	
-			currItem.ScaleAccum = prevItem.ScaleAccum;
-		}
-
-		// Rotate
-		if ( (currItem.RotationAccum.x==0.0f)||(currItem.RotationAccum.y==0.0f)||(currItem.RotationAccum.z==0.0f)||(currItem.RotationAccum.w==0.0f))
-		{
-			currItem.RotationAccum = prevItem.RotationAccum;		
-		}
-
-		// POSTM
-		if (D3DXVec3Length(&currItem.TranslationAccum)==0.0f)
-		{
-			currItem.TranslationAccum = prevItem.TranslationAccum;		
-		}	
-
-		refArrAnmKey.push_back(currItem);
-		prevItem=currItem;
-	}
-
-	// 생성된 애니메이션 정보가 없으면 리소스해제후 NULL리턴
-	if( refArrAnmKey.empty() )
-	{
-		pRscTransformAnm->Release();
-		pRscTransformAnm=NULL;
-	}			
-	
-
-	return pRscTransformAnm;
-}
-
 
 
 // 회전키정보의 누적변환
@@ -2016,7 +1849,13 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
-	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	//pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	if (m_pEntityMaterial->GetRefCounter()==0)
+	{
+		SceneMaterial* pSceneMaterial = m_pEntityMaterial->CreateSceneMaterial(stInfo.strNodeName);
+		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
+	}
+
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
 
@@ -2068,7 +1907,12 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	//pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	if (m_pEntityMaterial->GetRefCounter()==0)
+	{
+		SceneMaterial* pSceneMaterial = m_pEntityMaterial->CreateSceneMaterial(stInfo.strNodeName);
+		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
+	}
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
 	pNewSceneNode->SetBoneRef(boneRef);
@@ -2381,25 +2225,13 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 {
 	pNode->SetNodeName(stInfo.strNodeName.c_str());
 	pNode->SetParentName(stInfo.strParentName.c_str());
-	//pNode->SetLocalTM(stInfo.tmLocal);
-	//pNode->SetWorldTM(stInfo.tmWorld);
 	pNode->SetParentNode(stInfo.pParent);
 	pNode->SetNodeTM(stInfo.tmNode);
 }
 
 SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMATRIX& localTM )
 {
-	/*
-	cRscTransformAnm* pRscTransformAnm = cResourceMng::m_pResourceMng->CreateRscTransformAnm(rootName,meshName,"DEFAULT");
-
-	// 리소스 가 이미 있으면 있는거 전달
-	if( pRscTransformAnm->GetRefCounter() != 0)
-	{
-		SkipBlock();
-		return pRscTransformAnm;
-	}
-	*/
-	SceneAnimation* pSceneAnimation = m_pAnimation->CreateSceneAnimation(std::string(meshName));
+	SceneAnimation* pSceneAnimation = m_pEntityAnimation->CreateSceneAnimation(std::string(meshName));
 	if ( !pSceneAnimation->m_arrayANMKEY.empty() )
 	{
 		SkipBlock();

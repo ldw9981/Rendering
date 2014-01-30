@@ -79,7 +79,7 @@ public:
 	virtual ~cASEParser(void);
 private:	
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
-	//std::vector<Material>				m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
+	//std::vector<Material>						m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
 	std::vector<std::vector<Material>>		m_vecMaterial;
 	D3DXVECTOR3			m_tempAxisMin;
 	D3DXVECTOR3			m_tempAxisMax;	
@@ -90,7 +90,8 @@ private:
 	cSceneNode*			m_pLastObject;
 	int					m_CNTOBJECT;
 	int					m_repeat;
-	Animation*			m_pAnimation;
+	EntityAnimation*			m_pEntityAnimation;
+	EntityMaterial*				m_pEntityMaterial;
 public:	
 	virtual void		Close();
 		BOOL			SkipBlock();
@@ -108,12 +109,11 @@ public:
 		BOOL			GetString(LPSTR pOutput);
 		BOOL			Getstring(LPWSTR pOutput);
 		BOOL			GetIdentifier(LPSTR pOutput);
-	cRscTransformAnm*	GetRscTransformAnm(const char* rootName,const char* meshName,const D3DXMATRIX& localTM);
 	SceneAnimation*		GetSceneAnimation(const char* meshName,const D3DXMATRIX& localTM);
 		
 		D3DXMATRIX&		GetNodeTM();
 
-		Entity*		GetRootNode() const { return m_pSceneRoot; }
+		Entity*			GetRootNode() const { return m_pSceneRoot; }
 		void			SetRootNode(Entity* val) { m_pSceneRoot = val; }	
 
 		BOOL			Load(const char* strFileName,Entity* pOutput);

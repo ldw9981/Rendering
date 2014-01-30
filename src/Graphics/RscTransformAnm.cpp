@@ -25,7 +25,7 @@ BOOL cRscTransformAnm::Create()
 
 void cRscTransformAnm::Free()
 {
-	cResourceMng::m_pInstance->EraseRscTransformAnm(GetUniqueKey());
+	//cResourceMng::m_pInstance->EraseRscTransformAnm(GetUniqueKey());
 	delete this;
 }
 

@@ -45,16 +45,15 @@ struct SCENETIME
 	std::string			FILENAME;		// 모델의 파일이름
 	DWORD			FIRSTFRAME;		// 시작 프레임
 	DWORD			LASTFRAME;		// 마지막 프레임
-	DWORD			LASTFRAMEMS;	// 마지막 프레임의 ms
 	DWORD			FRAMESPEED;		// 초당 프레임수
 	DWORD			TICKSPERFRAME;	// 프레임당 틱수
 	DWORD			MESHFRAMESTEP;
 	DWORD			KEYFRAMESTEP;
 	D3DXVECTOR3		BACKGROUND_STATIC;
 	D3DXVECTOR3		AMBIENT_STATIC;
-	DWORD			EX_MSPERFRAME;		// 계산된 부가정보. 프레임당 ms
-	DWORD			EX_TICKSPERMS;		// 계산된 부가정보. ms당 틱수	
-	DWORD			EX_LASTFRAMEMS;		// 계산된 부가정보. 마지막 프레임 ms
+	float			EX_MSPERFRAME;		// 계산된 부가정보. 프레임당 ms
+	float			EX_TICKSPERMS;		// 계산된 부가정보. ms당 틱수	
+	float			EX_LASTFRAMEMS;		// 계산된 부가정보. 마지막 프레임 ms
 };
 
 

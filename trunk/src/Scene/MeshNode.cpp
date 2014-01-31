@@ -36,7 +36,7 @@ cMeshNode::~cMeshNode(void)
 void cMeshNode::Update(DWORD elapseTime)
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateSceneAnimation(m_animationTime,elapseTime),m_pParentNode);	
+	UpdateWorldMatrix(UpdateSceneAnimation(),m_pParentNode);	
 	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);

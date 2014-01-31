@@ -126,8 +126,6 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 	if (!pSceneAnimation)
 		return NULL;
 
-	EntityAnimation* pEntityAnimation = m_pRootNode->m_vecAnimation[m_pRootNode->m_animationIndex];
-
 	pSceneAnimation->GetTransform(m_AnimationTM,m_pRootNode->m_animationTime);		
 	return &m_AnimationTM;
 }

@@ -88,7 +88,7 @@ void cMenuView::Enter()
 	AttachObject(m_pAirPlaneBake);	
 	
 	
-	/*
+	
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = new cObjDragon;	
@@ -102,7 +102,7 @@ void cMenuView::Enter()
 		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f+ i*300));
 		AttachObject(m_pHouse[i]);	
 	}
-	*/
+	
 	
 	
 

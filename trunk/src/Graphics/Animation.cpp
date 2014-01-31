@@ -127,21 +127,26 @@ void SceneAnimation::InterpolateAnmKey(ANMKEY& out)
 	int nIndexPrev=nIndex;
 	int nIndexAfter=nIndex;
 
+	ANMKEY& inter = m_arrayANMKEY[nIndex];
+
 	// 추정인덱스의 시간을 살표보고  크면 인덱스 -1
-	if ( out.AnmTick < m_arrayANMKEY[nIndex].AnmTick)
+	if ( out.AnmTick < inter.AnmTick)
 	{
 		if(nIndex>0)	nIndexPrev--;
 	}
-	else if( out.AnmTick >= m_arrayANMKEY[nIndex].AnmTick) 
+	else if( out.AnmTick >= inter.AnmTick) 
 	{
 		if (nIndex < (int)m_arrayANMKEY.size()-1)		nIndexAfter++;
 	}
 
-	float fValue=GetInterpolateValue(m_arrayANMKEY[nIndexPrev].AnmTick,m_arrayANMKEY[nIndexAfter].AnmTick,out.AnmTick);
+	ANMKEY& prev = m_arrayANMKEY[nIndexPrev];
+	ANMKEY& after = m_arrayANMKEY[nIndexAfter]; 
 
-	D3DXQuaternionSlerp(&out.RotationAccum,&m_arrayANMKEY[nIndexPrev].RotationAccum,&m_arrayANMKEY[nIndexAfter].RotationAccum,fValue);
-	D3DXVec3Lerp(&out.TranslationAccum,&m_arrayANMKEY[nIndexPrev].TranslationAccum,&m_arrayANMKEY[nIndexAfter].TranslationAccum,fValue);
-	D3DXVec3Lerp(&out.ScaleAccum,&m_arrayANMKEY[nIndexPrev].ScaleAccum,&m_arrayANMKEY[nIndexAfter].ScaleAccum,fValue);
+	float fValue=GetInterpolateValue(prev.AnmTick,after.AnmTick,out.AnmTick);
+
+	D3DXQuaternionSlerp(&out.RotationAccum,&prev.RotationAccum,&after.RotationAccum,fValue);
+	D3DXVec3Lerp(&out.TranslationAccum,&prev.TranslationAccum,&after.TranslationAccum,fValue);
+	D3DXVec3Lerp(&out.ScaleAccum,&prev.ScaleAccum,&after.ScaleAccum,fValue);
 }
 
 

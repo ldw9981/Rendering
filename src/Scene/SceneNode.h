@@ -47,7 +47,7 @@ protected:
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bRender;
-	DWORD					m_animationTime;
+	//DWORD					m_animationTime;
 	
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
@@ -56,7 +56,7 @@ public:
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
 	D3DXMATRIX&			GetNodeTM();
 		
-	D3DXMATRIX*			UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTime);
+	D3DXMATRIX*			UpdateSceneAnimation();
 	D3DXMATRIX&			GetAnimationTM();
 			
 
@@ -117,9 +117,6 @@ public:
 	virtual void		Release();	
 
 	cSceneNode*		CreateNode(SCENETYPE type);
-
-	void		SerializeInAnm(std::ifstream& stream);
-	void		SerializeOutAnm(std::ofstream& stream);
 
 	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();

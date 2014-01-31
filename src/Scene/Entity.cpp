@@ -14,8 +14,10 @@
 Entity::Entity(void)
 {
 	m_strNodeName="Entity";
-	m_indexAnimation = -1;
+	m_animationIndex = -1;
 	m_indexMaterial = -1;
+	m_animationTime = 0;
+	m_animationLoop = false;
 }
 
 
@@ -99,6 +101,21 @@ void Entity::RenderBound()
 
 void Entity::Update( DWORD elapseTime )
 {
+	if (m_animationIndex != -1 )
+	{
+		m_animationTime += elapseTime;
+		if( m_animationTime >= m_vecAnimation[m_animationIndex]->m_dwTimeLength )
+		{
+			if ( m_animationLoop)
+			{
+				m_animationTime -= m_vecAnimation[m_animationIndex]->m_dwTimeLength;
+			}
+			else
+			{
+				m_animationTime = m_vecAnimation[m_animationIndex]->m_dwTimeLength;
+			}
+		}
+	}
 	cSceneNode::Update(elapseTime);
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 }
@@ -292,6 +309,24 @@ void Entity::PopMaterial()
 	{
 		(*it)->PopMaterial();
 	}	
+}
+
+void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix )
+{
+	std::string key = m_vecAnimation[index]->GetUniqueKey() + std::string("_") + std::string(suffix);
+
+	EntityAnimation* pNew = cResourceMng::m_pInstance->CreateEntityAnimation(key.c_str());
+	m_vecAnimation[index]->Cut(timeStart,timeEnd,pNew);
+	PushAnimation(pNew);
+}
+
+void Entity::PlayAnimation( int index,bool loop )
+{
+	assert(index < (int)m_vecAnimation.size());
+	m_animationIndex = index;
+	m_animationLoop = loop;
+	m_animationTime = 0;
+	
 }
 
 

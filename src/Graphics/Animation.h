@@ -46,12 +46,15 @@ public:
 	~SceneAnimation(void);
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
-	DWORD	m_dwTimeLength;
+
 
 	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
-	void	GetTransform(D3DXMATRIX& out,DWORD& animationTime, DWORD dwTimeDelta);	
+	void	GetTransform(D3DXMATRIX& out,DWORD animationTime );	
+	void	InterpolateAnmKey(ANMKEY& out);
 	void	SerializeIn(std::ifstream& stream);
 	void	SerializeOut(std::ofstream& stream);
+
+	void	Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut);
 };
 
 // 엔티티 즉 전체 씬을 에니메이션하는 데이터
@@ -62,10 +65,10 @@ class EntityAnimation:
 public:
 	EntityAnimation(void);
 	~EntityAnimation(void);
-protected:
+public:
 	// SceneNodeName/ArrayAnmKey
 	std::map<std::string,SceneAnimation*> m_container;
-
+	DWORD	m_dwTimeLength;
 public:
 	SceneAnimation* GetSceneAnimtion(std::string& nodeNAme);
 	SceneAnimation* CreateSceneAnimation(std::string& nodeName);
@@ -75,6 +78,8 @@ public:
 
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
+
+	void	Cut(DWORD start,DWORD end,EntityAnimation* pOut);
 };
 
 

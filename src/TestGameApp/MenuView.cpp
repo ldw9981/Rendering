@@ -88,7 +88,7 @@ void cMenuView::Enter()
 	AttachObject(m_pAirPlaneBake);	
 	
 	
-	
+	/*
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = new cObjDragon;	
@@ -102,7 +102,7 @@ void cMenuView::Enter()
 		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f+ i*300));
 		AttachObject(m_pHouse[i]);	
 	}
-	
+	*/
 	
 	
 
@@ -208,8 +208,12 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		if( m_pDragon->m_indexAnimation == -1 ) m_pDragon->m_indexAnimation = 0;
-		else if( m_pDragon->m_indexAnimation == 0 ) m_pDragon->m_indexAnimation = -1;
+		m_pDragon->m_animationIndex ++;		
+		if (m_pDragon->m_animationIndex >= (int)m_pDragon->m_vecAnimation.size() )
+		{
+			m_pDragon->m_animationIndex =0;			
+		}
+		m_pDragon->PlayAnimation(m_pDragon->m_animationIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))
@@ -220,6 +224,10 @@ void cMenuView::Control()
 		m_pDragon->SaveMaterial(std::string(strDataPath+"dragon.material").c_str(),0);
 	}	
 
+	if (g_pInput->IsTurnDn(DIK_F9))
+	{
+		m_pDragon->CutAndPushEntityAnimation(0,0,1000,"Cut");
+	}	
 
 	
 }

@@ -30,7 +30,6 @@ cSceneNode::cSceneNode(void)
 
 	m_bIsActiveAnimation = true;
 	m_bRender = true;
-	m_animationTime = 0;
 	m_bIsBone = false;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
@@ -112,7 +111,7 @@ BOOL cSceneNode::IsRootNode()
 	return TRUE;
 }
 
-D3DXMATRIX* cSceneNode::UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTime)
+D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 {	
 	if (!m_bIsActiveAnimation)
 		return NULL;
@@ -120,14 +119,16 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation(DWORD& animationTime,DWORD elapseTi
 	if ( m_vecSceneAnimation.empty())
 		return NULL;
 
-	if ( m_pRootNode->m_indexAnimation == -1 )
+	if ( m_pRootNode->m_animationIndex == -1 )
 		return NULL;
 
-	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_indexAnimation];
+	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_animationIndex];
 	if (!pSceneAnimation)
 		return NULL;
 
-	pSceneAnimation->GetTransform(m_AnimationTM,animationTime,elapseTime);		
+	EntityAnimation* pEntityAnimation = m_pRootNode->m_vecAnimation[m_pRootNode->m_animationIndex];
+
+	pSceneAnimation->GetTransform(m_AnimationTM,m_pRootNode->m_animationTime);		
 	return &m_AnimationTM;
 }
 
@@ -274,7 +275,7 @@ void cSceneNode::Render()
 void cSceneNode::Update( DWORD elapseTime )
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateSceneAnimation(m_animationTime,elapseTime),m_pParentNode);
+	UpdateWorldMatrix(UpdateSceneAnimation(),m_pParentNode);
 	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);
@@ -332,16 +333,6 @@ cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 
 	assert(ret!=NULL);
 	return ret;
-}
-
-void cSceneNode::SerializeInAnm( std::ifstream& stream )
-{
-
-}
-
-void cSceneNode::SerializeOutAnm( std::ofstream& stream )
-{
-	
 }
 
 void cSceneNode::PushAnimation( EntityAnimation* pAnimation )

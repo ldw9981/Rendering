@@ -23,9 +23,11 @@ public:
 	cRendererQueue			m_renderQueueBlendShadow;
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
-	std::vector<EntityMaterial*>	m_vecMaterial;	
-	int					m_indexAnimation;
+	std::vector<EntityMaterial*>	m_vecMaterial;		
 	int					m_indexMaterial;
+	int					m_animationIndex;
+	DWORD				m_animationTime;
+	bool				m_animationLoop;
 protected:
 	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	
@@ -48,13 +50,16 @@ public:
 	virtual void PopMaterial();
 
 
-	bool	SaveScene(const char* fileName);
-	bool	LoadScene(const char* fileName);
+	bool SaveScene(const char* fileName);
+	bool LoadScene(const char* fileName);
+		 
+	bool SaveAnimation(const char* fileName,int index);
+	bool LoadAnimation(const char* fileName);
+		 
+	bool SaveMaterial(const char* fileName,int index);
+	bool LoadMaterial(const char* fileName);
 
-	bool	SaveAnimation(const char* fileName,int index);
-	bool	LoadAnimation(const char* fileName);
-
-	bool	SaveMaterial(const char* fileName,int index);
-	bool	LoadMaterial(const char* fileName);
+	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix );
+	void PlayAnimation(int index,bool loop);
 };
 

@@ -212,8 +212,7 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 	{
 		return FALSE;
 	}
-	m_pEntityAnimation = cResourceMng::m_pInstance->CreateEntityAnimation(m_SceneTime.FILENAME.c_str());
-	m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
+	
 	
 
 	m_Token =  GetToken(m_TokenString);
@@ -1036,7 +1035,7 @@ BOOL cASEParser::Parsing_MaterialList()
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_END) 
 		return FALSE;	// }	
 
-	
+	m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
 	return bRet;
 }
 
@@ -1481,11 +1480,18 @@ BOOL cASEParser::Parsing_Scene()
 		}
 	}
 	// 1프레임당 ms구하기
-	m_SceneTime.EX_MSPERFRAME= 1000/m_SceneTime.FRAMESPEED;
+	m_SceneTime.EX_MSPERFRAME = 1000.0f / (float)m_SceneTime.FRAMESPEED;
 	// 1ms당 틱수 구하기 
-	m_SceneTime.EX_TICKSPERMS= m_SceneTime.TICKSPERFRAME/m_SceneTime.EX_MSPERFRAME;
+	m_SceneTime.EX_TICKSPERMS = (float)m_SceneTime.TICKSPERFRAME/m_SceneTime.EX_MSPERFRAME;
 	// 마지막 프레임 ms구하기
-	m_SceneTime.LASTFRAMEMS= m_SceneTime.LASTFRAME*m_SceneTime.EX_MSPERFRAME;
+	m_SceneTime.EX_LASTFRAMEMS = (float)m_SceneTime.LASTFRAME * m_SceneTime.EX_MSPERFRAME;
+
+	m_pEntityAnimation = cResourceMng::m_pInstance->CreateEntityAnimation(m_SceneTime.FILENAME.c_str());
+	if (m_pEntityAnimation->GetRefCounter()==0)
+	{
+		m_pEntityAnimation->m_dwTimeLength = (DWORD)m_SceneTime.EX_LASTFRAMEMS;
+	}
+
 	return TRUE;
 }
 
@@ -2280,7 +2286,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 					if(m_Token!=TOKENR_CONTROL_POS_SAMPLE)
 						return FALSE;										
 
-					dwTimeKey = GetInt() / m_SceneTime.EX_TICKSPERMS;			
+					dwTimeKey =  DWORD((float)GetInt() / m_SceneTime.EX_TICKSPERMS);			
 
 					D3DXVECTOR3 vecTranslationAccum;
 					GetVector3(&vecTranslationAccum);
@@ -2305,7 +2311,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 
 					float ang;
 					D3DXVECTOR3 axis;
-					dwTimeKey =  GetInt() / m_SceneTime.EX_TICKSPERMS;	
+					dwTimeKey =  DWORD((float)GetInt() / m_SceneTime.EX_TICKSPERMS);			
 					GetVector3(&axis);
 
 					std::pair<DWORD,D3DXQUATERNION> ItemDelta;
@@ -2357,7 +2363,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	} 
 
 	//pRscTransformAnm->SetTimeLength(dwTimeKey);
-	pSceneAnimation->m_dwTimeLength = dwTimeKey;
+	assert(dwTimeKey== (DWORD)m_SceneTime.EX_LASTFRAMEMS);
 	std::vector<ANMKEY>& refArrAnmKey=pSceneAnimation->m_arrayANMKEY;
 
 	ANMKEY prevItem=localTM_anmkey;

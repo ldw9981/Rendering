@@ -4,7 +4,7 @@
 #include "Resource/ResourceMng.h"
 #include "Graphics/RscTexture.h"
 
-#include "Scene/ViewMng.h"
+#include "Framework/ViewMng.h"
 #include "TestView.h"
 #include "MenuView.h"
 #include "Framework/D3DFramework.h"

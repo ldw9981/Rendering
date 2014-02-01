@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Scene/RendererQueue.h"
+#include "RendererQueue.h"
 
 class cGUIFont;
 class cView;

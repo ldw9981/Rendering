@@ -7,10 +7,10 @@
 #include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
 #include "Framework/D3DFramework.h"
-#include "DebugInfoView.h"
-#include "RendererQueue.h"
+#include "Framework/DebugInfoView.h"
+#include "Graphics/RendererQueue.h"
 #include "Foundation/Define.h"
-#include "View.h"
+#include "Framework/View.h"
 
 // 최초 루트노드 생성자
 ZQuadTree::ZQuadTree(ZTerrain* pTerrain,int tl,int tr,int bl,int br )

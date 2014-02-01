@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "GlobalView.h"
 #include "GUI/GUIButton.h"
-#include "Scene/ViewMng.h"
+#include "Framework/ViewMng.h"
 #include "Framework/D3DFramework.h"
 #include "Framework/EnvironmentVariable.h"
 #include "TestGameApp.h"

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "TestView.h"
-#include "Scene/ViewMng.h"
+#include "Framework/ViewMng.h"
 
 #include "GUI/GUIButton.h"
 #include "TestGameApp.h"

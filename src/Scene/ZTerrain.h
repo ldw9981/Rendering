@@ -1,7 +1,7 @@
 #ifndef _ZTERRAIN_H_
 #define _ZTERRAIN_H_
 
-#include "Scene/Entity.h"
+#include "Graphics/Entity.h"
 #include "Math/Sphere.h"
 #include "Graphics/RscVertexBuffer.h"
 #include "Foundation/Interface.h"

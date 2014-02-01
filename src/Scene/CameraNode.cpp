@@ -1,5 +1,5 @@
 #include "StdAfx.h"
-#include "DebugInfoView.h"
+#include "Framework/DebugInfoView.h"
 #include "Framework/D3DFramework.h"
 #include "Math/CollisionDetector.h"
 #include "Math/Plane.h"

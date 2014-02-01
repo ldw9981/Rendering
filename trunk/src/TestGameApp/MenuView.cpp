@@ -3,11 +3,11 @@
 #include "ASEParser/ASEParser.h"
 #include "Framework/D3DFramework.h"
 #include "TestGameApp.h"
-#include "Scene/ViewMng.h"
+#include "Framework/ViewMng.h"
 #include "ObjTank.h"
 #include "ObjDragon.h"
 #include "GUI/GUIButton.h"
-#include "Scene/DebugInfoView.h"
+#include "Framework/DebugInfoView.h"
 #include "Framework/EnvironmentVariable.h"
 #include "Graphics/Graphics.h"
 

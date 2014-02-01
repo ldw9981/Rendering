@@ -2,7 +2,7 @@
 #include "ZTerrain.h"
 #include "dib.h"
 #include "Framework/D3DFramework.h"
-#include "DebugInfoView.h"
+#include "Framework/DebugInfoView.h"
 
 #include "Resource/ResourceMng.h"
 #include "Graphics/RscIndexBuffer.h"

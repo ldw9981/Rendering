@@ -11,7 +11,7 @@
 #include "Foundation/Define.h"
 #include "Foundation/StringUtil.h"
 #include "Framework/EnvironmentVariable.h"
-#include "Scene/Entity.h"
+#include "Graphics/Entity.h"
 
 cASEParser::cASEParser()
 {

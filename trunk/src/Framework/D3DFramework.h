@@ -1,7 +1,7 @@
 #pragma once
 #include "./Framework/EnvironmentVariable.h"
 #include "FpsMng.h"
-#include "Scene/RendererQueue.h"
+#include "Graphics/RendererQueue.h"
 
 
 class cD3DFramework;

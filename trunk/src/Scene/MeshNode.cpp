@@ -12,10 +12,10 @@
 #include "Foundation/Define.h"
 
 #include "Scene/CameraNode.h"
-#include "Scene/RendererQueue.h"
+#include "Graphics/RendererQueue.h"
 
 #include "Framework/D3DFramework.h"
-#include "Scene/View.h"
+#include "Framework/View.h"
 
 #define MESHNODE_LASTEST 1
 

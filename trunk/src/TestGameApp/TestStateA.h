@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene/View.h"
+#include "Framework/View.h"
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
 

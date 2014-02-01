@@ -5,7 +5,7 @@
 #include "RscVertexBuffer.h"
 #include "Vertex.h"
 #include "MaterialEx.h"
-#include "Scene/View.h"
+#include "Framework/View.h"
 #include "Framework/D3DFramework.h"
 #include "Framework/Window.h"
 

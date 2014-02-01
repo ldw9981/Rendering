@@ -16,7 +16,7 @@
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
 #include "Framework/D3DFramework.h"
-#include "Scene/View.h"
+#include "Framework/View.h"
 
 #define SKINNEDMESH_LASTEST 1
 

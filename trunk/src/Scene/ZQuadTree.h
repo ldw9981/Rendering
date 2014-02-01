@@ -3,7 +3,7 @@
 
 #include "Math/Sphere.h"
 #include "Math/Plane.h"
-#include "Scene/Entity.h"
+#include "Graphics/Entity.h"
 
 #define	CELL_MAX	2
 

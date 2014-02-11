@@ -4,8 +4,7 @@
 */
 #include "StdAfx.h"
 #include "SkinnedMeshNode.h"
-#include "ASEParser/ASEParser.h"
-#include "ASEParser/ASELexer.h"
+
 
 #include "Foundation/Trace.h"
 #include "Math/Sphere.h"
@@ -15,8 +14,7 @@
 
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
-#include "Framework/D3DFramework.h"
-#include "Framework/View.h"
+#include "Graphics/Entity.h"
 
 #define SKINNEDMESH_LASTEST 1
 

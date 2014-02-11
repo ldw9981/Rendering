@@ -1,12 +1,12 @@
 #include "StdAfx.h"
-#include "Graphics.h"
+#include "Entity.h"
 #include "Graphics.h"
 #include "Animation.h"
 #include "MaterialEx.h"
 #include "Vertex.h"
-#include "Framework/View.h"
 #include "Math/CollisionDetector.h"
 #include "Resource/ResourceMng.h"
+#include "ASEParser/ASEParser.h"
 
 #define ENTITY_LASTEST 1
 
@@ -314,10 +314,16 @@ void Entity::PopMaterial()
 void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix )
 {
 	std::string key = m_vecAnimation[index]->GetUniqueKey() + std::string("_") + std::string(suffix);
-
-	EntityAnimation* pNew = cResourceMng::m_pInstance->CreateEntityAnimation(key.c_str());
-	m_vecAnimation[index]->Cut(timeStart,timeEnd,pNew);
-	PushAnimation(pNew);
+	EntityAnimation* pNew = cResourceMng::m_pInstance->CreateEntityAnimation(key.c_str());	
+	if (pNew->GetRefCounter()==0)
+	{
+		m_vecAnimation[index]->Cut(timeStart,timeEnd,pNew);
+		PushAnimation(pNew);
+	}
+	else
+	{
+		assert(pNew->GetRefCounter()==0);
+	}
 }
 
 void Entity::PlayAnimation( int index,bool loop )
@@ -327,6 +333,14 @@ void Entity::PlayAnimation( int index,bool loop )
 	m_animationLoop = loop;
 	m_animationTime = 0;
 	
+}
+
+bool Entity::LoadASE( const char* fileName )
+{
+	cASEParser parser;
+	parser.Load(fileName,this);
+	parser.Close();
+	return true;
 }
 
 

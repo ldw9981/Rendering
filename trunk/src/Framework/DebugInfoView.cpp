@@ -11,9 +11,6 @@ cDebugInfoView::cDebugInfoView()
 {
 	m_pFont = new cGUIFont;
 	m_bRender = true;
-	SetViewPortInfo(0,0,
-		g_pApp->GetRequestRectWidth(),
-		g_pApp->GetRequestRectHeight());
 	m_pInstance = this;
 }
 
@@ -24,7 +21,11 @@ cDebugInfoView::~cDebugInfoView()
 
 void cDebugInfoView::Enter( void* arg )
 {
-	
+	assert(m_pParentView!=NULL);
+	m_graphicWorld.SetViewPortInfo(m_pParentView->m_graphicWorld.m_ViewPortInfo.X+0,
+		m_pParentView->m_graphicWorld.m_ViewPortInfo.Y+0,
+		g_pApp->GetRequestRectWidth(),
+		g_pApp->GetRequestRectHeight());
 }
 
 void cDebugInfoView::Leave()

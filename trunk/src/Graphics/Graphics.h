@@ -4,6 +4,7 @@
 
 class cGUIFont;
 class cView;
+class World;
 
 class Graphics
 {
@@ -49,8 +50,6 @@ public:
 
 	D3DXHANDLE				m_hmLightView;
 	D3DXHANDLE				m_hmLightProjection;
-
-	D3DXVECTOR4				m_WorldLightPosition;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
@@ -60,11 +59,11 @@ public:
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	bool					m_bDebugBound;
-
+	HWND					m_hWnd;
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 public:	
 
-	bool Init(bool bWindowed,int width,int height);
+	bool Init(HINSTANCE hinstance, HWND hwnd,bool bWindowed,int width,int height);
 	void Finalize();
 
 	void LoadHLSL(const char* szFileName);
@@ -72,8 +71,8 @@ public:
 	void RenderDebugString(int x,int y,const char* szText);
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
 
-	void Render(cView* pView);
-	void RenderEX(cView* pView);
+	void Render(World* pWorld);
+	void RenderEX(World* pWorld);
 	void Begin();
 	void End();
 };

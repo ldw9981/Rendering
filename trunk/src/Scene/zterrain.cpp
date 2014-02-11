@@ -1,9 +1,7 @@
 #include "StdAfx.h"
 #include "ZTerrain.h"
 #include "dib.h"
-#include "Framework/D3DFramework.h"
-#include "Framework/DebugInfoView.h"
-
+#include "Graphics/Entity.h"
 #include "Resource/ResourceMng.h"
 #include "Graphics/RscIndexBuffer.h"
 #include "Math/CollisionDetector.h"
@@ -20,7 +18,8 @@ ZTerrain::ZTerrain()
 	m_cyDIB			= 0;
 	m_vfScale		= D3DXVECTOR3(10.0f, 0.1f, 10.0f);
 	m_pvHeightMap	= NULL;
-	
+	m_pRscIndexBuffer = NULL;
+	m_pRscVertexBuffer = NULL;
 	m_pTex = NULL;
 	m_nTriangles	= 0;
 	m_pQuadTree		= NULL;

@@ -6,6 +6,7 @@
 class cGUIButton;
 class cObjTank;
 class cObjDragon;
+class Entity;
 class cMenuView :
 	public cView	
 {
@@ -13,13 +14,13 @@ public:
 	cMenuView(void);
 	virtual ~cMenuView(void);
 private:
-	cCameraNode	m_Camera;
-	cObjTank*	m_pTank;
+	//cCameraNode	m_Camera;
+	Entity*	m_pTank;
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
-	cObjDragon*			m_pDragon;
-	cObjDragon*			m_pAirPlaneBake;
-	cObjDragon*			m_pHouse[10];
+	Entity*			m_pDragon;
+	Entity*			m_pAirPlaneBake;
+	Entity*			m_pHouse[10];
 public:	
 	virtual void Enter();
 	virtual void Leave();

@@ -1,6 +1,5 @@
 #include "StdAfx.h"
-#include "Framework/DebugInfoView.h"
-#include "Framework/D3DFramework.h"
+#include "Graphics/Entity.h"
 #include "Math/CollisionDetector.h"
 #include "Math/Plane.h"
 #include "Math/Line.h"
@@ -9,7 +8,6 @@
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
 
-cCameraNode*	cCameraNode::m_pActiveCamera=NULL;
 
 cCameraNode::cCameraNode()
 {
@@ -144,15 +142,6 @@ void cCameraNode::MakeWorldPickingRay( float ScreenX,float ScreenY,cLine& Output
 	D3DXVec3TransformCoord(&posEnd,&posEnd,&matViewProjectionInv);	
 	Output.Make(posStart,posEnd);
 }
-
-
-
-void cCameraNode::SetActive()
-{
-	m_pActiveCamera = this;
-}
-
-
 
 void cCameraNode::Control()
 {

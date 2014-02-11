@@ -13,9 +13,7 @@
 
 #include "Scene/CameraNode.h"
 #include "Graphics/RendererQueue.h"
-
-#include "Framework/D3DFramework.h"
-#include "Framework/View.h"
+#include "Graphics/Entity.h"
 
 #define MESHNODE_LASTEST 1
 

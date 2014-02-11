@@ -4,8 +4,6 @@
 #include "Foundation/Trace.h"
 #include "CameraNode.h"
 #include "Graphics/RendererQueue.h"
-#include "Framework/D3DFramework.h"
-#include "Framework/DebugInfoView.h"
 #include "Math/Sphere.h"
 #include "Scene/MeshNode.h"
 #include "Scene/SkinnedMeshNode.h"

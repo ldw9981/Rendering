@@ -24,10 +24,10 @@ public:
 private:
 	TestStateA*	m_pTestStateA;
 	TestStateB*	m_pTestStateB;
-	cCameraNode			m_Camera;
+	//cCameraNode			m_Camera;
 public:
 	cGlobalView* m_pGlobalButtonScene;
-	cObjTank*			m_pP38;
+	Entity*			m_pP38;
 public:
 	// cScene
 	virtual void Enter();

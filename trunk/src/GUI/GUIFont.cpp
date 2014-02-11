@@ -2,8 +2,6 @@
 #include "GUIFont.h"
 #include "Graphics/Graphics.h"
 #include "Foundation/Define.h"
-#include "Framework/D3DFramework.h"
-#include "Framework/Window.h"
 
 cGUIFont::cGUIFont(void)
 {
@@ -55,7 +53,7 @@ void cGUIFont::Create()
 	int nHeight;
 	int nPointSize = 12;
 
-	hDC = GetDC( g_pApp->GetWindow()->m_hWnd );
+	hDC = GetDC( Graphics::g_pGraphics->m_hWnd );
 
 	nHeight = -( MulDiv( nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72 ) );
 

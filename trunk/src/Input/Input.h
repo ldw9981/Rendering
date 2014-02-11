@@ -67,6 +67,7 @@ private:
 
 	LONG m_screenWidth, m_screenHeight;
 	LONG m_mouseX, m_mouseY;
+	HWND m_hWnd;
 };
 
 extern Input* g_pInput;

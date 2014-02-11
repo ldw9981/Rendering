@@ -25,4 +25,5 @@
 #include <assert.h>
 #include <string>
 #include <bitset>
+#include <map>
 // TODO: reference additional headers your program requires here

@@ -3,7 +3,7 @@
 #include "Scene/CameraNode.h"
 #include "Framework/ViewMng.h"
 #include "Graphics/Entity.h"
-
+#include "Graphics/World.h"
 
 class cCameraNode;
 class cView:
@@ -28,30 +28,17 @@ protected:
 	
 
 	BOOL					m_bHide;					//입력을 받지않고 그리지않는다.	갱신은 한다.	
-	D3DVIEWPORT9			m_ViewPortInfo;	
+//	D3DVIEWPORT9			m_ViewPortInfo;	
 	std::string				m_strName;
+	
 public:
+	World					m_graphicWorld;
 	cViewMng				m_ViewState;
-	std::list<Entity*>		m_listEntity;
-	std::list<Entity*>		m_listEntityShadow;
-	std::list<Entity*>		m_listEntityRender;
-
-	cRendererQueue			m_renderQueueNormal[16];
-	cRendererQueue			m_renderQueueBlend[16];
-	cRendererQueue			m_renderQueueTerrain;
-	cRendererQueue			m_renderQueueGUI;
-
-	cRendererQueue			m_renderQueueNormalShadow;
-	cRendererQueue			m_renderQueueBlendShadow;
-
 public:
 	cViewMng& GetState() { return m_ViewState; }
 	cView* GetParentView() const { return m_pParentView; }
 	void SetParentView(cView* val) { m_pParentView = val; }
-	D3DVIEWPORT9&			GetViewPortInfo()  { return m_ViewPortInfo; }
-	void					SetViewPortInfo(UINT x,UINT y,UINT width,UINT height);
-	void					SetViewPortInfo(D3DVIEWPORT9& val) { m_ViewPortInfo = val; }
-	void					SetViewPort();
+
 
 	BOOL					GetHide() const { return m_bHide; }
 	void					SetHide(BOOL val) { m_bHide = val; }
@@ -62,7 +49,6 @@ public:
 
 	// cIRenderable
 	virtual void			ProcessRender();
-	void					ProcessRenderEx();
 
 	// cIUpdatable
 	virtual void			Update(DWORD elapseTime);
@@ -72,7 +58,5 @@ public:
 	virtual void			Render();
 
 	virtual void			Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
-	void					DebugRender();
 
-	void					CullFrustum();
 };

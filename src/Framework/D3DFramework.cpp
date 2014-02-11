@@ -1,12 +1,12 @@
 #include "StdAfx.h"
 #include "D3DFramework.h"
-#include "Foundation//Interface.h"
+#include "Foundation/Interface.h"
 #include "Input/Input.h"
 #include "Resource/ResourceMng.h"
 #include "Framework/ViewMng.h"
 #include "Framework/DebugInfoView.h"
 #include "Foundation/Define.h"
-#include "EnvironmentVariable.h"	
+#include "Foundation/EnvironmentVariable.h"	
 #include "Graphics/Graphics.h"
 #include "Window.h"
 
@@ -60,7 +60,7 @@ bool cD3DFramework::Initialize()
 	m_pWindow->Initialize(m_RequestRect);
 
 	m_pGraphics = new Graphics;	
-	m_pGraphics->Init(!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
+	m_pGraphics->Init(m_hInstance,m_pWindow->m_hWnd,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new Input;
 	AttachObject(m_pInput);
@@ -134,9 +134,13 @@ void cD3DFramework::Render()
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
 	stream << "FPS " << temp << " ";
-	stream << "LIGHT" << Graphics::g_pGraphics->m_WorldLightPosition.x << " ";
-	stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
-	stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
+
+	POINT pt;
+	m_pInput->GetMouseLocation(pt.x,pt.y);
+
+	stream << "MOUSE" << pt.x << " " << pt.y << " ";
+	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
+	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
 	stream << "RESOUCE " << m_pResourceMng->GetCount() << " ";
 	Graphics::g_pGraphics->RenderDebugString(0,0,stream.str().c_str());
 

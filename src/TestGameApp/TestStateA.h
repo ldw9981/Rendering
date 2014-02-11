@@ -12,8 +12,8 @@ public:
 	TestStateA(void);
 	virtual ~TestStateA(void);
 private:
-	cCameraNode	m_Camera;
-	cObjTank*	m_pTank;
+	//cCameraNode	m_Camera;
+	Entity*		m_pTank;
 	ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
 public:	

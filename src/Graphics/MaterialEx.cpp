@@ -4,7 +4,7 @@
 #include "Foundation/Define.h"
 #include "Foundation/StringUtil.h"
 #include "Resource/ResourceMng.h"
-#include "Framework/EnvironmentVariable.h"
+#include "Foundation/EnvironmentVariable.h"
 
 #define MATERIAL_LASTEST 1
 

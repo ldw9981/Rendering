@@ -48,9 +48,9 @@ protected:
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bRender;
 	//DWORD					m_animationTime;
-	
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
+
 	D3DXMATRIX				m_nodeTM;
 
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }

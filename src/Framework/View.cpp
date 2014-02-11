@@ -3,20 +3,19 @@
 #include "Scene/CameraNode.h"
 #include "Graphics/Graphics.h"
 #include "Math/CollisionDetector.h"
+#include "Graphics/World.h"
 
 
 cView::cView(void)
 :m_pParentView(NULL)
 {
 	m_bHide=FALSE;
-
-	m_ViewPortInfo.MinZ = 0.0f;
-	m_ViewPortInfo.MaxZ = 1.0f;
+	AttachObject(&m_graphicWorld);
 }
 
 cView::~cView(void)
 {
-	
+	DettachObject(&m_graphicWorld);
 }
 
 void cView::AttachObject( IUnknownObject* pIUnknownObject )
@@ -28,7 +27,7 @@ void cView::AttachObject( IUnknownObject* pIUnknownObject )
 		m_ControlableList.push_back(pIC);
 		pIC->m_ItControlable = --m_ControlableList.end();	
 	}
-
+	/*
 	Entity* pEntity = dynamic_cast<Entity*>(pIUnknownObject);
 	if (pEntity !=NULL)
 	{
@@ -37,7 +36,7 @@ void cView::AttachObject( IUnknownObject* pIUnknownObject )
 		pEntity->m_itEntityList = --m_listEntity.end();	
 		return;
 	}
-
+	*/
 
 	IRenderable* pIR = dynamic_cast<IRenderable*>(pIUnknownObject);
 	if(pIR != NULL)
@@ -63,12 +62,14 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 		m_ControlableList.erase(pIC->m_ItControlable);
 	}	
 
+	/*
 	Entity* pEntity = dynamic_cast<Entity*>(pIUnknownObject);
 	if (pEntity !=NULL)
 	{
 		m_listEntity.erase(pEntity->m_itEntityList);
 		return;
 	}
+	*/
 
 	IRenderable* pIR = dynamic_cast<IRenderable*>(pIUnknownObject);
 	if(pIR != NULL)
@@ -85,12 +86,13 @@ void cView::DettachObject( IUnknownObject* pIUnknownObject )
 
 void cView::Update( DWORD elapseTime )
 {	
+	/*
 	auto itEntity = m_listEntity.begin();
 	for ( ;itEntity!=m_listEntity.end() ; ++itEntity )
 	{
 		(*itEntity)->Update(elapseTime);
 	}	
-
+	*/
 	std::list<IUpdatable*>::iterator it=m_ProgressableList.begin();
 	for ( ;it!=m_ProgressableList.end() ; ++it )
 	{
@@ -118,13 +120,12 @@ void cView::ProcessRender()
 		return;
 	
 	// scene 
-	CullFrustum();
-	
+	/*
+	CullFrustum();	
 	Graphics::g_pGraphics->Render(this);	
-
 	m_listEntityShadow.clear();
 	m_listEntityRender.clear();
-
+	*/
 
 	// gui 
 	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
@@ -137,27 +138,7 @@ void cView::ProcessRender()
 	m_ViewState.ProcessRender();
 }
 
-void cView::SetViewPortInfo( UINT x,UINT y,UINT width,UINT height )
-{
-	if (m_pParentView)
-	{ 
-		m_ViewPortInfo.X= m_pParentView->m_ViewPortInfo.X + x;
-		m_ViewPortInfo.Y= m_pParentView->m_ViewPortInfo.Y + y;
-	}
-	else
-	{
-		m_ViewPortInfo.X = x;
-		m_ViewPortInfo.Y = y;
-	}
 
-	m_ViewPortInfo.Width=width;
-	m_ViewPortInfo.Height=height;	
-}
-
-void cView::SetViewPort()
-{
-	Graphics::m_pDevice->SetViewport(&m_ViewPortInfo);				
-}
 
 void cView::Render()
 {
@@ -166,7 +147,7 @@ void cView::Render()
 
 void cView::Enter()
 {
-
+	
 }
 
 void cView::Leave()
@@ -179,93 +160,4 @@ void cView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 
 }
 
-void cView::DebugRender()
-{
-	auto itEntity = m_listEntity.begin();
-	for ( ;itEntity!=m_listEntity.end() ; ++itEntity )
-	{
-		(*itEntity)->RenderBound();
-	}	
-}
 
-void cView::CullFrustum()
-{
-	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
-	if (!pActiveCamera)
-		return;
-
-	Frustum& frustum = pActiveCamera->GetFrustum();
-
-	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
-	{
-		if( (*itIn)->Cull(&frustum,500.0f) == false )
-			continue;	
-		
-
-		m_listEntityShadow.push_back(*itIn);
-
-		if( (*itIn)->Cull(&frustum,0.0f) == false )
-			continue;	
-
-		m_listEntityRender.push_back(*itIn);
-	}
-}
-
-void cView::ProcessRenderEx()
-{
-	if (m_bHide)
-		return;
-
-	// scene 
-	//CullFrustum(m_listEntity,m_listEntityShadow,100.0f);
-	//CullFrustum(m_listEntityShadow,m_listEntityRender,0.0f);
-
-	cCameraNode* pActiveCamera = cCameraNode::GetActiveCamera();
-	if (pActiveCamera)
-	{
-		Frustum& frustum = pActiveCamera->GetFrustum();
-
-		cCollision::STATE retCS;
-		for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
-		{
-			retCS = cCollision::CheckWorldFrustumWithoutYAxis(frustum, (*itIn)->GetBoundingSphere() ,500.0f);
-			if( retCS == cCollision::OUTSIDE)
-				continue;
-
-			// gather shadow Render
-			m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
-			m_renderQueueBlendShadow.Insert((*itIn)->m_renderQueueBlendShadow);
-
-			retCS = cCollision::CheckWorldFrustum(frustum, (*itIn)->GetBoundingSphere());
-			if( retCS == cCollision::OUTSIDE)
-				continue;
-
-			// gather model Render
-			for(int i=0;i<16;i++)
-			{
-				m_renderQueueNormal[i].Insert((*itIn)->m_renderQueueNormal[i]);
-				m_renderQueueBlend[i].Insert((*itIn)->m_renderQueueBlend[i]);
-			}	
-		}
-	}
-
-	Graphics::g_pGraphics->Render(this);	
-
-	m_renderQueueNormalShadow.Clear();
-	m_renderQueueBlendShadow.Clear();
-	for(int i=0;i<16;i++)
-	{
-		m_renderQueueNormal[i].Clear();
-		m_renderQueueBlend[i].Clear();
-	}
-
-	// gui 
-	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
-	for ( ;it!=m_RenderableList.end() ; ++it )
-	{
-		(*it)->ProcessRender();	
-	}
-
-	// state 
-	m_ViewState.ProcessRender();
-}

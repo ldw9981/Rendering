@@ -10,7 +10,7 @@
 #include "Graphics/RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Foundation/StringUtil.h"
-#include "Framework/EnvironmentVariable.h"
+#include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Entity.h"
 
 cASEParser::cASEParser()

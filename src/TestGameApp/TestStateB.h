@@ -11,11 +11,11 @@ public:
 	TestStateB(void);
 	virtual ~TestStateB(void);
 public:
-	cCameraNode			m_Camera;
+	//cCameraNode			m_Camera;
 	BOOL				m_bControlCamera;
-	cObjDragon*			m_pDragon;
-	cObjTank*			m_pTank;
-	cObjTank*			m_pAirPlaneBake;
+	Entity*			m_pDragon;
+	Entity*			m_pTank;
+	Entity*			m_pAirPlaneBake;
 public:
 	// cScene
 	virtual void Enter();

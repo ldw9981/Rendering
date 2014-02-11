@@ -49,7 +49,7 @@ public:
 	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
 	virtual void PopMaterial();
 
-
+	bool LoadASE(const char* fileName);
 	bool SaveScene(const char* fileName);
 	bool LoadScene(const char* fileName);
 		 

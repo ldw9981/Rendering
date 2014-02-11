@@ -1,5 +1,5 @@
 #pragma once
-#include "./Framework/EnvironmentVariable.h"
+#include "Foundation/EnvironmentVariable.h"
 #include "FpsMng.h"
 #include "Graphics/RendererQueue.h"
 

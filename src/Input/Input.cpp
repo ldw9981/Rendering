@@ -28,7 +28,7 @@ Input::~Input(void)
 bool Input::Initialize(HINSTANCE hinstance, HWND hwnd, int screenWidth, int screenHeight)
 {
 	HRESULT result;
-
+	m_hWnd = hwnd;
 
 	// Store the screen size which will be used for positioning the mouse cursor.
 	m_screenWidth = screenWidth;
@@ -285,7 +285,7 @@ bool Input::IsCurrUp(BYTE dik)
 
 bool Input::Mouse_IsTurnDn(BYTE button)
 {
-	if(m_keyboardStateTurnDn[button]&0x80)
+	if(m_mouseState.rgbButtons[button]&0x80)
 		return TRUE;
 
 	return FALSE;
@@ -293,7 +293,7 @@ bool Input::Mouse_IsTurnDn(BYTE button)
 
 bool Input::Mouse_IsTurnUp(BYTE button)
 {
-	if(m_keyboardStateTurnUp[button]&0x80)
+	if(m_mouseState.rgbButtons[button]&0x80)
 		return TRUE;
 
 	return FALSE;

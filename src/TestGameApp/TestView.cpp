@@ -12,7 +12,6 @@
 #include "MenuView.h"
 #include "GlobalView.h"
 #include "Framework/D3DFramework.h"
-#include "ASEParser/ASEParser.h"
 
 #include "Scene/ZTerrain.h"
 #include "TestView.h"
@@ -21,6 +20,9 @@
 #include "GlobalView.h"
 #include "ObjTank.h"
 #include "Graphics/Graphics.h"
+
+#define PI           3.14159265f
+#define FOV          (PI/4.0f)	
 
 cTestView::cTestView(void)
 {
@@ -38,26 +40,18 @@ cTestView::~cTestView(void)
 
 void cTestView::Enter()
 {
-	SetViewPortInfo(0,0,g_pApp->GetRequestRectWidth(),g_pApp->GetRequestRectHeight());
-	m_Camera.SetActive();
-	m_Camera.SetPerspective(D3DXToRadian(45),1.0f,10000.0f,
+	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_Camera.SetLookAt(&D3DXVECTOR3(0.0f, 0.0f, -1.0f),
-		&D3DXVECTOR3(0.0f, 0.0f, 1.0f),
-		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));		
-
-	m_Camera.SetLocalPos(D3DXVECTOR3(0.0f,0.0f,-1000.0f));
-	m_Camera.SetProcessInput(true);
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
+		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-	cASEParser parser;
-	m_pP38 = new cObjTank;	
-	parser.Load(std::string(strDataPath+"Light Map.ase").c_str(),m_pP38);
-	parser.Close();
+	m_pP38 = m_graphicWorld.CreateEntity();	
+	m_pP38->LoadASE(std::string(strDataPath+"Light Map.ase").c_str());	
 	m_pP38->Build();
-	m_pP38->Init();
 	m_pP38->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	AttachObject(m_pP38);
+	m_pP38->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 
 	m_pTestStateA = new TestStateA;
 	m_pTestStateA->SetParentView(this);	
@@ -86,8 +80,7 @@ void cTestView::Leave()
 	SAFE_DELETE(m_pTestStateB);	
 	SAFE_DELETE(m_pTestStateA);	
 
-	DettachObject(m_pP38);
-	SAFE_DELETE(m_pP38);
+	m_graphicWorld.DeleteEntity(m_pP38);
 
 }
 
@@ -103,13 +96,13 @@ void cTestView::Control()
 	}
 	if (g_pInput->IsTurnDn(DIK_EQUALS))
 	{
-		Graphics::g_pGraphics->m_WorldLightPosition.y += 50;
+		m_graphicWorld.m_WorldLightPosition.y += 50;
 
 	}
 
 	if (g_pInput->IsTurnDn(DIK_MINUS))
 	{
-		Graphics::g_pGraphics->m_WorldLightPosition.y -= 50;
+		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
 
 
@@ -118,14 +111,14 @@ void cTestView::Control()
 		Graphics::g_pGraphics->m_bDebugBound = !Graphics::g_pGraphics->m_bDebugBound;
 	}
 	
-	m_Camera.Control();
+	m_graphicWorld.m_camera.Control();
 }
 
 void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 	if (pSource== m_pGlobalButtonScene->m_pBtNextScene)
 	{
-		m_Camera.SetProcessInput(false);
+		m_graphicWorld.m_camera.SetProcessInput(false);
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
 		
@@ -135,8 +128,11 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 		}
 		else 
 		{
-			DettachObject(m_pP38);
-			SAFE_DELETE(m_pP38);
+			if (m_pP38)
+			{
+				m_graphicWorld.DeleteEntity(m_pP38);
+				m_pP38 = NULL;
+			}			
 
 			GetState().Transite(m_pTestStateB);
 		}		
@@ -150,11 +146,9 @@ void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 void cTestView::Update( DWORD elapseTime )
 {
 	cView::Update(elapseTime);
-	m_Camera.Update(elapseTime);
 }
 
 void cTestView::ProcessRender()
 {
-	m_Camera.Render();
 	cView::ProcessRender();
 }

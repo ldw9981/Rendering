@@ -37,9 +37,6 @@ private:
 	
 	Frustum				m_frustum;
 	
-
-	static cCameraNode*	m_pActiveCamera;
-	
 public:
 
 	virtual void		Render();
@@ -60,11 +57,8 @@ public:
 	const D3DXMATRIX&	GetMatViewProjection() { return m_matViewProjection; }
 	const D3DXMATRIX&	GetMatView() { return m_matView; }
 	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }
-	Frustum&      GetFrustum()  { return m_frustum; }
-	void				SetActive();	
+	Frustum&			GetFrustum()  { return m_frustum; }
+
 	bool GetProcessInput() const { return m_bProcessInput; }
 	void SetProcessInput(bool val) { m_bProcessInput = val; }
-
-	static 	cCameraNode* GetActiveCamera()  { return m_pActiveCamera; }
-	static void			SetActiveCamera(cCameraNode* val) { m_pActiveCamera = val; }	
 };

@@ -1,6 +1,6 @@
 #pragma once
 
-
+class World;
 class cGUIFont
 {
 public:
@@ -8,11 +8,13 @@ public:
 	virtual ~cGUIFont(void);
 private:
 	LPD3DXFONT			m_pD3DXFont;
-	RECT				m_DestRect;
+	RECT				m_rect;
 	D3DXCOLOR			m_Color;
 	DWORD				m_Format;
-
+	World*				m_pWorld;
+	
 public:
+	void SetWorld(World* val);
 	DWORD				GetFormat() const { return m_Format; }
 	void				SetFormat(DWORD val) { m_Format = val; }
 	D3DXCOLOR&			GetColor()  { return m_Color; }

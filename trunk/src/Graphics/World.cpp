@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "World.h"
+#include "GUI/GUIButton.h"
+#include "GUI/GUIFont.h"
 #include "Graphics.h"
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
@@ -46,6 +48,11 @@ void World::Update( DWORD elapseTime )
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
 		(*itIn)->Update(elapseTime);
+	}
+
+	for ( auto itIn = m_mapButton.begin() ;itIn!=m_mapButton.end() ; ++itIn )
+	{
+		(*itIn).second->Update(elapseTime);
 	}
 }
 
@@ -99,4 +106,34 @@ void World::DeleteTerrain( ZTerrain* pEntity )
 {
 	m_listEntity.erase(pEntity->m_itEntityList);
 	delete pEntity;
+}
+
+cGUIButton* World::CreateButton( const char* strImageFile)
+{
+	cGUIButton* pButton = new cGUIButton;
+	pButton->Create(strImageFile);
+	pButton->SetWorld(this);
+	m_mapButton.insert(std::make_pair(pButton,pButton));
+	return pButton;
+}
+
+void World::DeleteButton( cGUIButton* pButton )
+{
+	m_mapButton.erase(pButton);
+	delete pButton;
+}
+
+cGUIFont* World::CreateFont()
+{
+	cGUIFont* pFont = new cGUIFont;
+	pFont->Create();
+	pFont->SetWorld(this);
+	m_mapFont.insert(std::make_pair(pFont,pFont));
+	return pFont;
+}
+
+void World::DeleteFont( cGUIFont* pFont )
+{
+	m_mapFont.erase(pFont);
+	delete pFont;
 }

@@ -35,6 +35,7 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseBump;
 	D3DXHANDLE				m_hTCreateShadowNormal;	// Ω¶¿Ã¥ı
 	D3DXHANDLE				m_hTCreateShadowBlend;	// Ω¶¿Ã¥ı
+	D3DXHANDLE				m_hTGUI;
 	LPD3DXEFFECT			m_pApplyShadowShader;
 	LPD3DXEFFECT			m_pCreateShadowShader;
 

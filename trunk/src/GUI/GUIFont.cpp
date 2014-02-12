@@ -1,11 +1,13 @@
 #include "StdAfx.h"
 #include "GUIFont.h"
+#include "Graphics/World.h"
 #include "Graphics/Graphics.h"
 #include "Foundation/Define.h"
 
 cGUIFont::cGUIFont(void)
 {
-	memset(&m_DestRect,0,sizeof(m_DestRect));
+	m_pWorld = NULL;
+	memset(&m_rect,0,sizeof(m_rect));
 
 	m_Color = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
 	m_Format=DT_NOCLIP;
@@ -20,12 +22,23 @@ cGUIFont::~cGUIFont(void)
 
 void cGUIFont::DrawText(UINT x,UINT y, const char* text )
 {	
-	m_DestRect.left = x;
-	m_DestRect.top = y;
-	m_DestRect.right = 0;
-	m_DestRect.bottom = 0;
+	if (m_pWorld)
+	{
+		D3DVIEWPORT9& viewPort = m_pWorld->GetViewPortInfo();
+		m_rect.left = viewPort.X + x;
+		m_rect.top = viewPort.Y + y;
+		m_rect.right = 0;
+		m_rect.bottom = 0;
+	}
+	else
+	{
+		m_rect.left = x;
+		m_rect.top = y;
+		m_rect.right = 0;
+		m_rect.bottom = 0;
+	}
 
-	HRESULT hr = m_pD3DXFont->DrawText( NULL,text, -1,&m_DestRect, m_Format, m_Color );
+	HRESULT hr = m_pD3DXFont->DrawText( NULL,text, -1,&m_rect, m_Format, m_Color );
 
 	if( FAILED( hr ) )
 		MessageBox(NULL,"Call to D3DXCreateFont failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
@@ -65,4 +78,9 @@ void cGUIFont::Create()
 		DEFAULT_PITCH | FF_DONTCARE, TEXT("Aria"), 
 		&m_pD3DXFont );
 	
+}
+
+void cGUIFont::SetWorld( World* val )
+{
+	m_pWorld = val;
 }

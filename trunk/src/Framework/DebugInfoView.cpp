@@ -9,7 +9,6 @@ cDebugInfoView* cDebugInfoView::m_pInstance=0;
 
 cDebugInfoView::cDebugInfoView()
 {
-	m_pFont = new cGUIFont;
 	m_bRender = true;
 	m_pInstance = this;
 }
@@ -26,11 +25,13 @@ void cDebugInfoView::Enter( void* arg )
 		m_pParentView->m_graphicWorld.m_ViewPortInfo.Y+0,
 		g_pApp->GetRequestRectWidth(),
 		g_pApp->GetRequestRectHeight());
+
+	m_pFont = m_graphicWorld.CreateFont();
 }
 
 void cDebugInfoView::Leave()
 {
-
+	m_graphicWorld.DeleteFont(m_pFont);
 }
 
 void cDebugInfoView::Control()

@@ -66,6 +66,12 @@ float gSpecularPower = 32;
 const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
 float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 
+struct VS_GUI_INPUT
+{
+    float4 mPosition : POSITION;
+    float2 mTexCoord : TEXCOORD0;
+};
+
 struct VS_LINE_INPUT
 {
    float4 mPosition : POSITION;
@@ -101,6 +107,12 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
    int4   mBlendIndices    : BLENDINDICES; 
 };
 
+struct VS_GUI_OUTPUT
+{
+    float4 mPosition  : POSITION;
+    float2 mTexCoord : TEXCOORD0;
+};
+
 struct VS_LINE_OUTPUT
 {
    float4 mPosition : POSITION;
@@ -131,6 +143,16 @@ struct VS_PHONG_DIFFUSE_BUMP_OUTPUT
    float2 mTexCoord1 : TEXCOORD6;
    float4 mClipPosition: TEXCOORD7;
 };
+
+//------------------------------------------------------------------------------
+VS_GUI_OUTPUT vs_GUI(VS_GUI_INPUT input)
+{
+    VS_GUI_OUTPUT output;
+    float4 worldPosition = mul(input.mPosition , gWorldMatrix);
+    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
+    output.mTexCoord = input.mTexCoord;   
+    return output;
+}
 
 VS_LINE_OUTPUT vs_Line( VS_LINE_INPUT input)
 {
@@ -256,6 +278,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 }
 
 
+
 struct PS_PHONG_DIFFUSE_INPUT
 { 
    float2 mTexCoord : TEXCOORD0;
@@ -278,6 +301,13 @@ struct PS_PHONG_DIFFUSE_BUMP_INPUT
    float2 mTexCoord1 : TEXCOORD6;  
    float4 mClipPosition : TEXCOORD7;
 };
+
+
+float4 ps_GUI(VS_GUI_OUTPUT input) : COLOR
+{
+   float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
+    return float4(diffuseSample,0.0f);
+}
 
 float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
 {  
@@ -480,13 +510,19 @@ float4 ps_PhongDiffuseLight(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    return float4(color,0.0f);
 }
 
-
+technique TGUI
+{
+    pass P0
+    { 
+		VertexShader = compile vs_2_0 vs_GUI();
+        PixelShader  = compile ps_2_0 ps_GUI();
+    }  
+}
 
 technique TSkinningPhong
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_SkinningPhongDiffuse();
         PixelShader  = compile ps_2_0 ps_Phong();
     }  
@@ -497,7 +533,6 @@ technique TSkinningPhongDiffuse
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_SkinningPhongDiffuse();
         PixelShader  = compile ps_2_0 ps_PhongDiffuse();
     }  
@@ -507,7 +542,6 @@ technique TLine
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_Line();
         PixelShader  = compile ps_2_0 ps_Line();
     }  
@@ -517,7 +551,6 @@ technique TPhong
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_PhongDiffuse();
         PixelShader  = compile ps_2_0 ps_Phong();
     }  
@@ -527,7 +560,6 @@ technique TTerrain
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_Terrain();
         PixelShader  = compile ps_2_0 ps_Terrain();
     }  
@@ -538,7 +570,6 @@ technique TPhongDiffuse
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_PhongDiffuse();
         PixelShader  = compile ps_2_0 ps_PhongDiffuse();
     }  
@@ -548,7 +579,6 @@ technique TPhongDiffuseLight
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_PhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseLight();
     }  
@@ -558,7 +588,6 @@ technique TPhongDiffuseBump
 {
     pass P0
     {
-        // shaders
         VertexShader = compile vs_2_0 vs_PhongDiffuseBump();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseBump();
     }  

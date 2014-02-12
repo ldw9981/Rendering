@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Foundation/Define.h"
 #include "GUI/GUIFont.h"
+#include "GUI/GUIButton.h"
 #include "RscVertexBuffer.h"
 #include "Vertex.h"
 #include "MaterialEx.h"
@@ -223,6 +224,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
 	m_hTCreateShadowNormal = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
 	m_hTCreateShadowBlend = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
+	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 
 	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 	m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
@@ -568,6 +570,17 @@ void Graphics::Render( World* pWorld )
 		m_pEffect->End();	
 	}
 
+	m_pEffect->SetTechnique(m_hTGUI);
+	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+	m_pEffect->BeginPass(0);
+	for ( auto it = pWorld->m_mapButton.begin();it != pWorld->m_mapButton.end() ; ++it )
+	{
+		(*it).second->Render();
+	}	
+	m_pEffect->EndPass();
+	m_pEffect->End();
+
+	// SHADOW_MAP
 	m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	m_pDevice->SetFVF(FVF_GUIVERTEX);
 	m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &g_vertices[0], sizeof(GUIVERTEX));

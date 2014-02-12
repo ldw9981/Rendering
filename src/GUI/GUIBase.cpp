@@ -3,6 +3,7 @@
 
 cGUIBase::cGUIBase(void)
 {
+	m_pWorld = NULL;
 }
 
 cGUIBase::~cGUIBase(void)

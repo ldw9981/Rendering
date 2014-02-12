@@ -45,6 +45,7 @@ public:
 	bool	Mouse_IsTurnUp(BYTE button);
 	bool	Mouse_IsCurrDn(BYTE button);
 	bool	Mouse_IsCurrUp(BYTE button);
+	bool	Mouse_IsMove();
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();

@@ -17,12 +17,13 @@ struct BUTTONFAN
 
 class cRscTexture;
 class INotifiable;
+class World;
 class cGUIButton:
 	public cGUIBase
 
 {
 public:
-	cGUIButton(INotifiable* pMediator);
+	cGUIButton();
 	virtual ~cGUIButton(void);
 
 private:
@@ -31,7 +32,7 @@ private:
 	UINT 				m_ImageIndex;
 	cRscTexture*		m_pImage;
 	
-	RECT				m_Rect;
+	RECT				m_rect;
 	float				m_Width;
 	float				m_Height;
 	float				m_TWidth;

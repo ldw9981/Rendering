@@ -80,8 +80,10 @@ void cTestView::Leave()
 	SAFE_DELETE(m_pTestStateB);	
 	SAFE_DELETE(m_pTestStateA);	
 
-	m_graphicWorld.DeleteEntity(m_pP38);
-
+	if (m_pP38)
+	{
+		m_graphicWorld.DeleteEntity(m_pP38);
+	}
 }
 
 void cTestView::Control()

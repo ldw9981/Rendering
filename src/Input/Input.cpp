@@ -316,3 +316,14 @@ bool Input::Mouse_IsCurrUp(BYTE button)
 	return TRUE;
 
 }
+
+bool Input::Mouse_IsMove()
+{
+	if(m_mouseState.lX != 0 ) 
+		return true;
+
+	if(m_mouseState.lY != 0 )
+		return true;
+
+	return false;
+}

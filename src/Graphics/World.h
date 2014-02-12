@@ -6,6 +6,8 @@
 
 class Entity;
 class ZTerrain;
+class cGUIButton;
+class cGUIFont;
 class World	:
 	public IUnknownObject,
 	public IUpdatable,
@@ -30,23 +32,28 @@ public:
 
 	cRendererQueue			m_renderQueueNormalShadow;
 	cRendererQueue			m_renderQueueBlendShadow;
+
+	std::map<cGUIButton*,cGUIButton*> m_mapButton;
+	std::map<cGUIFont*,cGUIFont*> m_mapFont;
 public:
 	// camera
 	cCameraNode				m_camera;
 	// directional light
 	D3DXVECTOR4				m_WorldLightPosition;
-
+protected:
 public:
-	// create Entity
+	// create,delete
 	Entity* CreateEntity();
 	void DeleteEntity(Entity* pEntity);
 	ZTerrain* CreateTerrain( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, const char* lpTexFilename );
 	void DeleteTerrain(ZTerrain* pEntity);
 
-	
-	// delete Entity
+	cGUIButton* CreateButton( const char* strImageFile);
+	void DeleteButton(cGUIButton* pButton);
 
-	// find Entity
+	cGUIFont* CreateFont();
+	void DeleteFont(cGUIFont* pButton);
+
 	virtual void ProcessRender();
 	virtual void Update(DWORD elapseTime);
 	void CullFrustum();

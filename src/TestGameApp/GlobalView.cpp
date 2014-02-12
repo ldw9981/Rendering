@@ -27,29 +27,19 @@ void cGlobalView::Enter()
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
-	m_pBtNextScene = new cGUIButton((INotifiable*) g_pApp->GetView());
-	m_pBtNextScene->Create(std::string(strDataPath+"ButtonNextScene.bmp").c_str());
+	m_pBtNextScene = m_graphicWorld.CreateButton(std::string(strDataPath+"ButtonNextScene.bmp").c_str());
+	m_pBtNextScene->SetMediator((INotifiable*) g_pApp->GetView());
 	m_pBtNextScene->SetPos(256,0);
-	AttachObject(m_pBtNextScene);
 
-	m_pBtExit = new cGUIButton((INotifiable*)g_pApp->GetView());
-	m_pBtExit->Create(std::string(strDataPath+"ButtonExit.bmp").c_str());
+	m_pBtExit = m_graphicWorld.CreateButton(std::string(strDataPath+"ButtonExit.bmp").c_str());
+	m_pBtExit->SetMediator((INotifiable*) g_pApp->GetView());
 	m_pBtExit->SetPos(128,0+64);
-	AttachObject(m_pBtExit);
-
-	//	m_pFont = new cGUIFont;
-	//	m_pFont->Create();
-	//	m_pFont->SetColor(D3DXCOLOR(0.0,0.0,0.0,0.0));
 }
 
 void cGlobalView::Leave()
 {
-
-	DettachObject(m_pBtNextScene);
-	SAFE_DELETE(m_pBtNextScene);
-
-	DettachObject(m_pBtExit);
-	SAFE_DELETE(m_pBtExit);
+	m_graphicWorld.DeleteButton(m_pBtNextScene);
+	m_graphicWorld.DeleteButton(m_pBtExit);
 }
 
 

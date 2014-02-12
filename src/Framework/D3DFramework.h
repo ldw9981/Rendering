@@ -18,6 +18,7 @@ class Input;
 class cViewMng;
 class cView;
 class Window;
+class CursorManager;
 
 class cD3DFramework 
 {
@@ -53,6 +54,7 @@ protected:
 	cResourceMng*			m_pResourceMng;
 	
 	CFpsMng					m_FpsMng;
+	CursorManager*			m_pCursorManager;
 	cView*					m_pView;
 	
 	

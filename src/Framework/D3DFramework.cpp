@@ -9,7 +9,7 @@
 #include "Foundation/EnvironmentVariable.h"	
 #include "Graphics/Graphics.h"
 #include "Window.h"
-
+#include "GUI/CursorManager.h"
 
 
 cD3DFramework* g_pApp=NULL;
@@ -72,11 +72,16 @@ bool cD3DFramework::Initialize()
 	
 
 	m_pResourceMng = new cResourceMng;	
+	m_pCursorManager = new CursorManager;
+	m_pCursorManager->Initialize(m_pWindow->m_hWnd);
 	return true;
 }
 
 void cD3DFramework::Finalize()
 {		
+	m_pCursorManager->Finalize();
+	SAFE_DELETE(m_pCursorManager);
+
 	SAFE_DELETE(m_pResourceMng);
 	DettachObject(m_pInput);
 	m_pInput->Finalize();
@@ -133,15 +138,16 @@ void cD3DFramework::Render()
 	Graphics::g_pGraphics->Begin();
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
-	stream << "FPS " << temp << " ";
+	stream << "FPS " << temp << "\n";
 
 	POINT pt;
-	m_pInput->GetMouseLocation(pt.x,pt.y);
-
-	stream << "MOUSE" << pt.x << " " << pt.y << " ";
+	g_pInput->GetMouseDelta(pt.x,pt.y);
+	stream << "MOUSE delta " << g_pInput->Mouse_IsMove() << "" << pt.x << " " << pt.y << "\n";
+	m_pCursorManager->GetCursorPos(&pt);
+	stream << "CURSOR pos " << pt.x << " " << pt.y << "\n";
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
-	stream << "RESOUCE " << m_pResourceMng->GetCount() << " ";
+	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";
 	Graphics::g_pGraphics->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();

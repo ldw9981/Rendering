@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 class EnvironmentVariable
 {
@@ -20,3 +22,4 @@ protected:
 	std::map<std::string,int>			m_mapEnvironmentVarInt;
 	std::map<std::string,float>		m_mapEnvironmentVarFloat;	
 };
+}

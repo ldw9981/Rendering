@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Restore.h"
+namespace Sophia
+{
 
 class cResource;
 class cIRestore;
@@ -51,3 +53,4 @@ public:
 	int					GetCount();
 };
 
+}

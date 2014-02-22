@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "Plane.h"
+namespace Sophia
+{
 
 cPlane::cPlane(void)
 {
@@ -98,4 +100,5 @@ void cPlane::SetNormal( D3DXVECTOR3& normal )
 void cPlane::SetD( float d )
 {
 	D3DXPLANE::d = d;
+}
 }

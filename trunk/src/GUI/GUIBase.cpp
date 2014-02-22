@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "GUIBase.h"
+namespace Sophia
+{
 
 cGUIBase::cGUIBase(void)
 {
@@ -13,4 +15,5 @@ cGUIBase::~cGUIBase(void)
 void cGUIBase::ProcessRender()
 {
 	Render();
+}
 }

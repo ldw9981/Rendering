@@ -20,6 +20,8 @@
 #pragma once
 
 #include "Lexer.h"
+namespace Sophia
+{
 
 //*****************************************************************************
 //*  Toke Definition                                                          *
@@ -297,3 +299,5 @@ public:
 	virtual void		AddTokenHistory( int identifier );
 	void				TraceHistory();
 };
+
+}

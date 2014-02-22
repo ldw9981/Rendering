@@ -1,6 +1,10 @@
 #pragma once
 #include "Foundation/interface.h"
 #include "Resource/Resource.h"
+
+namespace Sophia
+{
+
 typedef unsigned char SUBMATINDEX;
 
 /*
@@ -91,3 +95,5 @@ public:
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
 };
+
+}

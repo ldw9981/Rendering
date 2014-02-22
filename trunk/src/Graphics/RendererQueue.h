@@ -4,6 +4,8 @@
 
 */
 #include "Foundation/Interface.h"
+namespace Sophia
+{
 
 class IRenderer;
 class cRendererQueue:
@@ -37,3 +39,4 @@ public:
 	void	Render();
 	bool	IsEmpty();
 };
+}

@@ -3,7 +3,12 @@
 #include "View.h"
 #include "Foundation/Interface.h"
 
-class cGUIFont;
+namespace Sophia
+{
+	class cGUIFont;
+
+
+
 class cDebugInfoView:
 	public cView	
 {
@@ -13,7 +18,7 @@ public:
 
 	static cDebugInfoView* m_pInstance;
 private:
-	cGUIFont*			m_pFont;
+	Sophia::cGUIFont*			m_pFont;
 	std::string 		m_DebugString;
 	BOOL				m_bRender;
 	
@@ -33,3 +38,4 @@ public:
 	// cINotifiable
 	virtual void		Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };
+}

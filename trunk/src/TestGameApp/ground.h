@@ -2,7 +2,7 @@
 #include "Scene/SceneNode.h"
 
 class cGround:
-	public cSceneNode
+	public Sophia::cSceneNode
 {
 public:
 	cGround();

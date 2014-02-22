@@ -7,6 +7,7 @@
 #include "TestGameApp.h"
 
 
+using namespace Sophia;
 
 cGlobalView::cGlobalView(void)
 {
@@ -20,6 +21,7 @@ cGlobalView::~cGlobalView(void)
 
 void cGlobalView::Enter()
 {
+	cView::Enter();
 	assert(m_pParentView!=NULL);
 	m_graphicWorld.SetViewPortInfo(m_pParentView->m_graphicWorld.m_ViewPortInfo.X+128,m_pParentView->m_graphicWorld.m_ViewPortInfo.Y+0
 		,128*3,128);
@@ -40,6 +42,7 @@ void cGlobalView::Leave()
 {
 	m_graphicWorld.DeleteButton(m_pBtNextScene);
 	m_graphicWorld.DeleteButton(m_pBtExit);
+	cView::Leave();
 }
 
 

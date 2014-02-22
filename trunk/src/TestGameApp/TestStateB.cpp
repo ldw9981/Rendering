@@ -6,7 +6,7 @@
 #include "ObjTank.h"
 #include "TestGameApp.h"
 #include "Input/Input.h"
-
+using namespace Sophia;
 TestStateB::TestStateB(void)
 	:m_pDragon(NULL),m_pTank(NULL),m_pAirPlaneBake(NULL)
 {
@@ -26,6 +26,7 @@ TestStateB::~TestStateB(void)
 
 void TestStateB::Enter()
 {
+	cView::Enter();
 	m_graphicWorld.SetViewPortInfo(0,0,g_pApp->GetRequestRectWidth(),g_pApp->GetRequestRectHeight());
 	
 	m_bControlCamera=FALSE;
@@ -51,6 +52,7 @@ void TestStateB::Leave()
 {
 	m_graphicWorld.DeleteEntity(m_pDragon);	
 	m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
+	cView::Leave();
 }
 
 void TestStateB::Control()

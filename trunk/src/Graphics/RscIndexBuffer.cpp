@@ -4,6 +4,7 @@
 #include "Resource/ResourceMng.h"
 #include "Graphics/Graphics.h"
 
+using namespace Sophia;
 
 cRscIndexBuffer::cRscIndexBuffer(void)
 {	

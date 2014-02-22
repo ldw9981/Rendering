@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "Line.h"
+namespace Sophia
+{
 
 cLine::cLine(void)
 {
@@ -28,4 +30,5 @@ void cLine::GetPosition( const float t,D3DXVECTOR3& posOut )
 {
 	posOut = t * GetDirection();
 	posOut += m_Start;
+}
 }

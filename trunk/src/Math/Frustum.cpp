@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Frustum.h"
 
+namespace Sophia
+{
 
 Frustum::Frustum(void)
 {
@@ -60,4 +62,6 @@ void Frustum::Make( D3DXMATRIX &mat )
 cPlane& Frustum::GetPlane( int side )
 {
 	return m_plane[side];
+}
+
 }

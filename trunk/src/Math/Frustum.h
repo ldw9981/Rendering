@@ -1,6 +1,8 @@
 #pragma once
 #include "Plane.h"
 
+namespace Sophia
+{
 
 
 class Frustum
@@ -27,3 +29,4 @@ public:
 	cPlane& GetPlane( int side );
 };
 
+}

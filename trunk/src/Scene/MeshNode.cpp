@@ -15,7 +15,12 @@
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
 
+namespace Sophia
+{
+
 #define MESHNODE_LASTEST 1
+
+
 
 cMeshNode::cMeshNode(void)
 {		
@@ -54,21 +59,21 @@ void cMeshNode::Render(unsigned char multiSubIndex)
 	
 
 
-	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationNormal);
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
 	if( material.GetMapDiffuse() != NULL )	
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
 
 	if( material.GetMapNormal() != NULL )	
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
 
 	if( material.GetMapLight() != NULL )
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
 
-	Graphics::g_pGraphics->GetEffect()->CommitChanges();
+	Graphics::m_pInstance->GetEffect()->CommitChanges();
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
@@ -416,4 +421,6 @@ void cMeshNode::PopMaterial()
 	m_vecSceneMaterial.pop_back();
 
 	cSceneNode::PopMaterial();
+}
+
 }

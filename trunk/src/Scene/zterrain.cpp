@@ -9,6 +9,9 @@
 #include "Foundation/Define.h"
 #include "Graphics/Graphics.h"
 
+namespace Sophia
+{
+
 
 /// 생성자
 ZTerrain::ZTerrain()
@@ -172,12 +175,16 @@ void	ZTerrain::Render(unsigned char multiSubIndex)
 	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
-	Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",m_pTex);	
-	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&m_matWorld);
-	Graphics::g_pGraphics->GetEffect()->CommitChanges();
+	Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",m_pTex);	
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
+	Graphics::m_pInstance->GetEffect()->CommitChanges();
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 0, 0, m_cxDIB * m_czDIB, 0, m_nTriangles );
 
+
+	char temp[256];
+	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
+	Graphics::m_pInstance->RenderDebugString(0,Graphics::m_pInstance->m_viewPortInfo.Height-20,temp);
 }
 
 HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
@@ -187,11 +194,6 @@ HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 	m_nTriangles=0;
 	m_pQuadTree->GenTriIndex(frustum, m_nTriangles, pI,false );
 	m_pRscIndexBuffer->Unlock();
-
-	char temp[256];
-	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
-	Graphics::g_pGraphics->RenderDebugString(0,20,temp);
-
 	return S_OK;
 }
 
@@ -228,4 +230,5 @@ bool ZTerrain::Cull(  Frustum* pFrustum ,float loose )
 void ZTerrain::QueueRenderer( Entity* pEntity,bool bTraversal )
 {
 	pEntity->m_renderQueueTerrain.Insert(this,0);
+}
 }

@@ -3,6 +3,10 @@
 #include "Math/Sphere.h"
 #include "Graphics/RendererQueue.h"
 
+
+namespace Sophia
+{
+
 class EntityAnimation;
 class EntityMaterial;
 
@@ -63,3 +67,5 @@ public:
 	void PlayAnimation(int index,bool loop);
 };
 
+
+}

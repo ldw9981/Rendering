@@ -1,4 +1,7 @@
 #pragma once
+namespace Sophia
+{
+
 
 class cIRestore;
 class cStaticRestoreList
@@ -22,3 +25,4 @@ public:
 public:
 	virtual void Restore()=0;
 };
+}

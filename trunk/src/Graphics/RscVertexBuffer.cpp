@@ -4,6 +4,9 @@
 #include "Resource/ResourceMng.h"
 #include "Graphics/Graphics.h"
 
+
+using namespace Sophia;
+
 cRscVertexBuffer::cRscVertexBuffer(void)
 {
 	m_pD3DVertexBuffer=NULL;

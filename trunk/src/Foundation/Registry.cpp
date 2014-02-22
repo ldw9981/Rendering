@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <shlwapi.h>
 #pragma comment(lib,"shlwapi")
+namespace Sophia
+{
 
 Registry::Registry(void)
 {
@@ -160,3 +162,4 @@ bool Registry::WriteStringToREG(LPCTSTR lpKey, LPCTSTR lpValue, LPCTSTR lpData)
 	return WriteStringToREG(HiveKey,Key,lpValue,lpData);
 }
 
+}

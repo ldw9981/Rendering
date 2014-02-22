@@ -5,7 +5,7 @@
 class cObjDragon;
 class cObjTank;
 class TestStateB :
-	public cView
+	public Sophia::cView
 {
 public:
 	TestStateB(void);
@@ -13,9 +13,9 @@ public:
 public:
 	//cCameraNode			m_Camera;
 	BOOL				m_bControlCamera;
-	Entity*			m_pDragon;
-	Entity*			m_pTank;
-	Entity*			m_pAirPlaneBake;
+	Sophia::Entity*			m_pDragon;
+	Sophia::Entity*			m_pTank;
+	Sophia::Entity*			m_pAirPlaneBake;
 public:
 	// cScene
 	virtual void Enter();

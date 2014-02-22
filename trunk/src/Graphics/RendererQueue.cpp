@@ -2,6 +2,8 @@
 #include "RendererQueue.h"
 #include "Foundation/Interface.h"
 
+namespace Sophia
+{
 
 
 cRendererQueue::cRendererQueue()
@@ -44,3 +46,4 @@ void cRendererQueue::Clear()
 	m_listNode.clear();
 }
 
+}

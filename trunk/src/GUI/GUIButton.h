@@ -6,7 +6,8 @@
 #include "GUIBase.h"
 
 
-
+namespace Sophia
+{
 
 struct BUTTONFAN
 {
@@ -46,3 +47,5 @@ public:
 	virtual void		Update(DWORD elapsetime);
 	virtual void		Control();
 };
+
+}

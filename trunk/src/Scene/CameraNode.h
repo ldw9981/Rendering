@@ -3,6 +3,8 @@
 #include "Math/CollisionDetector.h"
 #include "Math/Frustum.h"
 
+namespace Sophia
+{
 
 
 class cPlane;
@@ -62,3 +64,5 @@ public:
 	bool GetProcessInput() const { return m_bProcessInput; }
 	void SetProcessInput(bool val) { m_bProcessInput = val; }
 };
+
+}

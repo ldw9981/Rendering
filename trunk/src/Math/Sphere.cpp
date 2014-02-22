@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "Sphere.h"
 
+namespace Sophia
+{
+
 cSphere::cSphere(void)
 {
 	m_CenterPos=D3DXVECTOR3(0.0f,0.0f,0.0f);
@@ -53,4 +56,6 @@ cSphere& cSphere::operator =(cSphere &rhs)
 	m_Radius = rhs.m_Radius;
 	m_CenterPos = rhs.m_CenterPos;
 	return *this;
+}
+
 }

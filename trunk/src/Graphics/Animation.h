@@ -1,6 +1,8 @@
 #pragma once
 #include "Resource/Resource.h"
 #include "Foundation/Interface.h"
+namespace Sophia
+{
 
 struct POSKEY
 {
@@ -35,7 +37,9 @@ struct ANMKEY
 	{
 
 	}
+
 };
+
 
 // 하나의 씬노드에 해당하는 시간을 포함한 연속적인 에니메이션 데이터 
 class SceneAnimation:
@@ -82,5 +86,5 @@ public:
 	void	Cut(DWORD start,DWORD end,EntityAnimation* pOut);
 };
 
-
+}
 

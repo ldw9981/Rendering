@@ -4,6 +4,8 @@
 #include "RendererQueue.h"
 #include "Scene/CameraNode.h"
 
+namespace Sophia
+{
 class Entity;
 class ZTerrain;
 class cGUIButton;
@@ -18,8 +20,11 @@ public:
 	virtual ~World(void);
 
 public:
-	
+	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
+	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
+	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	D3DVIEWPORT9			m_ViewPortInfo;
+
 	// entity
 	std::list<Entity*>		m_listEntity;
 	std::list<Entity*>		m_listEntityShadow;
@@ -40,6 +45,7 @@ public:
 	cCameraNode				m_camera;
 	// directional light
 	D3DXVECTOR4				m_WorldLightPosition;
+	bool					m_bDebugBound;
 protected:
 public:
 	// create,delete
@@ -58,11 +64,11 @@ public:
 	virtual void Update(DWORD elapseTime);
 	void CullFrustum();
 
-	D3DVIEWPORT9&			GetViewPortInfo()  { return m_ViewPortInfo; }
 	void					SetViewPortInfo(UINT x,UINT y,UINT width,UINT height);
-	void					SetViewPortInfo(D3DVIEWPORT9& val) { m_ViewPortInfo = val; }
-	void					SetViewPort();
-
-	
+	void					SetViewPortInfo(D3DVIEWPORT9& val) { m_ViewPortInfo = val; }	
+	bool Initialize();
+	void Finalize();
+	void Render();
 };
 
+}

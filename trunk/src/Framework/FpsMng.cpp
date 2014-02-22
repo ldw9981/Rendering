@@ -14,6 +14,8 @@
 #include <mmsystem.h>
 #include "FpsMng.h"
 //#include "DXCommon.h"
+namespace Sophia
+{
 
 CFpsMng::CFpsMng()
 {
@@ -151,4 +153,6 @@ void CFpsMng::FrameTuningEx()
 	}
 	/////	
 	m_dwOldMSec = timeGetTime();	
+}
+
 }

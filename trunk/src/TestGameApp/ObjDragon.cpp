@@ -3,6 +3,8 @@
 #include "Scene/SceneNode.h"
 #include "Input/Input.h"
 
+using namespace Sophia;
+
 cObjDragon::cObjDragon()
 {	
 	m_pDummy=NULL;

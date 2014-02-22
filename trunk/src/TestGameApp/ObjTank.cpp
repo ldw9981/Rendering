@@ -2,6 +2,8 @@
 #include "ObjTank.h"
 #include "Input/Input.h"
 
+using namespace Sophia;
+
 cObjTank::cObjTank(void)
 {	
 	m_bControl=false;

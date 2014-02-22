@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 class cLine
 {
@@ -25,3 +27,4 @@ public:
 };
 
 
+}

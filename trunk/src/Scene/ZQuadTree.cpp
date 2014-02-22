@@ -9,6 +9,8 @@
 #include "Graphics/Entity.h"
 #include "Graphics/RendererQueue.h"
 #include "Foundation/Define.h"
+namespace Sophia
+{
 
 
 // 최초 루트노드 생성자
@@ -318,4 +320,5 @@ void ZQuadTree::Update( DWORD elapseTime )
 void ZQuadTree::Render()
 {
 
+}
 }

@@ -4,6 +4,8 @@
 #include "Math/Sphere.h"
 #include "Math/Plane.h"
 #include "Graphics/Entity.h"
+namespace Sophia
+{
 
 #define	CELL_MAX	2
 
@@ -63,5 +65,5 @@ public:
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);	
 	virtual void		Render();
 };
-
+}
 #endif // _ZQUADTREE_H_

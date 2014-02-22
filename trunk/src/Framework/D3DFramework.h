@@ -3,6 +3,8 @@
 #include "FpsMng.h"
 #include "Graphics/RendererQueue.h"
 
+namespace Sophia
+{
 
 class cD3DFramework;
 
@@ -10,8 +12,6 @@ class		IUnknownObject;
 class		IRenderable;
 class		IUpdatable;
 class		IControlable;
-
-
 class Graphics;
 class cResourceMng;
 class Input;
@@ -28,8 +28,8 @@ public:
 
 public:
 	HINSTANCE				m_hInstance;	
+	HWND					m_hWnd;
 protected:	
-
 	RECT					m_RequestRect;
 
 	BOOL					m_bFullScreen;
@@ -46,7 +46,7 @@ protected:
 	DWORD					m_DeltaFrameTime;
 
 	// Server
-	Graphics*				m_pGraphics;
+	Sophia::Graphics*				m_pGraphics;
 	Input*					m_pInput;
 
 	// Manager
@@ -107,6 +107,9 @@ public:
 	virtual void			Control();
 	virtual void 			Update(DWORD elapseTime);
 	virtual void 			Render();
+
+	virtual void 			InitWindow();
 };
 
 extern cD3DFramework*	g_pApp;
+}

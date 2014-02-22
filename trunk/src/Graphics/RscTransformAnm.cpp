@@ -2,6 +2,8 @@
 #include "RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
+namespace Sophia
+{
 
 cRscTransformAnm::cRscTransformAnm()
 :m_dwTimeLength(0)
@@ -137,4 +139,5 @@ void cRscTransformAnm::SerializeOut( std::ofstream& stream )
 		stream.write((char*)&item,sizeof(item));
 	}
 	stream.write((char*)&m_dwTimeLength,sizeof(m_dwTimeLength));
+}
 }

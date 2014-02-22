@@ -24,6 +24,8 @@
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)	
 
+using namespace Sophia;
+
 cTestView::cTestView(void)
 {
 	m_pTestStateA=NULL;
@@ -40,6 +42,7 @@ cTestView::~cTestView(void)
 
 void cTestView::Enter()
 {
+	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
 	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
@@ -84,6 +87,7 @@ void cTestView::Leave()
 	{
 		m_graphicWorld.DeleteEntity(m_pP38);
 	}
+	cView::Leave();
 }
 
 void cTestView::Control()
@@ -110,7 +114,7 @@ void cTestView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
-		Graphics::g_pGraphics->m_bDebugBound = !Graphics::g_pGraphics->m_bDebugBound;
+		Sophia::Graphics::m_pInstance->m_bDebugBound = !Sophia::Graphics::m_pInstance->m_bDebugBound;
 	}
 	
 	m_graphicWorld.m_camera.Control();

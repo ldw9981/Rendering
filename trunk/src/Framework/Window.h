@@ -1,4 +1,7 @@
 #pragma once
+namespace Sophia
+{
+
 class Window
 {
 public:
@@ -24,3 +27,4 @@ public:
 	void					Finalize();
 };
 
+}

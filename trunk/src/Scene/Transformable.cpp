@@ -2,6 +2,10 @@
 #include "Transformable.h"
 #include "Scene/SceneNode.h"
 
+namespace Sophia
+{
+
+
 cTransformable::cTransformable( void )
 {
 	D3DXMatrixIdentity(&m_matWorld);
@@ -181,4 +185,6 @@ void cTransformable::SetLocalTM( const D3DXMATRIX& val )
 {
 	m_matLocal = val; 
 	//m_bModifiedMatLocal=TRUE;
+}
+
 }

@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 class cPlane:
 	public D3DXPLANE
@@ -20,4 +22,4 @@ public:
 	void			Make(const D3DXVECTOR3& p1,const D3DXVECTOR3& p2,const D3DXVECTOR3& p3 );
 	void			Normalize();
 };
-
+}

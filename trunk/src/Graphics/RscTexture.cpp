@@ -5,6 +5,10 @@
 #include "Foundation/Define.h"
 #include "Graphics/Graphics.h"
 
+namespace Sophia
+{
+
+
 cRscTexture::cRscTexture(void)
 :m_pD3DTexture(NULL)
 {	
@@ -55,4 +59,6 @@ void cRscTexture::SetTexture( UINT stage )
 void cRscTexture::SetNullTexture( UINT stage )
 {
 	Graphics::m_pDevice->SetTexture(stage,NULL);
+}
+
 }

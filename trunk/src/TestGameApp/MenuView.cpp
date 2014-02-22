@@ -10,6 +10,7 @@
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Graphics.h"
 
+using namespace Sophia;
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)	
 
@@ -38,6 +39,7 @@ cMenuView::~cMenuView(void)
 
 void cMenuView::Enter()
 {
+	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
 	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
@@ -124,6 +126,7 @@ void cMenuView::Leave()
 	//DettachObject(m_pDragon);
 	//SAFE_DELETE(m_pDragon);
 	m_graphicWorld.DeleteEntity(m_pDragon);
+	cView::Leave();
 }
 
 void cMenuView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
@@ -191,7 +194,7 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
-		Graphics::g_pGraphics->m_bDebugBound = !Graphics::g_pGraphics->m_bDebugBound;
+		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
 	}
 
 	if (g_pInput->IsTurnDn(DIK_F11))

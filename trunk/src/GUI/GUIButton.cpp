@@ -9,6 +9,10 @@
 #include "CursorManager.h"
 #include "Graphics/World.h"
 
+namespace Sophia
+{
+
+
 cGUIButton::cGUIButton()
 {
 	m_pImage=NULL;
@@ -87,7 +91,7 @@ void cGUIButton::SetPos( UINT x,UINT y )
 {	
 	if (m_pWorld)
 	{
-		D3DVIEWPORT9& viewPort = m_pWorld->GetViewPortInfo();
+		D3DVIEWPORT9& viewPort = m_pWorld->m_ViewPortInfo;
 		m_rect.left = viewPort.X + x;
 		m_rect.top = viewPort.Y + y;
 		m_rect.right = viewPort.X + (LONG)m_Width + x;
@@ -122,4 +126,6 @@ void cGUIButton::SetPos( UINT x,UINT y )
 		m_pButtonFan[i].vertices[3].tex.u = i*m_TWidth + 0.0f;
 		m_pButtonFan[i].vertices[3].tex.v = 1.0f;				
 	}
+}
+
 }

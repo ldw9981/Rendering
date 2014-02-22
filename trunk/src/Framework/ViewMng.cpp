@@ -6,6 +6,8 @@
 #include "Foundation/Define.h"
 
 
+namespace Sophia
+{
 
 FiniteState::FiniteState( void )
 {
@@ -79,3 +81,4 @@ void cViewMng::Update( DWORD elapseTime )
 }
 
 
+}

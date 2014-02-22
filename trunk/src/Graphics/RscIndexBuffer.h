@@ -3,6 +3,10 @@
 #include "Resource/Resource.h"
 #include "Resource/Restore.h"
 
+namespace Sophia
+{
+
+
 struct TRIANGLE
 {
 	WORD index[3];	
@@ -59,3 +63,5 @@ public:
 	int GetCount() const { return m_nCount; }
 	void SetCount(int val) { m_nCount = val; }
 };
+
+}

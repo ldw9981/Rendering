@@ -1,5 +1,7 @@
 #pragma once
 #include <Windows.h>
+namespace Sophia
+{
 
 #define SHLM HKEY_LOCAL_MACHINE
 #define SHCU HKEY_CURRENT_USER
@@ -49,3 +51,4 @@ public:
 	bool WriteIntToREG(LPCTSTR lpKey, LPCTSTR lpValue, UINT nData);
 	bool WriteStringToREG(LPCTSTR lpKey, LPCTSTR lpValue, LPCTSTR lpData);
 };
+}

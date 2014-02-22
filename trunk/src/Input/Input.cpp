@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Input.h"
+namespace Sophia
+{
 
 Input* g_pInput=NULL;
 
@@ -326,4 +328,5 @@ bool Input::Mouse_IsMove()
 		return true;
 
 	return false;
+}
 }

@@ -2,6 +2,10 @@
 #include "Resource/Resource.h"
 #include "Foundation/Interface.h"
 #include "Animation.h"
+
+namespace Sophia
+{
+
 /*
 struct POSKEY
 {
@@ -66,3 +70,5 @@ public:
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
 };
+
+}

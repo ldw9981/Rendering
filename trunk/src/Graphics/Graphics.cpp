@@ -18,6 +18,8 @@
 
 #define SHADOWMAP_SIZE 4096
 
+namespace Sophia
+{
 
 
 RECT				m_Rect;
@@ -26,11 +28,12 @@ GUIVERTEX g_vertices[4];
 
 
 
-Graphics*	Graphics::g_pGraphics = NULL;
+
+Graphics*	Graphics::m_pInstance = NULL;
 LPDIRECT3DDEVICE9 Graphics::m_pDevice;
 Graphics::Graphics(void)
 {
-	g_pGraphics = this;
+	m_pInstance = this;
 	for (int i=0;i<16;i++)
 	{	
 		m_hTNormal[i] = NULL;
@@ -81,7 +84,7 @@ void SetPos( UINT x,UINT y )
 }
 
 
-bool Graphics::Init(HINSTANCE hinstance, HWND hwnd,bool bWindowed,int width,int height)
+bool Graphics::Init(HWND hwnd,bool bWindowed,int width,int height)
 {
 	m_viewPortInfo.Width = width;
 	m_viewPortInfo.Height = height;
@@ -132,22 +135,6 @@ bool Graphics::Init(HINSTANCE hinstance, HWND hwnd,bool bWindowed,int width,int 
 		MessageBox(NULL,"Call to CreateDevice failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
 
 	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-
-	D3DMATERIAL9 mtrl;	
-	ZeroMemory(&mtrl,sizeof(D3DMATERIAL9));
-	mtrl.Diffuse.r = 1.0f;
-	mtrl.Diffuse.g = 1.0f;
-	mtrl.Diffuse.b = 1.0f;
-	mtrl.Diffuse.a = 1.0f;
-
-	mtrl.Ambient.r = 1.0f;
-	mtrl.Ambient.g = 1.0f;
-	mtrl.Ambient.b = 1.0f;
-	mtrl.Ambient.a = 1.0f;
-
-	m_pDevice->SetMaterial(&mtrl);
-
-	
 
 
 	m_pNewFont = new cGUIFont();	
@@ -293,7 +280,7 @@ void Graphics::RenderEX( World* pWorld )
 	cCameraNode* pCamera = &pWorld->m_camera;
 
 	UINT passes = 0;
-	pWorld->SetViewPort();
+	m_pDevice->SetViewport(&pWorld->m_ViewPortInfo);
 
 	// ±¤¿ø-ºä Çà·ÄÀ» ¸¸µç´Ù.
 	D3DXMATRIX matLightView;
@@ -421,10 +408,9 @@ void Graphics::RenderEX( World* pWorld )
 
 void Graphics::Render( World* pWorld )
 {
+	m_pDevice->SetViewport(&pWorld->m_ViewPortInfo);
 	cCameraNode* pCamera = &pWorld->m_camera;
 	UINT passes = 0;
-	//pWorld->SetViewPort();
-
 	// ±¤¿ø-ºä Çà·ÄÀ» ¸¸µç´Ù.
 	D3DXMATRIX matLightView;
 	{
@@ -586,6 +572,19 @@ void Graphics::Render( World* pWorld )
 	m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &g_vertices[0], sizeof(GUIVERTEX));
 }
 
+void Graphics::SetEffectVector_WorldLightPosition(D3DXVECTOR4* pVec )
+{
+	m_pEffect->SetVector(m_hvWorldLightPosition,pVec);
+}
 
+void Graphics::SetEffectMatirx_LightView(D3DXMATRIX* pMat )
+{
+	m_pEffect->SetMatrix(m_hmLightView, pMat);
+}
 
+void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
+{
+	m_pEffect->SetMatrix(m_hmLightProjection,pMat);	
+}
 
+}

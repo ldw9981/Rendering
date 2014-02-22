@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "Restore.h"
+namespace Sophia
+{
 
 std::list<cIRestore*> cStaticRestoreList::m_listRestore;
 
@@ -12,4 +14,5 @@ cIRestore::cIRestore( void )
 cIRestore::~cIRestore( void )
 {
 	m_listRestore.erase(m_ItRestore);	
+}
 }

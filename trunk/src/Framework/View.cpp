@@ -4,6 +4,8 @@
 #include "Graphics/Graphics.h"
 #include "Math/CollisionDetector.h"
 #include "Graphics/World.h"
+namespace Sophia
+{
 
 
 cView::cView(void)
@@ -147,17 +149,19 @@ void cView::Render()
 
 void cView::Enter()
 {
-	
+	m_graphicWorld.Initialize();
 }
 
 void cView::Leave()
 {
-	
+	m_graphicWorld.Finalize();
 }
+
 
 void cView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 
+}
 }
 
 

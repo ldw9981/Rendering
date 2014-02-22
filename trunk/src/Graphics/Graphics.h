@@ -1,10 +1,14 @@
 #pragma once
 
 #include "RendererQueue.h"
+namespace Sophia
+{
 
 class cGUIFont;
 class cView;
 class World;
+
+
 
 class Graphics
 {
@@ -13,11 +17,11 @@ public:
 	~Graphics(void);
 
 public:
-	static Graphics* g_pGraphics;
+	static Graphics* m_pInstance;
 	static LPDIRECT3DDEVICE9	m_pDevice;
 	// D3D 변수추가	
 	D3DVIEWPORT9			m_viewPortInfo;
-	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
+	
 	D3DPRESENT_PARAMETERS	m_D3DPP;         // Parameters for CreateDevice/Reset
 	LPDIRECT3D9				m_pD3D9;
 	LPD3DXFONT				m_pFont;
@@ -61,10 +65,11 @@ public:
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	bool					m_bDebugBound;
 	HWND					m_hWnd;
-	void SetHLSL(std::string val) { m_strHLSL = val; }
+	
 public:	
-
-	bool Init(HINSTANCE hinstance, HWND hwnd,bool bWindowed,int width,int height);
+	void SetHLSL(std::string val) { m_strHLSL = val; }
+	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
+	bool Init(HWND hwnd,bool bWindowed,int width,int height);
 	void Finalize();
 
 	void LoadHLSL(const char* szFileName);
@@ -76,4 +81,11 @@ public:
 	void RenderEX(World* pWorld);
 	void Begin();
 	void End();
+
+	void SetEffectVector_WorldLightPosition(D3DXVECTOR4* pVec);
+	void SetEffectMatirx_LightView(D3DXMATRIX* pMat);
+	void SetEffectMatirx_LightProjection(D3DXMATRIX* pMat);
 };
+
+
+}

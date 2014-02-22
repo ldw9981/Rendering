@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "AABB.h"
+namespace Sophia
+{
 
 cAABB::cAABB(void)
 {
@@ -53,4 +55,5 @@ cPlane& cAABB::GetPlane( int side )
 D3DXVECTOR3& cAABB::GetPos( int idx )
 {
 	return m_pos[idx];
+}
 }

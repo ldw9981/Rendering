@@ -4,8 +4,8 @@
 
 
 class cObjTank:
-	public Entity,
-	public IControlable
+	public Sophia::Entity,
+	public Sophia::IControlable
 {
 public:
 	cObjTank(void);

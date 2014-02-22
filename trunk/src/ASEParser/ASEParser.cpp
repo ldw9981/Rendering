@@ -12,6 +12,8 @@
 #include "Foundation/StringUtil.h"
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Entity.h"
+namespace Sophia
+{
 
 cASEParser::cASEParser()
 {
@@ -2403,4 +2405,5 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	*/
 
 	return pSceneAnimation;
+}
 }

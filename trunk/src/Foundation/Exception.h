@@ -1,5 +1,7 @@
 #pragma once
 
+namespace Sophia
+{
 
 
 
@@ -61,3 +63,4 @@ cout<<"Excepton "<<e.GetName()
 
 
 */
+}

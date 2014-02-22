@@ -6,6 +6,8 @@
 #include "Graphics/RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 #include "ZQuadTree.h"
+namespace Sophia
+{
 
 struct TERRAINVERTEX
 {
@@ -110,4 +112,6 @@ public:
 	TERRAINVERTEX* GetHeightMap() const { return m_pvHeightMap; }
 };
 
+
+}
 #endif // _ZTERRAIN_H_

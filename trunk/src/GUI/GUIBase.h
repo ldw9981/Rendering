@@ -2,6 +2,9 @@
 #include "Foundation/Interface.h"
 #include "Input/Input.h"
 
+namespace Sophia
+{
+
 class World;
 class cGUIBase:
 	public IUnknownObject,
@@ -26,3 +29,4 @@ public:
  	virtual void 		Update(DWORD elapsetime)=0;
  	virtual void 		Control()=0;
 };
+}

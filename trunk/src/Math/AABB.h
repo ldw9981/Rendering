@@ -1,5 +1,7 @@
 #pragma once
 #include "Plane.h"
+namespace Sophia
+{
 
 class cAABB
 {
@@ -21,3 +23,4 @@ public:
 	D3DXVECTOR3& GetPos(int idx);
 	cPlane& GetPlane(int side);
 };
+}

@@ -8,6 +8,9 @@
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
 
+namespace Sophia
+{
+
 
 cCameraNode::cCameraNode()
 {
@@ -42,20 +45,20 @@ cCameraNode::~cCameraNode(void)
 void cCameraNode::Render()
 {			
 	D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
-	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmView,&m_matView);
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmView,&m_matView);
 	D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
-	Graphics::g_pGraphics->GetEffect()->SetVector(Graphics::g_pGraphics->m_hvWorldCameraPosition,&pos);
+	Graphics::m_pInstance->GetEffect()->SetVector(Graphics::m_pInstance->m_hvWorldCameraPosition,&pos);
 
 	if (m_bProjectionModified)
 	{
 		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
-		Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmProjection,&m_matProjection);
+		Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmProjection,&m_matProjection);
 		m_bProjectionModified = false;
 	}		
 
 	m_matViewProjection = m_matView * m_matProjection;				
-	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmViewProjection,&m_matViewProjection);
-	Graphics::g_pGraphics->GetEffect()->CommitChanges();
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmViewProjection,&m_matViewProjection);
+	Graphics::m_pInstance->GetEffect()->CommitChanges();
 
 	m_frustum.Make(m_matViewProjection);
 }
@@ -202,4 +205,5 @@ void cCameraNode::Control()
 
 	SetVelocityPosition(vecPos);	
 	SetVelocityRotation(vecRot);
+}
 }

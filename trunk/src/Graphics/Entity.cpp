@@ -8,6 +8,10 @@
 #include "Resource/ResourceMng.h"
 #include "ASEParser/ASEParser.h"
 
+namespace Sophia
+{
+
+
 #define ENTITY_LASTEST 1
 
 
@@ -58,8 +62,8 @@ void Entity::RenderBound()
 	D3DXMATRIX world;
 	D3DXMatrixIdentity(&world);
 
-	Graphics::g_pGraphics->GetEffect()->SetMatrix(Graphics::g_pGraphics->m_hmWorld,&GetWorldTM());
-	Graphics::g_pGraphics->GetEffect()->CommitChanges();
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&GetWorldTM());
+	Graphics::m_pInstance->GetEffect()->CommitChanges();
 	Graphics::m_pDevice->SetFVF( D3DFVF_XYZ|D3DFVF_DIFFUSE ); 
 
 	Pos = D3DXVECTOR3( 1.f, 0.f, 0.f )* fScale; 
@@ -343,4 +347,4 @@ bool Entity::LoadASE( const char* fileName )
 	return true;
 }
 
-
+}

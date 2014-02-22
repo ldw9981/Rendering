@@ -4,6 +4,9 @@
 #include "Resource/ResourceMng.h"
 #include "Resource/Restore.h"
 
+namespace Sophia
+{
+
 class cRscTexture:
 	public cResource,
 	public cIRestore
@@ -29,3 +32,5 @@ public:
 	void SetFilePath(const char* filePath) { m_filePath = filePath; }
 	const char* GetFilePath() const { return m_filePath.c_str(); }
 };
+
+}

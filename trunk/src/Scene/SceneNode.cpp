@@ -15,6 +15,8 @@
 #include "ASEParser/ASEParser.h"
 #include "Graphics/Animation.h"
 #include "Graphics/Graphics.h"
+namespace Sophia
+{
 
 #define SCENENODE_LASTEST 1
 
@@ -366,4 +368,6 @@ void cSceneNode::PopMaterial()
 	{
 		(*it)->PopMaterial();
 	}
+}
+
 }

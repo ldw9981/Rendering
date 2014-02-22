@@ -5,6 +5,8 @@
 #include "Foundation/StringUtil.h"
 #include "Resource/ResourceMng.h"
 #include "Foundation/EnvironmentVariable.h"
+namespace Sophia
+{
 
 #define MATERIAL_LASTEST 1
 
@@ -355,3 +357,4 @@ void EntityMaterial::SerializeOut( std::ofstream& stream )
 }
 
 
+}

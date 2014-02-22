@@ -9,6 +9,10 @@
 #include "Resource/ResourceMng.h"
 #include "Math/Sphere.h"
 
+namespace Sophia
+{
+
+
 #define DEF_INTERPOLATE_TIME 16
 
 class cSceneNode;
@@ -165,3 +169,4 @@ public:
 		
 };
 
+}

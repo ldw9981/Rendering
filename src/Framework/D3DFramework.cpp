@@ -11,6 +11,10 @@
 #include "Window.h"
 #include "GUI/CursorManager.h"
 
+namespace Sophia
+{
+
+
 
 cD3DFramework* g_pApp=NULL;
 
@@ -33,6 +37,7 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 	m_pGraphics = NULL;
 	m_pInput = NULL;
 	m_pResourceMng = NULL;
+	m_pCursorManager = NULL;
 
 }
 cD3DFramework::~cD3DFramework(void)
@@ -56,42 +61,53 @@ bool cD3DFramework::Initialize()
 	::GetCurrentDirectoryA(MAX_PATH,CurrPath);
 	EnvironmentVariable::GetInstance().SetString("CurrPath",std::string(CurrPath)+std::string("\\"));
 
-	m_pWindow = new Window;
-	m_pWindow->Initialize(m_RequestRect);
+	InitWindow();
 
-	m_pGraphics = new Graphics;	
-	m_pGraphics->Init(m_hInstance,m_pWindow->m_hWnd,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
+	m_pGraphics = new Sophia::Graphics;	
+	m_pGraphics->Init(m_hWnd,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new Input;
 	AttachObject(m_pInput);
-	if(!m_pInput->Initialize(m_hInstance,m_pWindow->m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
+	if(!m_pInput->Initialize(m_hInstance,m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
 	{
-		MessageBox(m_pWindow->m_hWnd, "Could not initialize the input object.", "Error", MB_OK);
+		MessageBox(m_hWnd, "Could not initialize the input object.", "Error", MB_OK);
 		return false;
 	}
 	
 
 	m_pResourceMng = new cResourceMng;	
 	m_pCursorManager = new CursorManager;
-	m_pCursorManager->Initialize(m_pWindow->m_hWnd);
+	m_pCursorManager->Initialize(m_hWnd);
 	return true;
 }
 
 void cD3DFramework::Finalize()
 {		
-	m_pCursorManager->Finalize();
-	SAFE_DELETE(m_pCursorManager);
+	if (m_pCursorManager)
+	{
+		m_pCursorManager->Finalize();
+		SAFE_DELETE(m_pCursorManager);
+	}	
 
 	SAFE_DELETE(m_pResourceMng);
-	DettachObject(m_pInput);
-	m_pInput->Finalize();
-	SAFE_DELETE( m_pInput );
+	if (m_pInput)
+	{
+		DettachObject(m_pInput);
+		m_pInput->Finalize();
+		SAFE_DELETE( m_pInput );
+	}
 
-	m_pGraphics->Finalize();
-	SAFE_DELETE( m_pGraphics);
+	if (m_pGraphics)
+	{
+		m_pGraphics->Finalize();
+		SAFE_DELETE( m_pGraphics);
+	}
 
-	m_pWindow->Finalize();
-	SAFE_DELETE( m_pWindow);
+	if (m_pWindow)
+	{
+		m_pWindow->Finalize();
+		SAFE_DELETE( m_pWindow);
+	}
 }
 
 void cD3DFramework::Run()
@@ -135,7 +151,7 @@ void cD3DFramework::Update(DWORD elapseTime)
 
 void cD3DFramework::Render()
 {
-	Graphics::g_pGraphics->Begin();
+	Graphics::m_pInstance->Begin();
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
 	stream << "FPS " << temp << "\n";
@@ -148,7 +164,7 @@ void cD3DFramework::Render()
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
 	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";
-	Graphics::g_pGraphics->RenderDebugString(0,0,stream.str().c_str());
+	Graphics::m_pInstance->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
@@ -156,7 +172,7 @@ void cD3DFramework::Render()
 		(*it)->ProcessRender();	
 	}
 
-	Graphics::g_pGraphics->End();
+	Graphics::m_pInstance->End();
 }
 
 
@@ -225,3 +241,11 @@ void cD3DFramework::DettachObject( IUnknownObject* pIUnknownObject )
 	}	
 }
 
+void cD3DFramework::InitWindow()
+{
+	m_pWindow = new Window;
+	m_pWindow->Initialize(m_RequestRect);
+	m_hWnd = m_pWindow->m_hWnd;
+}
+
+}

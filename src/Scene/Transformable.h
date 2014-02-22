@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 /*
 	m_LocalTM 과 parentWorldTM 을 참조하여 m_WorldTM을 얻는 클래스 
@@ -60,3 +62,5 @@ public:
 	void					SetVelocityRotation( float x,float y,float z );
 	void					SetVelocityRotation( D3DXVECTOR3& rot );
 };
+
+}

@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "EnvironmentVariable.h"
+namespace Sophia
+{
 
 EnvironmentVariable::EnvironmentVariable(void)
 {
@@ -26,4 +28,5 @@ EnvironmentVariable& EnvironmentVariable::GetInstance()
 {
 	static EnvironmentVariable instance;
 	return instance;
+}
 }

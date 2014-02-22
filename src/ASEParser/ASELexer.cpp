@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Foundation/Trace.h"
 #include "ASELexer.h"
+namespace Sophia
+{
 
 #define	NUMBER_OF_RESERVEDWORD				233
 #define MAX_SKIP_LEVEL						3000
@@ -439,3 +441,4 @@ void cASELexer::TraceHistory()
 }
 
 
+}

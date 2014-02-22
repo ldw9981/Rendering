@@ -8,19 +8,19 @@ class cObjTank;
 class cObjDragon;
 class Entity;
 class cMenuView :
-	public cView	
+	public Sophia::cView	
 {
 public:
 	cMenuView(void);
 	virtual ~cMenuView(void);
 private:
 	//cCameraNode	m_Camera;
-	Entity*	m_pTank;
-	ZTerrain*	m_pZTerrain;
+	Sophia::Entity*	m_pTank;
+	Sophia::ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
-	Entity*			m_pDragon;
-	Entity*			m_pAirPlaneBake;
-	Entity*			m_pHouse[10];
+	Sophia::Entity*			m_pDragon;
+	Sophia::Entity*			m_pAirPlaneBake;
+	Sophia::Entity*			m_pHouse[10];
 public:	
 	virtual void Enter();
 	virtual void Leave();
@@ -30,5 +30,5 @@ public:
 	virtual void Control();
 
 	// cINotifiable
-	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
+	virtual void Notify(Sophia::cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

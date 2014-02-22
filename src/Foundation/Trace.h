@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 extern HWND g_TraceHWND;
 
@@ -39,3 +41,5 @@ extern void TraceMSGBOX(const char *format, ...);
 #define TRACE4(f, a1, a2, a3, a4)   ((void)0)
 
 #endif // _DEBUG
+
+}

@@ -1,5 +1,7 @@
 #pragma once
 #include "Foundation/Interface.h"
+namespace Sophia
+{
 
 class FiniteState
 {
@@ -83,3 +85,4 @@ public:
 	virtual void Render();
 	virtual void Control();
 };
+}

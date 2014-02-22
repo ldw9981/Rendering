@@ -2,6 +2,8 @@
 #include "Animation.h"
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
+namespace Sophia
+{
 
 SceneAnimation::SceneAnimation( void )
 {
@@ -244,3 +246,4 @@ void EntityAnimation::Cut( DWORD start,DWORD end,EntityAnimation* pOut )
 	}
 }
 
+}

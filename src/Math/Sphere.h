@@ -1,5 +1,8 @@
 #pragma once
 
+namespace Sophia
+{
+
 class cSphere
 {
 public:
@@ -29,3 +32,4 @@ public:
 	cSphere&		operator=(cSphere& rhs);
 };
 
+}

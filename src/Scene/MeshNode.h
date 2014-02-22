@@ -7,6 +7,10 @@
 #include "Graphics/MaterialEx.h"
 #include "Graphics/Vertex.h"
 
+namespace Sophia
+{
+
+
 class cMeshNode;
 class cView;
 
@@ -62,5 +66,4 @@ public:
 	virtual void PopMaterial();
 };
 
-
-
+}

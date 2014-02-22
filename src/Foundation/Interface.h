@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 class IRenderable;
 class IControlable;
@@ -63,3 +65,5 @@ public:
 	void ReadFloat(std::ifstream& stream,float& var);
 	void WriteFloat(std::ofstream& stream,float& var);
 };
+
+}

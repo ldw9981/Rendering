@@ -8,6 +8,8 @@
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/RscTransformAnm.h"
 #include "Graphics/Animation.h"
+namespace Sophia
+{
 
 cResourceMng* cResourceMng::m_pInstance;
 
@@ -229,3 +231,4 @@ void cResourceMng::EraseEntityMaterial( const std::string& strKey )
 }
 
 
+}

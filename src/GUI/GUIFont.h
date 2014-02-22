@@ -1,5 +1,10 @@
 #pragma once
 
+#pragma comment(lib,"Gdi32.lib")
+namespace Sophia
+{
+
+
 class World;
 class cGUIFont
 {
@@ -24,3 +29,5 @@ public:
 
 	void				Create();
 };
+
+}

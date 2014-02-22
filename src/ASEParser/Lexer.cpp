@@ -2,6 +2,10 @@
 #include "Foundation/Trace.h"
 #include "Lexer.h"
 
+namespace Sophia
+{
+
+
 cLexer::cLexer(const char* p_FileName, DWORD p_SizeOfBuffer)
 {
 	m_File				 = NULL;
@@ -147,3 +151,4 @@ void cLexer::AddTokenHistory( int identifier )
 	
 }
 
+}

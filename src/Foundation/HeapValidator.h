@@ -1,5 +1,8 @@
 #pragma once
 
+namespace Sophia
+{
+
 #ifdef _DEBUG
 #define new new(_CLIENT_BLOCK, __FILE__, __LINE__)
 #endif
@@ -20,3 +23,4 @@ public:
 	static void SetBreakAlloc(long lNewBreakAlloc);
 	static void CheckMemory();
 };
+}

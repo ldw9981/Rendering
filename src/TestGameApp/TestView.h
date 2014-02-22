@@ -16,7 +16,7 @@ class cGlobalView;
 
 
 class cTestView :
-	public cView
+	public Sophia::cView
 {
 public:
 	cTestView(void);
@@ -27,7 +27,7 @@ private:
 	//cCameraNode			m_Camera;
 public:
 	cGlobalView* m_pGlobalButtonScene;
-	Entity*			m_pP38;
+	Sophia::Entity*			m_pP38;
 public:
 	// cScene
 	virtual void Enter();
@@ -39,5 +39,5 @@ public:
 	virtual void ProcessRender();
 
 	// cINotifiable
-	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
+	virtual void Notify(Sophia::cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };

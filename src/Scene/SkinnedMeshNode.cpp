@@ -16,6 +16,10 @@
 #include "Foundation/Define.h"
 #include "Graphics/Entity.h"
 
+namespace Sophia
+{
+
+
 #define SKINNEDMESH_LASTEST 1
 
 SkinnedMeshNode::SkinnedMeshNode(void)
@@ -56,7 +60,7 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 	MultiSub& temp = m_vecMultiSub[multiSubIndex];
 	Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::g_pGraphics->m_pVertexDeclationBlend);
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -68,23 +72,23 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
 	}	
 
-	Graphics::g_pGraphics->GetEffect()->SetMatrixArray(Graphics::g_pGraphics->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
+	Graphics::m_pInstance->GetEffect()->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
 
 	if( material.GetMapDiffuse() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
 	}
 
 	if( material.GetMapNormal() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
 	}
 
 	if( material.GetMapLight() != NULL )
 	{
-		Graphics::g_pGraphics->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
 	}
-	Graphics::g_pGraphics->GetEffect()->CommitChanges();
+	Graphics::m_pInstance->GetEffect()->CommitChanges();
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
@@ -347,3 +351,4 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	}
 }
 
+}

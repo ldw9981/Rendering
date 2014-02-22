@@ -4,6 +4,8 @@
 #include "Framework/ViewMng.h"
 #include "Graphics/Entity.h"
 #include "Graphics/World.h"
+namespace Sophia
+{
 
 class cCameraNode;
 class cView:
@@ -32,7 +34,7 @@ protected:
 	std::string				m_strName;
 	
 public:
-	World					m_graphicWorld;
+	Sophia::World					m_graphicWorld;
 	cViewMng				m_ViewState;
 public:
 	cViewMng& GetState() { return m_ViewState; }
@@ -60,3 +62,4 @@ public:
 	virtual void			Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 
 };
+}

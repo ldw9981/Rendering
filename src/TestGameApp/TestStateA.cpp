@@ -9,7 +9,7 @@
 #include "GUI/GUIButton.h"
 #include "Framework/DebugInfoView.h"
 #include "Foundation/EnvironmentVariable.h"
-
+using namespace Sophia;
 TestStateA::TestStateA(void)
 	:m_pTank(NULL)
 {
@@ -31,6 +31,7 @@ TestStateA::~TestStateA(void)
 
 void TestStateA::Enter()
 {
+	cView::Enter();
 	m_graphicWorld.SetViewPortInfo(0,0,g_pApp->GetRequestRectWidth(),g_pApp->GetRequestRectHeight());
 
 
@@ -49,6 +50,7 @@ void TestStateA::Leave()
 {
 	m_graphicWorld.DeleteTerrain(m_pZTerrain);
 	m_graphicWorld.DeleteEntity(m_pTank);
+	cView::Leave();
 }
 
 void TestStateA::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )

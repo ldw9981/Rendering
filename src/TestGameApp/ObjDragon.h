@@ -3,15 +3,15 @@
 #include "Foundation/Interface.h"
 
 class cObjDragon :
-	public Entity,
-	public IControlable
+	public Sophia::Entity,
+	public Sophia::IControlable
 {
 public:
 	cObjDragon();
 	virtual ~cObjDragon(void);
 	BOOL		m_bControl;
 private:
-	cSceneNode* m_pDummy;		//용의 HelperObj
+	Sophia::cSceneNode* m_pDummy;		//용의 HelperObj
 	
 public:
 	//IObject

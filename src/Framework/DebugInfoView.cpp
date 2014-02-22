@@ -4,6 +4,8 @@
 #include "D3DFramework.h"
 #include "Foundation/Define.h"
 #include "Input/Input.h"
+namespace Sophia
+{
 
 cDebugInfoView* cDebugInfoView::m_pInstance=0;
 
@@ -90,3 +92,4 @@ void cDebugInfoView::AddDebugString( const char* format, ... )
 
 }
 
+}

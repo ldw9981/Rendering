@@ -6,15 +6,15 @@
 class cGUIButton;
 class cObjTank;
 class TestStateA :
-	public cView	
+	public Sophia::cView	
 {
 public:
 	TestStateA(void);
 	virtual ~TestStateA(void);
 private:
 	//cCameraNode	m_Camera;
-	Entity*		m_pTank;
-	ZTerrain*	m_pZTerrain;
+	Sophia::Entity*		m_pTank;
+	Sophia::ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
 public:	
 	virtual void Enter();
@@ -25,6 +25,6 @@ public:
 	virtual void Control();
 
 	// cINotifiable
-	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
+	virtual void Notify(Sophia::cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 };
 

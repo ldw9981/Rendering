@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "StringUtil.h"
 
+namespace Sophia
+{
 
 StringUtil::StringUtil(void)
 {
@@ -35,4 +37,6 @@ void StringUtil::SplitPath(std::string& input,std::string* _Drive,std::string* _
 	{
 		*_Ext += ext;
 	}
+}
+
 }

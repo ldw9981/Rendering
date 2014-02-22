@@ -2,6 +2,8 @@
 #include "Foundation/interface.h"
 #include "Scene/Transformable.h"
 
+namespace Sophia
+{
 
 struct SCENEINFO; 
 class cASEParser; 
@@ -124,3 +126,4 @@ public:
 	virtual void PopMaterial();
 };
 
+}

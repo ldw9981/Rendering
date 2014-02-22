@@ -2,6 +2,10 @@
 #include "Resource/Resource.h"
 #include "Resource/Restore.h"
 
+namespace Sophia
+{
+
+
 
 // 블렌드 버텍스랑 나뉠스도있지만 일단 때려박는다.
 class cRscVertexBuffer:
@@ -41,3 +45,5 @@ public:
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
 };
+
+}

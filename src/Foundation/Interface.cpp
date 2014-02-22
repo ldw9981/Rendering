@@ -1,6 +1,9 @@
 #include "StdAfx.h"
 #include "Interface.h"
 
+namespace Sophia
+{
+
 
 void ISerializable::ReadString( std::ifstream& stream,std::string& str )
 {
@@ -42,4 +45,6 @@ void ISerializable::ReadFloat( std::ifstream& stream,float& var )
 void ISerializable::WriteFloat( std::ofstream& stream,float& var )
 {
 	stream.write((char*)&var,sizeof(float));
+}
+
 }

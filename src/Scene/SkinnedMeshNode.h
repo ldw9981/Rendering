@@ -1,5 +1,7 @@
 #pragma once
 #include "meshnode.h"
+namespace Sophia
+{
 
 struct BONEREFINFO
 {
@@ -58,3 +60,4 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 };
+}

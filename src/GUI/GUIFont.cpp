@@ -4,6 +4,9 @@
 #include "Graphics/Graphics.h"
 #include "Foundation/Define.h"
 
+namespace Sophia
+{
+
 cGUIFont::cGUIFont(void)
 {
 	m_pWorld = NULL;
@@ -24,7 +27,7 @@ void cGUIFont::DrawText(UINT x,UINT y, const char* text )
 {	
 	if (m_pWorld)
 	{
-		D3DVIEWPORT9& viewPort = m_pWorld->GetViewPortInfo();
+		D3DVIEWPORT9& viewPort = m_pWorld->m_ViewPortInfo;
 		m_rect.left = viewPort.X + x;
 		m_rect.top = viewPort.Y + y;
 		m_rect.right = 0;
@@ -66,7 +69,7 @@ void cGUIFont::Create()
 	int nHeight;
 	int nPointSize = 12;
 
-	hDC = GetDC( Graphics::g_pGraphics->m_hWnd );
+	hDC = GetDC( Graphics::m_pInstance->m_hWnd );
 
 	nHeight = -( MulDiv( nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72 ) );
 
@@ -83,4 +86,6 @@ void cGUIFont::Create()
 void cGUIFont::SetWorld( World* val )
 {
 	m_pWorld = val;
+}
+
 }

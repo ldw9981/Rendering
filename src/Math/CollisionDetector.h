@@ -1,4 +1,6 @@
 #pragma once
+namespace Sophia
+{
 
 class cSphere;
 class cLine;
@@ -42,3 +44,4 @@ public:
 	static BOOL					InsideWorldFrustum(Frustum& frustum, D3DXVECTOR3& pos );
 	static cCollision::STATE	CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSphere& sphere,float loose=0.0f);
 };
+}

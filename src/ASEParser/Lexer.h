@@ -1,5 +1,9 @@
 #pragma once
 
+namespace Sophia
+{
+
+
 #define	MAX_SIZE_OF_BUFFER					65536
 
 // ±âº» Identifier
@@ -44,3 +48,5 @@ public:
 
 	virtual void		AddTokenHistory(int identifier);	
 };
+
+}

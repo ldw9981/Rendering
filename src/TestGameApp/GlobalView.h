@@ -2,19 +2,23 @@
 #include "Framework/View.h"
 #include "Scene/CameraNode.h"
 
-class cGUIFont;
-class cGUIButton;
+namespace Sophia
+{
+	class cGUIFont;
+	class cGUIButton;
+}
+
 
 class cGlobalView :
-	public cView
+	public Sophia::cView
 {
 public:
 	cGlobalView(void);
 	virtual ~cGlobalView(void);
 public:
-	cGUIButton* m_pBtNextScene;
-	cGUIButton* m_pBtExit;
-	cGUIFont*	m_pFont;
+	Sophia::cGUIButton* m_pBtNextScene;
+	Sophia::cGUIButton* m_pBtExit;
+	Sophia::cGUIFont*	m_pFont;
 
 public:
 	// cScene

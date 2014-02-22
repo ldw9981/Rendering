@@ -1,5 +1,7 @@
 #pragma once
 #include "Plane.h"
+namespace Sophia
+{
 
 class cTriangle
 	:public cPlane
@@ -23,3 +25,4 @@ public:
 	const D3DXVECTOR3	GetP3() const { return m_p3; }
 	void				SetP3(const D3DXVECTOR3& val) { m_p3 = val; }
 };
+}

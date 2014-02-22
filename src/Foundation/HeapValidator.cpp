@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "HeapValidator.h"
 
+namespace Sophia
+{
 
 void HeapValidator::SetDbgFlag()
 {
@@ -15,4 +17,5 @@ void HeapValidator::CheckMemory()
 void HeapValidator::SetBreakAlloc( long lNewBreakAlloc )
 {
 	_CrtSetBreakAlloc(lNewBreakAlloc);	
+}
 }

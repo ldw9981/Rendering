@@ -7,6 +7,9 @@
 #include "Frustum.h"
 
 #include "Foundation/Trace.h"
+namespace Sophia
+{
+
 cCollision::cCollision(void)
 {
 }
@@ -339,4 +342,5 @@ cCollision::STATE cCollision::CheckWorldFrustumWithoutYAxis(Frustum& frustum,cSp
 	}
 	//안쪽이다.
 	return cCollision::INSIDE;
+}
 }

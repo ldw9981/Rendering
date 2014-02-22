@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "Trace.h"
+namespace Sophia
+{
 
 HWND g_TraceHWND;
 
@@ -59,5 +61,7 @@ void TraceError(const char lpszFunction)
 	{
 		ExitProcess(dw); 
 	}
+
+}
 
 }

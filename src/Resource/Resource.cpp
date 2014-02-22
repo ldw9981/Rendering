@@ -3,6 +3,8 @@
 #include "Foundation/Trace.h"
 
 
+namespace Sophia
+{
 
 
 UINT cReferenceCounter::Release()
@@ -34,5 +36,5 @@ cResource::~cResource( void )
 
 }
 
-
+}
 

@@ -4,7 +4,7 @@
 
 
 class TestGameApp :
-	public cD3DFramework
+	public Sophia::cD3DFramework
 {
 public:
 	TestGameApp(const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight);

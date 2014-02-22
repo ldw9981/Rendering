@@ -1,4 +1,9 @@
 #pragma once
+
+namespace Sophia
+{
+
+
 extern D3DVERTEXELEMENT9 declNormal[];
 extern D3DVERTEXELEMENT9 declBlend[];
 #define FVF_GUIVERTEX (D3DFVF_XYZRHW|D3DFVF_TEX1)  
@@ -66,3 +71,4 @@ struct GUIVERTEX
 	TEXCOORD	tex;
 };
 
+}

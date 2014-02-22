@@ -1,6 +1,8 @@
 #include "StdAfx.h"
 #include "Window.h"
 #include "D3DFramework.h"
+namespace Sophia
+{
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
@@ -152,4 +154,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		}			
 	}
 	return 0;
+}
 }

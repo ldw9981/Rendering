@@ -14,6 +14,8 @@
 
 
 #pragma comment(lib, "Winmm.lib") 
+namespace Sophia
+{
 
 class CFpsMng
 {
@@ -51,5 +53,5 @@ private:
 	DWORD m_dwProcTime;			 // 1 Frame 처리시간
 
 };
-
+}
 #endif

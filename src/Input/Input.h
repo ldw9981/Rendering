@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Foundation/Interface.h"
+namespace Sophia
+{
 
 ///////////////////////////////
 // PRE-PROCESSING DIRECTIVES //
@@ -72,3 +74,4 @@ private:
 };
 
 extern Input* g_pInput;
+}

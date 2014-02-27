@@ -3,7 +3,9 @@
 #include "Framework/D3DFramework.h"
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Graphics.h"
+#include "Foundation/StringUtil.h"
 #include "Input/Input.h"
+
 
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)	
@@ -25,6 +27,7 @@ State::State(void)
 		m_pHouse[i] = NULL;
 	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
+	m_pModel = NULL;
 }
 
 State::~State( void )
@@ -42,107 +45,41 @@ void State::Enter()
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
-	
+	/*
 	m_pZTerrain = m_graphicWorld.CreateTerrain(&D3DXVECTOR3(20.0f,0.5f,20.0f),
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
-	/*
-	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
-		std::string(strDataPath+"map129.bmp").c_str(),
-		std::string(strDataPath+"ground.bmp").c_str()
-		);
-	AttachObject(m_pZTerrain);
 	*/
-		
-	m_pTank = m_graphicWorld.CreateEntity();
-	m_pTank->LoadASE(std::string(strDataPath+"TigerTank.ase").c_str());
-	m_pTank->Build();
-	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	
-	
-	m_pDragon = m_graphicWorld.CreateEntity();
-	m_pDragon->LoadASE(std::string(strDataPath+"Dragon2.ase").c_str());
-	m_pDragon->Build();
-	//m_pDragon->GetVelRotPerSec().y = D3DXToRadian(-45);
-	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
-
 	
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
 	m_pAirPlaneBake->Build();
 	//m_pAirPlaneBake->Init();
 	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
-
-	
-	
-	for (int i=0;i<10;i++)
-	{
-		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pHouse[i]->LoadAnimation(std::string(strDataPath+"dragon.animation").c_str());
-		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
-		m_pHouse[i]->Build();
-		
-		m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f+ i*300));
-	}
-	
-	
-	
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));	
 
 }
 
 void State::Leave()
 {
+	/*
 	m_graphicWorld.DeleteTerrain(m_pZTerrain);
 	//DettachObject(m_pZTerrain);
 	//SAFE_DELETE(m_pZTerrain);
-
-
-	for (int i=0;i<10;i++)
-	{
-		//DettachObject(m_pHouse[i]);
-		//SAFE_DELETE(m_pHouse[i]);	
-		m_graphicWorld.DeleteEntity(m_pHouse[i]);
-	}
-
-
-
-	//DettachObject(m_pTank);
-	//SAFE_DELETE(m_pTank);	
-	m_graphicWorld.DeleteEntity(m_pTank);
-
-	//DettachObject(m_pAirPlaneBake);
-	//SAFE_DELETE(m_pAirPlaneBake);
+	*/
 	m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
-
-	//DettachObject(m_pDragon);
-	//SAFE_DELETE(m_pDragon);
-	m_graphicWorld.DeleteEntity(m_pDragon);
+	
+	if (m_pModel)
+	{
+		m_graphicWorld.DeleteEntity(m_pModel);
+	}
 	cView::Leave();
 }
 
 
 void State::Update( DWORD elapseTime )
 {
-	cView::Update(elapseTime);
-	
-	/*
-	if (m_pTank)
-	{
-		D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
-		m_pTank->GetWorldPos(pos);
-
-		if(!m_pZTerrain->GetHeight(pos.x,pos.z,pos.y))
-		{
-			printf("d");
-		}
-		pos.y+=50.0f;
-		m_pTank->SetLocalPos(pos);
-	}
-	*/
-	
+	cView::Update(elapseTime);	
 }
 
 void State::ProcessRender()
@@ -212,3 +149,56 @@ void State::Control()
 
 	
 }
+
+void State::OpenASE( const char* path )
+{
+	if (m_pModel)
+	{
+		m_graphicWorld.DeleteEntity(m_pModel);
+		m_pModel = NULL;
+	}
+	m_pModel = m_graphicWorld.CreateEntity();
+	m_pModel->LoadASE(path);
+	m_pModel->Build();
+	//m_pAirPlaneBake->Init();
+	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	m_pModel->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
+}
+
+void State::SaveAsset()
+{
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	m_pModel->SaveScene(std::string(strDataPath+m_pModel->GetNodeName()+".scene").c_str());
+	m_pModel->SaveAnimationSet(std::string(strDataPath+m_pModel->GetNodeName()+".aniset").c_str());		
+	m_pModel->SaveMaterial(std::string(strDataPath+m_pModel->GetNodeName()+".material").c_str(),0);
+}
+
+
+
+void State::OpenAsset( const char* path )
+{
+	if (m_pModel)
+	{
+		m_graphicWorld.DeleteEntity(m_pModel);
+		m_pModel = NULL;
+	}
+	m_pModel = m_graphicWorld.CreateEntity();
+
+	std::string dir,name;
+	StringUtil::SplitPath(std::string(path),NULL,&dir,&name,NULL);
+	m_pModel->LoadScene(std::string(dir+name+".scene").c_str());
+	m_pModel->LoadAnimationSet(std::string(dir+name+".aniset").c_str());
+	m_pModel->LoadMaterial(std::string(dir+name+".material").c_str());
+	m_pModel->Build();
+	//m_pAirPlaneBake->Init();
+	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	m_pModel->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
+}
+
+Sophia::Entity* State::GetEntity()
+{
+	return m_pModel;
+}
+
+
+

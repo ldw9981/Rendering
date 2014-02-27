@@ -28,6 +28,7 @@ public:
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
 	std::vector<EntityMaterial*>	m_vecMaterial;		
+	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
 	int					m_animationIndex;
 	DWORD				m_animationTime;
@@ -59,12 +60,16 @@ public:
 		 
 	bool SaveAnimation(const char* fileName,int index);
 	bool LoadAnimation(const char* fileName);
-		 
+	bool SaveAnimationSet(const char* fileName);	 
+	bool LoadAnimationSet(const char* fileName);	
+
 	bool SaveMaterial(const char* fileName,int index);
 	bool LoadMaterial(const char* fileName);
 
 	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix );
 	void PlayAnimation(int index,bool loop);
+
+	void InsertBone(const char* name,cSceneNode* pBone);
 };
 
 

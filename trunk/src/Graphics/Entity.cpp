@@ -7,7 +7,7 @@
 #include "Math/CollisionDetector.h"
 #include "Resource/ResourceMng.h"
 #include "ASEParser/ASEParser.h"
-
+#include "Foundation/StringUtil.h"
 namespace Sophia
 {
 
@@ -22,6 +22,7 @@ Entity::Entity(void)
 	m_indexMaterial = -1;
 	m_animationTime = 0;
 	m_animationLoop = false;
+	m_type = TYPE_ROOT;
 }
 
 
@@ -345,6 +346,54 @@ bool Entity::LoadASE( const char* fileName )
 	parser.Load(fileName,this);
 	parser.Close();
 	return true;
+}
+
+bool Entity::SaveAnimationSet( const char* fileName )
+{
+	std::string dir;
+	StringUtil::SplitPath(std::string(fileName),NULL,&dir,NULL,NULL);
+	std::ofstream stream;
+	stream.open(fileName, std::ofstream::out );	
+		
+	stream << m_vecAnimation.size() << "\n";
+	
+	for (size_t i=0;i<m_vecAnimation.size();i++)
+	{
+		EntityAnimation* pAnimation = m_vecAnimation[i];
+
+		std::string name = pAnimation->GetUniqueKey() + std::string(".animation");
+		std::string full = dir + name;
+		stream << name << "\n";
+
+		SaveAnimation( full.c_str(),i);
+	}
+	return true;
+}
+
+bool Entity::LoadAnimationSet( const char* fileName )
+{
+	std::string dir;
+	StringUtil::SplitPath(std::string(fileName),NULL,&dir,NULL,NULL);
+	std::ifstream stream;
+	stream.open(fileName, std::ifstream::in );	
+
+	int size;
+	stream >> size;
+
+	for (int i=0;i<size;i++)
+	{
+		std::string name;
+		stream >> name;
+		std::string full = dir + name;
+		LoadAnimation(full.c_str());
+	}
+
+	return true;
+}
+
+void Entity::InsertBone( const char* name,cSceneNode* pBone )
+{
+	m_mapBones[std::string(name)] = pBone;
 }
 
 }

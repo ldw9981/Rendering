@@ -27,7 +27,7 @@
 #include <string>
 #include <algorithm>
 #include <bitset>
-
+#include <set>
 
 #include <Windows.h>
 #include <memory.h>

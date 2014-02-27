@@ -61,8 +61,8 @@ void TestGameApp::Finalize()
 	{
 		m_pView->Leave();
 		DettachObject(m_pView);
-	}		
-	SAFE_DELETE(m_pView);
+		SAFE_DELETE(m_pView);
+	}			
 	cD3DFramework::Finalize();
 }
 

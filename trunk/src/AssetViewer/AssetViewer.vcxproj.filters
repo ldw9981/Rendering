@@ -19,6 +19,24 @@
     <None Include="app.ico">
       <Filter>리소스 파일</Filter>
     </None>
+    <None Include="..\..\data\scenetree_mesh.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="..\..\data\scenetree_root.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="..\..\data\scenetree_scene.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="..\..\data\scenetree_skeleton.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="..\..\data\scenetree_skin.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="scenetree_mesh.png">
+      <Filter>리소스 파일</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssetViewer.cpp">
@@ -34,6 +52,18 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="State.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewForm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneTreeForm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MainForm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="NodePropertyForm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -53,6 +83,18 @@
     <ClInclude Include="State.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="MainForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneTreeForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="NodePropertyForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
@@ -61,6 +103,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Form1.resX">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SceneTreeForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ViewForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NodePropertyForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
   </ItemGroup>

@@ -12,3 +12,8 @@
 #include <vector>
 #include <bitset>
 #include <map>
+
+#pragma comment(lib,"User32.lib")
+
+#include <windows.h>
+#include <msclr/marshal_cppstd.h>

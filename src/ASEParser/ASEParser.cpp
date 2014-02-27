@@ -786,6 +786,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	{
 		pNewRscVertexBuffer->AddRef();
 		pNewRscIndexBuffer->AddRef();
+
 		if (!bSkinned)	
 		{
 			// 멀티서브도 아닌데,, 맵핑소스가 없으면 그냥 Scene으로 대체

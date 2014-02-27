@@ -31,12 +31,14 @@ public:
 	cSceneNode(void);
 	virtual ~cSceneNode(void);
 	
-	enum TYPE { TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH};
+	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH};
+public:
+	std::list<cSceneNode*>		m_listChildNode;		
 protected:
 	SCENETYPE 					m_type;
 	std::string					m_strNodeName;			
 	std::string					m_strParentName;		
-	std::list<cSceneNode*>		m_listChildNode;		
+	
 	cSceneNode*				m_pParentNode;
 	Entity*					m_pRootNode;
 	bool					m_bIsBone;
@@ -54,7 +56,7 @@ protected:
 public:	
 
 	D3DXMATRIX				m_nodeTM;
-
+	Sophia::SCENETYPE	GetType() const { return m_type; }
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
 	D3DXMATRIX&			GetNodeTM();
 		
@@ -124,6 +126,7 @@ public:
 	virtual void PopAnimation();
 	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
 	virtual void PopMaterial();
+	void Test(void(*Func)(cSceneNode*));
 };
 
 }

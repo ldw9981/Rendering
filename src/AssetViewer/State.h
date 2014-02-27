@@ -1,6 +1,6 @@
 #pragma once
 #include "Framework/View.h"
-
+class Sophia::Entity;
 class State : public Sophia::cView
 {
 public:
@@ -14,6 +14,8 @@ private:
 	Sophia::Entity*			m_pDragon;
 	Sophia::Entity*			m_pAirPlaneBake;
 	Sophia::Entity*			m_pHouse[10];
+
+	Sophia::Entity*			m_pModel;
 public:	
 	virtual void Enter();
 	virtual void Leave();
@@ -21,5 +23,12 @@ public:
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender();
 	virtual void Control();
+
+	void OpenASE(const char* path);
+	void OpenAsset(const char* path);
+	void SaveAsset();
+
+
+	Sophia::Entity* GetEntity();
 };
 

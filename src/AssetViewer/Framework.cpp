@@ -11,6 +11,7 @@ using namespace System;
 Framework::Framework(const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight)
 	: Sophia::cD3DFramework(szTitleName,bFullScreen,nWidth,nHeight)
 {
+	m_pView = NULL;
 }
 
 void Framework::InitWindow()

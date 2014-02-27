@@ -370,4 +370,13 @@ void cSceneNode::PopMaterial()
 	}
 }
 
+void cSceneNode::Test( void(*Func)(cSceneNode*) )
+{
+	Func(this);
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->Test(Func);
+	}
+}
+
 }

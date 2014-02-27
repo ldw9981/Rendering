@@ -84,12 +84,12 @@ void SetPos( UINT x,UINT y )
 }
 
 
-bool Graphics::Init(HWND hwnd,bool bWindowed,int width,int height)
+bool Graphics::Init(HWND hWndMain,HWND hWndPresent,bool bWindowed,int width,int height)
 {
 	m_viewPortInfo.Width = width;
 	m_viewPortInfo.Height = height;
-	m_hWnd = hwnd;
-
+	m_hWndMain = hWndMain;
+	m_hWndPresent = hWndPresent;
 	char szTemp[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,szTemp);
 
@@ -125,7 +125,7 @@ bool Graphics::Init(HWND hwnd,bool bWindowed,int width,int height)
 	HRESULT hr= m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
-		hwnd,
+		m_hWndMain,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
 		&m_pDevice );
@@ -272,7 +272,7 @@ void Graphics::Begin()
 void Graphics::End()
 {
 	m_pDevice->EndScene();
-	m_pDevice->Present( NULL, NULL, NULL, NULL );	
+	m_pDevice->Present( NULL, NULL, m_hWndPresent, NULL );	
 }
 
 void Graphics::RenderEX( World* pWorld )

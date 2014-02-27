@@ -15,9 +15,8 @@ namespace Sophia
 {
 
 
-
+cD3DFramework* cD3DFramework::m_pInstance;
 cD3DFramework* g_pApp=NULL;
-
 
 cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidth,int nHeight )
 :m_bFullScreen(bFullScreen)
@@ -30,6 +29,7 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 
 
 	g_pApp = this;	
+	m_pInstance = this;
 
 	m_bQuitLoop = FALSE;	
 
@@ -38,6 +38,7 @@ cD3DFramework::cD3DFramework( const char* szTitleName,BOOL bFullScreen,int nWidt
 	m_pInput = NULL;
 	m_pResourceMng = NULL;
 	m_pCursorManager = NULL;
+	m_pView = NULL;
 
 }
 cD3DFramework::~cD3DFramework(void)
@@ -64,20 +65,20 @@ bool cD3DFramework::Initialize()
 	InitWindow();
 
 	m_pGraphics = new Sophia::Graphics;	
-	m_pGraphics->Init(m_hWnd,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
+	m_pGraphics->Init(m_hWndMain,m_hWndPresent,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	m_pInput = new Input;
 	AttachObject(m_pInput);
-	if(!m_pInput->Initialize(m_hInstance,m_hWnd,GetRequestRectWidth(),GetRequestRectHeight()))
+	if(!m_pInput->Initialize(m_hInstance,m_hWndMain,GetRequestRectWidth(),GetRequestRectHeight()))
 	{
-		MessageBox(m_hWnd, "Could not initialize the input object.", "Error", MB_OK);
+		MessageBox(m_hWndMain, "Could not initialize the input object.", "Error", MB_OK);
 		return false;
 	}
 	
 
 	m_pResourceMng = new cResourceMng;	
 	m_pCursorManager = new CursorManager;
-	m_pCursorManager->Initialize(m_hWnd);
+	m_pCursorManager->Initialize(m_hWndMain);
 	return true;
 }
 
@@ -245,7 +246,10 @@ void cD3DFramework::InitWindow()
 {
 	m_pWindow = new Window;
 	m_pWindow->Initialize(m_RequestRect);
-	m_hWnd = m_pWindow->m_hWnd;
+	m_hWndMain = m_pWindow->m_hWnd;
+	m_hWndPresent = m_pWindow->m_hWnd;
 }
+
+
 
 }

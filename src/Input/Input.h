@@ -48,6 +48,9 @@ public:
 	bool	Mouse_IsCurrDn(BYTE button);
 	bool	Mouse_IsCurrUp(BYTE button);
 	bool	Mouse_IsMove();
+
+	void	Acquire();
+	void	UnAcquire();
 private:
 	bool ReadKeyboard();
 	bool ReadMouse();

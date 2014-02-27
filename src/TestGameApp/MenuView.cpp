@@ -85,9 +85,9 @@ void cMenuView::Enter()
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pHouse[i]->LoadAnimation(std::string(strDataPath+"dragon.animation").c_str());
-		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon2.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon2.material").c_str());
 		m_pHouse[i]->Build();
 		
 		m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
@@ -220,5 +220,12 @@ void cMenuView::Control()
 		m_pDragon->CutAndPushEntityAnimation(0,0,1000,"Cut");
 	}	
 
+	if (g_pInput->IsTurnDn(DIK_F8))
+	{
+		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		m_pDragon->SaveScene(std::string(strDataPath+"dragon.scene").c_str());
+		m_pDragon->SaveAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+		m_pDragon->SaveMaterial(std::string(strDataPath+"dragon.material").c_str(),0);
+	}	
 	
 }

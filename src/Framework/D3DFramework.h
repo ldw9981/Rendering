@@ -27,8 +27,10 @@ public:
 	virtual ~cD3DFramework(void);
 
 public:
+	static cD3DFramework*   m_pInstance;
 	HINSTANCE				m_hInstance;	
-	HWND					m_hWnd;
+	HWND					m_hWndMain;
+	HWND					m_hWndPresent;
 protected:	
 	RECT					m_RequestRect;
 

@@ -159,6 +159,7 @@ bool Input::ReadKeyboard()
 	result = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
 	if(FAILED(result))
 	{
+		/*
 		// If the keyboard lost focus or was not acquired then try to get control back.
 		if((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
 		{
@@ -168,6 +169,7 @@ bool Input::ReadKeyboard()
 		{
 			return false;
 		}
+		*/
 	}
 
 	return true;
@@ -183,6 +185,7 @@ bool Input::ReadMouse()
 	result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
 	if(FAILED(result))
 	{
+		/*
 		// If the mouse lost focus or was not acquired then try to get control back.
 		if((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
 		{
@@ -192,6 +195,7 @@ bool Input::ReadMouse()
 		{
 			return false;
 		}
+		*/
 	}
 
 	return true;
@@ -335,12 +339,14 @@ bool Input::Mouse_IsMove()
 
 void Input::Acquire()
 {
-
+	m_mouse->Acquire();
+	m_keyboard->Acquire();
 }
 
 void Input::UnAcquire()
 {
-
+	m_mouse->Unacquire();
+	m_keyboard->Unacquire();
 }
 
 }

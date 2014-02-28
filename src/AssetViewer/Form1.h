@@ -28,12 +28,7 @@ namespace AssetViewer {
 			//
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
-			Application::Idle += gcnew System::EventHandler(this,&Form1::OnApplicationIdle);
-			/*
-			m_pGraphics = new Sophia::Graphics;
-			m_pGraphicsWorld = new Sophia::World;
-			*/
-			m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
+			
 		}
 
 	protected:
@@ -46,16 +41,7 @@ namespace AssetViewer {
 			{
 				delete components;
 			}
-			m_pFramework->Finalize();
-			delete m_pFramework;
-			m_pFramework = NULL;
-			/*
-			m_pGraphicsWorld->Finalize();
-			delete m_pGraphicsWorld;
-
-			m_pGraphics->Finalize();
-			delete m_pGraphics;
-			*/
+	
 		}
 
 	private:
@@ -63,16 +49,10 @@ namespace AssetViewer {
 		/// 필수 디자이너 변수입니다.
 		/// </summary>
 		System::ComponentModel::Container ^components;
-	private: System::Windows::Forms::MenuStrip^  menuStrip1;
-	private: System::Windows::Forms::ToolStripMenuItem^  fileToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  openToolStripMenuItem;
+	private: System::Windows::Forms::TextBox^  textBox1;
 
 
 
-
-			 Framework*		m_pFramework;
-//		Sophia::Graphics* m_pGraphics;
-//		Sophia::World*	 m_pGraphicsWorld;
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// 디자이너 지원에 필요한 메서드입니다.
@@ -80,73 +60,34 @@ namespace AssetViewer {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
-			this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->menuStrip1->SuspendLayout();
+			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->SuspendLayout();
 			// 
-			// menuStrip1
+			// textBox1
 			// 
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->fileToolStripMenuItem});
-			this->menuStrip1->Location = System::Drawing::Point(0, 0);
-			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(1280, 24);
-			this->menuStrip1->TabIndex = 0;
-			this->menuStrip1->Text = L"menuStrip1";
-			// 
-			// fileToolStripMenuItem
-			// 
-			this->fileToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->openToolStripMenuItem});
-			this->fileToolStripMenuItem->Name = L"fileToolStripMenuItem";
-			this->fileToolStripMenuItem->Size = System::Drawing::Size(37, 20);
-			this->fileToolStripMenuItem->Text = L"File";
-			// 
-			// openToolStripMenuItem
-			// 
-			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-			this->openToolStripMenuItem->Size = System::Drawing::Size(103, 22);
-			this->openToolStripMenuItem->Text = L"Open";
-			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &Form1::openToolStripMenuItem_Click);
+			this->textBox1->Location = System::Drawing::Point(54, 41);
+			this->textBox1->Name = L"textBox1";
+			this->textBox1->Size = System::Drawing::Size(100, 21);
+			this->textBox1->TabIndex = 0;
+			this->textBox1->TextChanged += gcnew System::EventHandler(this, &Form1::textBox1_TextChanged);
 			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1280, 960);
-			this->Controls->Add(this->menuStrip1);
-			this->MainMenuStrip = this->menuStrip1;
+			this->ClientSize = System::Drawing::Size(264, 234);
+			this->Controls->Add(this->textBox1);
 			this->Name = L"Form1";
 			this->Text = L"Form1";
-			this->menuStrip1->ResumeLayout(false);
-			this->menuStrip1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
 		}
 #pragma endregion
 protected:
-		virtual void OnShown(EventArgs^ e)  override 
-		{
-			m_pFramework->m_hWndMain = (HWND)(void*)this->Handle;
-			if(!m_pFramework->Initialize())
-			{
-				Application::Exit();
-			}
-		}
+
 private:
-		bool AppStillIdle()
-		{
-			MSG msg;
-			return !::PeekMessage(&msg, (HWND)(Handle.ToPointer()), 0, 0, 0); 
-		}
-		System::Void OnApplicationIdle(System::Object^ sender,System::EventArgs^ e)
-		{						
-			while (AppStillIdle())
-			{
-				m_pFramework->Run();
-			}			
-		}
+
 	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 
 				 //Stream^ myStream;
@@ -168,6 +109,9 @@ private:
 
 			 }
 private: System::Void splitter1_SplitterMoved(System::Object^  sender, System::Windows::Forms::SplitterEventArgs^  e) {
+		 }
+private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
+			 
 		 }
 };
 }

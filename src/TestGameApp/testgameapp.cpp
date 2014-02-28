@@ -82,20 +82,22 @@ BOOL TestGameApp::OnWM_General( MSG& msg )
 {
 	switch(msg.message)
 	{
-	case WM_ACTIVATEAPP:
-		if (!msg.wParam)
-		{
-			//MessageBox(NULL,"the window is being deactivated.","알림",MB_OK);
-		}
-		else
-		{
-			//MessageBox(NULL,"the window is being activated.","알림",MB_OK);
+	case WM_ACTIVATE:    
+		if(msg.wParam == WA_ACTIVE)    
+		{        
+			m_pInput->Acquire();
+		}    
+		if(msg.wParam == WA_INACTIVE)
+		{        
+			m_pInput->UnAcquire();
 		}
 		return TRUE;
 	
 	}
 	return FALSE;
 }
+
+
 
 
 

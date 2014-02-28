@@ -23,6 +23,8 @@ Entity::Entity(void)
 	m_animationTime = 0;
 	m_animationLoop = false;
 	m_type = TYPE_ROOT;
+	m_skipStartTime=0;
+	m_earlyEndTime=0;
 }
 
 
@@ -109,15 +111,17 @@ void Entity::Update( DWORD elapseTime )
 	if (m_animationIndex != -1 )
 	{
 		m_animationTime += elapseTime;
-		if( m_animationTime >= m_vecAnimation[m_animationIndex]->m_dwTimeLength )
+		DWORD endTime = m_vecAnimation[m_animationIndex]->m_dwTimeLength - m_earlyEndTime;
+		if( m_animationTime >= endTime  )
 		{
 			if ( m_animationLoop)
 			{
-				m_animationTime -= m_vecAnimation[m_animationIndex]->m_dwTimeLength;
+				m_animationTime %= (endTime-m_skipStartTime);
+				m_animationTime += m_skipStartTime;
 			}
 			else
 			{
-				m_animationTime = m_vecAnimation[m_animationIndex]->m_dwTimeLength;
+				m_animationTime = endTime;
 			}
 		}
 	}
@@ -331,13 +335,16 @@ void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,
 	}
 }
 
-void Entity::PlayAnimation( int index,bool loop )
+void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime )
 {
 	assert(index < (int)m_vecAnimation.size());
 	m_animationIndex = index;
 	m_animationLoop = loop;
-	m_animationTime = 0;
-	
+	m_skipStartTime = skipStartTime;
+	m_earlyEndTime = earlyEndTime;
+	m_animationTime = m_skipStartTime;	
+
+	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_animationIndex]->m_dwTimeLength );
 }
 
 bool Entity::LoadASE( const char* fileName )

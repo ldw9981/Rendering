@@ -27,11 +27,14 @@ public:
 	cRendererQueue			m_renderQueueBlendShadow;
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
+	
 	std::vector<EntityMaterial*>	m_vecMaterial;		
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
 	int					m_animationIndex;
 	DWORD				m_animationTime;
+	DWORD				m_skipStartTime;
+	DWORD				m_earlyEndTime;
 	bool				m_animationLoop;
 protected:
 	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
@@ -67,9 +70,10 @@ public:
 	bool LoadMaterial(const char* fileName);
 
 	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix );
-	void PlayAnimation(int index,bool loop);
+	void PlayAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
 
 	void InsertBone(const char* name,cSceneNode* pBone);
+	const std::vector<EntityAnimation*> GetVecAnimation() { return m_vecAnimation; }
 };
 
 

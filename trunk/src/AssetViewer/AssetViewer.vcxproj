@@ -105,6 +105,7 @@
     <None Include="scenetree_mesh.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimationForm.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AssetViewer.cpp" />
     <ClCompile Include="Framework.cpp" />
@@ -119,6 +120,9 @@
     <ClCompile Include="ViewForm.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnimationForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="Form1.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -143,6 +147,9 @@
     <ResourceCompile Include="app.rc" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AnimationForm.resx">
+      <DependentUpon>AnimationForm.h</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resX">
       <DependentUpon>Form1.h</DependentUpon>
       <SubType>Designer</SubType>

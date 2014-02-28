@@ -50,14 +50,14 @@ void State::Enter()
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
 	*/
-	
+	/*
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
 	m_pAirPlaneBake->Build();
 	//m_pAirPlaneBake->Init();
 	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));	
-
+	*/
 }
 
 void State::Leave()
@@ -67,7 +67,7 @@ void State::Leave()
 	//DettachObject(m_pZTerrain);
 	//SAFE_DELETE(m_pZTerrain);
 	*/
-	m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
+	//m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
 	
 	if (m_pModel)
 	{

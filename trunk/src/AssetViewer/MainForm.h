@@ -2,7 +2,8 @@
 #include "ViewForm.h"
 #include "SceneTreeForm.h"
 #include "NodePropertyForm.h"
-
+#include "AnimationForm.h"
+#include "Form1.h"
 
 namespace AssetViewer {
 
@@ -28,6 +29,8 @@ namespace AssetViewer {
 			viewForm = gcnew ViewForm;
 	        sceneTreeForm = gcnew SceneTreeForm;
 			nodePropertyForm = gcnew NodePropertyForm;
+			animationForm = gcnew AnimationForm;
+			testForm = gcnew Form1;
 		}
 
 	protected:
@@ -40,7 +43,8 @@ namespace AssetViewer {
 			{
 				delete components;
 			}
-						
+			
+			delete animationForm;
 			delete nodePropertyForm;
 			delete sceneTreeForm;
 			delete viewForm;
@@ -48,7 +52,7 @@ namespace AssetViewer {
 
 
 	protected: 
-		State* m_pState;
+		static State* m_pState;
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
@@ -56,6 +60,10 @@ namespace AssetViewer {
 		System::ComponentModel::Container ^components;
 		ViewForm^ viewForm;
 		SceneTreeForm^ sceneTreeForm;
+		AnimationForm^ animationForm;
+		NodePropertyForm^		nodePropertyForm;
+		Form1^		testForm;
+
 	private: System::Windows::Forms::ToolStripMenuItem^  fileToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  openToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  saveToolStripMenuItem;
@@ -68,9 +76,7 @@ namespace AssetViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  animationToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  materialToolStripMenuItem;
 
-
-
-		 NodePropertyForm^		nodePropertyForm;
+		 
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// 디자이너 지원에 필요한 메서드입니다.
@@ -200,6 +206,12 @@ namespace AssetViewer {
 
 				 nodePropertyForm->MdiParent = this;
 				 nodePropertyForm->Show();
+
+				 animationForm->MdiParent = this;
+				 animationForm->Show();
+
+				 testForm->MdiParent = this;
+				 testForm->Show();
 			 }
 
 
@@ -224,7 +236,8 @@ private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System
 				
 				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
 				 pState->OpenASE(path.c_str());
-				  sceneTreeForm->FillTree();
+				 sceneTreeForm->Update(pState);
+				 animationForm->Update(pState);
 			 }
 			 delete openFileDialog1;
 		 }
@@ -243,7 +256,8 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
 				 pState->OpenAsset(path.c_str());
 				
-				 sceneTreeForm->FillTree();
+				 sceneTreeForm->Update(pState);
+				 animationForm->Update(pState);
 			 }
 			 delete openFileDialog1;
 		 }

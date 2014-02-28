@@ -3,6 +3,7 @@
 #include "Graphics/World.h"
 #include "Framework.h"
 #include "State.h"
+#include "Input/Input.h"
 
 namespace AssetViewer {
 
@@ -25,8 +26,7 @@ namespace AssetViewer {
 			//
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
-			Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);
-			m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
+			m_pFramework = NULL;
 		}
 
 	protected:
@@ -70,6 +70,8 @@ namespace AssetViewer {
 			this->MinimizeBox = false;
 			this->Name = L"ViewForm";
 			this->Text = L"ViewForm";
+			this->Activated += gcnew System::EventHandler(this, &ViewForm::ViewForm_Activated);
+			this->Deactivate += gcnew System::EventHandler(this, &ViewForm::ViewForm_Deactivate);
 			this->ResumeLayout(false);
 
 		}
@@ -77,6 +79,8 @@ namespace AssetViewer {
 	protected:
 		virtual void OnShown(EventArgs^ e)  override 
 		{
+			Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);
+			m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
 			m_pFramework->m_hWndMain = (HWND)(void*)MdiParent->Handle;
 			m_pFramework->m_hWndPresent = (HWND)(void*)this->Handle;
 			if(!m_pFramework->Initialize())
@@ -84,6 +88,7 @@ namespace AssetViewer {
 				Application::Exit();
 			}
 			m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
+			
 		}
 	private:
 		bool AppStillIdle()
@@ -98,5 +103,18 @@ namespace AssetViewer {
 				m_pFramework->Run();
 			}			
 		}
+	private: System::Void ViewForm_Activated(System::Object^  sender, System::EventArgs^  e) {
+				 if (m_pFramework)
+				 {
+					 m_pFramework->GetInput()->Acquire();
+				 }
+				 
+			 }
+	private: System::Void ViewForm_Deactivate(System::Object^  sender, System::EventArgs^  e) {
+				 if (m_pFramework)
+				 {
+					 m_pFramework->GetInput()->UnAcquire();
+				 }
+			 }
 	};
 }

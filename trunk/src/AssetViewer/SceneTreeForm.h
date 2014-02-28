@@ -32,25 +32,6 @@ namespace AssetViewer {
 			imageList.Images->Add(Bitmap::FromFile("scenetree_skeleton.png"));
 
 			treeView1->ImageList = %imageList;
-
-			/*
-			TreeNode^ svrNode = gcnew TreeNode("서버", 0, 0);
-			svrNode->Nodes->Add("SE", "서울 서버", 1, 1);
-			svrNode->Nodes->Add("DJ", "대전 서버", 2, 2);
-			TreeNode^ chNode = svrNode->Nodes->Add("SE", "부산 서버", 3, 3);			
-
-			//TreeNode^ chNode = gcnew TreeNode("서버", 0, 0);			
-			chNode->Nodes->Add("cSE", "c서울 서버", 1, 1);
-			chNode->Nodes->Add("cDJ", "c대전 서버", 2, 2);
-			chNode->Nodes->Add("cBS", "c부산 서버", 3, 3);
-
-			// 2개의 노드를 TreeView에 추가
-			treeView1->Nodes->Add(svrNode);
-			
-			// 모든 트리 노드를 보여준다
-			treeView1->ExpandAll();
-			*/
-			
 		}
 
 	protected:
@@ -126,21 +107,22 @@ namespace AssetViewer {
 	private: 
 		System::Void OnShown(System::Object^  sender, System::EventArgs^  e) {
 
-			 m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
+			 
 		 }
 
 	public:	
-		void FillTree()
+		void Update(State* pState)
 		{
+			m_pState = pState;
 			treeView1->Nodes->Clear();
-			TreeNode^ svrNode = Test(nullptr,m_pState->GetEntity());
+			TreeNode^ svrNode = CreateTreeNode(nullptr,pState->GetEntity());
 			treeView1->Nodes->Add(svrNode);
 			// 모든 트리 노드를 보여준다
 			treeView1->ExpandAll();		
 		
 		}
 	public: 
-		TreeNode^ Test(TreeNode^ parentTreeNode,Sophia::cSceneNode* pNode)
+		TreeNode^ CreateTreeNode(TreeNode^ parentTreeNode,Sophia::cSceneNode* pNode)
 		{
 			System::String^ name = gcnew System::String(pNode->GetNodeName().c_str());
 			TreeNode^ treeNode;
@@ -161,7 +143,7 @@ namespace AssetViewer {
 			
 			for ( auto it = pNode->m_listChildNode.begin() ; it != pNode->m_listChildNode.end() ; it++ )
 			{
-				Test(treeNode,*it);
+				CreateTreeNode(treeNode,*it);
 			}
 			return treeNode;
 		}

@@ -2,6 +2,7 @@
 #include "Framework.h"
 #include "State.h"
 #include "Scene/SceneNode.h"
+#include "Resource.h"
 
 namespace AssetViewer {
 
@@ -24,15 +25,19 @@ namespace AssetViewer {
 			//
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
-			
-			imageList.Images->Add(Bitmap::FromFile("scenetree_root.png"));
-			imageList.Images->Add(Bitmap::FromFile("scenetree_scene.png"));
-			imageList.Images->Add(Bitmap::FromFile("scenetree_mesh.png"));
-			imageList.Images->Add(Bitmap::FromFile("scenetree_skin.png"));
-			imageList.Images->Add(Bitmap::FromFile("scenetree_skeleton.png"));
+					
+			Reflection::Assembly^ pxAssembly = Reflection::Assembly::GetExecutingAssembly();
+			String^ pxResName = pxAssembly->GetName()->Name + ".SceneTreeForm"; //Note: add your resourcefile name here, i.e. ".MyResourceFile" as it appears in solution explorer, without it's extension
+			auto s_pxResourceManager = (gcnew Resources::ResourceManager(pxResName,pxAssembly));
 
-			treeView1->ImageList = %imageList;
-			
+			//pictureBox1->Image =  //note: this is the exact name from the resx, not the filename or name in solution explorer. By default it's name in the resx won't contain it's extension.
+
+			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_root"))));
+			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_scene"))));
+			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_mesh"))));
+			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_skin"))));
+			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_skeleton"))));
+			treeView1->ImageList = %imageList;			
 		}
 
 	protected:

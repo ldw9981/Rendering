@@ -19,22 +19,19 @@
     <None Include="app.ico">
       <Filter>리소스 파일</Filter>
     </None>
-    <None Include="..\..\data\scenetree_mesh.png">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="..\..\data\scenetree_root.png">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="..\..\data\scenetree_scene.png">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="..\..\data\scenetree_skeleton.png">
-      <Filter>리소스 파일</Filter>
-    </None>
-    <None Include="..\..\data\scenetree_skin.png">
-      <Filter>리소스 파일</Filter>
-    </None>
     <None Include="scenetree_mesh.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="scenetree_root.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="scenetree_scene.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="scenetree_skeleton.png">
+      <Filter>리소스 파일</Filter>
+    </None>
+    <None Include="scenetree_skin.png">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>
@@ -138,13 +135,13 @@
     <EmbeddedResource Include="ViewForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
-    <EmbeddedResource Include="NodePropertyForm.resx">
-      <Filter>리소스 파일</Filter>
-    </EmbeddedResource>
     <EmbeddedResource Include="AnimationForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="ScenePropertyForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MaterialPropertyForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
   </ItemGroup>

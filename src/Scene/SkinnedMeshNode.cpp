@@ -140,7 +140,7 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 
 void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
-	if (m_bRender)
+	if (m_bShow)
 	{	
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
@@ -166,7 +166,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 {
-	if (m_bRender)
+	if (m_bShow)
 	{	
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )

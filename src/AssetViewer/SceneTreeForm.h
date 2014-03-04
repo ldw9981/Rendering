@@ -32,6 +32,7 @@ namespace AssetViewer {
 			imageList.Images->Add(Bitmap::FromFile("scenetree_skeleton.png"));
 
 			treeView1->ImageList = %imageList;
+			
 		}
 
 	protected:
@@ -56,6 +57,7 @@ namespace AssetViewer {
 		/// 필수 디자이너 변수입니다.
 		/// </summary>
 		System::ComponentModel::Container ^components;
+	public:
 		System::Windows::Forms::TreeView^  treeView1;
 
 
@@ -73,6 +75,7 @@ namespace AssetViewer {
 			// treeView1
 			// 
 			this->treeView1->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->treeView1->HideSelection = false;
 			this->treeView1->Location = System::Drawing::Point(0, 0);
 			this->treeView1->Name = L"treeView1";
 			this->treeView1->Size = System::Drawing::Size(240, 474);
@@ -147,6 +150,6 @@ namespace AssetViewer {
 			}
 			return treeNode;
 		}
-	
-	};
+
+};
 }

@@ -110,7 +110,10 @@
     <ClCompile Include="AssetViewer.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="MainForm.cpp" />
-    <ClCompile Include="NodePropertyForm.cpp" />
+    <ClCompile Include="MaterialProperty.cpp" />
+    <ClCompile Include="MaterialPropertyForm.cpp" />
+    <ClCompile Include="SceneProperty.cpp" />
+    <ClCompile Include="ScenePropertyForm.cpp" />
     <ClCompile Include="SceneTreeForm.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -130,10 +133,15 @@
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="NodePropertyForm.h">
+    <ClInclude Include="MaterialProperty.h" />
+    <ClInclude Include="MaterialPropertyForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="resource.h" />
+    <ClInclude Include="SceneProperty.h" />
+    <ClInclude Include="ScenePropertyForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
     <ClInclude Include="SceneTreeForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
@@ -157,8 +165,11 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.h</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="NodePropertyForm.resx">
-      <DependentUpon>NodePropertyForm.h</DependentUpon>
+    <EmbeddedResource Include="MaterialPropertyForm.resx">
+      <DependentUpon>MaterialPropertyForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScenePropertyForm.resx">
+      <DependentUpon>ScenePropertyForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SceneTreeForm.resx">
       <DependentUpon>SceneTreeForm.h</DependentUpon>

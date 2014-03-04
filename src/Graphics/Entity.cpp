@@ -131,7 +131,7 @@ void Entity::Update( DWORD elapseTime )
 
 bool Entity::Cull( Frustum* pFrustum ,float loose)
 {
-	if (!m_bRender)
+	if (!m_bShow)
 		return false;
 
 	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere,loose);
@@ -320,9 +320,9 @@ void Entity::PopMaterial()
 	}	
 }
 
-void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix )
+void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix )
 {
-	std::string key = m_vecAnimation[index]->GetUniqueKey() + std::string("_") + std::string(suffix);
+	std::string key = GetNodeName() + std::string("_") + std::string(suffix);
 	EntityAnimation* pNew = cResourceMng::m_pInstance->CreateEntityAnimation(key.c_str());	
 	if (pNew->GetRefCounter()==0)
 	{
@@ -401,6 +401,38 @@ bool Entity::LoadAnimationSet( const char* fileName )
 void Entity::InsertBone( const char* name,cSceneNode* pBone )
 {
 	m_mapBones[std::string(name)] = pBone;
+}
+
+void Entity::EraseAnimation( int index )
+{
+	assert(index<(int)m_vecAnimation.size());
+	
+	// 자식에 설정된 SceneAnimation포인터 선제거
+	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	{
+		(*it)->EraseAnimation(index);
+	}	
+
+	int i=0;
+	for (auto it=m_vecAnimation.begin() ;it!=m_vecAnimation.end() ;it++ ,i++)
+	{
+		if(i != index)
+			continue;
+
+		EntityAnimation* pItem = *it;
+		m_vecAnimation.erase(it);
+		pItem->Release();
+		break;
+	}	
+}
+
+void Entity::StopAnimation()
+{
+	m_animationIndex = -1;
+	m_animationLoop = false;
+	m_skipStartTime = 0;
+	m_earlyEndTime = 0;
+	m_animationTime = 0;	
 }
 
 }

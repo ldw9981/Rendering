@@ -72,24 +72,11 @@ namespace AssetViewer {
 			this->Text = L"ViewForm";
 			this->Activated += gcnew System::EventHandler(this, &ViewForm::ViewForm_Activated);
 			this->Deactivate += gcnew System::EventHandler(this, &ViewForm::ViewForm_Deactivate);
+			this->Shown += gcnew System::EventHandler(this, &ViewForm::ViewForm_Shown);
 			this->ResumeLayout(false);
 
 		}
 #pragma endregion
-	protected:
-		virtual void OnShown(EventArgs^ e)  override 
-		{
-			Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);
-			m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
-			m_pFramework->m_hWndMain = (HWND)(void*)MdiParent->Handle;
-			m_pFramework->m_hWndPresent = (HWND)(void*)this->Handle;
-			if(!m_pFramework->Initialize())
-			{
-				Application::Exit();
-			}
-			m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
-			
-		}
 	private:
 		bool AppStillIdle()
 		{
@@ -115,6 +102,17 @@ namespace AssetViewer {
 				 {
 					 m_pFramework->GetInput()->UnAcquire();
 				 }
+			 }
+	private: System::Void ViewForm_Shown(System::Object^  sender, System::EventArgs^  e) {
+				 Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);
+				 m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
+				 m_pFramework->m_hWndMain = (HWND)(void*)MdiParent->Handle;
+				 m_pFramework->m_hWndPresent = (HWND)(void*)this->Handle;
+				 if(!m_pFramework->Initialize())
+				 {
+					 Application::Exit();
+				 }
+				 m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
 			 }
 	};
 }

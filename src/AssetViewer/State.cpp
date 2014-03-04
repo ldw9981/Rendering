@@ -28,6 +28,9 @@ State::State(void)
 	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
 	m_pModel = NULL;
+	m_bModifiedAnimation = false;
+	m_bModifiedScene = false;
+	m_bModifiedMaterial = false;
 }
 
 State::~State( void )
@@ -169,7 +172,11 @@ void State::SaveAsset()
 {
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	m_pModel->SaveScene(std::string(strDataPath+m_pModel->GetNodeName()+".scene").c_str());
-	m_pModel->SaveAnimationSet(std::string(strDataPath+m_pModel->GetNodeName()+".aniset").c_str());		
+	if (m_bModifiedAnimation)
+	{
+		m_pModel->SaveAnimationSet(std::string(strDataPath+m_pModel->GetNodeName()+".aniset").c_str());		
+		m_bModifiedAnimation = false;
+	}	
 	m_pModel->SaveMaterial(std::string(strDataPath+m_pModel->GetNodeName()+".material").c_str(),0);
 }
 

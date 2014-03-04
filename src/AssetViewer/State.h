@@ -16,6 +16,9 @@ private:
 	Sophia::Entity*			m_pHouse[10];
 
 	Sophia::Entity*			m_pModel;
+	bool					m_bModifiedAnimation;
+	bool					m_bModifiedScene;
+	bool					m_bModifiedMaterial;
 public:	
 	virtual void Enter();
 	virtual void Leave();
@@ -30,5 +33,11 @@ public:
 
 
 	Sophia::Entity* GetEntity();
+	bool GetModifiedScene() const { return m_bModifiedScene; }
+	void SetModifiedScene(bool val) { m_bModifiedScene = val; }
+	bool GetModifiedMaterial() const { return m_bModifiedMaterial; }
+	void SetModifiedMaterial(bool val) { m_bModifiedMaterial = val; }
+	bool GetModifiedAnimation() const { return m_bModifiedAnimation; }
+	void SetModifiedAnimation(bool val) { m_bModifiedAnimation = val; }
 };
 

@@ -1,9 +1,11 @@
 #pragma once
 #include "ViewForm.h"
 #include "SceneTreeForm.h"
-#include "NodePropertyForm.h"
+#include "ScenePropertyForm.h"
 #include "AnimationForm.h"
-#include "Form1.h"
+#include "MaterialPropertyForm.h"
+#include "Graphics/Entity.h"
+#include "Scene/SceneNode.h"
 
 namespace AssetViewer {
 
@@ -28,9 +30,10 @@ namespace AssetViewer {
 			//
 			viewForm = gcnew ViewForm;
 	        sceneTreeForm = gcnew SceneTreeForm;
-			nodePropertyForm = gcnew NodePropertyForm;
+			scenePropertyForm = gcnew ScenePropertyForm;
 			animationForm = gcnew AnimationForm;
-			testForm = gcnew Form1;
+			materialPropertyForm = gcnew MaterialPropertyForm;
+			m_pNode = NULL;
 		}
 
 	protected:
@@ -44,15 +47,17 @@ namespace AssetViewer {
 				delete components;
 			}
 			
+			delete materialPropertyForm;
 			delete animationForm;
-			delete nodePropertyForm;
+			delete scenePropertyForm;
 			delete sceneTreeForm;
 			delete viewForm;
 		}
 
 
 	protected: 
-		static State* m_pState;
+		State* m_pState;
+		Sophia::cSceneNode* m_pNode;
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
@@ -61,8 +66,9 @@ namespace AssetViewer {
 		ViewForm^ viewForm;
 		SceneTreeForm^ sceneTreeForm;
 		AnimationForm^ animationForm;
-		NodePropertyForm^		nodePropertyForm;
-		Form1^		testForm;
+		ScenePropertyForm^		scenePropertyForm;
+		MaterialPropertyForm^	materialPropertyForm;
+		
 
 	private: System::Windows::Forms::ToolStripMenuItem^  fileToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  openToolStripMenuItem;
@@ -199,19 +205,23 @@ namespace AssetViewer {
 #pragma endregion
 	private: System::Void OnShown(System::Object^  sender, System::EventArgs^  e) {
 				 viewForm->MdiParent = this;
+				 viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
 				 viewForm->Show();
 
 				 sceneTreeForm->MdiParent = this;
+				 sceneTreeForm->treeView1->AfterSelect += gcnew System::Windows::Forms::TreeViewEventHandler(this, &MainForm::sceneTreeForm_treeView1_AfterSelect);
 				 sceneTreeForm->Show();
+				
 
-				 nodePropertyForm->MdiParent = this;
-				 nodePropertyForm->Show();
+				 scenePropertyForm->MdiParent = this;
+				 scenePropertyForm->Show();
+				 
 
 				 animationForm->MdiParent = this;
 				 animationForm->Show();
 
-				 testForm->MdiParent = this;
-				 testForm->Show();
+				 materialPropertyForm->MdiParent = this;
+				 materialPropertyForm->Show();
 			 }
 
 
@@ -238,6 +248,9 @@ private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System
 				 pState->OpenASE(path.c_str());
 				 sceneTreeForm->Update(pState);
 				 animationForm->Update(pState);
+				 m_pNode = NULL;
+				 scenePropertyForm->Update(pState,NULL);
+				 materialPropertyForm->Update(pState,NULL);
 			 }
 			 delete openFileDialog1;
 		 }
@@ -258,12 +271,33 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 				
 				 sceneTreeForm->Update(pState);
 				 animationForm->Update(pState);
+				 m_pNode = NULL;
+				 scenePropertyForm->Update(pState,NULL);
+				 materialPropertyForm->Update(pState,NULL);
 			 }
 			 delete openFileDialog1;
 		 }
 private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 State* pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
-			 pState->SaveAsset();
+			
+			 m_pState->SaveAsset();
+			 sceneTreeForm->Update(m_pState);
+			 animationForm->Update(m_pState);
+		 }
+	public: System::Void sceneTreeForm_treeView1_AfterSelect(System::Object^  sender, System::Windows::Forms::TreeViewEventArgs^  e) {
+				
+				std::string name = msclr::interop::marshal_as< std::string >(e->Node->Text);
+				m_pNode = m_pState->GetEntity()->FindNode(name);
+				scenePropertyForm->Update(m_pState,m_pNode);
+				materialPropertyForm->Update(m_pState,m_pNode);
+			}
+	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
+				materialPropertyForm->Update(m_pState,m_pNode);
+		 }
+	private: System::Void viewForm_OnShown(System::Object^  sender, System::EventArgs^  e) {
+				  m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
+			 }
+	private: System::Void materialPropertyForm_comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
+				 materialPropertyForm->Update(m_pState,m_pNode);
 		 }
 };
 }

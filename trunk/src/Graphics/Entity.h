@@ -53,9 +53,12 @@ public:
 
 	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();
+	virtual void EraseAnimation(int index);
 
 	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
 	virtual void PopMaterial();
+
+	
 
 	bool LoadASE(const char* fileName);
 	bool SaveScene(const char* fileName);
@@ -69,8 +72,9 @@ public:
 	bool SaveMaterial(const char* fileName,int index);
 	bool LoadMaterial(const char* fileName);
 
-	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,char* suffix );
+	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix );
 	void PlayAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
+	void StopAnimation();
 
 	void InsertBone(const char* name,cSceneNode* pBone);
 	const std::vector<EntityAnimation*> GetVecAnimation() { return m_vecAnimation; }

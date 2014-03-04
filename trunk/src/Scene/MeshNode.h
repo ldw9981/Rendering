@@ -64,6 +64,7 @@ public:
 
 	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
 	virtual void PopMaterial();
+	SceneMaterial* GetSceneMaterial();
 };
 
 }

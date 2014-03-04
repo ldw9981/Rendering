@@ -6,9 +6,11 @@
 #include "graphics/graphics.h"
 #include "Graphics/World.h"
 #include "Framework.h"
+#include "SceneProperty.h"
+
+
 
 namespace AssetViewer {
-
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -43,14 +45,20 @@ namespace AssetViewer {
 			}
 	
 		}
+	private: System::ComponentModel::IContainer^  components;
+	protected: 
+	private: System::Windows::Forms::ContextMenuStrip^  contextMenuStrip1;
+	private: System::Windows::Forms::ToolStripMenuItem^  cutAndPushBackToolStripMenuItem;
+
+	private: System::Windows::Forms::PropertyGrid^  propertyGrid1;
 
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
 		/// </summary>
-		System::ComponentModel::Container ^components;
-	private: System::Windows::Forms::TextBox^  textBox1;
 
+
+			 SceneProperty^ sceneProperty;
 
 
 #pragma region Windows Form Designer generated code
@@ -60,27 +68,45 @@ namespace AssetViewer {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->components = (gcnew System::ComponentModel::Container());
+			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->cutAndPushBackToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->propertyGrid1 = (gcnew System::Windows::Forms::PropertyGrid());
+			this->contextMenuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
-			// textBox1
+			// contextMenuStrip1
 			// 
-			this->textBox1->Location = System::Drawing::Point(54, 41);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(100, 21);
-			this->textBox1->TabIndex = 0;
-			this->textBox1->TextChanged += gcnew System::EventHandler(this, &Form1::textBox1_TextChanged);
+			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->cutAndPushBackToolStripMenuItem});
+			this->contextMenuStrip1->Name = L"contextMenuStrip1";
+			this->contextMenuStrip1->Size = System::Drawing::Size(167, 26);
+			// 
+			// cutAndPushBackToolStripMenuItem
+			// 
+			this->cutAndPushBackToolStripMenuItem->Name = L"cutAndPushBackToolStripMenuItem";
+			this->cutAndPushBackToolStripMenuItem->Size = System::Drawing::Size(166, 22);
+			this->cutAndPushBackToolStripMenuItem->Text = L"CutAndPushBack";
+			// 
+			// propertyGrid1
+			// 
+			this->propertyGrid1->Dock = System::Windows::Forms::DockStyle::Fill;
+			this->propertyGrid1->Location = System::Drawing::Point(0, 0);
+			this->propertyGrid1->Name = L"propertyGrid1";
+			this->propertyGrid1->Size = System::Drawing::Size(766, 444);
+			this->propertyGrid1->TabIndex = 3;
+			this->propertyGrid1->Tag = L"SceneProperty";
 			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(264, 234);
-			this->Controls->Add(this->textBox1);
+			this->ClientSize = System::Drawing::Size(766, 444);
+			this->Controls->Add(this->propertyGrid1);
 			this->Name = L"Form1";
 			this->Text = L"Form1";
+			this->Load += gcnew System::EventHandler(this, &Form1::Form1_Load);
+			this->contextMenuStrip1->ResumeLayout(false);
 			this->ResumeLayout(false);
-			this->PerformLayout();
 
 		}
 #pragma endregion
@@ -112,6 +138,31 @@ private: System::Void splitter1_SplitterMoved(System::Object^  sender, System::W
 		 }
 private: System::Void textBox1_TextChanged(System::Object^  sender, System::EventArgs^  e) {
 			 
+		 }
+private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) {
+
+			 sceneProperty = gcnew SceneProperty;
+			
+			 sceneProperty->translation0_x = 0.3f;
+
+			propertyGrid1->SelectedObject = sceneProperty;
+			propertyGrid1->ExpandAllGridItems();
+
+		 }
+private: System::Void listBox1_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+			 if( e->Button == System::Windows::Forms::MouseButtons::Right)
+			 {
+				 contextMenuStrip1->Show();
+			 }
+		 }
+private: System::Void listBox1_Click(System::Object^  sender, System::EventArgs^  e) {
+			 contextMenuStrip1->Show();
+		 }
+private: System::Void listBox1_MouseDown(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e) {
+			 if( e->Button == System::Windows::Forms::MouseButtons::Right)
+			 {
+				 contextMenuStrip1->Show();
+			 }
 		 }
 };
 }

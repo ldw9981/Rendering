@@ -12,7 +12,7 @@
 #include <vector>
 #include <bitset>
 #include <map>
-
+#include <algorithm>
 #pragma comment(lib,"User32.lib")
 
 #include <windows.h>

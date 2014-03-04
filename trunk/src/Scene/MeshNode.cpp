@@ -148,7 +148,7 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 
 void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
-	if (m_bRender)
+	if (m_bShow)
 	{	
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
@@ -243,7 +243,7 @@ void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& ve
 
 void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 {
-	if (m_bRender)
+	if (m_bShow)
 	{
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
@@ -421,6 +421,11 @@ void cMeshNode::PopMaterial()
 	m_vecSceneMaterial.pop_back();
 
 	cSceneNode::PopMaterial();
+}
+
+SceneMaterial* cMeshNode::GetSceneMaterial()
+{
+	return m_vecSceneMaterial[m_pRootNode->m_indexMaterial];
 }
 
 }

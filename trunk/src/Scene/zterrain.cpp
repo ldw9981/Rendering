@@ -216,7 +216,7 @@ BOOL ZTerrain::GetHeight( float x,float z,float& y )
 
 bool ZTerrain::Cull(  Frustum* pFrustum ,float loose )
 {
-	if (!m_bRender)
+	if (!m_bShow)
 		return false;
 
 	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere,0.0f);

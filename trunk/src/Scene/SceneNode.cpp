@@ -29,7 +29,7 @@ cSceneNode::cSceneNode(void)
 //	m_NodeType=ROOT;	
 
 	m_bIsActiveAnimation = true;
-	m_bRender = true;
+	m_bShow = true;
 	m_bIsBone = false;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
@@ -354,6 +354,27 @@ void cSceneNode::PopAnimation()
 	}
 }
 
+void cSceneNode::EraseAnimation( int index )
+{	
+	int i=0;
+	for (auto it=m_vecSceneAnimation.begin() ;it!=m_vecSceneAnimation.end() ;it++ ,i++)
+	{
+		if(i != index)
+			continue;
+
+		SceneAnimation* pItem = *it;
+		m_vecSceneAnimation.erase(it);
+		break;
+	}	
+
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->EraseAnimation(index);
+	}
+}
+
+
+
 void cSceneNode::PushMaterial( EntityMaterial* pEntityMaterial )
 {
 	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
@@ -378,5 +399,6 @@ void cSceneNode::Test( void(*Func)(cSceneNode*) )
 		(*it)->Test(Func);
 	}
 }
+
 
 }

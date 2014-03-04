@@ -63,10 +63,19 @@
     <ClCompile Include="MainForm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="NodePropertyForm.cpp">
+    <ClCompile Include="AnimationForm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="AnimationForm.cpp">
+    <ClCompile Include="ScenePropertyForm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneProperty.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialPropertyForm.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MaterialProperty.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -95,10 +104,19 @@
     <ClInclude Include="SceneTreeForm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="NodePropertyForm.h">
+    <ClInclude Include="AnimationForm.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="AnimationForm.h">
+    <ClInclude Include="ScenePropertyForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneProperty.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialPropertyForm.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialProperty.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -121,6 +139,12 @@
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
     <EmbeddedResource Include="NodePropertyForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="AnimationForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ScenePropertyForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
   </ItemGroup>

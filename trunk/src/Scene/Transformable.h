@@ -4,6 +4,7 @@ namespace Sophia
 
 /*
 	m_LocalTM 과 parentWorldTM 을 참조하여 m_WorldTM을 얻는 클래스 
+	비효율 적인 부분이 많아 최적화할 여지가 많다.
 */
 
 class cSceneNode;

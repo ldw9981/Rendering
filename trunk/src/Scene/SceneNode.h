@@ -50,7 +50,7 @@ protected:
 
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
-	bool					m_bRender;
+	bool					m_bShow;
 	//DWORD					m_animationTime;
 	std::list<cSceneNode*>::iterator m_ParentListIt;
 public:	
@@ -94,8 +94,8 @@ public:
 	BOOL				GetIsActiveAnimation() const { return m_bIsActiveAnimation; }
 	void				SetIsActiveAnimation(BOOL val) { m_bIsActiveAnimation = val; }
 
-	bool GetRender() const { return m_bRender; }
-	void SetRender(bool val) { m_bRender = val; }
+	bool GetShow() const { return m_bShow; }
+	void SetShow(bool val) { m_bShow = val; }
 	void				UpdateChildren(DWORD elapseTime);
 	void				RenderChildren();
 	void				FreeChildren();
@@ -124,8 +124,12 @@ public:
 
 	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();
+	virtual void EraseAnimation(int index);
+
 	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
 	virtual void PopMaterial();
+
+	
 	void Test(void(*Func)(cSceneNode*));
 };
 

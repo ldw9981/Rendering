@@ -153,6 +153,37 @@ void SceneAnimation::InterpolateAnimationnKey( ANMKEY& out,ANMKEY& in1,ANMKEY& i
 	D3DXVec3Lerp(&out.ScaleAccum,&in1.ScaleAccum,&in2.ScaleAccum,v);
 }
 
+void SceneAnimation::GetAnimationKeyByIndex( ANMKEY& out,DWORD animationTime,size_t& index )
+{
+	size_t indexMax = m_arrayANMKEY.size()-1;
+	ANMKEY* pKey1=NULL;
+	ANMKEY* pKey2=NULL;
+	if (index >= indexMax)
+	{
+		index = 0;
+	}
+
+	if (animationTime < m_arrayANMKEY[index].AnmTick)
+	{
+		index = 0;
+	}
+
+	for ( ; index < indexMax ; index++)
+	{
+		pKey1 = &m_arrayANMKEY[index];
+		pKey2 = &m_arrayANMKEY[index+1];
+		
+		if( animationTime <  pKey2->AnmTick)
+		{
+			break;
+		}
+	}
+
+	float fValue=GetInterpolateValue(pKey1->AnmTick,pKey2->AnmTick,animationTime);
+	SceneAnimation::InterpolateAnimationnKey(out,*pKey1,*pKey2,fValue);
+	out.AnmTick = animationTime;
+}
+
 EntityAnimation::EntityAnimation(void)
 {
 	

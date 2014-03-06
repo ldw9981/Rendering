@@ -32,8 +32,8 @@ public:
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
 	
-	ENTITY_ANIMATION_DESCRIPTION m_animationDesc;
-	ENTITY_ANIMATION_DESCRIPTION m_animationDescPrev;
+	ENTITY_ANIMATION_DESCRIPTION m_animationDesc;		
+	ENTITY_ANIMATION_DESCRIPTION m_animationDescPrev;	//다른 애니이션 전환할때 fadeIn 옵션 사용한다면 이전 애니메이션키를 계속 얻기위해 필요하다.
 protected:
 	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	

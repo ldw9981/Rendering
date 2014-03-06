@@ -47,7 +47,8 @@ protected:
 	// Transform 애니메이션 정보
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;
 	
-
+	size_t					m_animationKeyIndex;
+	size_t					m_animationPrevKeyIndex;
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bShow;

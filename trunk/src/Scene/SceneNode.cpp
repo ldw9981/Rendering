@@ -33,6 +33,8 @@ cSceneNode::cSceneNode(void)
 	m_bIsBone = false;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
+	m_animationPrevKeyIndex = 0;
+	m_animationKeyIndex = 0;
 }
 
 cSceneNode::~cSceneNode(void)
@@ -130,7 +132,10 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 	ANMKEY anmKeyInter;
 	ANMKEY* pAnmKey=&anmKeyCurr;
 
-	pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);	
+	//pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);	
+	pSceneAnimation->GetAnimationKeyByIndex(anmKeyCurr,m_pRootNode->m_animationDesc.playTime,m_animationKeyIndex);
+	
+	
 	if (m_pRootNode->m_animationDescPrev.playIndex != -1)
 	{
 		if (m_pRootNode->m_animationDesc.fadeInTime > 0 ) 
@@ -139,12 +144,14 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 			assert(pSceneAnimationPrev!=NULL);
 
 			ANMKEY anmKeyPrev;
-			pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
+			//pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
+			pSceneAnimationPrev->GetAnimationKeyByIndex(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime,m_animationPrevKeyIndex);
 
 			SceneAnimation::InterpolateAnimationnKey(anmKeyInter,anmKeyPrev,anmKeyCurr,m_pRootNode->m_animationDesc.fadeWeight);
 			pAnmKey = &anmKeyInter;
 		}
 	}
+	
 	
 	
 	D3DXMATRIX tmSCL;

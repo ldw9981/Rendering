@@ -48,7 +48,7 @@ public:
 	bool	Mouse_IsCurrDn(BYTE button);
 	bool	Mouse_IsCurrUp(BYTE button);
 	bool	Mouse_IsMove();
-
+	void	SetRequestAcquire(bool val) { m_bRequestAcquire = val; }
 	void	Acquire();
 	void	UnAcquire();
 private:
@@ -74,6 +74,9 @@ private:
 	LONG m_screenWidth, m_screenHeight;
 	LONG m_mouseX, m_mouseY;
 	HWND m_hWnd;
+	bool m_bRequestAcquire;
+	
+
 };
 
 extern Input* g_pInput;

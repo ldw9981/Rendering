@@ -2,7 +2,7 @@
 #include "Scene/scenenode.h"
 #include "Math/Sphere.h"
 #include "Graphics/RendererQueue.h"
-
+#include "Graphics/Animation.h"
 
 namespace Sophia
 {
@@ -31,11 +31,9 @@ public:
 	std::vector<EntityMaterial*>	m_vecMaterial;		
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
-	int					m_animationIndex;
-	DWORD				m_animationTime;
-	DWORD				m_skipStartTime;
-	DWORD				m_earlyEndTime;
-	bool				m_animationLoop;
+	
+	ENTITY_ANIMATION_DESCRIPTION m_animationDesc;
+	ENTITY_ANIMATION_DESCRIPTION m_animationDescPrev;
 protected:
 	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	
@@ -73,11 +71,13 @@ public:
 	bool LoadMaterial(const char* fileName);
 
 	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix );
-	void PlayAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
+	void PlayAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0,DWORD fadeInTime=0);
 	void StopAnimation();
 
 	void InsertBone(const char* name,cSceneNode* pBone);
 	const std::vector<EntityAnimation*> GetVecAnimation() { return m_vecAnimation; }
+
+	void UpdateAnimationDescription(DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc);
 };
 
 

@@ -62,13 +62,16 @@ bool cD3DFramework::Initialize()
 	::GetCurrentDirectoryA(MAX_PATH,CurrPath);
 	EnvironmentVariable::GetInstance().SetString("CurrPath",std::string(CurrPath)+std::string("\\"));
 
+	m_pInput = new Input;
+	AttachObject(m_pInput);
+
 	InitWindow();
 
 	m_pGraphics = new Sophia::Graphics;	
 	m_pGraphics->Init(m_hWndMain,m_hWndPresent,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
-	m_pInput = new Input;
-	AttachObject(m_pInput);
+	
+	
 	if(!m_pInput->Initialize(m_hInstance,m_hWndMain,GetRequestRectWidth(),GetRequestRectHeight()))
 	{
 		MessageBox(m_hWndMain, "Could not initialize the input object.", "Error", MB_OK);

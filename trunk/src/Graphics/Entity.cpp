@@ -17,14 +17,9 @@ namespace Sophia
 
 Entity::Entity(void)
 {
-	m_strNodeName="Entity";
-	m_animationIndex = -1;
+	m_strNodeName="Entity";	
 	m_indexMaterial = -1;
-	m_animationTime = 0;
-	m_animationLoop = false;
 	m_type = TYPE_ROOT;
-	m_skipStartTime=0;
-	m_earlyEndTime=0;
 }
 
 
@@ -108,23 +103,8 @@ void Entity::RenderBound()
 
 void Entity::Update( DWORD elapseTime )
 {
-	if (m_animationIndex != -1 )
-	{
-		m_animationTime += elapseTime;
-		DWORD endTime = m_vecAnimation[m_animationIndex]->m_dwTimeLength - m_earlyEndTime;
-		if( m_animationTime >= endTime  )
-		{
-			if ( m_animationLoop)
-			{
-				m_animationTime %= (endTime-m_skipStartTime);
-				m_animationTime += m_skipStartTime;
-			}
-			else
-			{
-				m_animationTime = endTime;
-			}
-		}
-	}
+	UpdateAnimationDescription(elapseTime,m_animationDescPrev);
+	UpdateAnimationDescription(elapseTime,m_animationDesc);
 	cSceneNode::Update(elapseTime);
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 }
@@ -335,16 +315,21 @@ void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,
 	}
 }
 
-void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime )
+void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime )
 {
 	assert(index < (int)m_vecAnimation.size());
-	m_animationIndex = index;
-	m_animationLoop = loop;
-	m_skipStartTime = skipStartTime;
-	m_earlyEndTime = earlyEndTime;
-	m_animationTime = m_skipStartTime;	
+	
+	m_animationDescPrev = m_animationDesc;
+	
+	m_animationDesc.playIndex = index;
+	m_animationDesc.loop = loop;
+	m_animationDesc.skipStartTime = skipStartTime;
+	m_animationDesc.earlyEndTime = earlyEndTime;
+	m_animationDesc.playTime = m_animationDesc.skipStartTime;	
+	m_animationDesc.fadeInTime = fadeInTime;
+	m_animationDesc.fadeTime = 0;
 
-	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_animationIndex]->m_dwTimeLength );
+	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_animationDesc.playIndex]->m_dwTimeLength );
 }
 
 bool Entity::LoadASE( const char* fileName )
@@ -428,11 +413,41 @@ void Entity::EraseAnimation( int index )
 
 void Entity::StopAnimation()
 {
-	m_animationIndex = -1;
-	m_animationLoop = false;
-	m_skipStartTime = 0;
-	m_earlyEndTime = 0;
-	m_animationTime = 0;	
+	m_animationDescPrev = m_animationDesc;
+	m_animationDesc.playIndex = -1;
+	m_animationDesc.loop = false;
+	m_animationDesc.skipStartTime = 0;
+	m_animationDesc.earlyEndTime = 0;
+	m_animationDesc.playTime = 0;	
+	m_animationDesc.fadeInTime = 0;
+	m_animationDesc.fadeTime = 0;
+}
+
+void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )
+{
+	if ( desc.playIndex != -1 )
+	{
+		desc.playTime += elapseTime;
+		DWORD endTime = m_vecAnimation[desc.playIndex]->m_dwTimeLength - desc.earlyEndTime;
+		if( desc.playTime >= endTime  )
+		{
+			if ( desc.loop)
+			{
+				desc.playTime %= (endTime - desc.skipStartTime);
+				desc.playTime += desc.skipStartTime;
+			}
+			else
+			{
+				desc.playTime = endTime;
+			}
+		}
+
+		desc.fadeTime += elapseTime;
+		if (desc.fadeTime >= desc.fadeInTime)
+		{
+			desc.fadeTime = desc.fadeInTime;
+		}
+	}
 }
 
 }

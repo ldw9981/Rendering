@@ -199,12 +199,12 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		m_pDragon->m_animationIndex ++;		
-		if (m_pDragon->m_animationIndex >= (int)m_pDragon->m_vecAnimation.size() )
+		m_pDragon->m_animationDesc.playIndex ++;		
+		if (m_pDragon->m_animationDesc.playIndex >= (int)m_pDragon->m_vecAnimation.size() )
 		{
-			m_pDragon->m_animationIndex =0;			
+			m_pDragon->m_animationDesc.playIndex =0;			
 		}
-		m_pDragon->PlayAnimation(m_pDragon->m_animationIndex,true);
+		m_pDragon->PlayAnimation(m_pDragon->m_animationDesc.playIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))
@@ -227,5 +227,10 @@ void cMenuView::Control()
 		m_pDragon->SaveAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
 		m_pDragon->SaveMaterial(std::string(strDataPath+"dragon.material").c_str(),0);
 	}	
+
+	if (g_pInput->IsTurnDn(DIK_F7))
+	{
+		m_pDragon->PlayAnimation(0,false,0,0,1999);
+	}
 	
 }

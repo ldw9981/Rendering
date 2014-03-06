@@ -119,14 +119,56 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 	if ( m_vecSceneAnimation.empty())
 		return NULL;
 
-	if ( m_pRootNode->m_animationIndex == -1 )
+	if ( m_pRootNode->m_animationDesc.playIndex == -1 )
 		return NULL;
 
-	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_animationIndex];
-	if (!pSceneAnimation)
+	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_animationDesc.playIndex];
+	if (pSceneAnimation==NULL)
 		return NULL;
+		
+	ANMKEY anmKeyCurr;
+	ANMKEY anmKeyInter;
+	ANMKEY* pAnmKey=&anmKeyCurr;
 
-	pSceneAnimation->GetTransform(m_AnimationTM,m_pRootNode->m_animationTime);		
+	pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);
+	
+	
+	if ( m_pRootNode->m_animationDesc.fadeInTime > 0 && m_pRootNode->m_animationDescPrev.playIndex != -1 )
+	{
+		SceneAnimation* pSceneAnimationPrev = m_vecSceneAnimation[m_pRootNode->m_animationDescPrev.playIndex];
+		assert(pSceneAnimationPrev!=NULL);
+
+		ANMKEY anmKeyPrev;
+		pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
+
+		float t = (float)m_pRootNode->m_animationDesc.fadeTime / (float)m_pRootNode->m_animationDesc.fadeInTime;		
+
+		SceneAnimation::InterpolateAnimationnKey(anmKeyInter,anmKeyPrev,anmKeyCurr,t);
+		pAnmKey = &anmKeyInter;
+	}
+	
+	
+	D3DXMATRIX tmSCL;
+	D3DXMATRIX tmROT;
+	D3DXMATRIX tmPOS;	
+
+	// 각성분에대한  TM구하기
+	D3DXMatrixScaling(&tmSCL,
+		pAnmKey->ScaleAccum.x,
+		pAnmKey->ScaleAccum.y,
+		pAnmKey->ScaleAccum.z);
+
+	D3DXMatrixRotationQuaternion(&tmROT,
+		&pAnmKey->RotationAccum);					
+
+	D3DXMatrixTranslation(&tmPOS,
+		pAnmKey->TranslationAccum.x,
+		pAnmKey->TranslationAccum.y,
+		pAnmKey->TranslationAccum.z);			
+
+	// TM	
+	m_AnimationTM = tmSCL * tmROT * tmPOS;	
+	
 	return &m_AnimationTM;
 }
 

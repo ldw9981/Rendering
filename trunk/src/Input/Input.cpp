@@ -20,6 +20,7 @@ Input::Input(void)
 	memset(&m_mouseButtonPrev,0,4);	
 	memset(&m_mouseButtonTurnDn,0,4);	
 	memset(&m_mouseButtonTurnUp,0,4);	
+	m_bRequestAcquire = false;
 }
 
 Input::~Input(void)
@@ -141,6 +142,11 @@ void Input::Finalize()
 
 void Input::Update(DWORD elapseTime)
 {
+	if (m_bRequestAcquire)
+	{
+		Acquire();
+		m_bRequestAcquire = false;
+	}
 	// Read the current state of the keyboard.
 	ReadKeyboard();
 	// Read the current state of the mouse.

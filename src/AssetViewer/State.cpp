@@ -129,12 +129,12 @@ void State::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		m_pDragon->m_animationIndex ++;		
-		if (m_pDragon->m_animationIndex >= (int)m_pDragon->m_vecAnimation.size() )
+		m_pDragon->m_animationDesc.playIndex ++;		
+		if (m_pDragon->m_animationDesc.playIndex >= (int)m_pDragon->m_vecAnimation.size() )
 		{
-			m_pDragon->m_animationIndex =0;			
+			m_pDragon->m_animationDesc.playIndex =0;			
 		}
-		m_pDragon->PlayAnimation(m_pDragon->m_animationIndex,true);
+		m_pDragon->PlayAnimation(m_pDragon->m_animationDesc.playIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))

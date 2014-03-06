@@ -85,7 +85,7 @@ BOOL TestGameApp::OnWM_General( MSG& msg )
 	case WM_ACTIVATE:    
 		if(msg.wParam == WA_ACTIVE)    
 		{        
-			m_pInput->Acquire();
+			m_pInput->SetRequestAcquire(true);
 		}    
 		if(msg.wParam == WA_INACTIVE)
 		{        

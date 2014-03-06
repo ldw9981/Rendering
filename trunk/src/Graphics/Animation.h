@@ -49,9 +49,10 @@ struct ENTITY_ANIMATION_DESCRIPTION
 	bool				loop;
 	DWORD				fadeInTime;
 	DWORD				fadeTime;
+	float				fadeWeight;
 
 	ENTITY_ANIMATION_DESCRIPTION()
-		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0)
+		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0),fadeWeight(0.0f)
 	{
 
 	}
@@ -67,6 +68,7 @@ public:
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
 	DWORD*	m_pTimeLength;
+	float	m_weight;
 
 	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
 	void	GetTransform(D3DXMATRIX& out,DWORD animationTime );	

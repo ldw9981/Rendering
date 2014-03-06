@@ -130,21 +130,20 @@ D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
 	ANMKEY anmKeyInter;
 	ANMKEY* pAnmKey=&anmKeyCurr;
 
-	pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);
-	
-	
-	if ( m_pRootNode->m_animationDesc.fadeInTime > 0 && m_pRootNode->m_animationDescPrev.playIndex != -1 )
+	pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);	
+	if (m_pRootNode->m_animationDescPrev.playIndex != -1)
 	{
-		SceneAnimation* pSceneAnimationPrev = m_vecSceneAnimation[m_pRootNode->m_animationDescPrev.playIndex];
-		assert(pSceneAnimationPrev!=NULL);
+		if (m_pRootNode->m_animationDesc.fadeInTime > 0 ) 
+		{
+			SceneAnimation* pSceneAnimationPrev = m_vecSceneAnimation[m_pRootNode->m_animationDescPrev.playIndex];
+			assert(pSceneAnimationPrev!=NULL);
 
-		ANMKEY anmKeyPrev;
-		pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
+			ANMKEY anmKeyPrev;
+			pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
 
-		float t = (float)m_pRootNode->m_animationDesc.fadeTime / (float)m_pRootNode->m_animationDesc.fadeInTime;		
-
-		SceneAnimation::InterpolateAnimationnKey(anmKeyInter,anmKeyPrev,anmKeyCurr,t);
-		pAnmKey = &anmKeyInter;
+			SceneAnimation::InterpolateAnimationnKey(anmKeyInter,anmKeyPrev,anmKeyCurr,m_pRootNode->m_animationDesc.fadeWeight);
+			pAnmKey = &anmKeyInter;
+		}
 	}
 	
 	

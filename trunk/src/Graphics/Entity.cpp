@@ -328,6 +328,7 @@ void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD early
 	m_animationDesc.playTime = m_animationDesc.skipStartTime;	
 	m_animationDesc.fadeInTime = fadeInTime;
 	m_animationDesc.fadeTime = 0;
+	m_animationDesc.fadeWeight = 0.0f;
 
 	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_animationDesc.playIndex]->m_dwTimeLength );
 }
@@ -414,13 +415,7 @@ void Entity::EraseAnimation( int index )
 void Entity::StopAnimation()
 {
 	m_animationDescPrev = m_animationDesc;
-	m_animationDesc.playIndex = -1;
-	m_animationDesc.loop = false;
-	m_animationDesc.skipStartTime = 0;
-	m_animationDesc.earlyEndTime = 0;
-	m_animationDesc.playTime = 0;	
-	m_animationDesc.fadeInTime = 0;
-	m_animationDesc.fadeTime = 0;
+	m_animationDesc = ENTITY_ANIMATION_DESCRIPTION();
 }
 
 void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )
@@ -442,11 +437,17 @@ void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCR
 			}
 		}
 
-		desc.fadeTime += elapseTime;
-		if (desc.fadeTime >= desc.fadeInTime)
+		if (desc.fadeInTime!=0)
 		{
-			desc.fadeTime = desc.fadeInTime;
+			desc.fadeTime += elapseTime;
+			if (desc.fadeTime >= desc.fadeInTime)
+			{
+				desc.fadeTime = desc.fadeInTime;
+				desc.fadeInTime = 0;
+			}
+			desc.fadeWeight = (float)desc.fadeTime/(float)desc.fadeInTime;
 		}
+
 	}
 }
 

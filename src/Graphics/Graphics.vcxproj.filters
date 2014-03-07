@@ -26,9 +26,6 @@
     <ClInclude Include="RscTexture.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="RscTransformAnm.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="RscVertexBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -62,9 +59,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RscTexture.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="RscTransformAnm.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="RscVertexBuffer.cpp">

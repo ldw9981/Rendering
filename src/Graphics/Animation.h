@@ -67,13 +67,10 @@ public:
 	~SceneAnimation(void);
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
-	DWORD*	m_pTimeLength;
 	float	m_weight;
 
 	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
-	void	GetTransform(D3DXMATRIX& out,DWORD animationTime );	
-	void	GetAnimationKey(ANMKEY& out,DWORD animationTime);
-	void	GetAnimationKeyByIndex(ANMKEY& out,DWORD animationTime,size_t& index);
+	void	GetAnimationKey(ANMKEY& out,DWORD animationTime,size_t& index);
 	void	SerializeIn(std::ifstream& stream);
 	void	SerializeOut(std::ofstream& stream);
 

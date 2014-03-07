@@ -7,7 +7,6 @@ namespace Sophia
 
 struct SCENEINFO; 
 class cASEParser; 
-class cRscTransformAnm;
 class cRendererQueue;
 class cCameraNode;
 class cView;

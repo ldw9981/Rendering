@@ -7,7 +7,7 @@ namespace Sophia
 
 SceneAnimation::SceneAnimation( void )
 {
-	m_pTimeLength = NULL;
+	
 }
 
 SceneAnimation::~SceneAnimation( void )
@@ -29,33 +29,6 @@ float SceneAnimation::GetInterpolateValue( int start_time,int end_time,int inter
 
 	ret=(float)offset_time / (float)delta_time;	
 	return ret;
-}
-
-void SceneAnimation::GetTransform( D3DXMATRIX& out,DWORD animationTime )
-{
-	D3DXMATRIX tmSCL;
-	D3DXMATRIX tmROT;
-	D3DXMATRIX tmPOS;	
-
-	ANMKEY stTempAnmKey;
-	GetAnimationKey(stTempAnmKey,animationTime);
-	
-	// 각성분에대한  TM구하기
-	D3DXMatrixScaling(&tmSCL,
-		stTempAnmKey.ScaleAccum.x,
-		stTempAnmKey.ScaleAccum.y,
-		stTempAnmKey.ScaleAccum.z);
-
-	D3DXMatrixRotationQuaternion(&tmROT,
-		&stTempAnmKey.RotationAccum);					
-
-	D3DXMatrixTranslation(&tmPOS,
-		stTempAnmKey.TranslationAccum.x,
-		stTempAnmKey.TranslationAccum.y,
-		stTempAnmKey.TranslationAccum.z);			
-
-	// TM	
-	out = tmSCL * tmROT * tmPOS;		
 }
 
 void SceneAnimation::SerializeIn( std::ifstream& stream )
@@ -93,8 +66,9 @@ void SceneAnimation::SerializeOut( std::ofstream& stream )
 
 void SceneAnimation::Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut )
 {		
+	size_t index = 0;
 	ANMKEY itemFirst,itemLast;
-	GetAnimationKey(itemFirst,timeStart);
+	GetAnimationKey(itemFirst,timeStart,index);
 	pOut->m_arrayANMKEY.push_back(itemFirst);
 	
 	for (unsigned short i=0;i<m_arrayANMKEY.size();i++)
@@ -105,46 +79,13 @@ void SceneAnimation::Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut )
 			pOut->m_arrayANMKEY.push_back(item);
 		}
 	}
-	GetAnimationKey(itemLast,timeEnd);
+	GetAnimationKey(itemLast,timeEnd,index);
 	if (itemLast.AnmTick == 0)
 	{
 		__debugbreak();
 	}
 	pOut->m_arrayANMKEY.push_back(itemLast);
 }
-
-void SceneAnimation::GetAnimationKey(ANMKEY& out,DWORD animationTime)
-{
-	assert(m_arrayANMKEY.empty() == false);
-	float fIndexRate = (float) animationTime / (float)(*m_pTimeLength);		
-	assert(fIndexRate <= 1.0f);
-	
-	size_t nIndexMax = m_arrayANMKEY.size()-1;
-	size_t nIndex = (size_t)((float)nIndexMax * fIndexRate);
-	size_t nIndexPrev=nIndex;
-	size_t nIndexAfter=nIndex;
-
-	ANMKEY& inter = m_arrayANMKEY[nIndex];
-
-	// 추정인덱스의 시간을 살표보고  크면 인덱스 -1
-	if ( animationTime < inter.AnmTick)
-	{
-		if(nIndex>0)	nIndexPrev--;
-	}
-	else if( animationTime >= inter.AnmTick) 
-	{
-		if (nIndex < nIndexMax)		nIndexAfter++;
-	}
-
-	ANMKEY& prev = m_arrayANMKEY[nIndexPrev];
-	ANMKEY& after = m_arrayANMKEY[nIndexAfter]; 
-
-	float fValue=GetInterpolateValue(prev.AnmTick,after.AnmTick,animationTime);
-	SceneAnimation::InterpolateAnimationnKey(out,prev,after,fValue);
-	out.AnmTick = animationTime;
-}
-
-
 
 void SceneAnimation::InterpolateAnimationnKey( ANMKEY& out,ANMKEY& in1,ANMKEY& in2,float v )
 {
@@ -153,21 +94,17 @@ void SceneAnimation::InterpolateAnimationnKey( ANMKEY& out,ANMKEY& in1,ANMKEY& i
 	D3DXVec3Lerp(&out.ScaleAccum,&in1.ScaleAccum,&in2.ScaleAccum,v);
 }
 
-void SceneAnimation::GetAnimationKeyByIndex( ANMKEY& out,DWORD animationTime,size_t& index )
+void SceneAnimation::GetAnimationKey( ANMKEY& out,DWORD animationTime,size_t& index )
 {
 	size_t indexMax = m_arrayANMKEY.size()-1;
 	ANMKEY* pKey1=NULL;
 	ANMKEY* pKey2=NULL;
-	if (index >= indexMax)
+
+	if ( index >=indexMax ||  animationTime < m_arrayANMKEY[index].AnmTick)
 	{
 		index = 0;
 	}
-
-	if (animationTime < m_arrayANMKEY[index].AnmTick)
-	{
-		index = 0;
-	}
-
+	
 	for ( ; index < indexMax ; index++)
 	{
 		pKey1 = &m_arrayANMKEY[index];
@@ -217,8 +154,6 @@ void EntityAnimation::Free()
 SceneAnimation* EntityAnimation::CreateSceneAnimation( std::string& nodeName )
 {
 	SceneAnimation* pSceneAnimation = new SceneAnimation;
-	pSceneAnimation->m_pTimeLength = &m_dwTimeLength;
-
 	auto pairIB = m_container.insert(make_pair(nodeName,pSceneAnimation));
 	assert(pairIB.second!=false);
 	return pSceneAnimation;

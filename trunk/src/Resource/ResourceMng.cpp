@@ -6,7 +6,6 @@
 #include "Graphics/RscTexture.h"
 #include "Graphics/RscVertexBuffer.h"
 #include "Graphics/RscIndexBuffer.h"
-#include "Graphics/RscTransformAnm.h"
 #include "Graphics/Animation.h"
 namespace Sophia
 {

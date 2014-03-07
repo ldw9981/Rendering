@@ -7,7 +7,6 @@
 #include "Scene/CameraNode.h"
 #include "Scene/SkinnedMeshNode.h"
 #include "Resource/ResourceMng.h"
-#include "Graphics/RscTransformAnm.h"
 #include "Foundation/Define.h"
 #include "Foundation/StringUtil.h"
 #include "Foundation/EnvironmentVariable.h"
@@ -372,8 +371,6 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::vector<TRIANGLE>					vecTempExtraTFaceIndex;	
 
 	// 정점으로 Sphere를 만들기위한 임시 정보
-	
-	cRscTransformAnm* pRscTransformAnm = NULL;
 	SceneAnimation* pSceneAnimation = NULL;
 
 	SCENENODEINFO stInfo;	
@@ -410,7 +407,6 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
 				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;
@@ -807,8 +803,6 @@ BOOL cASEParser::Parsing_GeoObject()
 		SAFE_RELEASE(pNewRscIndexBuffer);
 		SAFE_RELEASE(pNewRscVertexBuffer);
 	}	
-	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
-
 
 	return TRUE;
 }
@@ -1046,7 +1040,6 @@ BOOL cASEParser::Parsing_MaterialList()
 BOOL cASEParser::Parsing_HelperObject()
 {	
 	SCENENODEINFO stInfo;
-	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1079,8 +1072,7 @@ BOOL cASEParser::Parsing_HelperObject()
 			break;
 
 		case TOKENR_TM_ANIMATION:
-			{					
-				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);
+			{									
 				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;
@@ -1094,15 +1086,13 @@ BOOL cASEParser::Parsing_HelperObject()
 	}
 
 	cSceneNode* pNewSceneNode = CreateSceneNode(stInfo);
-	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_ShapeObject()
 {
 	SCENENODEINFO stInfo;	
-	cRscTransformAnm* pRscTransformAnm = NULL;
-
+	
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
 
@@ -1134,7 +1124,6 @@ BOOL cASEParser::Parsing_ShapeObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
 				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
@@ -1162,14 +1151,12 @@ BOOL cASEParser::Parsing_ShapeObject()
 
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
-	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_LightObject()
 {	
 	SCENENODEINFO stInfo;	
-	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1202,7 +1189,6 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);	
 				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 			}
 			break;		
@@ -1245,14 +1231,12 @@ BOOL cASEParser::Parsing_LightObject()
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
 	return TRUE;
 }
 
 BOOL cASEParser::Parsing_CameraObject()
 {
 	SCENENODEINFO stInfo;	
-	cRscTransformAnm* pRscTransformAnm = NULL;
 
 	// {
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
@@ -1306,8 +1290,7 @@ BOOL cASEParser::Parsing_CameraObject()
 			break;
 		case TOKENR_TM_ANIMATION:		
 			if (bLoadCameraAnmTM==FALSE)
-			{				
-				//pRscTransformAnm = GetRscTransformAnm(m_SceneTime.FILENAME.c_str(),stInfo.strNodeName.c_str(),stInfo.tmLocal);				
+			{						
 				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
 				bLoadCameraAnmTM=TRUE;												
 			}			
@@ -1362,9 +1345,6 @@ BOOL cASEParser::Parsing_CameraObject()
 
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
-
-	//pNewSceneNode->SetRscTransformAnm(pRscTransformAnm);
-
 	return TRUE;	
 }
 
@@ -2365,7 +2345,6 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 		}
 	} 
 
-	//pRscTransformAnm->SetTimeLength(dwTimeKey);
 	assert(dwTimeKey== (DWORD)m_SceneTime.EX_LASTFRAMEMS);
 	std::vector<ANMKEY>& refArrAnmKey=pSceneAnimation->m_arrayANMKEY;
 
@@ -2395,15 +2374,6 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 		refArrAnmKey.push_back(currItem);
 		prevItem=currItem;
 	}
-
-	/*
-	// 생성된 애니메이션 정보가 없으면 리소스해제후 NULL리턴
-	if( refArrAnmKey.empty() )
-	{
-		pRscTransformAnm->Release();
-		pRscTransformAnm=NULL;
-	}			
-	*/
 
 	return pSceneAnimation;
 }

@@ -4,10 +4,10 @@
 #include "ASELexer.h"
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/RscVertexBuffer.h"
-#include "Graphics/RscTransformAnm.h"
 #include "Graphics/Vertex.h"
 #include "Resource/ResourceMng.h"
 #include "Math/Sphere.h"
+#include "Graphics/Animation.h"
 
 namespace Sophia
 {
@@ -21,6 +21,7 @@ class SkinnedMeshNode;
 class cHelperNode;
 class Entity;
 class cSphere;
+class SceneAnimation;
 struct BONEREFINFO;
 
 struct SCENENODEINFO

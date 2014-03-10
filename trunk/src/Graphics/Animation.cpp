@@ -33,6 +33,8 @@ float SceneAnimation::GetInterpolateValue( int start_time,int end_time,int inter
 
 void SceneAnimation::SerializeIn( std::ifstream& stream )
 {
+	stream.read((char*)&m_partialWeight,sizeof(m_partialWeight));
+
 	unsigned short count = 0;
 	stream.read((char*)&count,sizeof(count));
 	if (count==0)
@@ -49,7 +51,9 @@ void SceneAnimation::SerializeIn( std::ifstream& stream )
 }
 
 void SceneAnimation::SerializeOut( std::ofstream& stream )
-{
+{	
+	stream.write((char*)&m_partialWeight,sizeof(m_partialWeight));
+
 	unsigned short count = 0;
 	count = m_arrayANMKEY.size();
 	stream.write((char*)&count,sizeof(count));
@@ -65,7 +69,7 @@ void SceneAnimation::SerializeOut( std::ofstream& stream )
 }
 
 void SceneAnimation::Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut )
-{		
+{	
 	size_t index = 0;
 	ANMKEY itemFirst,itemLast;
 	GetAnimationKey(itemFirst,timeStart,index);

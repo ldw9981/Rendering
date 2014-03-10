@@ -206,4 +206,10 @@ void cCameraNode::Control()
 	SetVelocityPosition(vecPos);	
 	SetVelocityRotation(vecRot);
 }
+
+void cCameraNode::UpdateLocalMatrix()
+{
+
+}
+
 }

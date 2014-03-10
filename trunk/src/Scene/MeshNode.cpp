@@ -35,17 +35,6 @@ cMeshNode::~cMeshNode(void)
 	Release();
 }
 
-
-void cMeshNode::Update(DWORD elapseTime)
-{
-	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateSceneAnimation(),m_pParentNode);	
-	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
-	{		
-		(*iter)->Update(elapseTime);
-	}	
-}
-
 /*
 
 	일반 Object, Bone , Skined Mesh 전부 그리고음.

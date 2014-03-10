@@ -103,8 +103,27 @@ void Entity::RenderBound()
 
 void Entity::Update( DWORD elapseTime )
 {
-	UpdateAnimationDescription(elapseTime,m_animationDescPrev);
-	UpdateAnimationDescription(elapseTime,m_animationDesc);
+	UpdateAnimationDescription(elapseTime,m_basePrevAnimationDesc);
+	UpdateAnimationDescription(elapseTime,m_baseAnimationDesc);
+
+	size_t index =0;
+	for (auto it = m_listPartial.begin();it != m_listPartial.end();)
+	{
+		if(UpdatePartialDescription(elapseTime,it))
+		{
+			it++;
+			index++;
+		}
+		else
+		{
+			for (auto it_child = m_listChildNode.begin();it_child!=m_listChildNode.end();it_child++)
+			{
+				(*it_child)->DelPartialIndex(index);
+			}	
+			it = m_listPartial.erase(it);
+		}
+	}
+
 	cSceneNode::Update(elapseTime);
 	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
 }
@@ -319,18 +338,18 @@ void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD early
 {
 	assert(index < (int)m_vecAnimation.size());
 	
-	m_animationDescPrev = m_animationDesc;
+	m_basePrevAnimationDesc = m_baseAnimationDesc;
 	
-	m_animationDesc.playIndex = index;
-	m_animationDesc.loop = loop;
-	m_animationDesc.skipStartTime = skipStartTime;
-	m_animationDesc.earlyEndTime = earlyEndTime;
-	m_animationDesc.playTime = m_animationDesc.skipStartTime;	
-	m_animationDesc.fadeInTime = fadeInTime;
-	m_animationDesc.fadeTime = 0;
-	m_animationDesc.fadeWeight = 0.0f;
+	m_baseAnimationDesc.playIndex = index;
+	m_baseAnimationDesc.loop = loop;
+	m_baseAnimationDesc.skipStartTime = skipStartTime;
+	m_baseAnimationDesc.earlyEndTime = earlyEndTime;
+	m_baseAnimationDesc.playTime = m_baseAnimationDesc.skipStartTime;	
+	m_baseAnimationDesc.fadeInTime = fadeInTime;
+	m_baseAnimationDesc.fadeTime = 0;
+	m_baseAnimationDesc.fadeWeight = 0.0f;
 
-	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_animationDesc.playIndex]->m_dwTimeLength );
+	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength );
 }
 
 bool Entity::LoadASE( const char* fileName )
@@ -414,8 +433,8 @@ void Entity::EraseAnimation( int index )
 
 void Entity::StopAnimation()
 {
-	m_animationDescPrev = m_animationDesc;
-	m_animationDesc = ENTITY_ANIMATION_DESCRIPTION();
+	m_basePrevAnimationDesc = m_baseAnimationDesc;
+	m_baseAnimationDesc = ENTITY_ANIMATION_DESCRIPTION();
 }
 
 void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )
@@ -449,6 +468,63 @@ void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCR
 		}
 
 	}
+}
+
+void Entity::UpdateLocalMatrix()
+{
+
+}
+
+void Entity::PlayPartial( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD earlyEndTime/*=0*/ )
+{
+	ENTITY_ANIMATION_DESCRIPTION desc;
+	desc.playIndex = index;
+	desc.loop = loop;
+	desc.skipStartTime = skipStartTime;
+	desc.earlyEndTime = earlyEndTime;
+	desc.playTime = desc.skipStartTime;	
+	m_listPartial.push_back(desc);
+	
+
+	for (auto it = m_listChildNode.begin();it!=m_listChildNode.end();it++)
+	{
+		(*it)->AddPatialIndex();
+	}
+}
+
+bool Entity::UpdatePartialDescription( DWORD elapseTime,std::list<ENTITY_ANIMATION_DESCRIPTION>::iterator& it )
+{
+	ENTITY_ANIMATION_DESCRIPTION& desc = *it;
+	desc.playTime += elapseTime;
+	DWORD endTime = m_vecAnimation[desc.playIndex]->m_dwTimeLength - desc.earlyEndTime;
+	if( desc.playTime >= endTime  )
+	{
+		if ( desc.loop)
+		{
+			desc.playTime %= (endTime - desc.skipStartTime);
+			desc.playTime += desc.skipStartTime;
+			
+		}
+		else
+		{		
+			return false;
+		}
+	}
+	return true;
+
+	/*
+	if (desc.fadeInTime!=0)
+	{
+		desc.fadeTime += elapseTime;
+		if (desc.fadeTime >= desc.fadeInTime)
+		{
+			desc.fadeTime = desc.fadeInTime;
+			desc.fadeInTime = 0;
+		}
+		desc.fadeWeight = (float)desc.fadeTime/(float)desc.fadeInTime;
+	}
+	*/
+	
 }
 
 }

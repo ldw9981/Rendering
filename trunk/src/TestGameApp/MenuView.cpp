@@ -72,8 +72,8 @@ void cMenuView::Enter()
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon2.aniset").c_str());
 	m_pDragon->LoadMaterial(std::string(strDataPath+"dragon2.material").c_str());
 	m_pDragon->Build();
-	m_pDragon->SetLocalPos(D3DXVECTOR3(300.0f,200.0f,-100.0f));
-
+	m_pDragon->SetLocalPos(D3DXVECTOR3(0,200.0f,0));
+	m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 
 	/*
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
@@ -202,12 +202,12 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
-		m_pDragon->m_animationDesc.playIndex ++;		
-		if (m_pDragon->m_animationDesc.playIndex >= (int)m_pDragon->m_vecAnimation.size() )
+		m_pDragon->m_baseAnimationDesc.playIndex ++;		
+		if (m_pDragon->m_baseAnimationDesc.playIndex >= (int)m_pDragon->m_vecAnimation.size() )
 		{
-			m_pDragon->m_animationDesc.playIndex =0;			
+			m_pDragon->m_baseAnimationDesc.playIndex =0;			
 		}
-		m_pDragon->PlayAnimation(m_pDragon->m_animationDesc.playIndex,true);
+		m_pDragon->PlayAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))
@@ -233,7 +233,11 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F7))
 	{
-		m_pDragon->PlayAnimation(0,false,0,0,1900);
+		m_pDragon->PlayAnimation(0,true,0,0,0);
+	}
+	if (g_pInput->IsTurnDn(DIK_F6))
+	{
+		m_pDragon->PlayPartial(0,false,0,0);
 	}
 	
 }

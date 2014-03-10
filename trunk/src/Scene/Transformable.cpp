@@ -30,13 +30,8 @@ cTransformable::~cTransformable( void )
 	이전과 같으면 FALSE
 	갱신된것이면 TRUE
 */
-void cTransformable::UpdateWorldMatrix(D3DXMATRIX* pRepMatLocal/*=NULL*/,cTransformable* pParent/*=NULL*/)
-{	
-	if (pRepMatLocal!=NULL)
-	{	
-		 m_matLocal = *pRepMatLocal;	// 교체할 LocalTM이 있으면 교체		
-	}	
-	
+void cTransformable::UpdateWorldMatrix(cTransformable* pParent/*=NULL*/)
+{		
 	if (pParent==NULL)	
 	{
 		m_matWorld = m_matLocal;		// 부모가 없으면 LocalTM이 WorldTM이 된다.					

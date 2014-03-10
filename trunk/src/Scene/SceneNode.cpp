@@ -33,8 +33,10 @@ cSceneNode::cSceneNode(void)
 	m_bIsBone = false;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
-	m_animationPrevKeyIndex = 0;
-	m_animationKeyIndex = 0;
+	m_basePrevAnimationKeyIndex = 0;
+	m_baseAnimationKeyIndex = 0;
+	m_partialAnimationKeyIndex = 0;
+	m_partialPrevAnimationKeyIndex = 0;
 }
 
 cSceneNode::~cSceneNode(void)
@@ -113,69 +115,67 @@ BOOL cSceneNode::IsRootNode()
 	return TRUE;
 }
 
-D3DXMATRIX* cSceneNode::UpdateSceneAnimation()
+/*
+	SceneAnimation이 NULL일수 있다. 
+*/
+void cSceneNode::UpdateLocalMatrix()
 {	
+	ENTITY_ANIMATION_DESCRIPTION& base = m_pRootNode->m_baseAnimationDesc;
+	ENTITY_ANIMATION_DESCRIPTION& basePrev = m_pRootNode->m_basePrevAnimationDesc;
+	std::list<ENTITY_ANIMATION_DESCRIPTION>& listPartial = m_pRootNode->m_listPartial;
+
 	if (!m_bIsActiveAnimation)
-		return NULL;
-
+		return;
+	
 	if ( m_vecSceneAnimation.empty())
-		return NULL;
-
-	if ( m_pRootNode->m_animationDesc.playIndex == -1 )
-		return NULL;
-
-	SceneAnimation* pSceneAnimation = m_vecSceneAnimation[m_pRootNode->m_animationDesc.playIndex];
-	if (pSceneAnimation==NULL)
-		return NULL;
-		
-	ANMKEY anmKeyCurr;
-	ANMKEY anmKeyInter;
-	ANMKEY* pAnmKey=&anmKeyCurr;
-
-	//pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime);	
-	pSceneAnimation->GetAnimationKey(anmKeyCurr,m_pRootNode->m_animationDesc.playTime,m_animationKeyIndex);
-	
-	
-	if (m_pRootNode->m_animationDescPrev.playIndex != -1)
 	{
-		if (m_pRootNode->m_animationDesc.fadeInTime > 0 ) 
+		m_referenceAnimationKey.GetTrasnform(&m_matLocal);	
+		return;
+	}
+
+	ANMKEY anmKeyCurr;
+	ANMKEY anmKeyTemp;
+	
+	SceneAnimation* pSceneAnimation =NULL;	
+
+	// 전체 노드에서 재생되는 애니메이션
+	if ( base.playIndex != -1 )
+	{	
+		pSceneAnimation = m_vecSceneAnimation[base.playIndex];
+		if (pSceneAnimation)
 		{
-			SceneAnimation* pSceneAnimationPrev = m_vecSceneAnimation[m_pRootNode->m_animationDescPrev.playIndex];
-			assert(pSceneAnimationPrev!=NULL);
+			pSceneAnimation->GetAnimationKey(anmKeyCurr,base.playTime,m_baseAnimationKeyIndex);
 
-			ANMKEY anmKeyPrev;
-			//pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime);
-			pSceneAnimationPrev->GetAnimationKey(anmKeyPrev,m_pRootNode->m_animationDescPrev.playTime,m_animationPrevKeyIndex);
-
-			SceneAnimation::InterpolateAnimationnKey(anmKeyInter,anmKeyPrev,anmKeyCurr,m_pRootNode->m_animationDesc.fadeWeight);
-			pAnmKey = &anmKeyInter;
+			if (base.fadeInTime > 0 ) 
+			{
+				if (basePrev.playIndex != -1)
+				{
+					pSceneAnimation = m_vecSceneAnimation[basePrev.playIndex];
+					assert(pSceneAnimation!=NULL);
+					pSceneAnimation->GetAnimationKey(anmKeyTemp,basePrev.playTime,m_basePrevAnimationKeyIndex);
+					SceneAnimation::InterpolateAnimationnKey(anmKeyCurr,anmKeyTemp,anmKeyCurr,base.fadeWeight);
+				}
+			}
 		}
 	}
 	
-	
-	
-	D3DXMATRIX tmSCL;
-	D3DXMATRIX tmROT;
-	D3DXMATRIX tmPOS;	
+	if (pSceneAnimation==NULL)
+	{
+		anmKeyCurr=m_referenceAnimationKey;
+	}
 
-	// 각성분에대한  TM구하기
-	D3DXMatrixScaling(&tmSCL,
-		pAnmKey->ScaleAccum.x,
-		pAnmKey->ScaleAccum.y,
-		pAnmKey->ScaleAccum.z);
-
-	D3DXMatrixRotationQuaternion(&tmROT,
-		&pAnmKey->RotationAccum);					
-
-	D3DXMatrixTranslation(&tmPOS,
-		pAnmKey->TranslationAccum.x,
-		pAnmKey->TranslationAccum.y,
-		pAnmKey->TranslationAccum.z);			
-
-	// TM	
-	m_AnimationTM = tmSCL * tmROT * tmPOS;	
-	
-	return &m_AnimationTM;
+	size_t index=0;
+	for (auto it = listPartial.begin();it!=listPartial.end();it++,index++)
+	{
+		ENTITY_ANIMATION_DESCRIPTION& partial = *it;
+		pSceneAnimation = m_vecSceneAnimation[partial.playIndex];
+		if (pSceneAnimation)
+		{
+			pSceneAnimation->GetAnimationKey(anmKeyTemp,partial.playTime,m_partialIndex[index]);	
+			SceneAnimation::InterpolateAnimationnKey(anmKeyCurr,anmKeyCurr,anmKeyTemp,pSceneAnimation->m_partialWeight);
+		}
+	}
+	anmKeyCurr.GetTrasnform(&m_matLocal);	
 }
 
 void cSceneNode::UpdateChildren(DWORD elapseTime)
@@ -240,6 +240,10 @@ void cSceneNode::BuildComposite(Entity* pEntity)
 		D3DXMatrixInverse(&worldParentReferenceInv,NULL,&m_pParentNode->GetNodeTM());
 		m_matLocal = m_nodeTM * worldParentReferenceInv;
 	}
+
+	D3DXMatrixDecompose(&m_referenceAnimationKey.ScaleAccum,
+		&m_referenceAnimationKey.RotationAccum,
+		&m_referenceAnimationKey.TranslationAccum,&m_matLocal);
 
 	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pNode=NULL;
@@ -321,7 +325,8 @@ void cSceneNode::Render()
 void cSceneNode::Update( DWORD elapseTime )
 {
 	cTransformable::Update(elapseTime);
-	UpdateWorldMatrix(UpdateSceneAnimation(),m_pParentNode);
+	UpdateLocalMatrix();
+	UpdateWorldMatrix(m_pParentNode);
 	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);
@@ -445,6 +450,24 @@ void cSceneNode::Test( void(*Func)(cSceneNode*) )
 	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
 	{
 		(*it)->Test(Func);
+	}
+}
+
+void cSceneNode::AddPatialIndex()
+{
+	m_partialIndex.push_back(size_t(0));
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->AddPatialIndex();
+	}
+}
+
+void cSceneNode::DelPartialIndex(size_t index)
+{
+	m_partialIndex.erase(m_partialIndex.begin()+index);
+	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	{
+		(*it)->DelPartialIndex(index);
 	}
 }
 

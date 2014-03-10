@@ -166,18 +166,22 @@ void State::OpenASE( const char* path )
 	//m_pAirPlaneBake->Init();
 	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	m_pModel->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
+
+	m_bModifiedAnimation = true;
+	m_bModifiedScene = true;
+	m_bModifiedMaterial = true;
 }
 
 void State::SaveAsset()
 {
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	m_pModel->SaveScene(std::string(strDataPath+m_pModel->GetNodeName()+".scene").c_str());
-	if (m_bModifiedAnimation)
-	{
-		m_pModel->SaveAnimationSet(std::string(strDataPath+m_pModel->GetNodeName()+".aniset").c_str());		
-		m_bModifiedAnimation = false;
-	}	
+	m_pModel->SaveAnimationSet(std::string(strDataPath+m_pModel->GetNodeName()+".aniset").c_str());		
 	m_pModel->SaveMaterial(std::string(strDataPath+m_pModel->GetNodeName()+".material").c_str(),0);
+
+	m_bModifiedAnimation = false;
+	m_bModifiedScene = false;
+	m_bModifiedMaterial = false;
 }
 
 

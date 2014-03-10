@@ -33,7 +33,6 @@ protected:
 	std::vector<MultiSub>	m_vecMultiSub;
 	std::vector<SceneMaterial*>		m_vecSceneMaterial;
 public:
-	virtual void			Update(DWORD elapseTime);
 	virtual void			Render(unsigned char multiSubIndex);
 	virtual	void			BuildComposite(Entity* pEntity);
 

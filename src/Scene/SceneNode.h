@@ -1,6 +1,7 @@
 #pragma once
 #include "Foundation/interface.h"
 #include "Scene/Transformable.h"
+#include "Graphics/Animation.h"
 
 namespace Sophia
 {
@@ -46,13 +47,17 @@ protected:
 	// Transform 애니메이션 정보
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;
 	
-	size_t					m_animationKeyIndex;
-	size_t					m_animationPrevKeyIndex;
+	ANMKEY					m_referenceAnimationKey;
+	size_t					m_baseAnimationKeyIndex;
+	size_t					m_basePrevAnimationKeyIndex;
+	size_t					m_partialAnimationKeyIndex;
+	size_t					m_partialPrevAnimationKeyIndex;
 	BOOL					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bShow;
 	//DWORD					m_animationTime;
 	std::list<cSceneNode*>::iterator m_ParentListIt;
+	std::vector<size_t>		m_partialIndex;
 public:	
 
 	D3DXMATRIX				m_nodeTM;
@@ -60,7 +65,7 @@ public:
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
 	D3DXMATRIX&			GetNodeTM();
 		
-	D3DXMATRIX*			UpdateSceneAnimation();
+	virtual void		UpdateLocalMatrix();
 	D3DXMATRIX&			GetAnimationTM();
 			
 
@@ -131,6 +136,8 @@ public:
 
 	
 	void Test(void(*Func)(cSceneNode*));
+	void AddPatialIndex();
+	void DelPartialIndex(size_t index);
 };
 
 }

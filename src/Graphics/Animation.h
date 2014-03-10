@@ -38,6 +38,28 @@ struct ANMKEY
 
 	}
 
+	void GetTrasnform(D3DXMATRIX* p)
+	{
+		D3DXMATRIX tmSCL;
+		D3DXMATRIX tmROT;
+		D3DXMATRIX tmPOS;	
+
+		// 각성분에대한  TM구하기
+		D3DXMatrixScaling(&tmSCL,
+			ScaleAccum.x,
+			ScaleAccum.y,
+			ScaleAccum.z);
+
+		D3DXMatrixRotationQuaternion(&tmROT,
+			&RotationAccum);					
+
+		D3DXMatrixTranslation(&tmPOS,
+			TranslationAccum.x,
+			TranslationAccum.y,
+			TranslationAccum.z);	
+
+		*p = tmSCL * tmROT * tmPOS;		
+	}
 };
 
 struct ENTITY_ANIMATION_DESCRIPTION
@@ -50,9 +72,10 @@ struct ENTITY_ANIMATION_DESCRIPTION
 	DWORD				fadeInTime;
 	DWORD				fadeTime;
 	float				fadeWeight;
+	float				partialWeight;
 
 	ENTITY_ANIMATION_DESCRIPTION()
-		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0),fadeWeight(0.0f)
+		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0),fadeWeight(0.0f),partialWeight(0.0f)
 	{
 
 	}
@@ -67,7 +90,7 @@ public:
 	~SceneAnimation(void);
 public:
 	std::vector<ANMKEY> m_arrayANMKEY;
-	float	m_weight;
+	float	m_partialWeight;
 
 	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
 	void	GetAnimationKey(ANMKEY& out,DWORD animationTime,size_t& index);

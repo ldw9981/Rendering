@@ -53,7 +53,7 @@ public:
 	void					RotateOnLocal( float angleX,float angleY,float angleZ );
 
 	// 월드행렬 리턴
-	virtual void			UpdateWorldMatrix(D3DXMATRIX* pRepLocalTM=NULL,cTransformable* pParent=NULL);
+	virtual void			UpdateWorldMatrix(cTransformable* pParent=NULL);
 	void					Update(DWORD dwElapseMS);
 
 	D3DXVECTOR3				GetVelPosPerSec()  { return m_velPosPerSec; }

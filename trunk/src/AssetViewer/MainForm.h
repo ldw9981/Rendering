@@ -247,7 +247,7 @@ private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System
 				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
 				 pState->OpenASE(path.c_str());
 				 sceneTreeForm->Update(pState);
-				 animationForm->Update(pState);
+				 animationForm->Update(pState,NULL);
 				 m_pNode = NULL;
 				 scenePropertyForm->Update(pState,NULL);
 				 materialPropertyForm->Update(pState,NULL);
@@ -270,10 +270,10 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 				 pState->OpenAsset(path.c_str());
 				
 				 sceneTreeForm->Update(pState);
-				 animationForm->Update(pState);
 				 m_pNode = NULL;
-				 scenePropertyForm->Update(pState,NULL);
-				 materialPropertyForm->Update(pState,NULL);
+				 scenePropertyForm->Update(pState,m_pNode);
+				 materialPropertyForm->Update(pState,m_pNode);
+				 animationForm->Update(pState,m_pNode);
 			 }
 			 delete openFileDialog1;
 		 }
@@ -281,7 +281,7 @@ private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System
 			
 			 m_pState->SaveAsset();
 			 sceneTreeForm->Update(m_pState);
-			 animationForm->Update(m_pState);
+			 animationForm->Update(m_pState,m_pNode);
 		 }
 	public: System::Void sceneTreeForm_treeView1_AfterSelect(System::Object^  sender, System::Windows::Forms::TreeViewEventArgs^  e) {
 				
@@ -289,6 +289,7 @@ private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System
 				m_pNode = m_pState->GetEntity()->FindNode(name);
 				scenePropertyForm->Update(m_pState,m_pNode);
 				materialPropertyForm->Update(m_pState,m_pNode);
+				animationForm->Update(m_pState,m_pNode);
 			}
 	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
 				materialPropertyForm->Update(m_pState,m_pNode);

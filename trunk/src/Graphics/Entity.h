@@ -73,9 +73,10 @@ public:
 	bool LoadMaterial(const char* fileName);
 
 	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix );
-	void PlayAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0,DWORD fadeInTime=0);
-	void StopAnimation();
-	void PlayPartial(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
+	void PlayBaseAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0,DWORD fadeInTime=0);
+	void StopBaseAnimation();
+	void PlayPartialAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
+	void StopPartialAnimation(int index);
 
 	void InsertBone(const char* name,cSceneNode* pBone);
 	const std::vector<EntityAnimation*> GetVecAnimation() { return m_vecAnimation; }

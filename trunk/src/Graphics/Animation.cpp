@@ -7,7 +7,7 @@ namespace Sophia
 
 SceneAnimation::SceneAnimation( void )
 {
-	
+	m_partialWeight = 0.0f;
 }
 
 SceneAnimation::~SceneAnimation( void )

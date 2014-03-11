@@ -471,5 +471,10 @@ void cSceneNode::DelPartialIndex(size_t index)
 	}
 }
 
+SceneAnimation* cSceneNode::GetSceneAnimation( int index )
+{
+	return m_vecSceneAnimation[index];
+}
+
 
 }

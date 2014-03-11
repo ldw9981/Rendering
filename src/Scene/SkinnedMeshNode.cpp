@@ -43,8 +43,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		BONEREFINFO* pBoneRefInfo=&(*iter);				
 		pBoneRefInfo->pNode = pEntity->FindNode(pBoneRefInfo->strNodeName);	
 		assert(pBoneRefInfo->pNode!=NULL);	
-		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로
-		pBoneRefInfo->pNode->SetIsBone(true);		// 스킨드 메쉬가 참조하는 노드는 본으로 설정하고 그리지 않는다.
+		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로		
 		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetNodeTM());
 		pBoneRefInfo->SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
 	}			

@@ -3,23 +3,45 @@
 #include "Graphics/Animation.h"
 #include "State.h"
 
-void AssetViewer::AnimationForm::Update( State* pState )
+void AssetViewer::AnimationForm::Update( State* pState,Sophia::cSceneNode* pNode )
 {
 	m_pState = pState;
+	m_pNode = pNode;
 
-	textCutName->Text = "";
-	textLength->Text = Convert::ToString(0);
-	textStartTime->Text = Convert::ToString(0);
-	textEndTime->Text = Convert::ToString(0);
-	listAnimation->Items->Clear();
-	m_selectedIndexLast = listAnimation->SelectedIndex;
-	auto container = pState->GetEntity()->GetVecAnimation();
-	for (size_t i = 0;i<container.size();i++)
+	if (m_pEntity != pState->GetEntity() || listAnimation->Items->Count != pState->GetEntity()->GetVecAnimation().size())
 	{
-		System::String^ text = gcnew System::String(container[i]->GetUniqueKey().c_str());
-		listAnimation->Items->Add(text);
+		textCutName->Text = "";
+		textLength->Text = Convert::ToString(0);
+		textStartTime->Text = Convert::ToString(0);
+		textEndTime->Text = Convert::ToString(0);
+
+		listAnimation->Items->Clear();
+		m_selectedIndexLast = listAnimation->SelectedIndex;
+		auto container = pState->GetEntity()->GetVecAnimation();
+		for (size_t i = 0;i<container.size();i++)
+		{
+			System::String^ text = gcnew System::String(container[i]->GetUniqueKey().c_str());
+			listAnimation->Items->Add(text);
+		}
 	}
+
+	textBox_PartialWeight->Text = L"";
+	if (m_pNode && listAnimation->SelectedIndex != -1)
+	{
+		Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
+		if (pSceneAnimation)
+		{
+			textBox_PartialWeight->Text = Convert::ToString(pSceneAnimation->m_partialWeight);
+			textBox_PartialWeight->Enabled = true;
+		}		
+		else
+		{
+			textBox_PartialWeight->Enabled = false;
+		}
+	}
+
 	UpdateText(m_pState->GetModifiedAnimation());
+	m_pEntity = pState->GetEntity();
 }
 
 System::Void AssetViewer::AnimationForm::listAnimation_OnSelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
@@ -35,7 +57,6 @@ System::Void AssetViewer::AnimationForm::listAnimation_OnSelectedIndexChanged( S
 		textEndTime->Text = Convert::ToString((int)container[listAnimation->SelectedIndex]->m_dwTimeLength);
 	}
 
-	PlayAnimation();
 	m_selectedIndexLast = listAnimation->SelectedIndex;
 }
 
@@ -48,7 +69,6 @@ System::Void AssetViewer::AnimationForm::OnShown( System::Object^ sender, System
 System::Void AssetViewer::AnimationForm::loop_OnCheckedChanged( System::Object^ sender, System::EventArgs^ e )
 {
 
-	PlayAnimation();
 }
 
 System::Void AssetViewer::AnimationForm::textStartTime_KeyPress( System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e )
@@ -65,11 +85,6 @@ System::Void AssetViewer::AnimationForm::textStartTime_KeyPress( System::Object^
 			{
 				textStartTime->Text = Convert::ToString(0);
 			}
-			else
-			{
-				PlayAnimation();
-			}
-			
 		}
 		else
 		{
@@ -81,15 +96,7 @@ System::Void AssetViewer::AnimationForm::textStartTime_KeyPress( System::Object^
 
 void AssetViewer::AnimationForm::PlayAnimation()
 {
-	if (listAnimation->SelectedIndex == -1)
-		return;
 
-	int length = Convert::ToInt32(textLength->Text);
-	int startTime = Convert::ToInt32(textStartTime->Text);
-	int endTime = Convert::ToInt32(textEndTime->Text);
-
-	m_pState->GetEntity()->PlayAnimation(listAnimation->SelectedIndex,
-		checkBox1->Checked,startTime,length-endTime);
 }
 
 System::Void AssetViewer::AnimationForm::textEndTime_KeyPress( System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e )
@@ -105,11 +112,7 @@ System::Void AssetViewer::AnimationForm::textEndTime_KeyPress( System::Object^ s
 			if( (endTime>length) || (endTime < startTime))
 			{
 				textEndTime->Text = Convert::ToString(length);
-			}		
-			else
-			{
-				PlayAnimation();
-			}			
+			}					
 		}
 		else
 		{
@@ -139,7 +142,7 @@ System::Void AssetViewer::AnimationForm::buttonCut_Click( System::Object^ sender
 	int endTime = Convert::ToInt32(textEndTime->Text);
 	m_pState->GetEntity()->CutAndPushEntityAnimation(listAnimation->SelectedIndex,startTime,endTime,suffix.c_str());
 	m_pState->SetModifiedAnimation(true);
-	Update(m_pState);
+	Update(m_pState,m_pNode);
 }
 
 System::Void AssetViewer::AnimationForm::buttonDel_Click( System::Object^ sender, System::EventArgs^ e )
@@ -147,10 +150,10 @@ System::Void AssetViewer::AnimationForm::buttonDel_Click( System::Object^ sender
 	if (listAnimation->SelectedIndex == -1)
 		return;
 
-	m_pState->GetEntity()->StopAnimation();
+	m_pState->GetEntity()->StopBaseAnimation();
 	m_pState->GetEntity()->EraseAnimation(listAnimation->SelectedIndex);
 	m_pState->SetModifiedAnimation(true);
-	Update(m_pState);
+	Update(m_pState,m_pNode);
 }
 
 void AssetViewer::AnimationForm::UpdateText( bool modified )
@@ -162,5 +165,79 @@ void AssetViewer::AnimationForm::UpdateText( bool modified )
 	else
 	{
 		this->Text = L"Animation";
+	}
+}
+
+System::Void AssetViewer::AnimationForm::textBox_PartialWeight_KeyDown( System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e )
+{
+	if (e->KeyCode == Keys::Enter)
+	{	
+		float weight = (float)Convert::ToDouble(textBox_PartialWeight->Text);
+		weight = max(weight,0.0f);
+		weight = min(weight,1.0f);
+		textBox_PartialWeight->Text = Convert::ToString(weight);
+
+		if (listAnimation->SelectedIndex != -1 && m_pNode)
+		{
+			Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
+			if (pSceneAnimation)
+			{
+				pSceneAnimation->m_partialWeight = weight;
+				m_pState->SetModifiedAnimation(true);
+				UpdateText(true);
+				this->ActiveControl = splitContainer1->Panel1;
+				e->SuppressKeyPress = true;
+			}			
+		}		
+	}
+}
+
+System::Void AssetViewer::AnimationForm::textBox_PartialWeight_KeyPress( System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e )
+{
+
+}
+
+System::Void AssetViewer::AnimationForm::button_Base_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (listAnimation->SelectedIndex == -1)
+		return;
+
+	int length = Convert::ToInt32(textLength->Text);
+	int startTime = Convert::ToInt32(textStartTime->Text);
+	int endTime = Convert::ToInt32(textEndTime->Text);
+
+	m_pState->GetEntity()->PlayBaseAnimation(listAnimation->SelectedIndex,
+		checkBox1->Checked,startTime,length-endTime);
+}
+
+System::Void AssetViewer::AnimationForm::button_Partial_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (listAnimation->SelectedIndex == -1)
+		return;
+
+	int length = Convert::ToInt32(textLength->Text);
+	int startTime = Convert::ToInt32(textStartTime->Text);
+	int endTime = Convert::ToInt32(textEndTime->Text);
+
+	m_pState->GetEntity()->PlayPartialAnimation(listAnimation->SelectedIndex,
+		checkBox1->Checked,startTime,length-endTime);
+}
+
+System::Void AssetViewer::AnimationForm::button_BaseStop_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (m_pState && m_pEntity)
+	{
+		m_pEntity->StopBaseAnimation();
+	}
+}
+
+System::Void AssetViewer::AnimationForm::button_PartialStop_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (listAnimation->SelectedIndex == -1)
+		return;
+
+	if (m_pState && m_pEntity)
+	{
+		m_pEntity->StopPartialAnimation(listAnimation->SelectedIndex);
 	}
 }

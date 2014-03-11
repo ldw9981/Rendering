@@ -66,16 +66,16 @@ struct ENTITY_ANIMATION_DESCRIPTION
 {
 	int					playIndex;
 	DWORD				playTime;
+	DWORD				length;
 	DWORD				skipStartTime;
 	DWORD				earlyEndTime;
 	bool				loop;
 	DWORD				fadeInTime;
 	DWORD				fadeTime;
 	float				fadeWeight;
-	float				partialWeight;
 
 	ENTITY_ANIMATION_DESCRIPTION()
-		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0),fadeWeight(0.0f),partialWeight(0.0f)
+		:playIndex(-1),playTime(0),skipStartTime(0),earlyEndTime(0),loop(false),fadeInTime(0),fadeTime(0),fadeWeight(0.0f),length(0)
 	{
 
 	}

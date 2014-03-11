@@ -334,7 +334,7 @@ void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,
 	}
 }
 
-void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime )
+void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime )
 {
 	assert(index < (int)m_vecAnimation.size());
 	
@@ -348,6 +348,7 @@ void Entity::PlayAnimation( int index,bool loop ,DWORD skipStartTime,DWORD early
 	m_baseAnimationDesc.fadeInTime = fadeInTime;
 	m_baseAnimationDesc.fadeTime = 0;
 	m_baseAnimationDesc.fadeWeight = 0.0f;
+	m_baseAnimationDesc.length = m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength;
 
 	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength );
 }
@@ -431,10 +432,12 @@ void Entity::EraseAnimation( int index )
 	}	
 }
 
-void Entity::StopAnimation()
+void Entity::StopBaseAnimation()
 {
 	m_basePrevAnimationDesc = m_baseAnimationDesc;
-	m_baseAnimationDesc = ENTITY_ANIMATION_DESCRIPTION();
+
+	m_baseAnimationDesc.loop = false;
+	m_baseAnimationDesc.playTime = m_baseAnimationDesc.length - m_baseAnimationDesc.earlyEndTime;
 }
 
 void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )
@@ -442,7 +445,7 @@ void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCR
 	if ( desc.playIndex != -1 )
 	{
 		desc.playTime += elapseTime;
-		DWORD endTime = m_vecAnimation[desc.playIndex]->m_dwTimeLength - desc.earlyEndTime;
+		DWORD endTime = desc.length - desc.earlyEndTime;
 		if( desc.playTime >= endTime  )
 		{
 			if ( desc.loop)
@@ -475,7 +478,7 @@ void Entity::UpdateLocalMatrix()
 
 }
 
-void Entity::PlayPartial( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD earlyEndTime/*=0*/ )
+void Entity::PlayPartialAnimation( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD earlyEndTime/*=0*/ )
 {
 	ENTITY_ANIMATION_DESCRIPTION desc;
 	desc.playIndex = index;
@@ -483,6 +486,8 @@ void Entity::PlayPartial( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD ea
 	desc.skipStartTime = skipStartTime;
 	desc.earlyEndTime = earlyEndTime;
 	desc.playTime = desc.skipStartTime;	
+	desc.length = m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength;
+
 	m_listPartial.push_back(desc);
 	
 
@@ -492,11 +497,12 @@ void Entity::PlayPartial( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD ea
 	}
 }
 
+
 bool Entity::UpdatePartialDescription( DWORD elapseTime,std::list<ENTITY_ANIMATION_DESCRIPTION>::iterator& it )
 {
 	ENTITY_ANIMATION_DESCRIPTION& desc = *it;
 	desc.playTime += elapseTime;
-	DWORD endTime = m_vecAnimation[desc.playIndex]->m_dwTimeLength - desc.earlyEndTime;
+	DWORD endTime = desc.length - desc.earlyEndTime;
 	if( desc.playTime >= endTime  )
 	{
 		if ( desc.loop)
@@ -510,21 +516,20 @@ bool Entity::UpdatePartialDescription( DWORD elapseTime,std::list<ENTITY_ANIMATI
 			return false;
 		}
 	}
-	return true;
+	return true;	
+}
 
-	/*
-	if (desc.fadeInTime!=0)
+void Entity::StopPartialAnimation( int index )
+{
+	for (auto it = m_listPartial.begin();it != m_listPartial.end();it++)
 	{
-		desc.fadeTime += elapseTime;
-		if (desc.fadeTime >= desc.fadeInTime)
+		ENTITY_ANIMATION_DESCRIPTION& desc = (*it);
+		if( desc.playIndex == index )
 		{
-			desc.fadeTime = desc.fadeInTime;
-			desc.fadeInTime = 0;
+			desc.loop = false;
+			desc.playTime = desc.length - desc.earlyEndTime;
 		}
-		desc.fadeWeight = (float)desc.fadeTime/(float)desc.fadeInTime;
 	}
-	*/
-	
 }
 
 }

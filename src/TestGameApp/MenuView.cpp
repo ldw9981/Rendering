@@ -207,7 +207,7 @@ void cMenuView::Control()
 		{
 			m_pDragon->m_baseAnimationDesc.playIndex =0;			
 		}
-		m_pDragon->PlayAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
+		m_pDragon->PlayBaseAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))
@@ -233,11 +233,11 @@ void cMenuView::Control()
 
 	if (g_pInput->IsTurnDn(DIK_F7))
 	{
-		m_pDragon->PlayAnimation(0,true,0,0,0);
+		m_pDragon->PlayBaseAnimation(0,true,0,0,0);
 	}
 	if (g_pInput->IsTurnDn(DIK_F6))
 	{
-		m_pDragon->PlayPartial(0,false,0,0);
+		m_pDragon->PlayPartialAnimation(0,false,0,0);
 	}
 	
 }

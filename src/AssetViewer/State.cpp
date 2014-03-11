@@ -134,7 +134,7 @@ void State::Control()
 		{
 			m_pDragon->m_baseAnimationDesc.playIndex =0;			
 		}
-		m_pDragon->PlayAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
+		m_pDragon->PlayBaseAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
 	}	
 
 	if (g_pInput->IsTurnDn(DIK_F10))

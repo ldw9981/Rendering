@@ -264,6 +264,7 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);
+	stream.read((char*)&m_bIsBone,sizeof(m_bIsBone));
 
 	//child
 	stream.read((char*)&count,sizeof(count));
@@ -291,6 +292,7 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);
+	stream.write((char*)&m_bIsBone,sizeof(m_bIsBone));
 
 	//child
 	count = m_listChildNode.size();

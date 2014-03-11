@@ -785,11 +785,12 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		if (!bSkinned)	
 		{
-			// 멀티서브도 아닌데,, 맵핑소스가 없으면 그냥 Scene으로 대체
-			if (( m_vecMaterial[nMaterialRef].size() == 1)&&(m_vecMaterial[nMaterialRef][0].index_renderer_queue() == 0))
+			// Bone일때는 그냥...	
+			if( stInfo.strNodeName.find("Bip") != std::string::npos || stInfo.strNodeName.find("bip") != std::string::npos ||
+				stInfo.strNodeName.find("Bone") != std::string::npos || stInfo.strNodeName.find("bone") != std::string::npos )
 			{
-				pNewSceneNode = CreateSceneNode(stInfo);		// Bone일때는 그냥...
-	
+				pNewSceneNode = CreateSceneNode(stInfo);		
+				pNewSceneNode->SetIsBone(true);
 			}
 			else
 			{
@@ -941,7 +942,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
-						ASSERT(m_Token!=TOKEND_BLOCK_START);
+						//ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -973,7 +974,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						return FALSE;						
 					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 					{
-						ASSERT(m_Token!=TOKEND_BLOCK_START);
+						//ASSERT(m_Token!=TOKEND_BLOCK_START);
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
@@ -1031,6 +1032,14 @@ BOOL cASEParser::Parsing_MaterialList()
 	}//for (int i=0;i<nNUMMaterial;i++)	
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_END) 
 		return FALSE;	// }	
+
+	if (m_vecMaterial.empty())
+	{
+		Material material;		
+		std::vector<Material> vecSubMatrial;
+		vecSubMatrial.push_back(material);
+		m_vecMaterial.push_back(vecSubMatrial);
+	}
 
 	m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
 	return bRet;
@@ -2103,7 +2112,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 					return FALSE;						
 				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
+					//ASSERT(m_Token!=TOKEND_BLOCK_START);
 					switch(m_Token)
 					{
 					case TOKENR_BITMAP:

@@ -40,7 +40,7 @@ void AssetViewer::AnimationForm::Update( State* pState,Sophia::cSceneNode* pNode
 		}
 	}
 
-	UpdateText(m_pState->GetModifiedAnimation());
+	UpdateText(pState->GetModifiedAnimation());
 	m_pEntity = pState->GetEntity();
 }
 

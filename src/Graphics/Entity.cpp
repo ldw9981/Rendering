@@ -8,6 +8,7 @@
 #include "Resource/ResourceMng.h"
 #include "ASEParser/ASEParser.h"
 #include "Foundation/StringUtil.h"
+#include "Scene/Skeleton.h"
 namespace Sophia
 {
 
@@ -20,6 +21,7 @@ Entity::Entity(void)
 	m_strNodeName="Entity";	
 	m_indexMaterial = -1;
 	m_type = TYPE_ROOT;
+	m_bShowBone = false;
 }
 
 
@@ -404,9 +406,9 @@ bool Entity::LoadAnimationSet( const char* fileName )
 	return true;
 }
 
-void Entity::InsertBone( const char* name,cSceneNode* pBone )
+void Entity::InsertBone(cSceneNode* pBone )
 {
-	m_mapBones[std::string(name)] = pBone;
+	m_mapBones[pBone->GetNodeName()] = pBone;
 }
 
 void Entity::EraseAnimation( int index )
@@ -530,6 +532,33 @@ void Entity::StopPartialAnimation( int index )
 			desc.playTime = desc.length - desc.earlyEndTime;
 		}
 	}
+}
+
+void Entity::SetShowSkeleton( bool bShow )
+{
+	for (auto it = m_mapBones.begin();it != m_mapBones.end();it++)
+	{
+		cSceneNode* pNode = (*it).second;		
+		pNode->SetShow(bShow);
+	}
+	ClearRenderQueue();
+	QueueRenderer(this,true);
+	QueueRendererShadow(this,true);
+}
+
+void Entity::ClearRenderQueue()
+{
+	for (int i=0;i<16;i++)
+	{
+		m_renderQueueNormal[i].Clear();
+		m_renderQueueBlend[i].Clear();
+	}
+
+	m_renderQueueTerrain.Clear();
+	m_renderQueueGUI.Clear();
+
+	m_renderQueueNormalShadow.Clear();
+	m_renderQueueBlendShadow.Clear();
 }
 
 }

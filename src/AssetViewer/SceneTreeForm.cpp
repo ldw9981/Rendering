@@ -94,11 +94,8 @@ TreeNode^ AssetViewer::SceneTreeForm::CreateTreeNode( TreeNode^ parentTreeNode,S
 		treeNode = gcnew TreeNode(name, img, img);			
 	}
 	else
-	{				
-		if (pNode->GetIsBone())
-		{
-			img = 4;
-		}
+	{			
+		
 		treeNode = parentTreeNode->Nodes->Add( name , name,img,img);
 	}
 

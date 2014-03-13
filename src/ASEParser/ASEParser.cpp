@@ -11,6 +11,7 @@
 #include "Foundation/StringUtil.h"
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Entity.h"
+#include "Scene/Skeleton.h"
 namespace Sophia
 {
 
@@ -785,17 +786,14 @@ BOOL cASEParser::Parsing_GeoObject()
 
 		if (!bSkinned)	
 		{
-			// Bone일때는 그냥...	
+			bool bSkeleton = false;			
 			if( stInfo.strNodeName.find("Bip") != std::string::npos || stInfo.strNodeName.find("bip") != std::string::npos ||
 				stInfo.strNodeName.find("Bone") != std::string::npos || stInfo.strNodeName.find("bone") != std::string::npos )
 			{
-				pNewSceneNode = CreateSceneNode(stInfo);		
-				pNewSceneNode->SetIsBone(true);
+				bSkeleton = true;			
 			}
-			else
-			{
-				pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);	
-			}
+			
+			pNewSceneNode = CreateMeshNode(bSkeleton,stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);				
 		}
 		else 
 		{
@@ -1830,7 +1828,7 @@ void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNI
 
 
 cMeshNode* 
-cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
+cASEParser::CreateMeshNode(bool bSkeleton,SCENENODEINFO& stInfo,
 							cRscVertexBuffer* pVertexBuffer,
 							cRscIndexBuffer* pIndexBuffer,
 							std::map<SUBMATINDEX,WORD>& mapIndexCount,
@@ -1839,7 +1837,9 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	assert(pIndexBuffer!=NULL);
 	assert(pVertexBuffer!=NULL);
 
-	cMeshNode* pNewSceneNode= new cMeshNode;
+	cMeshNode* pNewSceneNode = NULL; 
+	if (bSkeleton) pNewSceneNode = new Skeleton;
+	else pNewSceneNode = new cMeshNode;	
 
 	//공통적인 데이터
 	if(stInfo.pParent == NULL)
@@ -1847,7 +1847,12 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
-	//pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
+	
+	if (bSkeleton)
+	{
+		m_pSceneRoot->InsertBone(pNewSceneNode);
+	}	
+
 	if (m_pEntityMaterial->GetRefCounter()==0)
 	{
 		SceneMaterial* pSceneMaterial = m_pEntityMaterial->CreateSceneMaterial(stInfo.strNodeName);
@@ -2386,4 +2391,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 
 	return pSceneAnimation;
 }
+
+
+
 }

@@ -15,6 +15,7 @@
 #include "ASEParser/ASEParser.h"
 #include "Graphics/Animation.h"
 #include "Graphics/Graphics.h"
+#include "Scene/Skeleton.h"
 namespace Sophia
 {
 
@@ -30,7 +31,6 @@ cSceneNode::cSceneNode(void)
 
 	m_bIsActiveAnimation = true;
 	m_bShow = true;
-	m_bIsBone = false;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
 	m_basePrevAnimationKeyIndex = 0;
@@ -264,7 +264,6 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);
-	stream.read((char*)&m_bIsBone,sizeof(m_bIsBone));
 
 	//child
 	stream.read((char*)&count,sizeof(count));
@@ -276,7 +275,6 @@ void cSceneNode::SerializeIn( std::ifstream& stream )
 		pNode->SetRootNode(m_pRootNode);
 		pNode->SetParentNode(this);
 		pNode->SetParentName(m_strNodeName.c_str());
-
 		AttachChildNode(pNode);
 		pNode->SerializeIn(stream);		
 	}	
@@ -292,7 +290,6 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);
-	stream.write((char*)&m_bIsBone,sizeof(m_bIsBone));
 
 	//child
 	count = m_listChildNode.size();
@@ -382,7 +379,8 @@ cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 		ret = new cMeshNode;
 	else if(type == TYPE_SKINNEDMESH)
 		ret = new SkinnedMeshNode;
-
+	else if(type == TYPE_SKELETON)
+		ret = new Skeleton;
 
 	assert(ret!=NULL);
 	return ret;

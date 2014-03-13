@@ -31,7 +31,7 @@ public:
 	cSceneNode(void);
 	virtual ~cSceneNode(void);
 	
-	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH};
+	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH,TYPE_SKELETON};
 public:
 	std::list<cSceneNode*>		m_listChildNode;		
 protected:
@@ -41,9 +41,7 @@ protected:
 	
 	cSceneNode*				m_pParentNode;
 	Entity*					m_pRootNode;
-	bool					m_bIsBone;
-
-	
+		
 	// Transform 애니메이션 정보
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;
 	
@@ -92,10 +90,6 @@ public:
 
 	Entity*				GetRootNode() const { return m_pRootNode; }
 	void				SetRootNode(Entity* val) { m_pRootNode = val; }
-	bool				GetIsBone() const { return m_bIsBone; }
-	void				SetIsBone(bool val) { m_bIsBone = val; }	
-
-
 	BOOL				GetIsActiveAnimation() const { return m_bIsActiveAnimation; }
 	void				SetIsActiveAnimation(BOOL val) { m_bIsActiveAnimation = val; }
 

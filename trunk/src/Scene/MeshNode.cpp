@@ -23,8 +23,7 @@ namespace Sophia
 
 
 cMeshNode::cMeshNode(void)
-{		
-	m_bIsBone= FALSE;
+{	
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
 	m_type = TYPE_MESH;

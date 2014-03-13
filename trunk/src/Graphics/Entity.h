@@ -9,7 +9,7 @@ namespace Sophia
 
 class EntityAnimation;
 class EntityMaterial;
-
+class Skeleton;
 class Entity :
 	public cSceneNode
 {
@@ -22,15 +22,17 @@ public:
 	cRendererQueue			m_renderQueueBlend[16];
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
-
 	cRendererQueue			m_renderQueueNormalShadow;
 	cRendererQueue			m_renderQueueBlendShadow;
+	cRendererQueue			m_renderQueueLine;
+
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
 	
 	std::vector<EntityMaterial*>	m_vecMaterial;		
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
+	bool				m_bShowBone;
 	
 	ENTITY_ANIMATION_DESCRIPTION m_baseAnimationDesc;		
 	ENTITY_ANIMATION_DESCRIPTION m_basePrevAnimationDesc;	//다른 애니이션 전환할때 fadeIn 옵션 사용한다면 이전 애니메이션키를 계속 얻기위해 필요하다.
@@ -78,11 +80,14 @@ public:
 	void PlayPartialAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
 	void StopPartialAnimation(int index);
 
-	void InsertBone(const char* name,cSceneNode* pBone);
+	void InsertBone(cSceneNode* pBone);
 	const std::vector<EntityAnimation*> GetVecAnimation() { return m_vecAnimation; }
 
 	void UpdateAnimationDescription(DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc);
 	bool UpdatePartialDescription(DWORD elapseTime,std::list<ENTITY_ANIMATION_DESCRIPTION>::iterator& it);
+	void SetShowSkeleton(bool bShow);
+
+	void ClearRenderQueue();
 };
 
 

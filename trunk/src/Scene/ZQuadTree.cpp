@@ -136,10 +136,45 @@ void	ZQuadTree::DevideSelf()
 
 void ZQuadTree::GenTriIndex(Frustum& frustum,int& nTris, LPVOID pIndex ,bool bTraverse )
 {
-	if (m_bIsLeafNode)
+	LPWORD p = ((LPWORD)pIndex) + nTris * 3;
+	if (!m_bIsLeafNode)
 	{
-		LPWORD p = ((LPWORD)pIndex) + nTris * 3;
+		cCollision::STATE state = cCollision::CheckWorldFrustumWithoutYAxis(frustum,m_BoundingSphere);
+		if ( state == cCollision::INSIDE)
+		{
+			LPWORD p = ((LPWORD)pIndex) + nTris * 3;
+			int tl = m_nCorner[CORNER_TL];
+			int size = m_nCorner[CORNER_TR]-tl;
+			int czdib = m_pTerrain->GetCZDIB();
+			int point=0;
+			for (int ch = 0 ; ch < size ; ch++)
+			{
+				for (int cw = 0; cw < size ; cw++)
+				{
+					point = ch * czdib + tl + cw;
+					*p++ = point ;					 	// + - +
+					*p++ = point + 1;				    // | /
+					*p++ = point + czdib;			    // +
+					nTris++;		
 
+					*p++ = point + 1;				    //      +
+					*p++ = point + czdib + 1;			//    / |
+					*p++ = point + czdib;				//  + - +
+					nTris++;
+				}
+
+			}
+		}
+		else if ( state == cCollision::INTERSECT)
+		{
+			m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,false);
+			m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,false);
+		}			
+	}
+	else
+	{
 		*p++ = m_nCorner[CORNER_TL];			// + - +
 		*p++ = m_nCorner[CORNER_TR];			// | /
 		*p++ = m_nCorner[CORNER_BL];            // +
@@ -149,33 +184,6 @@ void ZQuadTree::GenTriIndex(Frustum& frustum,int& nTris, LPVOID pIndex ,bool bTr
 		*p++ = m_nCorner[CORNER_TR];			//    / |
 		*p++ = m_nCorner[CORNER_BR];			//  + - +
 		nTris++;
-		return;
-	}
-
-	if (bTraverse)
-	{
-		m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,true);
-		m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,true);
-		m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,true);
-		m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,true);		
-	}
-	else
-	{
-		cCollision::STATE state = cCollision::CheckWorldFrustumWithoutYAxis(frustum,m_BoundingSphere);
-		if ( state == cCollision::INSIDE)
-		{
-			m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,true);
-			m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,true);
-			m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,true);
-			m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,true);	
-		}
-		else if ( state == cCollision::INTERSECT)
-		{
-			m_pChild[CORNER_TL]->GenTriIndex(frustum, nTris, pIndex ,false);
-			m_pChild[CORNER_TR]->GenTriIndex(frustum, nTris, pIndex ,false);
-			m_pChild[CORNER_BL]->GenTriIndex(frustum, nTris, pIndex ,false);
-			m_pChild[CORNER_BR]->GenTriIndex(frustum, nTris, pIndex ,false);
-		}		
 	}
 }
 

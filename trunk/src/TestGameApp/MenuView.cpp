@@ -52,13 +52,6 @@ void cMenuView::Enter()
 	m_pZTerrain = m_graphicWorld.CreateTerrain(&D3DXVECTOR3(20.0f,0.5f,20.0f),
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
-	/*
-	m_pZTerrain->Create(&D3DXVECTOR3(20.0f,0.5f,20.0f),
-		std::string(strDataPath+"map129.bmp").c_str(),
-		std::string(strDataPath+"ground.bmp").c_str()
-		);
-	AttachObject(m_pZTerrain);
-	*/
 		
 	/*
 	m_pTank = m_graphicWorld.CreateEntity();
@@ -66,7 +59,7 @@ void cMenuView::Enter()
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	*/
-	
+	/*
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon2.aniset").c_str());
@@ -74,7 +67,7 @@ void cMenuView::Enter()
 	m_pDragon->Build();
 	m_pDragon->SetLocalPos(D3DXVECTOR3(0,200.0f,0));
 	m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-
+	*/
 	/*
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
@@ -105,30 +98,23 @@ void cMenuView::Enter()
 void cMenuView::Leave()
 {
 	m_graphicWorld.DeleteTerrain(m_pZTerrain);
-	//DettachObject(m_pZTerrain);
-	//SAFE_DELETE(m_pZTerrain);
+
 
 
 	for (int i=0;i<10;i++)
 	{
-		//DettachObject(m_pHouse[i]);
-		//SAFE_DELETE(m_pHouse[i]);	
+
 		//m_graphicWorld.DeleteEntity(m_pHouse[i]);
 	}
 
 
 
-	//DettachObject(m_pTank);
-	//SAFE_DELETE(m_pTank);	
 	//m_graphicWorld.DeleteEntity(m_pTank);
 
-	//DettachObject(m_pAirPlaneBake);
-	//SAFE_DELETE(m_pAirPlaneBake);
+
 	//m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
 
-	//DettachObject(m_pDragon);
-	//SAFE_DELETE(m_pDragon);
-	m_graphicWorld.DeleteEntity(m_pDragon);
+	//m_graphicWorld.DeleteEntity(m_pDragon);
 	cView::Leave();
 }
 

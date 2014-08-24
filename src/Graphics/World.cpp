@@ -224,7 +224,7 @@ void World::Render()
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 
-
+	
 	//1. write depth
 	m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
 	m_pEffect->Begin(&passes, 0);
@@ -247,8 +247,7 @@ void World::Render()
 	}	
 	m_pEffect->EndPass();
 	m_pEffect->End();
-
-
+	
 
 	//////////////////////////////
 	// 2. 그림자 입히기
@@ -265,12 +264,13 @@ void World::Render()
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 		m_pEffect->BeginPass(0);	
 
+		
 		auto itEntityRender = m_listEntityRender.begin();
 		for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
 		{
@@ -281,7 +281,7 @@ void World::Render()
 		m_pEffect->End();
 	}
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다

@@ -870,6 +870,30 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_GENERIC:
 			case TOKENR_MAP_TYPE:
 			case TOKENR_MAP_OPACITY:
+				{
+					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+						return FALSE;						
+					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+					{
+						//ASSERT(m_Token!=TOKEND_BLOCK_START);
+						switch(m_Token)
+						{
+						case TOKENR_BITMAP:
+
+							std::string strFileName=GetString().c_str();							
+							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+							std::string strFullPath = strDataPath;
+							strFullPath += strFileName;					
+
+							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
+							if(pRscTexture==NULL)
+								TRACE1("MAP_OPACITY: %s 파일이없습니다.\n",strFullPath.c_str());
+							material.SetMapOpacity(pRscTexture);
+							break;
+						}		
+					}
+				}
+				break;
 			case TOKENR_MAP_REFLECT:
 				{
 					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
@@ -2056,6 +2080,28 @@ bool cASEParser::GetSubMaterial( Material& material)
 		case TOKENR_MAP_GENERIC:
 		case TOKENR_MAP_TYPE:
 		case TOKENR_MAP_OPACITY:
+			{
+				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+					return FALSE;						
+				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+				{			
+					switch(m_Token)
+					{
+					case TOKENR_BITMAP:
+						std::string strFileName=GetString().c_str();							
+						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+						std::string strFullPath = strDataPath;
+						strFullPath += strFileName;
+
+						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
+						if(pRscTexture==NULL)
+							TRACE1("MAP_OPACITY: %s 파일이없습니다.\n",strFullPath.c_str());
+						material.SetMapOpacity(pRscTexture);
+						break;
+					}
+				}									
+			}
+			break;	
 		case TOKENR_MAP_REFLECT:
 			{
 				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	

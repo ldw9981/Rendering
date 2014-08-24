@@ -27,14 +27,12 @@ RECT				m_Rect;
 GUIVERTEX g_vertices[4];
 
 
-
-
 Graphics*	Graphics::m_pInstance = NULL;
 LPDIRECT3DDEVICE9 Graphics::m_pDevice;
 Graphics::Graphics(void)
 {
 	m_pInstance = this;
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{	
 		m_hTNormal[i] = NULL;
 		m_hTBlend[i] = NULL;
@@ -205,6 +203,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
 	m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
 	m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
+	m_hTPhongDiffuseOpacity = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
 
 	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
@@ -237,14 +236,22 @@ void Graphics::LoadHLSL(const char* szFileName)
 	indexRenderQueue.set(Material::DIFFUSE);
 	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuse;
 
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::NORMAL);
 	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBump;
 
-	indexRenderQueue.reset(Material::NORMAL);
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::LIGHT);
 	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLight;
 
-	for (int i=0;i<16;i++)
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::OPACITY);
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacity;
+
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{	
 		if (m_hTNormal[i] == NULL )	
 			m_hTNormal[i] = m_hTPhongDiffuse;
@@ -252,7 +259,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	indexRenderQueue.reset();
 	m_hTBlend[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{	
 		if (m_hTBlend[i] == NULL )	
 			m_hTBlend[i] = m_hTSkinningPhongDiffuse;
@@ -360,7 +367,7 @@ void Graphics::RenderEX( World* pWorld )
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
@@ -370,7 +377,7 @@ void Graphics::RenderEX( World* pWorld )
 		m_pEffect->End();
 	}
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
@@ -497,7 +504,7 @@ void Graphics::Render( World* pWorld )
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
@@ -513,7 +520,7 @@ void Graphics::Render( World* pWorld )
 		m_pEffect->End();
 	}
 
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다

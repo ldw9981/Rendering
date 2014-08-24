@@ -3,6 +3,7 @@
 #include "Foundation/Interface.h"
 #include "RendererQueue.h"
 #include "Scene/CameraNode.h"
+#include "Graphics.h"
 
 namespace Sophia
 {
@@ -30,8 +31,8 @@ public:
 	std::list<Entity*>		m_listEntityShadow;
 	std::list<Entity*>		m_listEntityRender;
 	
-	cRendererQueue			m_renderQueueNormal[16];
-	cRendererQueue			m_renderQueueBlend[16];
+	cRendererQueue			m_renderQueueNormal[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueBlend[TECHNIQUE_SIZE];
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
 

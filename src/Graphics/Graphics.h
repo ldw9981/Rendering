@@ -8,7 +8,7 @@ class cGUIFont;
 class cView;
 class World;
 
-
+#define TECHNIQUE_SIZE 16
 
 class Graphics
 {
@@ -37,6 +37,7 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuse;// Å×Å©´Ð
 	D3DXHANDLE				m_hTPhongDiffuseLight;
 	D3DXHANDLE				m_hTPhongDiffuseBump;
+	D3DXHANDLE				m_hTPhongDiffuseOpacity;// Å×Å©´Ð
 	D3DXHANDLE				m_hTCreateShadowNormal;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTCreateShadowBlend;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTGUI;
@@ -58,8 +59,8 @@ public:
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
-	D3DXHANDLE				m_hTNormal[16];
-	D3DXHANDLE				m_hTBlend[16];
+	D3DXHANDLE				m_hTNormal[TECHNIQUE_SIZE];
+	D3DXHANDLE				m_hTBlend[TECHNIQUE_SIZE];
 	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
@@ -85,6 +86,8 @@ public:
 	void SetEffectVector_WorldLightPosition(D3DXVECTOR4* pVec);
 	void SetEffectMatirx_LightView(D3DXMATRIX* pMat);
 	void SetEffectMatirx_LightProjection(D3DXMATRIX* pMat);
+
+	void ArrangeTechnique(unsigned int index,D3DXHANDLE hTechnique);
 };
 
 

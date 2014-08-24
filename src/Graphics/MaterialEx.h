@@ -21,7 +21,7 @@ public:
 		DIFFUSE	=0x000,
 		NORMAL	=0x001,		
 		LIGHT	=0x002,
-		//REFRACT =0x003,
+		OPACITY =0x003,
 		MAX
 	};
 public:
@@ -45,6 +45,7 @@ private:
 	cRscTexture*			m_pMapNormal;
 //	cRscTexture*			m_pMapRefract;	
 	cRscTexture*			m_pMapLight;
+	cRscTexture*			m_pMapOpacity;
 	//Light
 	//Specular
 	//Reflection
@@ -59,6 +60,8 @@ public:
 // 	void					SetMapRefract(cRscTexture* val);
 	cRscTexture*			GetMapLight() const;
 	void					SetMapLight(cRscTexture* val);
+	cRscTexture*			GetMapOpacity() const;
+	void					SetMapOpacity(cRscTexture* val);
 
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);

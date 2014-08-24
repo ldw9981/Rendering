@@ -3,6 +3,7 @@
 #include "Math/Sphere.h"
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Animation.h"
+#include "Graphics.h"
 
 namespace Sophia
 {
@@ -18,8 +19,8 @@ public:
 	virtual ~Entity(void);
 
 public:
-	cRendererQueue			m_renderQueueNormal[16];
-	cRendererQueue			m_renderQueueBlend[16];
+	cRendererQueue			m_renderQueueNormal[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueBlend[TECHNIQUE_SIZE];
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
 	cRendererQueue			m_renderQueueNormalShadow;

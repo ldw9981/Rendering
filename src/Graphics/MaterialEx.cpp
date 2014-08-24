@@ -8,7 +8,7 @@
 namespace Sophia
 {
 
-#define MATERIAL_LASTEST 1
+#define MATERIAL_LASTEST 2
 
 
 Material::Material(void)
@@ -25,6 +25,7 @@ Material::Material(void)
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
+	m_pMapOpacity = NULL;
 	//m_pMapRefract = NULL;
 	
 }
@@ -42,10 +43,12 @@ Material::Material( const Material &Other )
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
+	m_pMapOpacity = NULL;
 	//m_pMapRefract = NULL;
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
+	SetMapOpacity(Other.m_pMapOpacity);
 	//SetMapRefract(Other.m_pMapRefract);
 }
 Material::~Material(void)
@@ -53,6 +56,7 @@ Material::~Material(void)
 	SAFE_RELEASE(m_pMapDiffuse);		
 	SAFE_RELEASE(m_pMapNormal);
 	SAFE_RELEASE(m_pMapLight);
+	SAFE_RELEASE(m_pMapOpacity);
 //	SAFE_RELEASE(m_pMapRefract);
 }
 
@@ -69,6 +73,7 @@ Material& Material::operator =(const Material &Other)
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
+	SetMapOpacity(Other.m_pMapOpacity);
 	//SetMapRefract(Other.m_pMapRefract);
 	return *this;
 }
@@ -156,6 +161,33 @@ void Material::SetMapLight( cRscTexture* val )
 	}
 }
 
+cRscTexture* Material::GetMapOpacity() const
+{
+	return m_pMapOpacity;
+}
+
+void Material::SetMapOpacity( cRscTexture* val )
+{
+	if (m_pMapOpacity)
+	{
+		m_pMapLight->Release();
+	}	
+	m_pMapOpacity = val;
+	if (m_pMapOpacity)
+	{		
+		m_pMapOpacity->AddRef();
+	}	
+
+	if (m_pMapOpacity)
+	{
+		index_renderer_queue_.set(OPACITY);
+	}
+	else
+	{
+		index_renderer_queue_.reset(OPACITY);	
+	}
+}
+
 void Material::SerializeIn( std::ifstream& stream )
 {
 	unsigned short ver = 0;
@@ -208,6 +240,24 @@ void Material::SerializeIn( std::ifstream& stream )
 		if(pRscTexture)
 			SetMapLight(pRscTexture);
 	}
+
+	if (ver >= MATERIAL_LASTEST)
+	{
+		type = 0;
+		stream.read((char*)&type,sizeof(type));
+		fileName.clear();	
+		ReadString(stream,fileName);	
+		if (fileName.length()!=0)
+		{
+			std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+			std::string strFullPath = strDataPath;
+			strFullPath += fileName;
+			cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
+			assert(pRscTexture!=NULL);
+			if(pRscTexture)
+				SetMapOpacity(pRscTexture);
+		}
+	}
 }
 
 void Material::SerializeOut( std::ofstream& stream )
@@ -243,7 +293,17 @@ void Material::SerializeOut( std::ofstream& stream )
 		StringUtil::SplitPath(std::string(m_pMapLight->GetFilePath()),NULL,NULL,&fileName,&fileName);
 	}
 	WriteString(stream,fileName);	
+
+	type = OPACITY;
+	stream.write((char*)&type,sizeof(type));
+	fileName.clear();
+	if (m_pMapLight)
+	{
+		StringUtil::SplitPath(std::string(m_pMapOpacity->GetFilePath()),NULL,NULL,&fileName,&fileName);
+	}
+	WriteString(stream,fileName);	
 }
+
 
 void SceneMaterial::SerializeIn( std::ifstream& stream )
 {

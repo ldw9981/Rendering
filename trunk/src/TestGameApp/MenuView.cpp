@@ -53,12 +53,12 @@ void cMenuView::Enter()
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
 		
-	/*
+	
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadASE(std::string(strDataPath+"TigerTank.ase").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	*/
+	
 	/*
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
@@ -109,7 +109,7 @@ void cMenuView::Leave()
 
 
 
-	//m_graphicWorld.DeleteEntity(m_pTank);
+	m_graphicWorld.DeleteEntity(m_pTank);
 
 
 	//m_graphicWorld.DeleteEntity(m_pAirPlaneBake);

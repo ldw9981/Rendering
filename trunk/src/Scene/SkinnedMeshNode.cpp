@@ -87,6 +87,10 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 	{
 		Graphics::m_pInstance->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
 	}
+
+	if( material.GetMapOpacity() != NULL )
+		Graphics::m_pInstance->GetEffect()->SetTexture("Opacity_Tex",material.GetMapOpacity()->GetD3DTexture());
+
 	Graphics::m_pInstance->GetEffect()->CommitChanges();
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 

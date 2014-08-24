@@ -3,6 +3,7 @@ texture Tex0;
 texture Tex1;
 texture Tex2;
 texture Tex3;
+texture Opacity_Tex;
 texture ShadowMap_Tex : RenderColorTarget;
 
 // 변환행렬
@@ -47,11 +48,28 @@ sampler gLightSampler = sampler_state
     MagFilter = LINEAR;
 };
 
+sampler gOpacitySampler = sampler_state
+{
+    Texture   = (Opacity_Tex);
+    MipFilter = LINEAR;
+    MinFilter = LINEAR;
+    MagFilter = LINEAR;
+};
+
 sampler2D ShadowSampler = sampler_state
 {
    Texture = (ShadowMap_Tex);
 };
 
+/////////////////////
+// BLENDING STATES //
+/////////////////////
+BlendState AlphaBlendingOn
+{
+    BlendEnable[0] = TRUE;
+    DestBlend = INV_SRC_ALPHA;
+    SrcBlend = SRC_ALPHA;
+};
 
 float gAmbientIntensity = 0.0f;
 float4 gAmbientColor = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -238,6 +256,8 @@ VS_PHONG_DIFFUSE_BUMP_OUTPUT vs_PhongDiffuseBump( VS_PHONG_DIFFUSE_INPUT input)
    
    return output;
 }
+
+
 
 VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT input)
 {
@@ -505,9 +525,54 @@ float4 ps_PhongDiffuseLight(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    else
    {
        color += gSpecularColor.xyz * specular;
-   }
+   }   
+   return float4(color,0.0f);	
+}
+
+float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
+{  
+   float3 color;
+   float3 lambert = saturate(input.mLambert);
+   float3 worldNormal = normalize(input.mNormal);
+   float3 cameraDir = normalize(input.mCameraDir);
+   float3 reflectDir = normalize(input.mReflect);
+   float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
+   float alphaSample = tex2D( gOpacitySampler , input.mTexCoord ).a;
+	
+	if( alphaSample < 0.5f )
+	{
+		discard;
+	}
+	
+   float3 specular = 0;
+   specular = dot(reflectDir,-cameraDir);
+   specular = saturate(specular);
+   specular = pow(specular, gSpecularPower);
+  
+//   float4 specularIntensity = tex2D(gSpecularSampler,input.mTexCoord);
+//   specular = specular * specularIntensity.xyz;
+  
+   color = diffuseSample * gAmbientColor.xyz * gAmbientIntensity;
+   color += diffuseSample * lambert;
+  
    
-   return float4(color,0.0f);
+   float currentDepth = input.mClipPosition.z / input.mClipPosition.w;   
+   float2 uv = input.mClipPosition.xy / input.mClipPosition.w;
+   uv.y = -uv.y;
+   uv = uv * 0.5 + 0.5;   
+   
+   float shadowDepth = tex2D(ShadowSampler, uv).r;   
+   
+   if (currentDepth > shadowDepth + 0.00125f)
+   {
+      color *= 0.5f;
+   } 
+   else
+   {
+      color += gSpecularColor.xyz * specular;
+   }
+	  
+	return float4(color,0.0f);	
 }
 
 technique TGUI
@@ -590,6 +655,15 @@ technique TPhongDiffuseBump
     {
         VertexShader = compile vs_2_0 vs_PhongDiffuseBump();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseBump();
+    }  
+}
+
+technique TPhongDiffuseOpacity
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuseOpacity();
     }  
 }
 

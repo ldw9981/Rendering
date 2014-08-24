@@ -22,6 +22,9 @@ public:
 	[Category("Material")]
 	property System::String^ lightMap;	
 
+	[Category("Material")]
+	property System::String^ opacityMap;	
+
 public:
 	void Read(Sophia::Material* pMaterial);
 };

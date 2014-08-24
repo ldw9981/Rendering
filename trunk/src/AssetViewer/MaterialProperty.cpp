@@ -9,6 +9,7 @@ MaterialProperty::MaterialProperty(void)
 	diffuseMap = gcnew System::String("");
 	normalMap = gcnew System::String("");
 	lightMap = gcnew System::String("");
+	opacityMap = gcnew System::String("");
 }
 
 
@@ -17,6 +18,7 @@ MaterialProperty::~MaterialProperty(void)
 	delete diffuseMap;
 	delete normalMap;
 	delete lightMap;
+	delete opacityMap;
 }
 
 void MaterialProperty::Read( Sophia::Material* pMaterial )
@@ -24,6 +26,7 @@ void MaterialProperty::Read( Sophia::Material* pMaterial )
 	delete diffuseMap;
 	delete normalMap;
 	delete lightMap;
+	delete opacityMap;
 
 	std::string fullpath;
 	if (pMaterial->GetMapDiffuse())
@@ -62,5 +65,18 @@ void MaterialProperty::Read( Sophia::Material* pMaterial )
 	else
 	{
 		lightMap = gcnew System::String("");
+	}
+
+	if (pMaterial->GetMapOpacity())
+	{
+
+		fullpath = pMaterial->GetMapOpacity()->GetFilePath();
+		std::string name;
+		Sophia::StringUtil::SplitPath(fullpath,NULL,NULL,&name,&name);
+		opacityMap = gcnew System::String(name.c_str());
+	}
+	else
+	{
+		opacityMap = gcnew System::String("");
 	}
 }

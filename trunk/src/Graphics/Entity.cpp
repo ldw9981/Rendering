@@ -548,7 +548,7 @@ void Entity::SetShowSkeleton( bool bShow )
 
 void Entity::ClearRenderQueue()
 {
-	for (int i=0;i<16;i++)
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_renderQueueNormal[i].Clear();
 		m_renderQueueBlend[i].Clear();

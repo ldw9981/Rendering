@@ -69,7 +69,7 @@ void cGUIFont::Create()
 	int nHeight;
 	int nPointSize = 12;
 
-	hDC = GetDC( Graphics::m_pInstance->m_hWndMain );
+	hDC = GetDC( Graphics::m_pInstance->m_hWndPresent );
 
 	nHeight = -( MulDiv( nPointSize, GetDeviceCaps(hDC, LOGPIXELSY), 72 ) );
 

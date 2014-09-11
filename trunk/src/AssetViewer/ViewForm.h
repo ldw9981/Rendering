@@ -64,7 +64,7 @@ namespace AssetViewer {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1024, 768);
+			this->ClientSize = System::Drawing::Size(512,512);
 			this->ControlBox = false;
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
@@ -104,8 +104,8 @@ namespace AssetViewer {
 				 }
 			 }
 	private: System::Void ViewForm_Shown(System::Object^  sender, System::EventArgs^  e) {
-				 Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);
-				 m_pFramework = new Framework("AssetViewer",false,this->Size.Width,this->Size.Height);
+				 Application::Idle += gcnew System::EventHandler(this,&ViewForm::OnApplicationIdle);				
+				 m_pFramework = new Framework("AssetViewer",false,this->ClientSize.Width,this->ClientSize.Height);
 				 m_pFramework->m_hWndMain = (HWND)(void*)MdiParent->Handle;
 				 m_pFramework->m_hWndPresent = (HWND)(void*)this->Handle;
 				 if(!m_pFramework->Initialize())
@@ -115,4 +115,5 @@ namespace AssetViewer {
 				 m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
 			 }
 	};
+
 }

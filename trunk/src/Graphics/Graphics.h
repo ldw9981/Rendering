@@ -65,12 +65,11 @@ public:
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	bool					m_bDebugBound;
-	HWND					m_hWndMain;
 	HWND					m_hWndPresent;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
-	bool Init(HWND hWndMain,HWND hWndPresent,bool bWindowed,int width,int height);
+	bool Init(HWND hWndPresent,bool bWindowed,int width,int height);
 	void Finalize();
 
 	void LoadHLSL(const char* szFileName);

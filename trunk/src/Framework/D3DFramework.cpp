@@ -68,7 +68,7 @@ bool cD3DFramework::Initialize()
 	InitWindow();
 
 	m_pGraphics = new Sophia::Graphics;	
-	m_pGraphics->Init(m_hWndMain,m_hWndPresent,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
+	m_pGraphics->Init(m_hWndPresent,!m_bFullScreen,GetRequestRectWidth(),GetRequestRectHeight());
 
 	
 	

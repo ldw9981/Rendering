@@ -42,7 +42,7 @@ void State::Enter()
 	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 0.0f, -1500.0f),
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
@@ -94,6 +94,7 @@ void State::Control()
 {
 	cView::Control();	
 	
+	
 	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
 		if(m_graphicWorld.m_camera.GetProcessInput())
@@ -110,13 +111,13 @@ void State::Control()
 		}
 	}
 	
-	if (g_pInput->IsTurnDn(DIK_EQUALS))
+	if (g_pInput->IsCurrDn(DIK_EQUALS))
 	{
 		m_graphicWorld.m_WorldLightPosition.y += 50;
 
 	}
 
-	if (g_pInput->IsTurnDn(DIK_MINUS))
+	if (g_pInput->IsCurrDn(DIK_MINUS))
 	{
 		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
@@ -164,8 +165,8 @@ void State::OpenASE( const char* path )
 	m_pModel->LoadASE(path);
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	m_pModel->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
+	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
+	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
 	m_bModifiedAnimation = true;
 	m_bModifiedScene = true;
@@ -202,8 +203,8 @@ void State::OpenAsset( const char* path )
 	m_pModel->LoadMaterial(std::string(dir+name+".material").c_str());
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	m_pModel->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
+	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
+	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 }
 
 Sophia::Entity* State::GetEntity()

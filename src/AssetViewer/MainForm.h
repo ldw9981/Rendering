@@ -194,7 +194,7 @@ namespace AssetViewer {
 				this->optionToolStripMenuItem1});
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(1024, 24);
+			this->menuStrip1->Size = System::Drawing::Size(1280, 24);
 			this->menuStrip1->TabIndex = 1;
 			this->menuStrip1->Text = L"menuStrip1";
 			// 
@@ -209,13 +209,13 @@ namespace AssetViewer {
 			// 
 			this->skeletonToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->toolStripMenuItem_Skeleton_ShowHide});
 			this->skeletonToolStripMenuItem->Name = L"skeletonToolStripMenuItem";
-			this->skeletonToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->skeletonToolStripMenuItem->Size = System::Drawing::Size(120, 22);
 			this->skeletonToolStripMenuItem->Text = L"Skeleton";
 			// 
 			// toolStripMenuItem_Skeleton_ShowHide
 			// 
 			this->toolStripMenuItem_Skeleton_ShowHide->Name = L"toolStripMenuItem_Skeleton_ShowHide";
-			this->toolStripMenuItem_Skeleton_ShowHide->Size = System::Drawing::Size(152, 22);
+			this->toolStripMenuItem_Skeleton_ShowHide->Size = System::Drawing::Size(134, 22);
 			this->toolStripMenuItem_Skeleton_ShowHide->Text = L"Show/Hide";
 			this->toolStripMenuItem_Skeleton_ShowHide->Click += gcnew System::EventHandler(this, &MainForm::toolStripMenuItem_Skeleton_ShowHide_Click);
 			// 
@@ -229,7 +229,7 @@ namespace AssetViewer {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1024, 768);
+			this->ClientSize = System::Drawing::Size(1280, 720);
 			this->Controls->Add(this->menuStrip1);
 			this->IsMdiContainer = true;
 			this->MainMenuStrip = this->menuStrip1;
@@ -245,21 +245,26 @@ namespace AssetViewer {
 		}
 #pragma endregion
 	private: System::Void OnShown(System::Object^  sender, System::EventArgs^  e) {
-				 viewForm->MdiParent = this;
-				 viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
-				 viewForm->Show();
 
 				 sceneTreeForm->MdiParent = this;
 				 sceneTreeForm->treeView1->AfterSelect += gcnew System::Windows::Forms::TreeViewEventHandler(this, &MainForm::sceneTreeForm_treeView1_AfterSelect);
+				 int CaptionHeight = sceneTreeForm->Height - sceneTreeForm->ClientSize.Height;
+				 sceneTreeForm->Size = System::Drawing::Size(400, this->ClientSize.Height - CaptionHeight);
 				 sceneTreeForm->Show();
-				
-
+				 sceneTreeForm->Location = System::Drawing::Point(0, 0);
+				 
 				 scenePropertyForm->MdiParent = this;
 				 scenePropertyForm->Show();
-				 
+
+				 viewForm->MdiParent = this;
+				 viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
+				 viewForm->Show();
+				 viewForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width, 0); 
+
 
 				 animationForm->MdiParent = this;
 				 animationForm->Show();
+				  animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
 
 				 materialPropertyForm->MdiParent = this;
 				 materialPropertyForm->Show();

@@ -101,8 +101,7 @@ namespace AssetViewer {
 			// SceneTreeForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
-			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(240, 474);
+			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;		
 			this->ControlBox = false;
 			this->Controls->Add(this->treeView1);
 			this->MaximizeBox = false;

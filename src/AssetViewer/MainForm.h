@@ -29,10 +29,11 @@ namespace AssetViewer {
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
 			viewForm = gcnew ViewForm;
-	        sceneTreeForm = gcnew SceneTreeForm;
-			scenePropertyForm = gcnew ScenePropertyForm;
+	        sceneTreeForm = gcnew SceneTreeForm;			
 			animationForm = gcnew AnimationForm;
-			materialPropertyForm = gcnew MaterialPropertyForm;
+			
+			scenePropertyForm = nullptr;
+			materialPropertyForm = nullptr;
 			m_pNode = NULL;
 			m_bShowSkeleton = false;
 		}
@@ -46,11 +47,9 @@ namespace AssetViewer {
 			if (components)
 			{
 				delete components;
-			}
+			}			
 			
-			delete materialPropertyForm;
-			delete animationForm;
-			delete scenePropertyForm;
+			delete animationForm;			
 			delete sceneTreeForm;
 			delete viewForm;
 		}
@@ -59,11 +58,13 @@ namespace AssetViewer {
 	protected: 
 		State* m_pState;
 		Sophia::cSceneNode* m_pNode;
+	private: System::ComponentModel::IContainer^  components;
+	protected: 
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+
 		ViewForm^ viewForm;
 		SceneTreeForm^ sceneTreeForm;
 		AnimationForm^ animationForm;
@@ -86,6 +87,9 @@ namespace AssetViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  optionToolStripMenuItem1;
 	private: System::Windows::Forms::ToolStripMenuItem^  skeletonToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem_Skeleton_ShowHide;
+	private: System::Windows::Forms::ContextMenuStrip^  contextMenuStrip1;
+	private: System::Windows::Forms::ToolStripMenuItem^  scenePropertyToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  materialPropertyToolStripMenuItem;
 
 
 
@@ -99,6 +103,7 @@ namespace AssetViewer {
 		/// </summary>
 		void InitializeComponent(void)
 		{
+			this->components = (gcnew System::ComponentModel::Container());
 			this->fileToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->openToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->aSEToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -114,7 +119,11 @@ namespace AssetViewer {
 			this->skeletonToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->toolStripMenuItem_Skeleton_ShowHide = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->optionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
+			this->scenePropertyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->materialPropertyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuStrip1->SuspendLayout();
+			this->contextMenuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// fileToolStripMenuItem
@@ -225,6 +234,28 @@ namespace AssetViewer {
 			this->optionToolStripMenuItem->Size = System::Drawing::Size(32, 19);
 			this->optionToolStripMenuItem->Text = L"Option";
 			// 
+			// contextMenuStrip1
+			// 
+			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->scenePropertyToolStripMenuItem, 
+				this->materialPropertyToolStripMenuItem});
+			this->contextMenuStrip1->Name = L"contextMenuStrip1";
+			this->contextMenuStrip1->Size = System::Drawing::Size(167, 48);
+			this->contextMenuStrip1->ItemClicked += gcnew System::Windows::Forms::ToolStripItemClickedEventHandler(this, &MainForm::contextMenuStrip1_ItemClicked);
+			// 
+			// scenePropertyToolStripMenuItem
+			// 
+			this->scenePropertyToolStripMenuItem->Name = L"scenePropertyToolStripMenuItem";
+			this->scenePropertyToolStripMenuItem->Size = System::Drawing::Size(166, 22);
+			this->scenePropertyToolStripMenuItem->Tag = L"";
+			this->scenePropertyToolStripMenuItem->Text = L"Scene Property";
+			// 
+			// materialPropertyToolStripMenuItem
+			// 
+			this->materialPropertyToolStripMenuItem->Name = L"materialPropertyToolStripMenuItem";
+			this->materialPropertyToolStripMenuItem->Size = System::Drawing::Size(166, 22);
+			this->materialPropertyToolStripMenuItem->Tag = L"";
+			this->materialPropertyToolStripMenuItem->Text = L"Material Property";
+			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
@@ -239,6 +270,7 @@ namespace AssetViewer {
 			this->Shown += gcnew System::EventHandler(this, &MainForm::OnShown);
 			this->menuStrip1->ResumeLayout(false);
 			this->menuStrip1->PerformLayout();
+			this->contextMenuStrip1->ResumeLayout(false);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -248,14 +280,13 @@ namespace AssetViewer {
 
 				 sceneTreeForm->MdiParent = this;
 				 sceneTreeForm->treeView1->AfterSelect += gcnew System::Windows::Forms::TreeViewEventHandler(this, &MainForm::sceneTreeForm_treeView1_AfterSelect);
+				 sceneTreeForm->treeView1->NodeMouseClick += gcnew System::Windows::Forms::TreeNodeMouseClickEventHandler(this, &MainForm::sceneTreeForm_treeView1_NodeMouseClick);
+
 				 int CaptionHeight = sceneTreeForm->Height - sceneTreeForm->ClientSize.Height;
 				 sceneTreeForm->Size = System::Drawing::Size(400, this->ClientSize.Height - CaptionHeight);
 				 sceneTreeForm->Show();
 				 sceneTreeForm->Location = System::Drawing::Point(0, 0);
-				 
-				 scenePropertyForm->MdiParent = this;
-				 scenePropertyForm->Show();
-
+				
 				 viewForm->MdiParent = this;
 				 viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
 				 viewForm->Show();
@@ -264,10 +295,8 @@ namespace AssetViewer {
 
 				 animationForm->MdiParent = this;
 				 animationForm->Show();
-				  animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
+				 animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
 
-				 materialPropertyForm->MdiParent = this;
-				 materialPropertyForm->Show();
 			 }
 
 
@@ -296,8 +325,13 @@ private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System
 				 sceneTreeForm->Update(pState);
 				 animationForm->Update(pState,NULL);
 				 m_pNode = NULL;
-				 scenePropertyForm->Update(pState,NULL);
-				 materialPropertyForm->Update(pState,NULL);
+
+		
+				if ( scenePropertyForm!= nullptr )
+					 scenePropertyForm->Update(pState,NULL);
+
+				if ( materialPropertyForm!= nullptr )
+					 materialPropertyForm->Update(pState,NULL);
 			 }
 			 delete openFileDialog1;
 		 }
@@ -318,10 +352,15 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 	             pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
 
 				 sceneTreeForm->Update(pState);
+                 animationForm->Update(pState,m_pNode);
 				 m_pNode = NULL;
-				 scenePropertyForm->Update(pState,m_pNode);
-				 materialPropertyForm->Update(pState,m_pNode);
-				 animationForm->Update(pState,m_pNode);
+
+				 if ( scenePropertyForm!= nullptr )
+					scenePropertyForm->Update(pState,m_pNode);
+
+				 if ( materialPropertyForm!= nullptr )
+					 materialPropertyForm->Update(pState,m_pNode);
+				
 			 }
 			 delete openFileDialog1;
 		 }
@@ -335,9 +374,30 @@ private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System
 				
 				std::string name = msclr::interop::marshal_as< std::string >(e->Node->Text);
 				m_pNode = m_pState->GetEntity()->FindNode(name);
-				scenePropertyForm->Update(m_pState,m_pNode);
-				materialPropertyForm->Update(m_pState,m_pNode);
 				animationForm->Update(m_pState,m_pNode);
+
+				if ( scenePropertyForm != nullptr )
+					scenePropertyForm->Update(m_pState,m_pNode);
+
+				if ( materialPropertyForm!= nullptr )
+					materialPropertyForm->Update(m_pState,m_pNode);
+			}
+	public: System::Void sceneTreeForm_treeView1_NodeMouseClick(System::Object^  sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^  e) {
+				if (e->Button != System::Windows::Forms::MouseButtons::Right)
+					return;
+
+				if (m_pNode == NULL)
+					return;
+
+				std::string name = msclr::interop::marshal_as< std::string >(e->Node->Text);
+				if( m_pNode->GetNodeName() != name )
+					return;
+				
+				System::Drawing::Point pt = sceneTreeForm->PointToScreen(System::Drawing::Point(0,0));
+				pt.X += e->Location.X;
+				pt.Y += e->Location.Y;
+
+				contextMenuStrip1->Show(pt);				
 			}
 	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
 				materialPropertyForm->Update(m_pState,m_pNode);
@@ -355,5 +415,61 @@ private: System::Void toolStripMenuItem_Skeleton_ShowHide_Click(System::Object^ 
 			 m_bShowSkeleton = !m_bShowSkeleton;
 			 m_pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
 		 }
+
+
+	private: System::Void scenePropertyForm_Closed(System::Object^  sender, System::EventArgs^  e) 
+		{
+			//assert(scenePropertyForm!=nullptr);
+			delete scenePropertyForm;
+			scenePropertyForm = nullptr;			
+		}
+	private: System::Void materialPropertyForm_Closed(System::Object^  sender, System::EventArgs^  e) 
+		{
+			//ASSERT(materialPropertyForm!=nullptr);
+			delete materialPropertyForm;
+			materialPropertyForm = nullptr;	
+		}
+	public: void Pop_scenePropertyForm()
+		{
+			//assert(scenePropertyForm==nullptr);
+			if (scenePropertyForm!=nullptr)
+				return;
+
+			scenePropertyForm = gcnew ScenePropertyForm;
+			scenePropertyForm->Owner = this;
+			scenePropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::scenePropertyForm_Closed);
+			scenePropertyForm->Show();		
+
+		}
+	public: void Pop_materialPropertyForm()
+		{
+			//assert(materialPropertyForm==nullptr);
+			if (materialPropertyForm!=nullptr)
+				return;
+
+			materialPropertyForm = gcnew MaterialPropertyForm;
+			materialPropertyForm->Owner = this;
+			materialPropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::materialPropertyForm_Closed);
+			materialPropertyForm->Show();
+		}
+	public: System::Void contextMenuStrip1_ItemClicked(System::Object^  sender, System::Windows::Forms::ToolStripItemClickedEventArgs^  e) {
+				int index = e->ClickedItem->Owner->Items->IndexOf(e->ClickedItem);				
+				switch (index)
+				{
+				case 0:
+					Pop_scenePropertyForm();
+					if ( scenePropertyForm != nullptr )
+						scenePropertyForm->Update(m_pState,m_pNode);
+					
+					break;
+				case 1:
+					Pop_materialPropertyForm();
+					if ( materialPropertyForm!= nullptr )
+						materialPropertyForm->Update(m_pState,m_pNode);
+
+					break;
+				}				
+			}
+			 
 };
 }

@@ -111,8 +111,9 @@ namespace AssetViewer {
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(312, 480);
-			this->ControlBox = false;
 			this->Controls->Add(this->splitContainer1);
+			this->MaximizeBox = false;
+			this->MinimizeBox = false;
 			this->Name = L"MaterialPropertyForm";
 			this->Text = L"MaterialPropertyForm";
 			this->splitContainer1->Panel1->ResumeLayout(false);

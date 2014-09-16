@@ -297,7 +297,7 @@ void Material::SerializeOut( std::ofstream& stream )
 	type = OPACITY;
 	stream.write((char*)&type,sizeof(type));
 	fileName.clear();
-	if (m_pMapLight)
+	if (m_pMapOpacity)
 	{
 		StringUtil::SplitPath(std::string(m_pMapOpacity->GetFilePath()),NULL,NULL,&fileName,&fileName);
 	}

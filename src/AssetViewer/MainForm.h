@@ -276,28 +276,8 @@ namespace AssetViewer {
 
 		}
 #pragma endregion
-	private: System::Void OnShown(System::Object^  sender, System::EventArgs^  e) {
-
-				 sceneTreeForm->MdiParent = this;
-				 sceneTreeForm->treeView1->AfterSelect += gcnew System::Windows::Forms::TreeViewEventHandler(this, &MainForm::sceneTreeForm_treeView1_AfterSelect);
-				 sceneTreeForm->treeView1->NodeMouseClick += gcnew System::Windows::Forms::TreeNodeMouseClickEventHandler(this, &MainForm::sceneTreeForm_treeView1_NodeMouseClick);
-
-				 int CaptionHeight = sceneTreeForm->Height - sceneTreeForm->ClientSize.Height;
-				 sceneTreeForm->Size = System::Drawing::Size(400, this->ClientSize.Height - CaptionHeight);
-				 sceneTreeForm->Show();
-				 sceneTreeForm->Location = System::Drawing::Point(0, 0);
-				
-				 viewForm->MdiParent = this;
-				 viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
-				 viewForm->Show();
-				 viewForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width, 0); 
-
-
-				 animationForm->MdiParent = this;
-				 animationForm->Show();
-				 animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
-
-			 }
+	private: 
+		System::Void OnShown(System::Object^  sender, System::EventArgs^  e);
 
 
 	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -322,7 +302,10 @@ private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System
 				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
 				 pState->OpenASE(path.c_str());
 				 pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
+				 sceneTreeForm->Clear();
 				 sceneTreeForm->Update(pState);
+
+				 animationForm->Clear();
 				 animationForm->Update(pState,NULL);
 				 m_pNode = NULL;
 
@@ -351,7 +334,10 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 				 pState->OpenAsset(path.c_str());
 	             pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
 
+				 sceneTreeForm->Clear();
 				 sceneTreeForm->Update(pState);
+
+				 animationForm->Clear();
                  animationForm->Update(pState,m_pNode);
 				 m_pNode = NULL;
 
@@ -367,7 +353,7 @@ private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, Syst
 private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
 			
 			 m_pState->SaveAsset();
-			 sceneTreeForm->Update(m_pState);
+		
 			 animationForm->Update(m_pState,m_pNode);
 		 }
 	public: System::Void sceneTreeForm_treeView1_AfterSelect(System::Object^  sender, System::Windows::Forms::TreeViewEventArgs^  e) {
@@ -470,6 +456,5 @@ private: System::Void toolStripMenuItem_Skeleton_ShowHide_Click(System::Object^ 
 					break;
 				}				
 			}
-			 
-};
+	};
 }

@@ -437,7 +437,7 @@ void Entity::EraseAnimation( int index )
 void Entity::StopBaseAnimation()
 {
 	m_basePrevAnimationDesc = m_baseAnimationDesc;
-
+	
 	m_baseAnimationDesc.loop = false;
 	m_baseAnimationDesc.playTime = m_baseAnimationDesc.length - m_baseAnimationDesc.earlyEndTime;
 }
@@ -488,7 +488,7 @@ void Entity::PlayPartialAnimation( int index,bool loop,DWORD skipStartTime/*=0*/
 	desc.skipStartTime = skipStartTime;
 	desc.earlyEndTime = earlyEndTime;
 	desc.playTime = desc.skipStartTime;	
-	desc.length = m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength;
+	desc.length = m_vecAnimation[index]->m_dwTimeLength;
 
 	m_listPartial.push_back(desc);
 	

@@ -422,6 +422,8 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 
 void cASELexer::AddTokenHistory( int identifier )
 {
+	return;
+
 	if (identifier >= ASE_TOKEN_MAX)
 	{
 		ASSERT(identifier >= ASE_TOKEN_MAX);

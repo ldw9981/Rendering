@@ -39,7 +39,6 @@ namespace AssetViewer {
 			imageList.Images->Add((cli::safe_cast<Drawing::Bitmap^>(s_pxResourceManager->GetObject("scenetree_skeleton"))));
 			treeView1->ImageList = %imageList;			
 			tagFont = gcnew System::Drawing::Font( "Helvetica",8,FontStyle::Bold );
-
 		}
 
 	protected:
@@ -63,7 +62,10 @@ namespace AssetViewer {
 	
 	protected: 
 		State*			m_pState;
+		Sophia::Entity*	m_pEntity;
 		ImageList imageList;
+		int				m_animationIndex;
+		bool			m_showWeight;
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
@@ -129,16 +131,9 @@ namespace AssetViewer {
 		 }
 
 	public:	
-		void Update(State* pState)
-		{
-			m_pState = pState;
-			treeView1->Nodes->Clear();
-			TreeNode^ svrNode = CreateTreeNode(nullptr,pState->GetEntity());
-			treeView1->Nodes->Add(svrNode);
-			// 모든 트리 노드를 보여준다
-			treeView1->ExpandAll();		
-		
-		}
+		void Clear();
+		void SetAnimationIndex(int index);
+		void Update(State* pState);
 	public: 
 		TreeNode^ CreateTreeNode(TreeNode^ parentTreeNode,Sophia::cSceneNode* pNode);
 	private:
@@ -147,6 +142,9 @@ namespace AssetViewer {
 		System::Drawing::Rectangle NodeBounds( TreeNode^ node );
 	private:
 		void DrawTreeNodeHighlightSelectedEvenWithoutFocus(System::Object^ sender, DrawTreeNodeEventArgs^ e);
-
+	public: 
+		System::Void listAnimation_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e );
+	public:	
+		System::Void checkBox_showPartialWeight_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 	};
 }

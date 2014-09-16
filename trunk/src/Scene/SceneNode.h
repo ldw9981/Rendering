@@ -132,7 +132,8 @@ public:
 	void Test(void(*Func)(cSceneNode*));
 	void AddPatialIndex();
 	void DelPartialIndex(size_t index);
-	SceneAnimation* GetSceneAnimation(int index);
+	SceneAnimation* GetSceneAnimation(size_t index);
+	int CountSceneAnimation();
 };
 
 }

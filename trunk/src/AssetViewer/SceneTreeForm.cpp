@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "SceneTreeForm.h"
-
+#include "Graphics/Animation.h"
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -36,9 +36,9 @@ void AssetViewer::SceneTreeForm::DrawTreeNodeHighlightSelectedEvenWithoutFocus( 
 
 	// If a node tag is present, draw its string representation 
 	// to the right of the label text.
-	if ( e->Node->Tag != nullptr )
+	if (e->Node!=nullptr && e->Node->Tag != nullptr )
 	{
-		e->Graphics->DrawString( e->Node->Tag->ToString(), tagFont, Brushes::Yellow, (float)e->Bounds.Right + 2, (float)e->Bounds.Top );
+		e->Graphics->DrawString( e->Node->Tag->ToString(), tagFont, Brushes::Black, (float)e->Bounds.Right + 2, (float)e->Bounds.Top );
 	}
 
 
@@ -67,6 +67,8 @@ System::Drawing::Rectangle AssetViewer::SceneTreeForm::NodeBounds( TreeNode^ nod
 {
 	// Set the return value to the normal node bounds.
 	System::Drawing::Rectangle bounds = node->Bounds;
+	bounds.X -=1 ;
+	/*
 	if ( node->Tag != nullptr )
 	{
 		// Retrieve a Graphics object from the TreeView handle
@@ -79,6 +81,7 @@ System::Drawing::Rectangle AssetViewer::SceneTreeForm::NodeBounds( TreeNode^ nod
 		bounds = Rectangle::Inflate( bounds, tagWidth / 2, 0 );
 		g->~Graphics();
 	}
+	*/
 
 	return bounds;
 }
@@ -99,9 +102,110 @@ TreeNode^ AssetViewer::SceneTreeForm::CreateTreeNode( TreeNode^ parentTreeNode,S
 		treeNode = parentTreeNode->Nodes->Add( name , name,img,img);
 	}
 
+	if (m_showWeight && m_animationIndex != -1 && pNode->CountSceneAnimation()>0) 
+	{
+		Sophia::SceneAnimation* pSceneAnimation = pNode->GetSceneAnimation(m_animationIndex);
+		if (pSceneAnimation)
+		{
+			treeNode->Tag = Convert::ToString(pSceneAnimation->m_partialWeight);		
+		}			
+	}
+
+
 	for ( auto it = pNode->m_listChildNode.begin() ; it != pNode->m_listChildNode.end() ; it++ )
 	{
 		CreateTreeNode(treeNode,*it);
 	}
 	return treeNode;
+}
+
+void AssetViewer::SceneTreeForm::Clear()
+{
+	treeView1->Nodes->Clear();
+	m_animationIndex = -1;
+}
+
+void AssetViewer::SceneTreeForm::Update( State* pState )
+{
+	m_pState = pState;
+	if (m_pState == NULL)
+		return;
+
+	m_pEntity = pState->GetEntity();
+	if (m_pEntity==NULL)
+		return;
+
+
+	TreeNode^ svrNode = CreateTreeNode(nullptr,pState->GetEntity());
+	treeView1->Nodes->Add(svrNode);
+	// 모든 트리 노드를 보여준다
+	treeView1->ExpandAll();
+}
+
+void AssetViewer::SceneTreeForm::SetAnimationIndex( int index )
+{
+	m_animationIndex = index;
+}
+
+System::Void AssetViewer::SceneTreeForm::listAnimation_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
+{
+	ListBox^ listBox = safe_cast<ListBox^>(sender); 
+	if (m_animationIndex == listBox->SelectedIndex)
+		return;
+
+	m_animationIndex = listBox->SelectedIndex;	
+
+	if (!m_showWeight)
+		return;
+
+	TreeNode^ selectedNode = treeView1->SelectedNode;
+	System::String^ key;
+
+	if (selectedNode!=nullptr)
+	{
+		key = gcnew System::String(selectedNode->Text);
+	}		
+
+
+	treeView1->Nodes->Clear();	
+	Update(m_pState);		
+
+
+	if (selectedNode!=nullptr)
+	{
+		array<TreeNode^>^ findNode = treeView1->Nodes->Find(key,true);
+		if (findNode->Length != 0)
+		{
+			treeView1->SelectedNode = findNode[0];
+		}
+	}
+}
+
+System::Void AssetViewer::SceneTreeForm::checkBox_showPartialWeight_CheckedChanged( System::Object^ sender, System::EventArgs^ e )
+{
+	CheckBox^ checkBox = safe_cast<CheckBox^>(sender); 
+	m_showWeight = checkBox->Checked;
+
+	TreeNode^ selectedNode = treeView1->SelectedNode;
+	System::String^ key;
+
+	if (selectedNode!=nullptr)
+	{
+		key = gcnew System::String(selectedNode->Text);
+	}		
+		
+	if (m_animationIndex == -1)
+		return;
+
+	treeView1->Nodes->Clear();
+	Update(m_pState);		
+
+	if (selectedNode!=nullptr)
+	{
+		array<TreeNode^>^ findNode = treeView1->Nodes->Find(key,true);
+		if (findNode->Length != 0)
+		{
+			treeView1->SelectedNode = findNode[0];
+		}
+	}
 }

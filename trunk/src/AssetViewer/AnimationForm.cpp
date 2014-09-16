@@ -26,17 +26,17 @@ void AssetViewer::AnimationForm::Update( State* pState,Sophia::cSceneNode* pNode
 	}
 
 	textBox_PartialWeight->Text = L"";
+	textBox_PartialWeight->Enabled = false;
 	if (m_pNode && listAnimation->SelectedIndex != -1)
 	{
-		Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
-		if (pSceneAnimation)
+		if( m_pNode->CountSceneAnimation() > 0)
 		{
-			textBox_PartialWeight->Text = Convert::ToString(pSceneAnimation->m_partialWeight);
-			textBox_PartialWeight->Enabled = true;
-		}		
-		else
-		{
-			textBox_PartialWeight->Enabled = false;
+			Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
+			if (pSceneAnimation)
+			{
+				textBox_PartialWeight->Text = Convert::ToString(pSceneAnimation->m_partialWeight);
+				textBox_PartialWeight->Enabled = true;
+			}	
 		}
 	}
 
@@ -170,26 +170,32 @@ void AssetViewer::AnimationForm::UpdateText( bool modified )
 
 System::Void AssetViewer::AnimationForm::textBox_PartialWeight_KeyDown( System::Object^ sender, System::Windows::Forms::KeyEventArgs^ e )
 {
-	if (e->KeyCode == Keys::Enter)
-	{	
-		float weight = (float)Convert::ToDouble(textBox_PartialWeight->Text);
-		weight = max(weight,0.0f);
-		weight = min(weight,1.0f);
-		textBox_PartialWeight->Text = Convert::ToString(weight);
+	if (e->KeyCode != Keys::Enter)
+		return;
 
-		if (listAnimation->SelectedIndex != -1 && m_pNode)
-		{
-			Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
-			if (pSceneAnimation)
-			{
-				pSceneAnimation->m_partialWeight = weight;
-				m_pState->SetModifiedAnimation(true);
-				UpdateText(true);
-				this->ActiveControl = splitContainer1->Panel1;
-				e->SuppressKeyPress = true;
-			}			
-		}		
-	}
+	float weight = (float)Convert::ToDouble(textBox_PartialWeight->Text);
+	weight = max(weight,0.0f);
+	weight = min(weight,1.0f);
+	textBox_PartialWeight->Text = Convert::ToString(weight);
+
+	if (listAnimation->SelectedIndex == -1)
+		return;
+	
+	if ( m_pNode == NULL )
+		return;
+
+	if (m_pNode->CountSceneAnimation() == 0)
+		return;
+
+	Sophia::SceneAnimation* pSceneAnimation = m_pNode->GetSceneAnimation(listAnimation->SelectedIndex);
+	if (!pSceneAnimation)
+		return;
+
+	pSceneAnimation->m_partialWeight = weight;
+	m_pState->SetModifiedAnimation(true);
+	UpdateText(true);
+	this->ActiveControl = splitContainer1->Panel1;
+	e->SuppressKeyPress = true;
 }
 
 System::Void AssetViewer::AnimationForm::textBox_PartialWeight_KeyPress( System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e )
@@ -207,7 +213,7 @@ System::Void AssetViewer::AnimationForm::button_Base_Click( System::Object^ send
 	int endTime = Convert::ToInt32(textEndTime->Text);
 
 	m_pState->GetEntity()->PlayBaseAnimation(listAnimation->SelectedIndex,
-		checkBox1->Checked,startTime,length-endTime);
+		checkBox_baseLoop->Checked,startTime,length-endTime);
 }
 
 System::Void AssetViewer::AnimationForm::button_Partial_Click( System::Object^ sender, System::EventArgs^ e )
@@ -220,7 +226,7 @@ System::Void AssetViewer::AnimationForm::button_Partial_Click( System::Object^ s
 	int endTime = Convert::ToInt32(textEndTime->Text);
 
 	m_pState->GetEntity()->PlayPartialAnimation(listAnimation->SelectedIndex,
-		checkBox1->Checked,startTime,length-endTime);
+		checkBox_partialLoop->Checked,startTime,length-endTime);
 }
 
 System::Void AssetViewer::AnimationForm::button_BaseStop_Click( System::Object^ sender, System::EventArgs^ e )
@@ -240,4 +246,19 @@ System::Void AssetViewer::AnimationForm::button_PartialStop_Click( System::Objec
 	{
 		m_pEntity->StopPartialAnimation(listAnimation->SelectedIndex);
 	}
+}
+
+void AssetViewer::AnimationForm::Clear()
+{
+	m_pState = NULL;
+	m_pNode = NULL;
+	m_pEntity = NULL;
+	textCutName->Text = "";
+	textLength->Text = Convert::ToString(0);
+	textStartTime->Text = Convert::ToString(0);
+	textEndTime->Text = Convert::ToString(0);
+
+	listAnimation->Items->Clear();
+	textBox_PartialWeight->Text = L"";
+	textBox_PartialWeight->Enabled = false;
 }

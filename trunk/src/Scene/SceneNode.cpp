@@ -471,9 +471,15 @@ void cSceneNode::DelPartialIndex(size_t index)
 	}
 }
 
-SceneAnimation* cSceneNode::GetSceneAnimation( int index )
+SceneAnimation* cSceneNode::GetSceneAnimation( size_t index )
 {
+	assert(index < m_vecSceneAnimation.size()); 
 	return m_vecSceneAnimation[index];
+}
+
+int cSceneNode::CountSceneAnimation()
+{
+	return m_vecSceneAnimation.size();
 }
 
 

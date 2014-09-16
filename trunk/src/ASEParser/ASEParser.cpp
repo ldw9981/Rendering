@@ -2411,7 +2411,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 		}
 	} 
 
-	assert(dwTimeKey== (DWORD)m_SceneTime.EX_LASTFRAMEMS);
+	//assert(dwTimeKey== (DWORD)m_SceneTime.EX_LASTFRAMEMS);
 	std::vector<ANMKEY>& refArrAnmKey=pSceneAnimation->m_arrayANMKEY;
 
 	ANMKEY prevItem=localTM_anmkey;
@@ -2439,6 +2439,13 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 
 		refArrAnmKey.push_back(currItem);
 		prevItem=currItem;
+	}
+
+	// 중간키까지만 있을경우 마지막은 동일한 값으로 추가
+	if (dwTimeKey < m_SceneTime.EX_LASTFRAMEMS)
+	{
+		prevItem.AnmTick = m_SceneTime.EX_LASTFRAMEMS;
+		refArrAnmKey.push_back(prevItem);
 	}
 
 	return pSceneAnimation;

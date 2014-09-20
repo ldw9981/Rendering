@@ -4,7 +4,7 @@
 namespace Sophia
 {
 
-#define	NUMBER_OF_RESERVEDWORD				233
+#define	NUMBER_OF_RESERVEDWORD				234
 #define MAX_SKIP_LEVEL						3000
 #define DEBUG_LEXER 1
 #define ASE_TOKEN_MAX						256
@@ -252,11 +252,13 @@ LPSTR Token[ASE_TOKEN_MAX]	 = {"*3DSMAX_ASCIIEXPORT"		/*  0*/
 ,	"*PROP_HIDDEN"				/*230*/
 ,	"*PROP_NORENDERABLE"		/*231*/
 ,	"*PROP_BONE"				/*232*/
+,	"*MESH_ANIMATION"			/*233*/	
 ,};
 
 
 cASELexer::cASELexer(const char* p_FileName, DWORD p_SizeOfBuffer) : cLexer(p_FileName, p_SizeOfBuffer)
 {
+//	m_tokenHistory
 }
 
 cASELexer::~cASELexer()
@@ -422,19 +424,23 @@ LONG cASELexer::GetToken(LPSTR p_TokenString)
 
 void cASELexer::AddTokenHistory( int identifier )
 {
-	return;
-
 	if (identifier >= ASE_TOKEN_MAX)
 	{
 		ASSERT(identifier >= ASE_TOKEN_MAX);
 		return;
 	}
-	m_tokenHistory.push_back(Token[identifier]);
+	m_tokenHistory.push_front(Token[identifier]);
+
+	size_t size = m_tokenHistory.size();
+	if (size > 20)
+	{
+		m_tokenHistory.pop_back();
+	}
 }
 
 void cASELexer::TraceHistory()
 {
-	std::vector<std::string>::iterator iter;
+	std::list<std::string>::iterator iter;
 	for ( iter=m_tokenHistory.begin() ; iter!=m_tokenHistory.end() ; ++iter)
 	{
 		std::string& text=(*iter);		

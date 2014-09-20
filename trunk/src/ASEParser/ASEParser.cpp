@@ -894,8 +894,8 @@ BOOL cASEParser::Parsing_MaterialList()
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
-
-							std::string strFileName=GetString().c_str();							
+							std::string strFileName;
+							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
 							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;					
@@ -983,8 +983,8 @@ BOOL cASEParser::Parsing_MaterialList()
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
-
-							std::string strFileName=GetString().c_str();							
+							std::string strFileName;
+							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
 							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;					
@@ -1015,8 +1015,8 @@ BOOL cASEParser::Parsing_MaterialList()
 						switch(m_Token)
 						{
 						case TOKENR_BITMAP:
-					
-							std::string strFileName=GetString().c_str();							
+							std::string strFileName;
+							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
 							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 							std::string strFullPath = strDataPath;
 							strFullPath += strFileName;
@@ -2108,7 +2108,8 @@ bool cASEParser::GetSubMaterial( Material& material)
 					switch(m_Token)
 					{
 					case TOKENR_BITMAP:
-						std::string strFileName=GetString().c_str();							
+						std::string strFileName;
+						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);		
 						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
@@ -2161,7 +2162,8 @@ bool cASEParser::GetSubMaterial( Material& material)
 					{
 					case TOKENR_BITMAP:
 
-						std::string strFileName=GetString().c_str();							
+						std::string strFileName;
+						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);					
 						/*
 						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 						std::string strFullPath = strDataPath;
@@ -2188,7 +2190,8 @@ bool cASEParser::GetSubMaterial( Material& material)
 					{
 					case TOKENR_BITMAP:
 
-						std::string strFileName=GetString().c_str();							
+						std::string strFileName;
+						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);				
 						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;
@@ -2218,7 +2221,8 @@ bool cASEParser::GetSubMaterial( Material& material)
 					switch(m_Token)
 					{
 					case TOKENR_BITMAP:
-						std::string strFileName=GetString().c_str();							
+						std::string strFileName;
+						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
 						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 						std::string strFullPath = strDataPath;
 						strFullPath += strFileName;

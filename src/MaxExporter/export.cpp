@@ -1881,6 +1881,8 @@ void AsciiExp::make_face_uv(Face *f, Point3 *tv)
 // Replace some characters we don't care for.
 TCHAR* AsciiExp::FixupName(TCHAR* name)
 {
+	return name;
+
 	static char buffer[256];
 	TCHAR* cPtr;
 	

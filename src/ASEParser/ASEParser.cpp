@@ -441,48 +441,56 @@ BOOL cASEParser::Parsing_GeoObject()
 							if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 								throw;
 
-							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+							UINT size;
+							if (totalBoneRef==0)
+								size = vecNormalVertexForBuffer.size();
+							else
+								size = vecBlendVertexForBuffer.size();
+
+							ASSERT(size==0);
+							
+							for (UINT i=0;i<totalVertices;i++)
 							{
-								if (m_Token==TOKEND_BLOCK_START)
-									throw;
+								if (GetToken(m_TokenString)!=TOKENR_MESH_VERTEX)
+									throw;								
 
-								switch(m_Token)
+								UINT index=GetInt();
+								ASSERT(i==index);
+								D3DXVECTOR3 vertex;
+								GetVector3(&vertex);	
+
+								//Bounding Sphere를 위한 최대 최소 얻기
+								m_tempAxisMin.x= min(vertex.x,m_tempAxisMin.x);
+								m_tempAxisMin.y= min(vertex.y,m_tempAxisMin.y);
+								m_tempAxisMin.z= min(vertex.z,m_tempAxisMin.z);
+
+								m_tempAxisMax.x= max(vertex.x,m_tempAxisMax.x);
+								m_tempAxisMax.y= max(vertex.y,m_tempAxisMax.y);
+								m_tempAxisMax.z= max(vertex.z,m_tempAxisMax.z);		
+
+								// 원점중심 로컬좌표로 이동
+								D3DXVec3TransformCoord(&vertex,&vertex,&stInfo.tmInvNode);
+																
+								if (totalBoneRef==0)
 								{
-								case TOKENR_MESH_VERTEX:
-									
-									int index=GetInt();
-									D3DXVECTOR3 vertex;
-									GetVector3(&vertex);	
-
-									//Bounding Sphere를 위한 최대 최소 얻기
-									m_tempAxisMin.x= min(vertex.x,m_tempAxisMin.x);
-									m_tempAxisMin.y= min(vertex.y,m_tempAxisMin.y);
-									m_tempAxisMin.z= min(vertex.z,m_tempAxisMin.z);
-
-									m_tempAxisMax.x= max(vertex.x,m_tempAxisMax.x);
-									m_tempAxisMax.y= max(vertex.y,m_tempAxisMax.y);
-									m_tempAxisMax.z= max(vertex.z,m_tempAxisMax.z);		
-
-									// 원점중심 로컬좌표로 이동
-									D3DXVec3TransformCoord(&vertex,&vertex,&stInfo.tmInvNode);
-
-									if (totalBoneRef==0)
-									{
-										NORMALVERTEX Item;
-										memset(&Item,0,sizeof(Item));
-										Item.vertex = vertex;
-										vecNormalVertexForBuffer.push_back(Item);
-									}
-									else
-									{
-										BLENDVERTEX Item;
-										memset(&Item,0,sizeof(Item));
-										Item.vertex = vertex;
-										vecBlendVertexForBuffer.push_back(Item);	
-									}						
-									break;
+									NORMALVERTEX Item;
+									memset(&Item,0,sizeof(Item));
+									Item.vertex = vertex;
+									vecNormalVertexForBuffer.push_back(Item);				
+									size = vecNormalVertexForBuffer.size();
 								}
-							}							
+								else
+								{
+									BLENDVERTEX Item;
+									memset(&Item,0,sizeof(Item));
+									Item.vertex = vertex;
+									vecBlendVertexForBuffer.push_back(Item);			
+									size = vecBlendVertexForBuffer.size();
+								}						
+							}					
+
+							if (GetToken(m_TokenString)!=TOKEND_BLOCK_END)
+								throw;							
 						}			
 						break;
 					case TOKENR_MESH_FACE_LIST:
@@ -645,7 +653,9 @@ BOOL cASEParser::Parsing_GeoObject()
 							{
 								if(GetToken(m_TokenString)!=TOKENR_BONE)
 									throw;
-								GetInt();				
+								UINT index = GetInt();
+								ASSERT(index == i);
+
 								if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 									throw;
 
@@ -669,8 +679,9 @@ BOOL cASEParser::Parsing_GeoObject()
 						{			
 							if(GetToken(m_TokenString) != TOKEND_BLOCK_START)	
 								throw;
-
+							
 							UINT size = vecBlendVertexForBuffer.size();
+							ASSERT(totalVertices == size);
 							for (UINT iVertex=0;iVertex<size;iVertex++)
 							{												
 
@@ -741,6 +752,9 @@ BOOL cASEParser::Parsing_GeoObject()
 				assert(nMaterialRef < m_vecMaterial.size());				
 			}
 			break;	
+		case TOKENR_MESH_ANIMATION:
+			SkipBlock();
+			break;
 		}
 	}	
 

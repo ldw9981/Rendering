@@ -32,7 +32,7 @@ protected:
 	DWORD				m_TotalFileSize;													// 파일의 전체 크기
 	DWORD				m_NowProgress;														// 현재 진행.
 
-	std::vector<std::string> m_tokenHistory;
+	std::list<std::string> m_tokenHistory;
 
 public:
 	cLexer(const char* p_FileName=NULL, DWORD p_SizeOfBuffer=MAX_SIZE_OF_BUFFER);

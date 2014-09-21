@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "MainForm.h"
-
+#include "State.h"
 
 System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::EventArgs^ e )
 {
@@ -24,4 +24,18 @@ System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::Eve
 	animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
 	animationForm->listAnimation->SelectedIndexChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::listAnimation_SelectedIndexChanged);
 	animationForm->checkBox_showPartialWeight->CheckedChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::checkBox_showPartialWeight_CheckedChanged);
+}
+
+System::Void AssetViewer::MainForm::shadowOnOffToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	m_pState->m_graphicWorld.SetEnableShadow(!m_pState->m_graphicWorld.GetEnableShadow());
+}
+
+System::Void AssetViewer::MainForm::skeletonShowHideToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (m_pState==NULL)
+		return;
+
+	m_bShowSkeleton = !m_bShowSkeleton;
+	m_pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
 }

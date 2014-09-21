@@ -47,6 +47,7 @@ public:
 	// directional light
 	D3DXVECTOR4				m_WorldLightPosition;
 	bool					m_bDebugBound;
+	bool					m_bEnableShadow;
 protected:
 public:
 	// create,delete
@@ -70,6 +71,8 @@ public:
 	bool Initialize();
 	void Finalize();
 	void Render();
+	bool GetEnableShadow() const { return m_bEnableShadow; }
+	void SetEnableShadow(bool val) { m_bEnableShadow = val; }
 };
 
 }

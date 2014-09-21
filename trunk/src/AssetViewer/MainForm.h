@@ -85,11 +85,14 @@ namespace AssetViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  animationToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  optionToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  optionToolStripMenuItem1;
-	private: System::Windows::Forms::ToolStripMenuItem^  skeletonToolStripMenuItem;
-	private: System::Windows::Forms::ToolStripMenuItem^  toolStripMenuItem_Skeleton_ShowHide;
+
+
 	private: System::Windows::Forms::ContextMenuStrip^  contextMenuStrip1;
 	private: System::Windows::Forms::ToolStripMenuItem^  scenePropertyToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  materialPropertyToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  viewToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  shadowOnOffToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  skeletonShowHideToolStripMenuItem;
 
 
 
@@ -116,8 +119,9 @@ namespace AssetViewer {
 			this->closeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
 			this->optionToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->skeletonToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
-			this->toolStripMenuItem_Skeleton_ShowHide = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->viewToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->shadowOnOffToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->skeletonShowHideToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->optionToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->scenePropertyToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
@@ -209,24 +213,32 @@ namespace AssetViewer {
 			// 
 			// optionToolStripMenuItem1
 			// 
-			this->optionToolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->skeletonToolStripMenuItem});
+			this->optionToolStripMenuItem1->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->viewToolStripMenuItem});
 			this->optionToolStripMenuItem1->Name = L"optionToolStripMenuItem1";
 			this->optionToolStripMenuItem1->Size = System::Drawing::Size(56, 20);
 			this->optionToolStripMenuItem1->Text = L"Option";
 			// 
-			// skeletonToolStripMenuItem
+			// viewToolStripMenuItem
 			// 
-			this->skeletonToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->toolStripMenuItem_Skeleton_ShowHide});
-			this->skeletonToolStripMenuItem->Name = L"skeletonToolStripMenuItem";
-			this->skeletonToolStripMenuItem->Size = System::Drawing::Size(120, 22);
-			this->skeletonToolStripMenuItem->Text = L"Skeleton";
+			this->viewToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->shadowOnOffToolStripMenuItem, 
+				this->skeletonShowHideToolStripMenuItem});
+			this->viewToolStripMenuItem->Name = L"viewToolStripMenuItem";
+			this->viewToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->viewToolStripMenuItem->Text = L"View";
 			// 
-			// toolStripMenuItem_Skeleton_ShowHide
+			// shadowOnOffToolStripMenuItem
 			// 
-			this->toolStripMenuItem_Skeleton_ShowHide->Name = L"toolStripMenuItem_Skeleton_ShowHide";
-			this->toolStripMenuItem_Skeleton_ShowHide->Size = System::Drawing::Size(134, 22);
-			this->toolStripMenuItem_Skeleton_ShowHide->Text = L"Show/Hide";
-			this->toolStripMenuItem_Skeleton_ShowHide->Click += gcnew System::EventHandler(this, &MainForm::toolStripMenuItem_Skeleton_ShowHide_Click);
+			this->shadowOnOffToolStripMenuItem->Name = L"shadowOnOffToolStripMenuItem";
+			this->shadowOnOffToolStripMenuItem->Size = System::Drawing::Size(184, 22);
+			this->shadowOnOffToolStripMenuItem->Text = L"Shadow On/Off";
+			this->shadowOnOffToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::shadowOnOffToolStripMenuItem_Click);
+			// 
+			// skeletonShowHideToolStripMenuItem
+			// 
+			this->skeletonShowHideToolStripMenuItem->Name = L"skeletonShowHideToolStripMenuItem";
+			this->skeletonShowHideToolStripMenuItem->Size = System::Drawing::Size(184, 22);
+			this->skeletonShowHideToolStripMenuItem->Text = L"Skeleton Show/Hide";
+			this->skeletonShowHideToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::skeletonShowHideToolStripMenuItem_Click);
 			// 
 			// optionToolStripMenuItem
 			// 
@@ -394,14 +406,6 @@ private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System
 	private: System::Void materialPropertyForm_comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
 				 materialPropertyForm->Update(m_pState,m_pNode);
 		 }
-private: System::Void toolStripMenuItem_Skeleton_ShowHide_Click(System::Object^  sender, System::EventArgs^  e) {
-			 if (m_pState==NULL)
-				 return;
-
-			 m_bShowSkeleton = !m_bShowSkeleton;
-			 m_pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
-		 }
-
 
 	private: System::Void scenePropertyForm_Closed(System::Object^  sender, System::EventArgs^  e) 
 		{
@@ -456,5 +460,7 @@ private: System::Void toolStripMenuItem_Skeleton_ShowHide_Click(System::Object^ 
 					break;
 				}				
 			}
-	};
+	private: System::Void shadowOnOffToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+private: System::Void skeletonShowHideToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+};
 }

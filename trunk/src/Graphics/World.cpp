@@ -28,6 +28,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(500.0f, 5500.0f, -500.0f, 1.0f);
 	m_bDebugBound = false;
+	m_bEnableShadow = true;
 }
 
 
@@ -175,7 +176,7 @@ void World::Finalize()
 
 void World::Render()
 {
-	Graphics::m_pDevice->SetViewport(&m_ViewPortInfo);
+	//Graphics::m_pDevice->SetViewport(&m_ViewPortInfo);
 	LPD3DXEFFECT m_pEffect = Graphics::m_pInstance->GetEffect();
 	
 	UINT passes = 0;
@@ -224,30 +225,31 @@ void World::Render()
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 
-	
-	//1. write depth
-	m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
-	m_pEffect->Begin(&passes, 0);
-	m_pEffect->BeginPass(0);
-	auto itEntityShadow = m_listEntityShadow.begin();
-	for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
+	if (m_bEnableShadow)
 	{
-		(*itEntityShadow)->m_renderQueueNormalShadow.Render();
-	}		
-	m_pEffect->EndPass();
-	m_pEffect->End();
+		//1. write depth
+		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+		auto itEntityShadow = m_listEntityShadow.begin();
+		for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
+		{
+			(*itEntityShadow)->m_renderQueueNormalShadow.Render();
+		}		
+		m_pEffect->EndPass();
+		m_pEffect->End();
 
-	m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlend);
-	m_pEffect->Begin(&passes, 0);
-	m_pEffect->BeginPass(0);
-	itEntityShadow = m_listEntityShadow.begin();
-	for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
-	{
-		(*itEntityShadow)->m_renderQueueBlendShadow.Render();
-	}	
-	m_pEffect->EndPass();
-	m_pEffect->End();
-	
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlend);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+		itEntityShadow = m_listEntityShadow.begin();
+		for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
+		{
+			(*itEntityShadow)->m_renderQueueBlendShadow.Render();
+		}	
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
 
 	//////////////////////////////
 	// 2. 그림자 입히기
@@ -262,7 +264,8 @@ void World::Render()
 	pHWDepthStencilBuffer->Release();
 	pHWDepthStencilBuffer = NULL;
 
-	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);
+	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
+
 
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{

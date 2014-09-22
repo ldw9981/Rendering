@@ -886,116 +886,22 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_TYPE:
 			case TOKENR_MAP_OPACITY:
 				{
-					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-						return FALSE;						
-					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-					{
-						//ASSERT(m_Token!=TOKEND_BLOCK_START);
-						switch(m_Token)
-						{
-						case TOKENR_BITMAP:
-							std::string strFileName;
-							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
-							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							std::string strFullPath = strDataPath;
-							strFullPath += strFileName;					
-
-							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-							if(pRscTexture==NULL)
-								TRACE1("MAP_OPACITY: %s 파일이없습니다.\n",strFullPath.c_str());
-							material.SetMapOpacity(pRscTexture);
-							break;
-						}		
-					}
+					material.SetMapOpacity(GetTexture());
 				}
 				break;
 			case TOKENR_MAP_REFLECT:
 				{
-					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-						return FALSE;						
-					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-					{
-						ASSERT(m_Token!=TOKEND_BLOCK_START);
-						switch(m_Token)
-						{
-						case TOKENR_BITMAP:
-						
-							/*
-
-							string strFileName=GetString().c_str();							
-							string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							string strFullPath = strDataPath;
-							strFullPath += strFileName;
-
-							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
-							if(pRscTexture==NULL)
-								TRACE1("MAP_REFLECT: %s 파일이없습니다.\n",strFullPath.c_str());
-							
-							SubMatrial.SetMapRefract(pRscTexture);
-							*/
-							break;
-						case TOKENR_MAP_GENERIC:
-							if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-								return FALSE;						
-							while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-							{
-								ASSERT(m_Token!=TOKEND_BLOCK_START);
-							}
-							break;
-						}		
-					}
+					SkipBlock();
 				}
 				break;
 			case TOKENR_MAP_REFRACT:
 				{
-					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-						return FALSE;						
-					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-					{
-						ASSERT(m_Token!=TOKEND_BLOCK_START);
-						switch(m_Token)
-						{
-						case TOKENR_BITMAP:
-
-							std::string strFileName=GetString().c_str();							
-							/*
-							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							std::string strFullPath = strDataPath;
-							strFullPath += strFileName;
-
-							cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
-							if(pRscTexture==NULL)
-								TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
-							material.SetMapRefract(pRscTexture);
-							*/
-							break;
-						}		
-					}
+					SkipBlock();
 				}
 				break;
 			case TOKENR_MAP_BUMP:
 				{
-					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-						return FALSE;						
-					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-					{
-						//ASSERT(m_Token!=TOKEND_BLOCK_START);
-						switch(m_Token)
-						{
-						case TOKENR_BITMAP:
-							std::string strFileName;
-							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
-							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							std::string strFullPath = strDataPath;
-							strFullPath += strFileName;					
-
-							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-							if(pRscTexture==NULL)
-								TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
-							material.SetMapNormal(pRscTexture);
-							break;
-						}		
-					}
+					material.SetMapNormal(GetTexture());
 				}
 				break;
 			case TOKENR_MAP_SELFILLUM:
@@ -1007,27 +913,7 @@ BOOL cASEParser::Parsing_MaterialList()
 				break;
 			case TOKENR_MAP_DIFFUSE:
 				{
-					if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-						return FALSE;						
-					while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-					{
-						//ASSERT(m_Token!=TOKEND_BLOCK_START);
-						switch(m_Token)
-						{
-						case TOKENR_BITMAP:
-							std::string strFileName;
-							StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
-							std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-							std::string strFullPath = strDataPath;
-							strFullPath += strFileName;
-
-							cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-							if(pRscTexture==NULL)
-								TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
-							material.SetMapDiffuse(pRscTexture);
-							break;
-						}		
-					}
+					material.SetMapDiffuse(GetTexture());
 				}
 				break;
 			
@@ -2101,108 +1987,22 @@ bool cASEParser::GetSubMaterial( Material& material)
 		case TOKENR_MAP_TYPE:
 		case TOKENR_MAP_OPACITY:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return FALSE;						
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{			
-					switch(m_Token)
-					{
-					case TOKENR_BITMAP:
-						std::string strFileName;
-						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);		
-						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-						std::string strFullPath = strDataPath;
-						strFullPath += strFileName;
-
-						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-						if(pRscTexture==NULL)
-							TRACE1("MAP_OPACITY: %s 파일이없습니다.\n",strFullPath.c_str());
-						material.SetMapOpacity(pRscTexture);
-						break;
-					}
-				}									
+				material.SetMapOpacity(GetTexture());	
 			}
 			break;	
 		case TOKENR_MAP_REFLECT:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return FALSE;						
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-					switch(m_Token)
-					{
-					case TOKENR_BITMAP:
-						/*
-
-						string strFileName=GetString().c_str();							
-						string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-						string strFullPath = strDataPath;
-						strFullPath += strFileName;
-
-						cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
-						if(pRscTexture==NULL)
-						TRACE1("MAP_REFLECT: %s 파일이없습니다.\n",strFullPath.c_str());
-
-						SubMatrial.SetMapRefract(pRscTexture);
-						*/
-						break;
-					}		
-				}
+				SkipBlock();
 			}
 			break;
 		case TOKENR_MAP_REFRACT:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return FALSE;						
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-					switch(m_Token)
-					{
-					case TOKENR_BITMAP:
-
-						std::string strFileName;
-						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);					
-						/*
-						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-						std::string strFullPath = strDataPath;
-						strFullPath += strFileName;
-
-						cRscTexture* pRscTexture= m_ResourceMng.CreateRscTexture(strFullPath.c_str());
-						if(pRscTexture==NULL)
-							TRACE1("MAP_REFRACT: %s 파일이없습니다.\n",strFullPath.c_str());
-						material.SetMapRefract(pRscTexture);
-						*/
-						break;
-					}		
-				}
+				SkipBlock();
 			}
 			break;
 		case TOKENR_MAP_BUMP:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return FALSE;						
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					//ASSERT(m_Token!=TOKEND_BLOCK_START);
-					switch(m_Token)
-					{
-					case TOKENR_BITMAP:
-
-						std::string strFileName;
-						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);				
-						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-						std::string strFullPath = strDataPath;
-						strFullPath += strFileName;
-
-						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-						if(pRscTexture==NULL)
-							TRACE1("MAP_BUMP: %s 파일이없습니다.\n",strFullPath.c_str());
-						material.SetMapNormal(pRscTexture);
-						break;
-					}		
-				}
+				material.SetMapNormal(GetTexture());	
 			}
 			break;
 		case TOKENR_MAP_SELFILLUM:
@@ -2214,26 +2014,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 			break;
 		case TOKENR_MAP_DIFFUSE:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return FALSE;						
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{			
-					switch(m_Token)
-					{
-					case TOKENR_BITMAP:
-						std::string strFileName;
-						StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
-						std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-						std::string strFullPath = strDataPath;
-						strFullPath += strFileName;
-
-						cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
-						if(pRscTexture==NULL)
-							TRACE1("MAP_DIFFUSE: %s 파일이없습니다.\n",strFullPath.c_str());
-						material.SetMapDiffuse(pRscTexture);
-						break;
-					}
-				}									
+				material.SetMapDiffuse(GetTexture());	
 			}
 			break;													
 		case TOKENR_NUMSUBMTLS:
@@ -2467,6 +2248,48 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	}
 
 	return pSceneAnimation;
+}
+
+cRscTexture* cASEParser::GetTexture()
+{
+	cRscTexture* pRscTexture=NULL;
+	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+		return NULL;						
+
+	while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+	{
+		switch(m_Token)
+		{
+		case TOKENR_BITMAP:
+			{
+				std::string strFileName;
+				StringUtil::SplitPath(GetString(),NULL,NULL,&strFileName,&strFileName);							
+				std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+				std::string strFullPath = strDataPath;
+				strFullPath += strFileName;					
+
+				pRscTexture = cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
+				if(pRscTexture==NULL)
+					TraceMSGBOX("can't find file. [ %s ]\n",strFullPath.c_str());
+				break;
+			}
+
+		case TOKENR_MAP_GENERIC:
+			{
+				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+					return NULL;						
+
+				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
+				{
+					ASSERT(m_Token!=TOKEND_BLOCK_START);
+				}
+				break;
+			}
+		}						
+	}
+
+	
+	return pRscTexture;
 }
 
 

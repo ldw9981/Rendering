@@ -28,7 +28,7 @@ void TraceMSGBOX(const char *format, ...)
 	int i = _vstprintf_s(buf, format, argptr);
 	va_end(argptr);
 
-	int rval = MessageBox(g_TraceHWND, "TraceMSGBOX", buf, MB_YESNO|MB_TOPMOST);
+	int rval = MessageBox(g_TraceHWND,buf, "TraceMSGBOX", MB_YESNO|MB_TOPMOST);
 	if (rval == IDYES) PostMessage(g_TraceHWND, WM_CLOSE, 0, 0);		
 
 }

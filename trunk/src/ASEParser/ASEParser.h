@@ -131,6 +131,8 @@ public:
 
 		BOOL			Parsing_MaterialList();
 		bool			GetSubMaterial(Material& SubMatrial);// return class
+		cRscTexture*	GetTexture();
+
 		BOOL			Parsing_ShapeObject();
 		BOOL			Parsing_LightObject();
 		BOOL			Parsing_CameraObject();

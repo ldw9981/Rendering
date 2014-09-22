@@ -601,6 +601,15 @@ BOOL cASEParser::Parsing_GeoObject()
 					case TOKENR_MESH_NUMCVERTEX:
 						GetInt();
 						break;
+					case TOKENR_MESH_CVERTLIST:
+						SkipBlock();
+						break;
+					case TOKENR_MESH_NUMCVFACES:
+						GetInt();
+						break;
+					case TOKENR_MESH_CFACELIST:
+						SkipBlock();
+						break;
 					case TOKENR_MESH_NORMALS:
 						{
 							// {

@@ -125,6 +125,12 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
    int4   mBlendIndices    : BLENDINDICES; 
 };
 
+struct VS_SHADOW_NORMAL_INPUT 
+{
+   float4 mPosition: POSITION;
+	float2 mTexCoord : TEXCOORD0;
+};
+
 struct VS_GUI_OUTPUT
 {
     float4 mPosition  : POSITION;
@@ -162,6 +168,14 @@ struct VS_PHONG_DIFFUSE_BUMP_OUTPUT
    float4 mClipPosition: TEXCOORD7;
 };
 
+struct VS_SHADOW_OUTPUT 
+{
+   float4 mPosition: POSITION;
+	float2 mTexCoord : TEXCOORD0;
+   float4 mClipPosition: TEXCOORD7;
+};
+
+
 //------------------------------------------------------------------------------
 VS_GUI_OUTPUT vs_GUI(VS_GUI_INPUT input)
 {
@@ -180,6 +194,9 @@ VS_LINE_OUTPUT vs_Line( VS_LINE_INPUT input)
    output.mColor = input.mColor;
    return output;
 }
+
+
+
 
 
 VS_PHONG_DIFFUSE_OUTPUT vs_Terrain( VS_TERRAIN_INPUT input)
@@ -297,6 +314,45 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
     return output;
 }
 
+VS_SHADOW_OUTPUT vs_Shadow_Normal( VS_SHADOW_NORMAL_INPUT Input )
+{
+   VS_SHADOW_OUTPUT Output;
+ 
+   Output.mPosition = mul(Input.mPosition, gWorldMatrix);
+   Output.mPosition = mul(Output.mPosition, gLightViewMatrix);
+   Output.mPosition = mul(Output.mPosition, gLightProjectionMatrix);
+
+   Output.mClipPosition = Output.mPosition;
+	Output.mTexCoord = Input.mTexCoord;   
+   
+   return Output;
+}
+
+VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
+{
+    VS_SHADOW_OUTPUT output;
+	
+    float fLastWeight = 1.0;
+    float fWeight;
+    float afBlendWeights[3] = (float[3])input.mBlendWeights;
+	int aiIndices[4] = (int[4])input.mBlendIndices;
+	
+	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
+
+	float4x4 matWorldSkinned;
+	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
+	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
+	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
+	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+   
+	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
+    output.mPosition = mul(worldPosition, gLightViewMatrix);
+    output.mPosition = mul(output.mPosition, gLightProjectionMatrix);
+    output.mClipPosition = output.mPosition;  
+	 output.mTexCoord = input.mTexCoord;   
+    return output;
+}
+
 
 
 struct PS_PHONG_DIFFUSE_INPUT
@@ -322,11 +378,17 @@ struct PS_PHONG_DIFFUSE_BUMP_INPUT
    float4 mClipPosition : TEXCOORD7;
 };
 
+struct PS_SHADOW_INPUT 
+{
+	float2 mTexCoord : TEXCOORD0;
+	float4 mClipPosition: TEXCOORD7;
+};
+
 
 float4 ps_GUI(VS_GUI_OUTPUT input) : COLOR
 {
    float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
-    return float4(diffuseSample,0.0f);
+   return float4(diffuseSample,0.0f);
 }
 
 float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
@@ -538,11 +600,7 @@ float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    float3 reflectDir = normalize(input.mReflect);
    float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
    float alphaSample = tex2D( gOpacitySampler , input.mTexCoord ).a;
-	
-	if( alphaSample < 0.5f )
-	{
-		discard;
-	}
+
 	
    float3 specular = 0;
    specular = dot(reflectDir,-cameraDir);
@@ -572,7 +630,20 @@ float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
       color += gSpecularColor.xyz * specular;
    }
 	  
-	return float4(color,0.0f);	
+	return float4(color,alphaSample);	
+}
+
+float4 ps_Shadow(PS_SHADOW_INPUT Input) : COLOR
+{   
+   float depth = Input.mClipPosition.z / Input.mClipPosition.w;
+   return float4(depth.xxx, 1);
+}
+
+float4 ps_Shadow_NormalTransparency(PS_SHADOW_INPUT Input) : COLOR
+{   
+	float alphaSample = tex2D( gOpacitySampler , Input.mTexCoord ).a;
+   float depth = Input.mClipPosition.z / Input.mClipPosition.w;
+   return float4(depth.xxx, alphaSample);
 }
 
 technique TGUI
@@ -667,69 +738,6 @@ technique TPhongDiffuseOpacity
     }  
 }
 
-
-
-struct VS_SHADOW_NORMAL_INPUT 
-{
-   float4 mPosition: POSITION;
-};
-
-struct VS_SHADOW_OUTPUT 
-{
-   float4 mPosition: POSITION;
-   float4 mClipPosition: TEXCOORD1;
-};
-
-
-
-VS_SHADOW_OUTPUT vs_Shadow_Normal( VS_SHADOW_NORMAL_INPUT Input )
-{
-   VS_SHADOW_OUTPUT Output;
- 
-   Output.mPosition = mul(Input.mPosition, gWorldMatrix);
-   Output.mPosition = mul(Output.mPosition, gLightViewMatrix);
-   Output.mPosition = mul(Output.mPosition, gLightProjectionMatrix);
-
-   Output.mClipPosition = Output.mPosition;
-   
-   return Output;
-}
-
-VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
-{
-    VS_SHADOW_OUTPUT output;
-	
-    float fLastWeight = 1.0;
-    float fWeight;
-    float afBlendWeights[3] = (float[3])input.mBlendWeights;
-	int aiIndices[4] = (int[4])input.mBlendIndices;
-	
-	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
-
-	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
-	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
-	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
-   
-	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
-    output.mPosition = mul(worldPosition, gLightViewMatrix);
-    output.mPosition = mul(output.mPosition, gLightProjectionMatrix);
-    output.mClipPosition = output.mPosition;  
-    return output;
-}
-
-struct PS_INPUT 
-{
-   float4 mClipPosition: TEXCOORD1;
-};
-
-float4 ps_Shadow(PS_INPUT Input) : COLOR
-{   
-   float depth = Input.mClipPosition.z / Input.mClipPosition.w;
-   return float4(depth.xxx, 1);
-}
-
 //--------------------------------------------------------------//
 // Technique Section for CreateShadowShader
 //--------------------------------------------------------------//
@@ -751,6 +759,26 @@ technique TShadowSkinning
       PixelShader = compile ps_2_0 ps_Shadow();
    }
 }
+
+technique CreateShadowAlphaTestShader
+{
+   pass P0
+   {
+
+      VertexShader = compile vs_2_0 vs_Shadow_Normal();
+      PixelShader = compile ps_2_0 ps_Shadow_NormalTransparency();
+   }
+}
+technique TShadowSkinningAlphaTest
+{
+   pass CreateShadow
+   {
+
+      VertexShader = compile vs_2_0 vs_Shadow_Skinning();
+      PixelShader = compile ps_2_0 ps_Shadow_NormalTransparency();
+   }
+}
+
 
 
 

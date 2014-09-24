@@ -22,9 +22,7 @@ namespace Sophia
 {
 
 
-RECT				m_Rect;
 
-GUIVERTEX g_vertices[4];
 
 
 Graphics*	Graphics::m_pInstance = NULL;
@@ -53,7 +51,7 @@ Graphics::~Graphics(void)
 {
 }
 
-void SetPos( UINT x,UINT y )
+void Graphics::SetPos( UINT x,UINT y )
 {
 	// 이미지의 위치, 사이즈로 영역 계산
 	m_Rect.left = x;
@@ -209,6 +207,10 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
 	m_hTCreateShadowNormal = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
 	m_hTCreateShadowBlend = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
+
+	m_hTCreateShadowNormalAlphaTest = m_pEffect->GetTechniqueByName( _T("CreateShadowAlphaTestShader") );
+	m_hTCreateShadowBlendAlphaTest = m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
+
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 
 	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
@@ -485,6 +487,7 @@ void Graphics::Render( World* pWorld )
 	}	
 	m_pEffect->EndPass();
 	m_pEffect->End();
+
 
 
 

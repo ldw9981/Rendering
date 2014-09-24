@@ -14,10 +14,17 @@ class cRendererQueue:
 public:
 	cRendererQueue();
 	~cRendererQueue();
-	
+
+	struct RenderState 
+	{
+		bool alphaBlend;
+		bool alphaTest;
+	};
+
 	std::list<std::pair<IRenderer*,unsigned char>>	m_listNode;
 private:
 public:
+	void	Insert(IRenderer* pItem,unsigned char index);
 	void	Insert(IRenderer* pItem,unsigned char index);
 	void	Insert(cRendererQueue& renderQueue);
 	void	Render();

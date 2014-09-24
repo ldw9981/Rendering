@@ -38,6 +38,10 @@ public:
 	float					Power;          /* Sharpness if specular highlight */
 	float					Multiply;				//power의 곱
 	float					Transparency;			//메쉬 투명도
+	bool					AlphaSort;
+	bool					AlphaTestEnable;
+	unsigned char			AlphaTestRef;
+	unsigned char			AlphaTestOp;
 
 	std::bitset<4>			index_renderer_queue_;
 private:		

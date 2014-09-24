@@ -37,7 +37,9 @@ public:
 	cRendererQueue			m_renderQueueGUI;
 
 	cRendererQueue			m_renderQueueNormalShadow;
+	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
 	cRendererQueue			m_renderQueueBlendShadow;
+	cRendererQueue			m_renderQueueBlendAlphaTestShadow;
 
 	std::map<cGUIButton*,cGUIButton*> m_mapButton;
 	std::map<cGUIFont*,cGUIFont*> m_mapFont;
@@ -65,6 +67,7 @@ public:
 	virtual void ProcessRender();
 	virtual void Update(DWORD elapseTime);
 	void CullFrustum();
+	void GatherRender();
 
 	void					SetViewPortInfo(UINT x,UINT y,UINT width,UINT height);
 	void					SetViewPortInfo(D3DVIEWPORT9& val) { m_ViewPortInfo = val; }	

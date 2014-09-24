@@ -55,7 +55,7 @@ void cMenuView::Enter()
 		
 	
 	m_pTank = m_graphicWorld.CreateEntity();
-	m_pTank->LoadASE(std::string(strDataPath+"TigerTank.ase").c_str());
+	m_pTank->LoadASE(std::string(strDataPath+"leaf.ase").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 	

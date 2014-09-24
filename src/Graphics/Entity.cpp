@@ -558,7 +558,9 @@ void Entity::ClearRenderQueue()
 	m_renderQueueGUI.Clear();
 
 	m_renderQueueNormalShadow.Clear();
+	m_renderQueueNormalAlphaTestShadow.Clear();
 	m_renderQueueBlendShadow.Clear();
+	m_renderQueueBlendAlphaTestShadow.Clear();
 }
 
 }

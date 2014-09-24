@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RendererQueue.h"
+#include "Vertex.h"
 namespace Sophia
 {
 
@@ -40,6 +41,8 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseOpacity;// Å×Å©´Ð
 	D3DXHANDLE				m_hTCreateShadowNormal;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTCreateShadowBlend;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowNormalAlphaTest;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowBlendAlphaTest;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTGUI;
 	LPD3DXEFFECT			m_pApplyShadowShader;
 	LPD3DXEFFECT			m_pCreateShadowShader;
@@ -66,6 +69,9 @@ public:
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	bool					m_bDebugBound;
 	HWND					m_hWndPresent;
+
+	RECT				m_Rect;
+	GUIVERTEX			 g_vertices[4];
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
@@ -87,6 +93,7 @@ public:
 	void SetEffectMatirx_LightProjection(D3DXMATRIX* pMat);
 
 	void ArrangeTechnique(unsigned int index,D3DXHANDLE hTechnique);
+	void SetPos( UINT x,UINT y );
 };
 
 

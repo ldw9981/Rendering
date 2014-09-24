@@ -243,7 +243,14 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
 
 			int i = material.index_renderer_queue();
-			pEntity->m_renderQueueNormalShadow.Insert(this,multiSubIndex);
+			if (material.AlphaTestEnable && material.GetMapOpacity()!=NULL)
+			{
+				pEntity->m_renderQueueNormalAlphaTestShadow.Insert(this,multiSubIndex);
+			}
+			else
+			{
+				pEntity->m_renderQueueNormalShadow.Insert(this,multiSubIndex);
+			}			
 			multiSubIndex++;
 		}
 	}

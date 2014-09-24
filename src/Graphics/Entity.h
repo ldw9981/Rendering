@@ -24,7 +24,9 @@ public:
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
 	cRendererQueue			m_renderQueueNormalShadow;
+	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
 	cRendererQueue			m_renderQueueBlendShadow;
+	cRendererQueue			m_renderQueueBlendAlphaTestShadow;
 	cRendererQueue			m_renderQueueLine;
 
 	std::list<Entity*>::iterator m_itEntityList;

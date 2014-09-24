@@ -26,7 +26,7 @@ World::World(void)
 	m_ViewPortInfo.Y = 0;
 	m_ViewPortInfo.Width = 0;
 	m_ViewPortInfo.Height = 0;
-	m_WorldLightPosition = D3DXVECTOR4(500.0f, 5500.0f, -500.0f, 1.0f);
+	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
 }
@@ -49,11 +49,11 @@ void World::ProcessRender()
 	m_camera.Render();
 	// scene 
 	CullFrustum();
+	GatherRender();
 
 	Render();
 
-	m_listEntityShadow.clear();
-	m_listEntityRender.clear();
+
 }
 
 void World::Update( DWORD elapseTime )
@@ -72,8 +72,10 @@ void World::Update( DWORD elapseTime )
 
 void World::CullFrustum()
 {
-	Frustum& frustum = m_camera.GetFrustum();
+	m_listEntityShadow.clear();
+	m_listEntityRender.clear();
 
+	Frustum& frustum = m_camera.GetFrustum();
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
 		if( (*itIn)->Cull(&frustum,500.0f) == false )
@@ -228,27 +230,39 @@ void World::Render()
 	if (m_bEnableShadow)
 	{
 		//1. write depth
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
 		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
-		auto itEntityShadow = m_listEntityShadow.begin();
-		for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
-		{
-			(*itEntityShadow)->m_renderQueueNormalShadow.Render();
-		}		
+		m_renderQueueNormalShadow.Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
 
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlend);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
-		itEntityShadow = m_listEntityShadow.begin();
-		for ( ;itEntityShadow != m_listEntityShadow.end() ; ++itEntityShadow )
-		{
-			(*itEntityShadow)->m_renderQueueBlendShadow.Render();
-		}	
+		m_renderQueueBlendShadow.Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
+
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)0x000001);
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE); 
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+
+		m_renderQueueNormalAlphaTestShadow.Render();
+		m_pEffect->EndPass();
+		m_pEffect->End();
+
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlendAlphaTest);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);
+		m_renderQueueBlendAlphaTestShadow.Render();
+		m_pEffect->EndPass();
+		m_pEffect->End();
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
 	}
 
 	//////////////////////////////
@@ -266,20 +280,12 @@ void World::Render()
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
-
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-		m_pEffect->BeginPass(0);	
-
-		
-		auto itEntityRender = m_listEntityRender.begin();
-		for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
-		{
-			(*itEntityRender)->m_renderQueueNormal[i].Render();
-		}	
-
+		m_pEffect->BeginPass(0);			
+		m_renderQueueNormal[i].Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
@@ -289,13 +295,7 @@ void World::Render()
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 		m_pEffect->BeginPass(0);	
-
-		auto itEntityRender = m_listEntityRender.begin();
-		for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
-		{
-			(*itEntityRender)->m_renderQueueBlend[i].Render();
-		}	
-
+		m_renderQueueBlend[i].Render();		
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
@@ -303,13 +303,7 @@ void World::Render()
 	m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
 	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 	m_pEffect->BeginPass(0);	
-
-	auto itEntityRender = m_listEntityRender.begin();
-	for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
-	{
-		(*itEntityRender)->m_renderQueueTerrain.Render();
-	}	
-
+	m_renderQueueTerrain.Render();
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
@@ -318,7 +312,7 @@ void World::Render()
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTLine);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 		m_pEffect->BeginPass(0);
-		itEntityRender = m_listEntityRender.begin();
+		auto itEntityRender = m_listEntityRender.begin();
 		for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
 		{
 			(*itEntityRender)->RenderBound();
@@ -337,12 +331,48 @@ void World::Render()
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
-	/*
+	
 	// SHADOW_MAP
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
-	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, &g_vertices[0], sizeof(GUIVERTEX));
-	*/
+	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));
+	
+}
+
+void World::GatherRender()
+{
+	m_renderQueueNormalShadow.Clear();
+	m_renderQueueNormalAlphaTestShadow.Clear();
+	m_renderQueueBlendShadow.Clear();
+	m_renderQueueBlendAlphaTestShadow.Clear();
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	{
+		m_renderQueueNormal[i].Clear();
+		m_renderQueueBlend[i].Clear();
+	}		
+	m_renderQueueTerrain.Clear();
+
+
+
+	for ( auto itIn = m_listEntityShadow.begin() ;itIn!=m_listEntityShadow.end() ; ++itIn )
+	{
+		m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
+		m_renderQueueNormalAlphaTestShadow.Insert((*itIn)->m_renderQueueNormalAlphaTestShadow);
+		m_renderQueueBlendShadow.Insert((*itIn)->m_renderQueueBlendShadow);
+		m_renderQueueBlendAlphaTestShadow.Insert((*itIn)->m_renderQueueBlendAlphaTestShadow);
+	}
+
+
+	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
+	{
+		for (int i=0;i<TECHNIQUE_SIZE;i++)
+		{
+			m_renderQueueNormal[i].Insert((*itIn)->m_renderQueueNormal[i]);	
+			m_renderQueueBlend[i].Insert((*itIn)->m_renderQueueBlend[i]);		
+		}		
+
+		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
+	}
 }
 
 }

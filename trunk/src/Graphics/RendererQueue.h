@@ -25,7 +25,6 @@ public:
 private:
 public:
 	void	Insert(IRenderer* pItem,unsigned char index);
-	void	Insert(IRenderer* pItem,unsigned char index);
 	void	Insert(cRendererQueue& renderQueue);
 	void	Render();
 	bool	IsEmpty();

@@ -38,11 +38,11 @@ public:
 	float					Power;          /* Sharpness if specular highlight */
 	float					Multiply;				//power의 곱
 	float					Transparency;			//메쉬 투명도
+	bool					AlphaBlend;
 	bool					AlphaSort;
 	bool					AlphaTestEnable;
 	unsigned char			AlphaTestRef;
 	unsigned char			AlphaTestOp;
-
 	std::bitset<4>			index_renderer_queue_;
 private:		
 	cRscTexture*			m_pMapDiffuse;
@@ -71,7 +71,7 @@ public:
 	virtual void SerializeOut(std::ofstream& stream);
 };
 
-class SceneMaterial:
+class MeshMaterials:
 	public ISerializable
 {
 public:
@@ -81,20 +81,20 @@ public:
 	virtual void SerializeOut(std::ofstream& stream);
 };
 
-class EntityMaterial:
+class EntityMaterials:
 	public cResource
 	,public ISerializable
 {
 public:
-	EntityMaterial(void);
-	~EntityMaterial(void);
+	EntityMaterials(void);
+	~EntityMaterials(void);
 public:
 	// SceneNodeName/SceneMaterial
-	std::map<std::string,SceneMaterial*> m_container;	// 노드 이름별 보관
+	std::map<std::string,MeshMaterials*> m_container;	// 노드 이름별 보관
 
 public:
-	SceneMaterial* GetSceneMaterial(std::string& nodeNAme);
-	SceneMaterial* CreateSceneMaterial(std::string& nodeName);
+	MeshMaterials* GetMeshMaterial(std::string& nodeNAme);
+	MeshMaterials* CreateMeshMaterial(std::string& nodeName);
 	// cResource
 	virtual	BOOL			Create();	
 	virtual	void			Free();

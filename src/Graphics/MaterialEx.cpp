@@ -8,7 +8,7 @@
 namespace Sophia
 {
 
-#define MATERIAL_LASTEST 2
+#define MATERIAL_LASTEST 3
 
 
 Material::Material(void)
@@ -26,6 +26,9 @@ Material::Material(void)
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
 	m_pMapOpacity = NULL;
+	AlphaBlend = false;
+	AlphaTestEnable = false;
+	AlphaTestRef = 0;
 	//m_pMapRefract = NULL;
 	
 }
@@ -39,6 +42,9 @@ Material::Material( const Material &Other )
 	Specular	= Other.Specular;
 	Multiply	= Other.Multiply;
 	Transparency = Other.Transparency;	
+	AlphaBlend = Other.AlphaBlend;
+	AlphaTestEnable = Other.AlphaTestEnable;
+	AlphaTestRef = Other.AlphaTestRef;
 
 	m_pMapDiffuse = NULL;
 	m_pMapNormal = NULL;
@@ -69,6 +75,9 @@ Material& Material::operator =(const Material &Other)
 	Specular	= Other.Specular;
 	Multiply	= Other.Multiply;
 	Transparency = Other.Transparency;
+	AlphaBlend = Other.AlphaBlend;
+	AlphaTestEnable = Other.AlphaTestEnable;
+	AlphaTestRef = Other.AlphaTestRef;
 	
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
@@ -258,6 +267,18 @@ void Material::SerializeIn( std::ifstream& stream )
 				SetMapOpacity(pRscTexture);
 		}
 	}
+
+	if (ver >= MATERIAL_LASTEST)
+	{
+		bool bAlphaBlend;
+		stream.read((char*)&bAlphaBlend,sizeof(bool));
+		AlphaBlend = bAlphaBlend;	
+
+		bool bAlphaTestEnable;
+		stream.read((char*)&bAlphaTestEnable,sizeof(bool));
+		AlphaTestEnable = bAlphaTestEnable;		
+	}
+
 }
 
 void Material::SerializeOut( std::ofstream& stream )
@@ -302,10 +323,14 @@ void Material::SerializeOut( std::ofstream& stream )
 		StringUtil::SplitPath(std::string(m_pMapOpacity->GetFilePath()),NULL,NULL,&fileName,&fileName);
 	}
 	WriteString(stream,fileName);	
+
+
+	stream.write((char*)&AlphaBlend,sizeof(bool));
+	stream.write((char*)&AlphaTestEnable,sizeof(bool));		
 }
 
 
-void SceneMaterial::SerializeIn( std::ifstream& stream )
+void MeshMaterials::SerializeIn( std::ifstream& stream )
 {
 	unsigned char count = 0;
 	stream.read((char*)&count,sizeof(count));
@@ -320,7 +345,7 @@ void SceneMaterial::SerializeIn( std::ifstream& stream )
 	}
 }
 
-void SceneMaterial::SerializeOut( std::ofstream& stream )
+void MeshMaterials::SerializeOut( std::ofstream& stream )
 {
 	unsigned char count = 0;
 	count = m_container.size();
@@ -335,12 +360,12 @@ void SceneMaterial::SerializeOut( std::ofstream& stream )
 }
 
 
-EntityMaterial::EntityMaterial(void)
+EntityMaterials::EntityMaterials(void)
 {
 
 }
 
-EntityMaterial::~EntityMaterial(void)
+EntityMaterials::~EntityMaterials(void)
 {
 	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
 	{
@@ -350,7 +375,7 @@ EntityMaterial::~EntityMaterial(void)
 }
 
 
-BOOL EntityMaterial::Create()
+BOOL EntityMaterials::Create()
 {
 	assert(m_RefCounter>=0);
 	if (m_RefCounter > 0 )
@@ -359,24 +384,24 @@ BOOL EntityMaterial::Create()
 	return TRUE;
 }
 
-void EntityMaterial::Free()
+void EntityMaterials::Free()
 {
 	cResourceMng::m_pInstance->EraseEntityMaterial(GetUniqueKey());
 	delete this;
 }
 
-SceneMaterial* EntityMaterial::CreateSceneMaterial( std::string& nodeName )
+MeshMaterials* EntityMaterials::CreateMeshMaterial( std::string& nodeName )
 {
-	SceneMaterial* pSceneMaterial = new SceneMaterial;
+	MeshMaterials* pSceneMaterial = new MeshMaterials;
 
 	auto pairIB = m_container.insert(make_pair(nodeName,pSceneMaterial));
 	assert(pairIB.second!=false);
 	return pSceneMaterial;
 }
 
-SceneMaterial* EntityMaterial::GetSceneMaterial( std::string& nodeNAme )
+MeshMaterials* EntityMaterials::GetMeshMaterial( std::string& nodeNAme )
 {
-	SceneMaterial* pSceneMaterial = NULL;
+	MeshMaterials* pSceneMaterial = NULL;
 	auto it = m_container.find(nodeNAme);
 	if (it != m_container.end())
 	{
@@ -385,7 +410,7 @@ SceneMaterial* EntityMaterial::GetSceneMaterial( std::string& nodeNAme )
 	return pSceneMaterial;
 }
 
-void EntityMaterial::SerializeIn( std::ifstream& stream )
+void EntityMaterials::SerializeIn( std::ifstream& stream )
 {
 	unsigned short count = 0;
 	stream.read((char*)&count,sizeof(count));
@@ -396,12 +421,12 @@ void EntityMaterial::SerializeIn( std::ifstream& stream )
 	{
 		std::string nodeName;
 		ReadString(stream,nodeName);
-		SceneMaterial* pSceneMaterial = CreateSceneMaterial(nodeName);
+		MeshMaterials* pSceneMaterial = CreateMeshMaterial(nodeName);
 		pSceneMaterial->SerializeIn(stream);
 	}
 }
 
-void EntityMaterial::SerializeOut( std::ofstream& stream )
+void EntityMaterials::SerializeOut( std::ofstream& stream )
 {
 	unsigned short count = 0;
 	count = m_container.size();

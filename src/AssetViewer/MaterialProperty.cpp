@@ -10,6 +10,8 @@ MaterialProperty::MaterialProperty(void)
 	normalMap = gcnew System::String("");
 	lightMap = gcnew System::String("");
 	opacityMap = gcnew System::String("");
+	alphaBlend = false;
+	alphaTestEnable = false;
 }
 
 
@@ -79,4 +81,17 @@ void MaterialProperty::Read( Sophia::Material* pMaterial )
 	{
 		opacityMap = gcnew System::String("");
 	}
+
+	alphaBlend = pMaterial->AlphaBlend;
+	alphaTestEnable = pMaterial->AlphaTestEnable;
+	alphaTestRef = pMaterial->AlphaTestRef;
+}
+
+void MaterialProperty::Write( Sophia::Material* pMaterial )
+{
+	pMaterial->AlphaBlend = alphaBlend;
+	pMaterial->AlphaTestEnable = alphaTestEnable;
+
+	alphaTestRef = min(alphaTestRef,255);
+	pMaterial->AlphaTestRef = (unsigned char)alphaTestRef;
 }

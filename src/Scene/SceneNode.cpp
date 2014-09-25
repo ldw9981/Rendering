@@ -428,7 +428,7 @@ void cSceneNode::EraseAnimation( int index )
 
 
 
-void cSceneNode::PushMaterial( EntityMaterial* pEntityMaterial )
+void cSceneNode::PushMaterial( EntityMaterials* pEntityMaterial )
 {
 	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
 	{

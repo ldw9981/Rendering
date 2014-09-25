@@ -199,20 +199,20 @@ void cResourceMng::GetKeyEntityMaterial( std::string& key,const char* filePath )
 	key += fileName;
 }
 
-EntityMaterial* cResourceMng::CreateEntityMaterial( const char* filePath )
+EntityMaterials* cResourceMng::CreateEntityMaterial( const char* filePath )
 {
-	EntityMaterial* pItem=NULL;
+	EntityMaterials* pItem=NULL;
 	std::string strKey;
 	GetKeyEntityMaterial(strKey,filePath);	
 
 	auto it=m_contMaterial.find(strKey);
 	if (it!=m_contMaterial.end())
 	{
-		pItem=static_cast<EntityMaterial*>(it->second);
+		pItem=static_cast<EntityMaterials*>(it->second);
 		return pItem;
 	}
 
-	pItem = new EntityMaterial;
+	pItem = new EntityMaterials;
 	pItem->SetUniqueKey(strKey);
 	//pItem->SetFilePath(filePath);
 	if(!pItem->Create())	

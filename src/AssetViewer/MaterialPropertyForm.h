@@ -105,6 +105,7 @@ namespace AssetViewer {
 			this->propertyGrid1->Name = L"propertyGrid1";
 			this->propertyGrid1->Size = System::Drawing::Size(312, 451);
 			this->propertyGrid1->TabIndex = 0;
+			this->propertyGrid1->PropertyValueChanged += gcnew System::Windows::Forms::PropertyValueChangedEventHandler(this, &MaterialPropertyForm::propertyGrid1_PropertyValueChanged);
 			// 
 			// MaterialPropertyForm
 			// 
@@ -129,6 +130,7 @@ namespace AssetViewer {
 			 }
 
 private: System::Void comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
+private: System::Void propertyGrid1_PropertyValueChanged(System::Object^  s, System::Windows::Forms::PropertyValueChangedEventArgs^  e);
 };
 }
 

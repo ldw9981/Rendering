@@ -39,10 +39,10 @@ cMeshNode::~cMeshNode(void)
 	일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
 
-void cMeshNode::Render(unsigned char multiSubIndex)
+void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 {
-	MultiSub& multiSub = m_vecMultiSub[multiSubIndex];
-	Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[multiSub.materialIndex];
+	MultiSub& multiSub = *pMultiSub;
+	Material& material = *pMaterial;
 		//m_vecMaterial[temp.materialIndex];
 	
 
@@ -99,6 +99,9 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	m_pRscIndexBuffer->Unlock();
 	m_pRscVetextBuffer->Unlock();
 	
+	size_t index = (size_t)pEntity->GetIndexMaterial();
+	ASSERT(m_vecSceneMaterial.size() > index );
+	m_pMeshMaterials = m_vecSceneMaterial[index];
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);	
@@ -144,12 +147,22 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			MultiSub& temp = (*it_sub);
-			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
+			MultiSub* pMultiSub = & (*it_sub);
+			Material* pMaterial = GetMaterial(pMultiSub);
 
-			int i = material.index_renderer_queue();
-			pEntity->m_renderQueueNormal[i].Insert(this,multiSubIndex);
-			multiSubIndex++;
+			int i = pMaterial->index_renderer_queue();
+
+			if (pMaterial->AlphaBlend == false)
+			{
+				if (pMaterial->AlphaTestEnable == false)
+					pEntity->m_renderQueueNormal[i].Insert(this,pMultiSub,pMaterial);
+				else
+					pEntity->m_renderQueueNormalAlphaTest[i].Insert(this,pMultiSub,pMaterial);				
+			}
+			else
+			{
+				pEntity->m_renderQueueNormalAlphaBlend[i].Insert(this,pMultiSub,pMaterial);
+			}			
 		}
 	}
 
@@ -236,22 +249,19 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 {
 	if (m_bShow)
 	{
-		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			MultiSub& temp = (*it_sub);
-			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
-
-			int i = material.index_renderer_queue();
-			if (material.AlphaTestEnable && material.GetMapOpacity()!=NULL)
+			MultiSub* pMultiSub = &(*it_sub);
+			Material* pMaterial = GetMaterial(pMultiSub);
+						
+			if (pMaterial->AlphaTestEnable && pMaterial->GetMapOpacity()!=NULL)
 			{
-				pEntity->m_renderQueueNormalAlphaTestShadow.Insert(this,multiSubIndex);
+				pEntity->m_renderQueueNormalAlphaTestShadow.Insert(this,pMultiSub,pMaterial);
 			}
 			else
 			{
-				pEntity->m_renderQueueNormalShadow.Insert(this,multiSubIndex);
+				pEntity->m_renderQueueNormalShadow.Insert(this,pMultiSub,pMaterial);
 			}			
-			multiSubIndex++;
 		}
 	}
 
@@ -406,9 +416,9 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 }
 
 
-void cMeshNode::PushMaterial( EntityMaterial* pEntityMaterial )
+void cMeshNode::PushMaterial( EntityMaterials* pEntityMaterial )
 {
-	SceneMaterial* pSceneMaterial = pEntityMaterial->GetSceneMaterial(m_strNodeName);
+	MeshMaterials* pSceneMaterial = pEntityMaterial->GetMeshMaterial(m_strNodeName);
 	m_vecSceneMaterial.push_back(pSceneMaterial);
 
 	cSceneNode::PushMaterial(pEntityMaterial);	
@@ -421,9 +431,19 @@ void cMeshNode::PopMaterial()
 	cSceneNode::PopMaterial();
 }
 
-SceneMaterial* cMeshNode::GetSceneMaterial()
+MeshMaterials* cMeshNode::GetMeshMaterials()
 {
 	return m_vecSceneMaterial[m_pRootNode->m_indexMaterial];
+}
+
+Material* cMeshNode::GetMaterial( MultiSub* pMultiSub )
+{
+	return &m_pMeshMaterials->m_container[pMultiSub->materialIndex];
+}
+
+void cMeshNode::GetRenderPosition( D3DXVECTOR3& pos )
+{
+	GetWorldPos(pos);
 }
 
 }

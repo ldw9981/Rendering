@@ -35,7 +35,7 @@ Entity::~Entity(void)
 
 	for (auto it=m_vecMaterial.begin();it!=m_vecMaterial.end();++it )
 	{
-		EntityMaterial* pEntityMaterial = *it;
+		EntityMaterials* pEntityMaterial = *it;
 		pEntityMaterial->Release();
 	}	
 }
@@ -144,6 +144,26 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 
 void Entity::Build()
 {
+	m_renderQueueNormalShadow.Clear();
+	m_renderQueueSkinnedShadow.Clear();
+
+	m_renderQueueNormalAlphaTestShadow.Clear();
+	m_renderQueueSkinnedAlphaTestShadow.Clear();
+
+	for (unsigned i=0 ;i<TECHNIQUE_SIZE ; i++)
+	{			
+		m_renderQueueNormal[i].Clear();
+		m_renderQueueSkinned[i].Clear();
+		m_renderQueueNormalAlphaTest[i].Clear();
+		m_renderQueueSkinnedAlphaTest[i].Clear();
+		m_renderQueueNormalAlphaBlend[i].Clear();
+		m_renderQueueSkinnedAlphaBlend[i].Clear();
+	}
+	m_renderQueueTerrain.Clear();
+	m_renderQueueGUI.Clear();
+	m_renderQueueLine.Clear();
+
+	
 	if (!m_vecMaterial.empty())
 	{
 		m_indexMaterial = 0;	
@@ -276,14 +296,14 @@ bool Entity::SaveMaterial( const char* fileName ,int index)
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);	
 
-	EntityMaterial* pEntityMaterial = m_vecMaterial[index];
+	EntityMaterials* pEntityMaterial = m_vecMaterial[index];
 	pEntityMaterial->SerializeOut(stream);
 	return true;
 }
 
 bool Entity::LoadMaterial( const char* fileName )
 {
-	EntityMaterial* pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(fileName);
+	EntityMaterials* pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(fileName);
 	if (pEntityMaterial->GetRefCounter()==0)
 	{
 		std::ifstream stream;
@@ -295,7 +315,7 @@ bool Entity::LoadMaterial( const char* fileName )
 	return true;
 }
 
-void Entity::PushMaterial( EntityMaterial* pEntityMaterial )
+void Entity::PushMaterial( EntityMaterials* pEntityMaterial )
 {
 	pEntityMaterial->AddRef();
 	m_vecMaterial.push_back(pEntityMaterial);
@@ -311,7 +331,7 @@ void Entity::PopMaterial()
 	if (m_vecMaterial.empty())
 		return;
 
-	EntityMaterial* pEntityMaterial = m_vecMaterial[m_vecMaterial.size()-1];
+	EntityMaterials* pEntityMaterial = m_vecMaterial[m_vecMaterial.size()-1];
 	m_vecMaterial.pop_back();
 	pEntityMaterial->Release();
 
@@ -551,7 +571,7 @@ void Entity::ClearRenderQueue()
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_renderQueueNormal[i].Clear();
-		m_renderQueueBlend[i].Clear();
+		m_renderQueueSkinned[i].Clear();
 	}
 
 	m_renderQueueTerrain.Clear();
@@ -559,8 +579,8 @@ void Entity::ClearRenderQueue()
 
 	m_renderQueueNormalShadow.Clear();
 	m_renderQueueNormalAlphaTestShadow.Clear();
-	m_renderQueueBlendShadow.Clear();
-	m_renderQueueBlendAlphaTestShadow.Clear();
+	m_renderQueueSkinnedShadow.Clear();
+	m_renderQueueSkinnedAlphaTestShadow.Clear();
 }
 
 }

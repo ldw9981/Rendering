@@ -347,7 +347,7 @@ void Graphics::RenderEX( World* pWorld )
 	m_pEffect->SetTechnique(m_hTCreateShadowBlend);
 	m_pEffect->Begin(&passes, 0);
 	m_pEffect->BeginPass(0);
-	pWorld->m_renderQueueBlendShadow.Render();
+	pWorld->m_renderQueueSkinnedShadow.Render();
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
@@ -383,7 +383,7 @@ void Graphics::RenderEX( World* pWorld )
 		m_pEffect->SetTechnique(m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
 		m_pEffect->BeginPass(0);	
-		pWorld->m_renderQueueBlend[i].Render();
+		pWorld->m_renderQueueSkinned[i].Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
@@ -483,7 +483,7 @@ void Graphics::Render( World* pWorld )
 	itEntityShadow = pWorld->m_listEntityShadow.begin();
 	for ( ;itEntityShadow != pWorld->m_listEntityShadow.end() ; ++itEntityShadow )
 	{
-		(*itEntityShadow)->m_renderQueueBlendShadow.Render();
+		(*itEntityShadow)->m_renderQueueSkinnedShadow.Render();
 	}	
 	m_pEffect->EndPass();
 	m_pEffect->End();
@@ -531,7 +531,7 @@ void Graphics::Render( World* pWorld )
 		auto itEntityRender = pWorld->m_listEntityRender.begin();
 		for ( ;itEntityRender != pWorld->m_listEntityRender.end() ; ++itEntityRender )
 		{
-			(*itEntityRender)->m_renderQueueBlend[i].Render();
+			(*itEntityRender)->m_renderQueueSkinned[i].Render();
 		}	
 
 		m_pEffect->EndPass();

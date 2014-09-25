@@ -31,15 +31,23 @@ public:
 	std::list<Entity*>		m_listEntityShadow;
 	std::list<Entity*>		m_listEntityRender;
 	
+	cRendererQueue			m_renderQueueNormalShadow;	
+	cRendererQueue			m_renderQueueSkinnedShadow;
+
+	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
+	cRendererQueue			m_renderQueueSkinnedAlphaTestShadow;
+
 	cRendererQueue			m_renderQueueNormal[TECHNIQUE_SIZE];
-	cRendererQueue			m_renderQueueBlend[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinned[TECHNIQUE_SIZE];
+
+	cRendererQueue			m_renderQueueNormalAlphaTest[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinnedAlphaTest[TECHNIQUE_SIZE];
+
+	cRendererQueue			m_renderQueueNormalAlphaBlend[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinnedAlphaBlend[TECHNIQUE_SIZE];
+
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
-
-	cRendererQueue			m_renderQueueNormalShadow;
-	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
-	cRendererQueue			m_renderQueueBlendShadow;
-	cRendererQueue			m_renderQueueBlendAlphaTestShadow;
 
 	std::map<cGUIButton*,cGUIButton*> m_mapButton;
 	std::map<cGUIFont*,cGUIFont*> m_mapFont;

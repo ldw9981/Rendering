@@ -4,6 +4,7 @@
 */
 #include "StdAfx.h"
 #include "SkinnedMeshNode.h"
+#include "MeshNode.h"
 
 
 #include "Foundation/Trace.h"
@@ -54,10 +55,10 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 
 일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
-void SkinnedMeshNode::Render(unsigned char multiSubIndex)
+void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 {
-	MultiSub& temp = m_vecMultiSub[multiSubIndex];
-	Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
+	MultiSub& multiSub = *pMultiSub;
+	Material& material = *pMaterial;	
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
@@ -97,8 +98,8 @@ void SkinnedMeshNode::Render(unsigned char multiSubIndex)
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),
-		temp.startIndex,
-		temp.primitiveCount );			
+		multiSub.startIndex,
+		multiSub.primitiveCount );			
 	
 }
 
@@ -130,6 +131,9 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 		m_pRscIndexBuffer->Unlock();
 		m_pRscVetextBuffer->Unlock();
 
+	size_t index = (size_t)pEntity->GetIndexMaterial();
+	ASSERT(m_vecSceneMaterial.size() > index );
+	m_pMeshMaterials = m_vecSceneMaterial[index];
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
@@ -148,12 +152,22 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			MultiSub& temp = (*it_sub);
-			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
+			MultiSub* pMultiSub = &(*it_sub);
+			Material* pMaterial = GetMaterial(pMultiSub);
 
-			int i = material.index_renderer_queue();
-			pEntity->m_renderQueueBlend[i].Insert(this,multiSubIndex);
-			multiSubIndex++;
+			int i = pMaterial->index_renderer_queue();
+
+			if (pMaterial->AlphaBlend == false)
+			{
+				if (pMaterial->AlphaTestEnable == false)
+					pEntity->m_renderQueueSkinned[i].Insert(this,pMultiSub,pMaterial);
+				else
+					pEntity->m_renderQueueSkinnedAlphaTest[i].Insert(this,pMultiSub,pMaterial);				
+			}
+			else
+			{
+				pEntity->m_renderQueueSkinnedAlphaBlend[i].Insert(this,pMultiSub,pMaterial);
+			}	
 		}
 	}
 	
@@ -174,12 +188,17 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 		unsigned char multiSubIndex=0;
 		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
 		{
-			MultiSub& temp = (*it_sub);
-			Material& material = m_vecSceneMaterial[m_pRootNode->m_indexMaterial]->m_container[temp.materialIndex];
+			MultiSub* pMultiSub = &(*it_sub);
+			Material* pMaterial = GetMaterial(pMultiSub);
 
-			int i = material.index_renderer_queue();
-			pEntity->m_renderQueueBlendShadow.Insert(this,multiSubIndex);
-			multiSubIndex++;
+			if (pMaterial->AlphaTestEnable && pMaterial->GetMapOpacity()!=NULL)
+			{
+				pEntity->m_renderQueueSkinnedAlphaTestShadow.Insert(this,pMultiSub,pMaterial);
+			}
+			else
+			{
+				pEntity->m_renderQueueSkinnedShadow.Insert(this,pMultiSub,pMaterial);
+			}			
 		}
 	}
 

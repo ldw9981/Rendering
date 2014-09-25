@@ -1794,7 +1794,7 @@ cASEParser::CreateMeshNode(bool bSkeleton,SCENENODEINFO& stInfo,
 
 	if (m_pEntityMaterial->GetRefCounter()==0)
 	{
-		SceneMaterial* pSceneMaterial = m_pEntityMaterial->CreateSceneMaterial(stInfo.strNodeName);
+		MeshMaterials* pSceneMaterial = m_pEntityMaterial->CreateMeshMaterial(stInfo.strNodeName);
 		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
 	}
 
@@ -1852,7 +1852,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	//pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
 	if (m_pEntityMaterial->GetRefCounter()==0)
 	{
-		SceneMaterial* pSceneMaterial = m_pEntityMaterial->CreateSceneMaterial(stInfo.strNodeName);
+		MeshMaterials* pSceneMaterial = m_pEntityMaterial->CreateMeshMaterial(stInfo.strNodeName);
 		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
 	}
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
@@ -2252,7 +2252,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	// 중간키까지만 있을경우 마지막은 동일한 값으로 추가
 	if (dwTimeKey < m_SceneTime.EX_LASTFRAMEMS)
 	{
-		prevItem.AnmTick = m_SceneTime.EX_LASTFRAMEMS;
+		prevItem.AnmTick = (DWORD)m_SceneTime.EX_LASTFRAMEMS;
 		refArrAnmKey.push_back(prevItem);
 	}
 

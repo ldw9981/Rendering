@@ -9,7 +9,7 @@ namespace Sophia
 {
 
 class EntityAnimation;
-class EntityMaterial;
+class EntityMaterials;
 class Skeleton;
 class Entity :
 	public cSceneNode
@@ -19,22 +19,32 @@ public:
 	virtual ~Entity(void);
 
 public:
+	cRendererQueue			m_renderQueueNormalShadow;	
+	cRendererQueue			m_renderQueueSkinnedShadow;
+
+	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
+	cRendererQueue			m_renderQueueSkinnedAlphaTestShadow;
+
 	cRendererQueue			m_renderQueueNormal[TECHNIQUE_SIZE];
-	cRendererQueue			m_renderQueueBlend[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinned[TECHNIQUE_SIZE];
+
+	cRendererQueue			m_renderQueueNormalAlphaTest[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinnedAlphaTest[TECHNIQUE_SIZE];
+
+	cRendererQueue			m_renderQueueNormalAlphaBlend[TECHNIQUE_SIZE];
+	cRendererQueue			m_renderQueueSkinnedAlphaBlend[TECHNIQUE_SIZE];
+
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;
-	cRendererQueue			m_renderQueueNormalShadow;
-	cRendererQueue			m_renderQueueNormalAlphaTestShadow;
-	cRendererQueue			m_renderQueueBlendShadow;
-	cRendererQueue			m_renderQueueBlendAlphaTestShadow;
 	cRendererQueue			m_renderQueueLine;
 
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
 	
-	std::vector<EntityMaterial*>	m_vecMaterial;		
+	std::vector<EntityMaterials*>	m_vecMaterial;		
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	int					m_indexMaterial;
+
 	bool				m_bShowBone;
 	
 	ENTITY_ANIMATION_DESCRIPTION m_baseAnimationDesc;		
@@ -59,7 +69,7 @@ public:
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
 
-	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
+	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
 	virtual void PopMaterial();
 	virtual void UpdateLocalMatrix();
 	
@@ -91,6 +101,8 @@ public:
 	void SetShowSkeleton(bool bShow);
 
 	void ClearRenderQueue();
+	int GetIndexMaterial() const { return m_indexMaterial; }
+	void SetIndexMaterial(int val) { m_indexMaterial = val; }
 };
 
 

@@ -8,6 +8,9 @@ namespace Sophia
 {
 
 class IRenderer;
+class Material;
+class MultiSub;
+class cCameraNode;
 class cRendererQueue:
 	public IRenderer
 {
@@ -15,20 +18,27 @@ public:
 	cRendererQueue();
 	~cRendererQueue();
 
-	struct RenderState 
+	struct Specific 
 	{
-		bool alphaBlend;
-		bool alphaTest;
+		MultiSub* pMultiSub;
+		Material* pMaterial;
+		float distancesq;
+
 	};
 
-	std::list<std::pair<IRenderer*,unsigned char>>	m_listNode;
+
+	std::list<std::pair<IRenderer*,Specific>>	m_listNode;
 private:
 public:
-	void	Insert(IRenderer* pItem,unsigned char index);
+//	void	Insert(IRenderer* pItem,unsigned char index);
+	void	Insert(IRenderer* pItem,MultiSub* pMultiSub,Material* pMaterial);
 	void	Insert(cRendererQueue& renderQueue);
 	void	Render();
+	void	RenderAlphaTest();
+	void	RenderAlphaBlendAndTest(cCameraNode* pCamera);
 	bool	IsEmpty();
 	void	Clear();
+	void	Sort(cCameraNode* pCamera);
 };
 
 class RendererQueue:

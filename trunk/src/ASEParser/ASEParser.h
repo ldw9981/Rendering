@@ -96,7 +96,7 @@ private:
 	int					m_CNTOBJECT;
 	int					m_repeat;
 	EntityAnimation*			m_pEntityAnimation;
-	EntityMaterial*				m_pEntityMaterial;
+	EntityMaterials*				m_pEntityMaterial;
 public:	
 	virtual void		Close();
 		BOOL			SkipBlock();

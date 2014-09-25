@@ -15,8 +15,8 @@ class Frustum;
 class Entity;
 class SceneAnimation;
 class EntityAnimation;
-class EntityMaterial;
-class SceneMaterial;
+class EntityMaterials;
+class MeshMaterials;
 
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
@@ -125,7 +125,7 @@ public:
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
 
-	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
+	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
 	virtual void PopMaterial();
 
 	

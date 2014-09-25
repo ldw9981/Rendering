@@ -42,7 +42,7 @@ void cMenuView::Enter()
 	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 400.0f, -1500.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 800.0f, -2000.0f),
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
@@ -55,10 +55,13 @@ void cMenuView::Enter()
 		
 	
 	m_pTank = m_graphicWorld.CreateEntity();
-	m_pTank->LoadASE(std::string(strDataPath+"leaf.ase").c_str());
+	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
+	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
+	m_pTank->LoadMaterial(std::string(strDataPath+"Beautiful Girl.material").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	
+	m_pTank->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
+
 	/*
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
@@ -77,19 +80,19 @@ void cMenuView::Enter()
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	*/
 	
-	/*
+	
 	for (int i=0;i<10;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
-		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon2.aniset").c_str());
-		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon2.material").c_str());
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		m_pHouse[i]->Build();
 		
-		m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f+ i*300));
+		//m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(-100+i*180.0f,300.0f,100.0f+ i* 50));
 	}
-	*/
+	
 	
 	
 
@@ -104,7 +107,7 @@ void cMenuView::Leave()
 	for (int i=0;i<10;i++)
 	{
 
-		//m_graphicWorld.DeleteEntity(m_pHouse[i]);
+		m_graphicWorld.DeleteEntity(m_pHouse[i]);
 	}
 
 
@@ -184,6 +187,7 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
 		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
+		m_graphicWorld.m_bDebugBound = !m_graphicWorld.m_bDebugBound;
 	}
 
 	if (g_pInput->IsTurnDn(DIK_F11))

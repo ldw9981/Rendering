@@ -230,7 +230,6 @@ void World::Render()
 	if (m_bEnableShadow)
 	{
 		//1. write depth
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
 		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
@@ -241,28 +240,25 @@ void World::Render()
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlend);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
-		m_renderQueueBlendShadow.Render();
+		m_renderQueueSkinnedShadow.Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
-
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)0x000001);
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE); 
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+			
 		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
 
-		m_renderQueueNormalAlphaTestShadow.Render();
+		m_renderQueueNormalAlphaTestShadow.RenderAlphaTest();
 		m_pEffect->EndPass();
 		m_pEffect->End();
 
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlendAlphaTest);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);
-		m_renderQueueBlendAlphaTestShadow.Render();
+		m_renderQueueSkinnedAlphaTestShadow.RenderAlphaTest();
 		m_pEffect->EndPass();
 		m_pEffect->End();
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE); 
+		
 	}
 
 	//////////////////////////////
@@ -280,10 +276,17 @@ void World::Render()
 
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
+	m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
+	m_pEffect->Begin(&passes, 0);	
+	m_pEffect->BeginPass(0);	
+	m_renderQueueTerrain.Render();
+	m_pEffect->EndPass();
+	m_pEffect->End();
+
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
-		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);			
 		m_renderQueueNormal[i].Render();
 		m_pEffect->EndPass();
@@ -293,24 +296,60 @@ void World::Render()
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
-		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
-		m_renderQueueBlend[i].Render();		
+		m_renderQueueSkinned[i].Render();		
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
 
-	m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
-	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
-	m_pEffect->BeginPass(0);	
-	m_renderQueueTerrain.Render();
-	m_pEffect->EndPass();
-	m_pEffect->End();
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	{
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
+		m_pEffect->Begin(&passes, 0);	
+		m_pEffect->BeginPass(0);			
+		m_renderQueueNormalAlphaTest[i].RenderAlphaTest();
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	{
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
+		m_pEffect->Begin(&passes, 0);
+		m_pEffect->BeginPass(0);	
+		m_renderQueueSkinnedAlphaTest[i].RenderAlphaTest();		
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	{
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
+		m_pEffect->Begin(&passes, 0);	
+		m_pEffect->BeginPass(0);				
+		m_renderQueueNormalAlphaBlend[i].RenderAlphaBlendTest(&m_camera);
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+
+	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	{
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
+		m_pEffect->Begin(&passes, 0);	
+		m_pEffect->BeginPass(0);	
+		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendTest(&m_camera);		
+		m_pEffect->EndPass();
+		m_pEffect->End();
+	}
+
+
+
 
 	if (m_bDebugBound)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTLine);
-		m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);
 		auto itEntityRender = m_listEntityRender.begin();
 		for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
@@ -322,7 +361,7 @@ void World::Render()
 	}
 
 	m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTGUI);
-	m_pEffect->Begin(&passes, 0);	// 쉐이더 설정은 꼭 Begin전에 한다. 따라서 쉐이더별로 정렬이 필요하다
+	m_pEffect->Begin(&passes, 0);	
 	m_pEffect->BeginPass(0);
 	for ( auto it = m_mapButton.begin();it != m_mapButton.end() ; ++it )
 	{
@@ -343,14 +382,19 @@ void World::GatherRender()
 {
 	m_renderQueueNormalShadow.Clear();
 	m_renderQueueNormalAlphaTestShadow.Clear();
-	m_renderQueueBlendShadow.Clear();
-	m_renderQueueBlendAlphaTestShadow.Clear();
+	m_renderQueueSkinnedShadow.Clear();
+	m_renderQueueSkinnedAlphaTestShadow.Clear();
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_renderQueueNormal[i].Clear();
-		m_renderQueueBlend[i].Clear();
+		m_renderQueueSkinned[i].Clear();
+		m_renderQueueNormalAlphaTest[i].Clear();
+		m_renderQueueSkinnedAlphaTest[i].Clear();
+		m_renderQueueNormalAlphaBlend[i].Clear();
+		m_renderQueueSkinnedAlphaBlend[i].Clear();
 	}		
 	m_renderQueueTerrain.Clear();
+
 
 
 
@@ -358,20 +402,23 @@ void World::GatherRender()
 	{
 		m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
 		m_renderQueueNormalAlphaTestShadow.Insert((*itIn)->m_renderQueueNormalAlphaTestShadow);
-		m_renderQueueBlendShadow.Insert((*itIn)->m_renderQueueBlendShadow);
-		m_renderQueueBlendAlphaTestShadow.Insert((*itIn)->m_renderQueueBlendAlphaTestShadow);
+		m_renderQueueSkinnedShadow.Insert((*itIn)->m_renderQueueSkinnedShadow);
+		m_renderQueueSkinnedAlphaTestShadow.Insert((*itIn)->m_renderQueueSkinnedAlphaTestShadow);
 	}
 
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
+		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
 		for (int i=0;i<TECHNIQUE_SIZE;i++)
 		{
 			m_renderQueueNormal[i].Insert((*itIn)->m_renderQueueNormal[i]);	
-			m_renderQueueBlend[i].Insert((*itIn)->m_renderQueueBlend[i]);		
-		}		
-
-		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
+			m_renderQueueSkinned[i].Insert((*itIn)->m_renderQueueSkinned[i]);		
+			m_renderQueueNormalAlphaTest[i].Insert((*itIn)->m_renderQueueNormalAlphaTest[i]);	
+			m_renderQueueSkinnedAlphaTest[i].Insert((*itIn)->m_renderQueueSkinnedAlphaTest[i]);		
+			m_renderQueueNormalAlphaBlend[i].Insert((*itIn)->m_renderQueueNormalAlphaBlend[i]);	
+			m_renderQueueSkinnedAlphaBlend[i].Insert((*itIn)->m_renderQueueSkinnedAlphaBlend[i]);		
+		}			
 	}
 }
 

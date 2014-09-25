@@ -80,7 +80,7 @@ private:
 public:
 	/// 화면에 지형을 출력한다.
 	virtual bool	Cull( Frustum* pFrustum ,float loose);
-	virtual void	Render(unsigned char multiSubIndex);
+	virtual void	Render(MultiSub* pMultiSub,Material* pMaterial);
 	virtual	void	Update(DWORD elapseTime);
 	virtual	void	QueueRenderer(Entity* pEntity,bool bTraversal);
 	/// x, z위치의 정점값을 얻어낸다.

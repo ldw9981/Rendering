@@ -1,5 +1,5 @@
 #pragma once
-#include "Foundation/interface.h"
+
 #include "Math/Sphere.h"
 #include "Graphics/RscVertexBuffer.h"
 #include "Graphics/RscIndexBuffer.h"
@@ -14,6 +14,13 @@ namespace Sophia
 class cMeshNode;
 class cView;
 
+class MultiSub
+{
+public:
+	unsigned short primitiveCount;
+	unsigned short startIndex;
+	unsigned char materialIndex;
+};
 
 class cMeshNode:
 	public cSceneNode
@@ -21,19 +28,14 @@ class cMeshNode:
 public:
 	cMeshNode(void);
 	virtual ~cMeshNode(void);
-
-	typedef struct {
-		unsigned short primitiveCount;
-		unsigned short startIndex;
-		unsigned char materialIndex;
-	} MultiSub;
 protected:	
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
 	std::vector<MultiSub>	m_vecMultiSub;
-	std::vector<SceneMaterial*>		m_vecSceneMaterial;
+	std::vector<MeshMaterials*>		m_vecSceneMaterial;
+	MeshMaterials*			m_pMeshMaterials;
 public:
-	virtual void			Render(unsigned char multiSubIndex);
+	virtual void			Render(MultiSub* pMultiSub,Material* pMaterial);
 	virtual	void			BuildComposite(Entity* pEntity);
 
 
@@ -61,9 +63,13 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
-	virtual void PushMaterial(EntityMaterial* pEntityMaterial);
+	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
 	virtual void PopMaterial();
-	SceneMaterial* GetSceneMaterial();
+	MeshMaterials* GetMeshMaterials();
+
+	Material* GetMaterial(MultiSub* pMultiSub);
+
+	virtual void GetRenderPosition(D3DXVECTOR3& pos);
 };
 
 }

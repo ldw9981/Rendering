@@ -11,7 +11,7 @@ class cRscVertexBuffer;
 class cRscIndexBuffer;
 class cResourceMng;
 class EntityAnimation;
-class EntityMaterial;
+class EntityMaterials;
 
 class cResourceMng:
 	private cStaticRestoreList
@@ -47,7 +47,7 @@ public:
 	void				EraseEntityAnimation(const std::string& strKey);	
 	
 	void				GetKeyEntityMaterial(std::string& key,const  char* filePath );
-	EntityMaterial*		CreateEntityMaterial(const char* filePath);
+	EntityMaterials*		CreateEntityMaterial(const char* filePath);
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
 	int					GetCount();

@@ -3,6 +3,9 @@
 namespace Sophia
 {
 
+class MultiSub;
+class Material;
+
 struct BONEREFINFO
 {
 	std::string strNodeName;
@@ -41,7 +44,7 @@ protected:
 	D3DXMATRIX*				m_pArrayMatBoneRef;
 
 public:
-	virtual void			Render(unsigned char multiSubIndex);	
+	virtual void			Render(MultiSub* pMultiSub,Material* pMaterial);
 	virtual void			BuildComposite(Entity* pEntity);
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);

@@ -1,4 +1,5 @@
 #pragma once
+
 namespace Sophia
 {
 
@@ -7,6 +8,8 @@ class IControlable;
 class INotifiable;
 class cGUIBase;
 class IUpdatable;
+class Material;
+class MultiSub;
 
 class IUnknownObject
 {
@@ -18,7 +21,8 @@ class IRenderer
 {
 public:
 	virtual void Render(){};
-	virtual void Render(unsigned char multiSubIndex){};
+	virtual void Render(MultiSub* pMultisub,Material* pMaterial){};
+	virtual void GetRenderPosition(D3DXVECTOR3& pos) {};
 };
 
 class IRenderable

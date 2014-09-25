@@ -16,7 +16,7 @@ void AssetViewer::MaterialPropertyForm::Update( State* pState,Sophia::cSceneNode
 
 	if (pMesh)
 	{
-		Sophia::SceneMaterial* pSceneMaterial = pMesh->GetSceneMaterial();
+		Sophia::MeshMaterials* pSceneMaterial = pMesh->GetMeshMaterials();
 		if (bChangeNode)
 		{			
 			this->comboBox1->Items->Clear();
@@ -42,7 +42,7 @@ System::Void AssetViewer::MaterialPropertyForm::comboBox1_SelectedIndexChanged( 
 	if (pMesh==NULL)
 		return;
 
-	Sophia::SceneMaterial* pSceneMaterial = pMesh->GetSceneMaterial();
+	Sophia::MeshMaterials* pSceneMaterial = pMesh->GetMeshMaterials();
 	Sophia::Material* pMaterial = NULL;
 	int index = this->comboBox1->SelectedIndex;
 	if (index != -1)
@@ -58,5 +58,30 @@ System::Void AssetViewer::MaterialPropertyForm::comboBox1_SelectedIndexChanged( 
 	else
 	{
 		propertyGrid1->SelectedObject = nullptr;
+	}
+}
+
+System::Void AssetViewer::MaterialPropertyForm::propertyGrid1_PropertyValueChanged( System::Object^ s, System::Windows::Forms::PropertyValueChangedEventArgs^ e )
+{
+	if (m_pNode==NULL)
+		return;
+
+	Sophia::cMeshNode* pMesh = dynamic_cast<Sophia::cMeshNode*>(m_pNode);
+	if (pMesh==NULL)
+		return;
+
+	Sophia::MeshMaterials* pSceneMaterial = pMesh->GetMeshMaterials();
+	Sophia::Material* pMaterial = NULL;
+	int index = this->comboBox1->SelectedIndex;
+	if (index != -1)
+	{
+		pMaterial = &pSceneMaterial->m_container[index];
+	}
+
+	if (pMaterial!=NULL)
+	{
+		propertyData->Write(pMaterial);
+
+		pMesh->GetRootNode()->Build();
 	}
 }

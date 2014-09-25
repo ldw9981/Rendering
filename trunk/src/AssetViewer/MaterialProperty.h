@@ -25,7 +25,17 @@ public:
 	[Category("Material")]
 	property System::String^ opacityMap;	
 
+	[Category("Material")]
+	property System::Boolean alphaBlend;	
+
+	[Category("Material")]
+	property System::Boolean alphaTestEnable;	
+
+	[Category("Material")]
+	property System::Int16 alphaTestRef;
+
 public:
 	void Read(Sophia::Material* pMaterial);
+	void Write(Sophia::Material* pMaterial);
 };
 

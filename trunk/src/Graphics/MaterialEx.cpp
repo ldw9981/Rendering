@@ -277,6 +277,8 @@ void Material::SerializeIn( std::ifstream& stream )
 		bool bAlphaTestEnable;
 		stream.read((char*)&bAlphaTestEnable,sizeof(bool));
 		AlphaTestEnable = bAlphaTestEnable;		
+
+		stream.read((char*)&AlphaTestRef,sizeof(char));
 	}
 
 }
@@ -327,6 +329,7 @@ void Material::SerializeOut( std::ofstream& stream )
 
 	stream.write((char*)&AlphaBlend,sizeof(bool));
 	stream.write((char*)&AlphaTestEnable,sizeof(bool));		
+	stream.write((char*)&AlphaTestRef,sizeof(char));		
 }
 
 

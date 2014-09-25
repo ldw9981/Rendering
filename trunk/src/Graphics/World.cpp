@@ -328,7 +328,7 @@ void World::Render()
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);				
-		m_renderQueueNormalAlphaBlend[i].RenderAlphaBlendTest(&m_camera);
+		m_renderQueueNormalAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
@@ -338,7 +338,7 @@ void World::Render()
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
-		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendTest(&m_camera);		
+		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);		
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}

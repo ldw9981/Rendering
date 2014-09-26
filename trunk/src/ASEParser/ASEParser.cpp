@@ -2285,13 +2285,8 @@ cRscTexture* cASEParser::GetTexture()
 
 		case TOKENR_MAP_GENERIC:
 			{
-				if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
-					return NULL;						
-
-				while (m_Token=GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
-				{
-					ASSERT(m_Token!=TOKEND_BLOCK_START);
-				}
+				ASSERT(pRscTexture==NULL);
+				pRscTexture = GetTexture();
 				break;
 			}
 		}						

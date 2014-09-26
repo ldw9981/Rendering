@@ -292,6 +292,7 @@ void World::Render()
 		m_pEffect->End();
 	}
 
+	
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
@@ -301,7 +302,7 @@ void World::Render()
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-
+		
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
@@ -311,7 +312,7 @@ void World::Render()
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-
+	
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
@@ -342,7 +343,7 @@ void World::Render()
 		m_pEffect->End();
 	}
 
-
+	
 
 
 	if (m_bDebugBound)

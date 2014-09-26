@@ -441,9 +441,9 @@ Material* cMeshNode::GetMaterial( MultiSub* pMultiSub )
 	return &m_pMeshMaterials->m_container[pMultiSub->materialIndex];
 }
 
-void cMeshNode::GetRenderPosition( D3DXVECTOR3& pos )
+const D3DXVECTOR3* cMeshNode::GetRenderWorldPos()
 {
-	GetWorldPos(pos);
+	return GetWorldPos();
 }
 
 }

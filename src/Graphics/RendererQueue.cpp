@@ -100,21 +100,20 @@ static bool GreateDistance(std::pair<IRenderer*,cRendererQueue::Specific>& a,std
 void cRendererQueue::Sort(cCameraNode* pCamera)
 {
 	D3DXVECTOR3 temp;
-	D3DXVECTOR3 cam;
-	D3DXVECTOR3 render;
-	pCamera->GetWorldPos(cam);
+	const D3DXVECTOR3* pVecCam;
+	const D3DXVECTOR3* pVecRender;
+	pVecCam = pCamera->GetWorldPos();
 	auto it=m_listNode.begin();
 	for ( ; it!=m_listNode.end(); ++it )
 	{		
 		Specific& item = (*it).second;		
-		(*it).first->GetRenderPosition(render);
+		pVecRender = (*it).first->GetRenderWorldPos();
 
-		temp = cam - render;
+		temp = *pVecCam - *pVecRender;
 		item.distancesq = D3DXVec3LengthSq(&temp);	
 	}
 
 	m_listNode.sort(&GreateDistance);
-//	sort( m_listNode.begin() , m_listNode.end() , Specific::GreateDistance);
 }
 
 }

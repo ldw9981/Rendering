@@ -186,12 +186,11 @@ void World::Render()
 	D3DXMATRIX matLightView;
 	{
 		D3DXVECTOR3 vEyePt( m_WorldLightPosition.x, m_WorldLightPosition.y,  m_WorldLightPosition.z );		
-		D3DXVECTOR3 vLookatPt;
-		m_camera.GetWorldPos(vLookatPt);
+		const D3DXVECTOR3* vLookatPt = m_camera.GetWorldPos();
 
-		vEyePt += vLookatPt;
+		vEyePt += *vLookatPt;
 		D3DXVECTOR3 vUpVec(    0.0f, 1.0f,  0.0f );
-		D3DXMatrixLookAtLH( &matLightView, &vEyePt, &vLookatPt, &vUpVec );
+		D3DXMatrixLookAtLH( &matLightView, &vEyePt, vLookatPt, &vUpVec );
 	}
 
 	// 광원-투영 행렬을 만든다.

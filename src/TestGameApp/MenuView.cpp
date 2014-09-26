@@ -47,12 +47,12 @@ void cMenuView::Enter()
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-
+	/*
 	
 	m_pZTerrain = m_graphicWorld.CreateTerrain(&D3DXVECTOR3(20.0f,0.5f,20.0f),
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
-		
+	*/	
 	
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
@@ -100,7 +100,7 @@ void cMenuView::Enter()
 
 void cMenuView::Leave()
 {
-	m_graphicWorld.DeleteTerrain(m_pZTerrain);
+	//m_graphicWorld.DeleteTerrain(m_pZTerrain);
 
 
 

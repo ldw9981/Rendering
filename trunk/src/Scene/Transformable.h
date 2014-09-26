@@ -46,6 +46,7 @@ public:
 	void					GetLocalPos( D3DXVECTOR3& pos );	
 	void					GetWorldPos( D3DXVECTOR3& pos );
 	void					SetWorldPos( D3DXVECTOR3& pos );
+	const D3DXVECTOR3*		GetWorldPos();
 
 	
 	void					MoveOnLocal( float deltaX,float deltaY,float deltaZ );

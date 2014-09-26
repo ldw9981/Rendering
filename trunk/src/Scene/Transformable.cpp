@@ -66,6 +66,11 @@ void cTransformable::GetWorldPos(D3DXVECTOR3& pos)
 	pos.z = m_matWorld._43;  
 }
 
+const D3DXVECTOR3* cTransformable::GetWorldPos()
+{
+	return (D3DXVECTOR3*)&m_matWorld._41;
+}
+
 
 void cTransformable::MoveOnLocal( float deltaX,float deltaY,float deltaZ )
 {

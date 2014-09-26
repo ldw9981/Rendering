@@ -69,7 +69,8 @@ public:
 
 	Material* GetMaterial(MultiSub* pMultiSub);
 
-	virtual void GetRenderPosition(D3DXVECTOR3& pos);
+	//virtual void GetRenderPosition(D3DXVECTOR3& pos);
+	virtual const D3DXVECTOR3* GetRenderWorldPos();;
 };
 
 }

@@ -86,6 +86,7 @@ void cRendererQueue::RenderAlphaBlendAndTest(cCameraNode* pCamera)
 		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
 	}
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false); 
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
 

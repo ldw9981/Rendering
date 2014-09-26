@@ -46,8 +46,7 @@ void cCameraNode::Render()
 {			
 	D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
 	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmView,&m_matView);
-	D3DXVECTOR4 pos( m_matWorld._41,m_matWorld._42,m_matWorld._43,m_matWorld._44);
-	Graphics::m_pInstance->GetEffect()->SetVector(Graphics::m_pInstance->m_hvWorldCameraPosition,&pos);
+	Graphics::m_pInstance->GetEffect()->SetVector(Graphics::m_pInstance->m_hvWorldCameraPosition,(D3DXVECTOR4*)&m_matWorld.m[3][0]);
 
 	if (m_bProjectionModified)
 	{
@@ -101,7 +100,7 @@ void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,co
 	temp._41 = -D3DXVec3Dot(&xaxis,pEye);
 	temp._42 = -D3DXVec3Dot(&yaxis,pEye);
 	temp._43 = -D3DXVec3Dot(&zaxis,pEye);
-
+		
 	D3DXMatrixInverse(&m_matLocal,NULL,&temp);
 }
 

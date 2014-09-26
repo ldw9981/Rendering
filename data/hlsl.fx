@@ -636,7 +636,7 @@ float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
 float4 ps_Shadow(PS_SHADOW_INPUT Input) : COLOR
 {   
    float depth = Input.mClipPosition.z / Input.mClipPosition.w;
-   return float4(depth.xxx, 1);
+   return float4(depth.xxx, 0.0f);
 }
 
 float4 ps_Shadow_NormalTransparency(PS_SHADOW_INPUT Input) : COLOR

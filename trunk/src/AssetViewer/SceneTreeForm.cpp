@@ -107,7 +107,9 @@ TreeNode^ AssetViewer::SceneTreeForm::CreateTreeNode( TreeNode^ parentTreeNode,S
 		Sophia::SceneAnimation* pSceneAnimation = pNode->GetSceneAnimation(m_animationIndex);
 		if (pSceneAnimation)
 		{
-			treeNode->Tag = Convert::ToString(pSceneAnimation->m_partialWeight);		
+			char temp[32]={0,};
+			sprintf_s(temp,"%.3f",pSceneAnimation->m_partialWeight);
+			treeNode->Tag = gcnew System::String(temp);
 		}			
 	}
 

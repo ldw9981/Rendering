@@ -808,16 +808,17 @@ BOOL cASEParser::Parsing_GeoObject()
 		pNewRscVertexBuffer->AddRef();
 		pNewRscIndexBuffer->AddRef();
 
-		if (!bSkinned)	
+
+		bool bSkeleton = false;			
+		if( stInfo.strNodeName.find("Bip") != std::string::npos || stInfo.strNodeName.find("bip") != std::string::npos ||
+			stInfo.strNodeName.find("Bone") != std::string::npos || stInfo.strNodeName.find("bone") != std::string::npos )
 		{
-			bool bSkeleton = false;			
-			if( stInfo.strNodeName.find("Bip") != std::string::npos || stInfo.strNodeName.find("bip") != std::string::npos ||
-				stInfo.strNodeName.find("Bone") != std::string::npos || stInfo.strNodeName.find("bone") != std::string::npos )
-			{
-				bSkeleton = true;			
-			}
-			
-			pNewSceneNode = CreateMeshNode(bSkeleton,stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);				
+			bSkeleton = true;			
+			pNewSceneNode = CreateSkeleton(stInfo);
+		}
+		else if (!bSkinned)	
+		{			
+			pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);				
 		}
 		else 
 		{
@@ -1767,7 +1768,7 @@ void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNI
 
 
 cMeshNode* 
-cASEParser::CreateMeshNode(bool bSkeleton,SCENENODEINFO& stInfo,
+cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 							cRscVertexBuffer* pVertexBuffer,
 							cRscIndexBuffer* pIndexBuffer,
 							std::map<SUBMATINDEX,WORD>& mapIndexCount,
@@ -1776,21 +1777,13 @@ cASEParser::CreateMeshNode(bool bSkeleton,SCENENODEINFO& stInfo,
 	assert(pIndexBuffer!=NULL);
 	assert(pVertexBuffer!=NULL);
 
-	cMeshNode* pNewSceneNode = NULL; 
-	if (bSkeleton) pNewSceneNode = new Skeleton;
-	else pNewSceneNode = new cMeshNode;	
-
+	cMeshNode* pNewSceneNode = new cMeshNode;	
 	//공통적인 데이터
 	if(stInfo.pParent == NULL)
 		stInfo.pParent = m_pSceneRoot;
 
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
-	
-	if (bSkeleton)
-	{
-		m_pSceneRoot->InsertBone(pNewSceneNode);
-	}	
 
 	if (m_pEntityMaterial->GetRefCounter()==0)
 	{
@@ -2294,6 +2287,22 @@ cRscTexture* cASEParser::GetTexture()
 
 	
 	return pRscTexture;
+}
+
+Skeleton* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
+{
+	Skeleton* pNewSceneNode = NULL; 
+	pNewSceneNode = new Skeleton;	
+
+	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+	SetNodeInfo(pNewSceneNode,stInfo);
+
+	m_pSceneRoot->InsertBone(pNewSceneNode);
+	return pNewSceneNode;
 }
 
 

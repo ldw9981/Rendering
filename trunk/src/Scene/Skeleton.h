@@ -1,10 +1,10 @@
 #pragma once
-#include "MeshNode.h"
+#include "SceneNode.h"
 
 namespace Sophia
 {
 
-class Skeleton : public cMeshNode
+class Skeleton : public cSceneNode
 {
 public:
 	Skeleton(void);

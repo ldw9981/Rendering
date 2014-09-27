@@ -13,17 +13,17 @@ System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::Eve
 	sceneTreeForm->Show();
 	sceneTreeForm->Location = System::Drawing::Point(0, 0);
 
-	viewForm->MdiParent = this;
-	viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
-	viewForm->Show();
-	viewForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width, 0); 
-
-
 	animationForm->MdiParent = this;
 	animationForm->Show();
 	animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
 	animationForm->listAnimation->SelectedIndexChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::listAnimation_SelectedIndexChanged);
 	animationForm->checkBox_showPartialWeight->CheckedChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::checkBox_showPartialWeight_CheckedChanged);
+
+	viewForm->MdiParent = this;
+	viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
+	viewForm->Show();
+	viewForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width, 0); 
+	OutputDebugString(L"MainForm::OnShown");
 }
 
 System::Void AssetViewer::MainForm::shadowOnOffToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
@@ -38,4 +38,23 @@ System::Void AssetViewer::MainForm::skeletonShowHideToolStripMenuItem_Click( Sys
 
 	m_bShowSkeleton = !m_bShowSkeleton;
 	m_pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
+}
+
+System::Void AssetViewer::MainForm::MainForm_Deactivate( System::Object^ sender, System::EventArgs^ e )
+{
+	if(viewForm->m_pFramework)
+	{
+		viewForm->m_pFramework->GetInput()->UnAcquire();
+	}
+	OutputDebugString(L"MainForm_Deactivate");
+}
+
+System::Void AssetViewer::MainForm::MainForm_Activated( System::Object^ sender, System::EventArgs^ e )
+{
+	if(viewForm->m_pFramework)
+	{
+		viewForm->Activate();				
+		viewForm->m_pFramework->GetInput()->Acquire();
+	}
+	OutputDebugString(L"MainForm_Activated");
 }

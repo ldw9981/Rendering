@@ -92,65 +92,60 @@ void State::ProcessRender()
 
 void State::Control()
 {
-	cView::Control();	
+	cView::Control();		
 	
-	
-	if (g_pInput->IsTurnDn(DIK_TAB))
-	{
-		if(m_graphicWorld.m_camera.GetProcessInput())
-		{
-			m_graphicWorld.m_camera.SetProcessInput(false);
-		//	if(m_pTank)
-		//		m_pTank->m_bControl=TRUE;
-		}
-		else
-		{
-			m_graphicWorld.m_camera.SetProcessInput(true);
-		//	if(m_pTank)
-		//		m_pTank->m_bControl=FALSE;			
-		}
-	}
 	
 	if (g_pInput->IsCurrDn(DIK_EQUALS))
 	{
 		m_graphicWorld.m_WorldLightPosition.y += 50;
 
 	}
-
 	if (g_pInput->IsCurrDn(DIK_MINUS))
 	{
 		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
 
-
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
 		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
+	}	
+	
+	if (g_pInput->GetMouseState().lX != 0)
+	{
+		if(g_pInput->Mouse_IsCurrDn(0))
+		{
+			int* delta = (int*)&g_pInput->GetMouseState().lX;
+
+			D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+			D3DXMATRIX rot;
+			D3DXMatrixRotationY(&rot,D3DXToRadian( *(delta) * -0.2f ));
+			localTM = rot * localTM;
+		}
 	}
 
-	if (g_pInput->IsTurnDn(DIK_F11))
+	if (g_pInput->GetMouseState().lY != 0)
 	{
-		m_pDragon->m_baseAnimationDesc.playIndex ++;		
-		if (m_pDragon->m_baseAnimationDesc.playIndex >= (int)m_pDragon->m_vecAnimation.size() )
+		if(g_pInput->Mouse_IsCurrDn(0))
 		{
-			m_pDragon->m_baseAnimationDesc.playIndex =0;			
+			int* delta = (int*)&g_pInput->GetMouseState().lY;
+
+			D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+			D3DXMATRIX rot;
+			D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * 0.2f ));
+			localTM = rot * localTM;
 		}
-		m_pDragon->PlayBaseAnimation(m_pDragon->m_baseAnimationDesc.playIndex,true);
-	}	
+	}
 
-	if (g_pInput->IsTurnDn(DIK_F10))
+
+	if (g_pInput->GetMouseState().lZ != 0)
 	{
-		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
-		m_pDragon->SaveScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pDragon->SaveAnimation(std::string(strDataPath+"dragon.animation").c_str(),0);		
-		m_pDragon->SaveMaterial(std::string(strDataPath+"dragon.material").c_str(),0);
-	}	
 
-	if (g_pInput->IsTurnDn(DIK_F9))
-	{
-		m_pDragon->CutAndPushEntityAnimation(0,0,1000,"Cut");
-	}	
-
+			int* iz = (int*)&g_pInput->GetMouseState().lZ;
+			D3DXVECTOR3 temp;
+			m_graphicWorld.m_camera.GetLocalPos(temp);
+			temp.z += (float)*(iz) * 0.1f;		
+			m_graphicWorld.m_camera.SetLocalPos(temp);
+	}
 	
 }
 
@@ -165,7 +160,6 @@ void State::OpenASE( const char* path )
 	m_pModel->LoadASE(path);
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
 	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
 	m_bModifiedAnimation = true;
@@ -203,7 +197,6 @@ void State::OpenAsset( const char* path )
 	m_pModel->LoadMaterial(std::string(dir+name+".material").c_str());
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
 	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 }
 

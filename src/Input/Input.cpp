@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Input.h"
+#include "Foundation/Trace.h"
 namespace Sophia
 {
 
@@ -20,6 +21,7 @@ Input::Input(void)
 	memset(&m_mouseButtonPrev,0,4);	
 	memset(&m_mouseButtonTurnDn,0,4);	
 	memset(&m_mouseButtonTurnUp,0,4);	
+	memset(&m_mouseState,0,sizeof(m_mouseState));
 	m_bRequestAcquire = false;
 }
 
@@ -165,19 +167,8 @@ bool Input::ReadKeyboard()
 	result = m_keyboard->GetDeviceState(sizeof(m_keyboardState), (LPVOID)&m_keyboardState);
 	if(FAILED(result))
 	{
-		/*
-		// If the keyboard lost focus or was not acquired then try to get control back.
-		if((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
-		{
-			m_keyboard->Acquire();
-		}
-		else
-		{
-			return false;
-		}
-		*/
+	
 	}
-
 	return true;
 }
 
@@ -191,17 +182,7 @@ bool Input::ReadMouse()
 	result = m_mouse->GetDeviceState(sizeof(DIMOUSESTATE), (LPVOID)&m_mouseState);
 	if(FAILED(result))
 	{
-		/*
-		// If the mouse lost focus or was not acquired then try to get control back.
-		if((result == DIERR_INPUTLOST) || (result == DIERR_NOTACQUIRED))
-		{
-			m_mouse->Acquire();
-		}
-		else
-		{
-			return false;
-		}
-		*/
+
 	}
 
 	return true;

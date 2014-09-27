@@ -58,6 +58,11 @@ void cTransformable::GetLocalPos( D3DXVECTOR3& pos )
 	pos.z = m_matLocal._43;  
 }
 
+const D3DXVECTOR3* cTransformable::GetLocalPos()
+{
+	return (D3DXVECTOR3*)&m_matLocal._41;
+}
+
 
 void cTransformable::GetWorldPos(D3DXVECTOR3& pos)
 {

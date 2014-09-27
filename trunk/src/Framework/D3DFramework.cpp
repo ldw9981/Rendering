@@ -160,11 +160,10 @@ void cD3DFramework::Render()
 	std::ostringstream stream;
 	stream << "FPS " << temp << "\n";
 
-	POINT pt;
-	g_pInput->GetMouseDelta(pt.x,pt.y);
-	stream << "MOUSE delta " << g_pInput->Mouse_IsMove() << "" << pt.x << " " << pt.y << "\n";
-	m_pCursorManager->GetCursorPos(&pt);
-	stream << "CURSOR pos " << pt.x << " " << pt.y << "\n";
+	const DIMOUSESTATE& dims = g_pInput->GetMouseState();
+	stream << "MOUSE delta " << dims.lX << " " << dims.lY << " " << dims.lZ << "\n";
+	
+	//stream << "CURSOR pos " << pt.x << " " << pt.y << "\n";
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
 	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";

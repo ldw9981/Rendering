@@ -38,6 +38,7 @@ public:
 	bool IsEscapePressed();
 	void GetMouseLocation(LONG& mouseX, LONG& mouseY);
 	void GetMouseDelta(LONG& mouseX, LONG& mouseY);
+	const DIMOUSESTATE& GetMouseState() const { return m_mouseState; }
 	bool	IsTurnDn(BYTE diKeyboard);
 	bool	IsTurnUp(BYTE diKeyboard);
 	bool	IsCurrDn(BYTE diKeyboard);

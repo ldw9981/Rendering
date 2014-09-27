@@ -223,7 +223,7 @@ namespace AssetViewer {
 			this->viewToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->shadowOnOffToolStripMenuItem, 
 				this->skeletonShowHideToolStripMenuItem});
 			this->viewToolStripMenuItem->Name = L"viewToolStripMenuItem";
-			this->viewToolStripMenuItem->Size = System::Drawing::Size(152, 22);
+			this->viewToolStripMenuItem->Size = System::Drawing::Size(100, 22);
 			this->viewToolStripMenuItem->Text = L"View";
 			// 
 			// shadowOnOffToolStripMenuItem
@@ -278,6 +278,8 @@ namespace AssetViewer {
 			this->MainMenuStrip = this->menuStrip1;
 			this->Name = L"MainForm";
 			this->Text = L"MainForm";
+			this->Activated += gcnew System::EventHandler(this, &MainForm::MainForm_Activated);
+			this->Deactivate += gcnew System::EventHandler(this, &MainForm::MainForm_Deactivate);
 			this->Load += gcnew System::EventHandler(this, &MainForm::MainForm_Load);
 			this->Shown += gcnew System::EventHandler(this, &MainForm::OnShown);
 			this->menuStrip1->ResumeLayout(false);
@@ -462,5 +464,7 @@ private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System
 			}
 	private: System::Void shadowOnOffToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 private: System::Void skeletonShowHideToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+private: System::Void MainForm_Deactivate(System::Object^  sender, System::EventArgs^  e);
+private: System::Void MainForm_Activated(System::Object^  sender, System::EventArgs^  e);
 };
 }

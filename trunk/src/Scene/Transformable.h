@@ -34,16 +34,18 @@ public:
 //	void					SetWorldTMModified(BOOL val) { m_bModifiedMatWorld = val; }
 
 	void					SetWorldTM(const D3DXMATRIX& val) { m_matWorld = val; }
-	const D3DXMATRIX&		GetWorldTM() const { return m_matWorld; }
+	D3DXMATRIX&				GetWorldTM() { return m_matWorld; }
 
 
 
-	const D3DXMATRIX&		GetLocalTM() const { return m_matLocal; }
+	D3DXMATRIX&				GetLocalTM() { return m_matLocal; }
 	void					SetLocalTM(const D3DXMATRIX& val);
 
 
 	void					SetLocalPos( D3DXVECTOR3& pos );
 	void					GetLocalPos( D3DXVECTOR3& pos );	
+	const D3DXVECTOR3*		GetLocalPos();
+
 	void					GetWorldPos( D3DXVECTOR3& pos );
 	void					SetWorldPos( D3DXVECTOR3& pos );
 	const D3DXVECTOR3*		GetWorldPos();

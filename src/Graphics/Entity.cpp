@@ -583,4 +583,21 @@ void Entity::ClearRenderQueue()
 	m_renderQueueSkinnedAlphaTestShadow.Clear();
 }
 
+cSceneNode* Entity::FindNode( std::string& nodename )
+{
+	std::list<cSceneNode*>::iterator iter;	
+	cSceneNode* pItem=NULL;
+	cSceneNode* pFoundItem=NULL;
+	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	{
+		pItem=*iter;
+		pFoundItem=pItem->FindNode(nodename);
+		if (pFoundItem!=NULL)
+		{
+			return pFoundItem;
+		}			 
+	}	
+	return NULL;
+}
+
 }

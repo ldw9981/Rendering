@@ -19,6 +19,8 @@ private:
 	bool					m_bModifiedAnimation;
 	bool					m_bModifiedScene;
 	bool					m_bModifiedMaterial;
+public:
+	bool					m_bShowSkeleton;
 public:	
 	virtual void Enter();
 	virtual void Leave();

@@ -268,18 +268,20 @@ void Material::SerializeIn( std::ifstream& stream )
 		}
 	}
 
+	
 	if (ver >= MATERIAL_LASTEST)
 	{
 		bool bAlphaBlend;
-		stream.read((char*)&bAlphaBlend,sizeof(bool));
+		stream.read((char*)&bAlphaBlend,sizeof(AlphaBlend));
 		AlphaBlend = bAlphaBlend;	
 
 		bool bAlphaTestEnable;
-		stream.read((char*)&bAlphaTestEnable,sizeof(bool));
+		stream.read((char*)&bAlphaTestEnable,sizeof(AlphaTestEnable));
 		AlphaTestEnable = bAlphaTestEnable;		
 
-		stream.read((char*)&AlphaTestRef,sizeof(char));
+		stream.read((char*)&AlphaTestRef,sizeof(AlphaTestRef));
 	}
+	
 
 }
 
@@ -327,9 +329,9 @@ void Material::SerializeOut( std::ofstream& stream )
 	WriteString(stream,fileName);	
 
 
-	stream.write((char*)&AlphaBlend,sizeof(bool));
-	stream.write((char*)&AlphaTestEnable,sizeof(bool));		
-	stream.write((char*)&AlphaTestRef,sizeof(char));		
+	stream.write((char*)&AlphaBlend,sizeof(AlphaBlend));
+	stream.write((char*)&AlphaTestEnable,sizeof(AlphaTestEnable));		
+	stream.write((char*)&AlphaTestRef,sizeof(AlphaTestRef));		
 }
 
 

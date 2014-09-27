@@ -31,6 +31,7 @@ State::State(void)
 	m_bModifiedAnimation = false;
 	m_bModifiedScene = false;
 	m_bModifiedMaterial = false;
+	m_bShowSkeleton = false;
 }
 
 State::~State( void )
@@ -110,32 +111,35 @@ void State::Control()
 		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
 	}	
 	
-	if (g_pInput->GetMouseState().lX != 0)
+	if (m_pModel)
 	{
-		if(g_pInput->Mouse_IsCurrDn(0))
+		if (g_pInput->GetMouseState().lX != 0)
 		{
-			int* delta = (int*)&g_pInput->GetMouseState().lX;
+			if(g_pInput->Mouse_IsCurrDn(0))
+			{
+				int* delta = (int*)&g_pInput->GetMouseState().lX;
 
-			D3DXMATRIX& localTM = m_pModel->GetLocalTM();
-			D3DXMATRIX rot;
-			D3DXMatrixRotationY(&rot,D3DXToRadian( *(delta) * -0.2f ));
-			localTM = rot * localTM;
+
+				D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+				D3DXMATRIX rot;
+				D3DXMatrixRotationY(&rot,D3DXToRadian( *(delta) * -0.2f ));
+				localTM = rot * localTM;
+			}
+		}
+
+		if (g_pInput->GetMouseState().lY != 0)
+		{
+			if(g_pInput->Mouse_IsCurrDn(0))
+			{
+				int* delta = (int*)&g_pInput->GetMouseState().lY;
+
+				D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+				D3DXMATRIX rot;
+				D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * 0.2f ));
+				localTM = rot * localTM;
+			}
 		}
 	}
-
-	if (g_pInput->GetMouseState().lY != 0)
-	{
-		if(g_pInput->Mouse_IsCurrDn(0))
-		{
-			int* delta = (int*)&g_pInput->GetMouseState().lY;
-
-			D3DXMATRIX& localTM = m_pModel->GetLocalTM();
-			D3DXMATRIX rot;
-			D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * 0.2f ));
-			localTM = rot * localTM;
-		}
-	}
-
 
 	if (g_pInput->GetMouseState().lZ != 0)
 	{
@@ -165,6 +169,7 @@ void State::OpenASE( const char* path )
 	m_bModifiedAnimation = true;
 	m_bModifiedScene = true;
 	m_bModifiedMaterial = true;
+	m_pModel->SetShowSkeleton(m_bShowSkeleton);
 }
 
 void State::SaveAsset()
@@ -198,6 +203,7 @@ void State::OpenAsset( const char* path )
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
 	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
+	m_pModel->SetShowSkeleton(m_bShowSkeleton);
 }
 
 Sophia::Entity* State::GetEntity()

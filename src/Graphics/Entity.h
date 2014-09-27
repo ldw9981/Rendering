@@ -103,6 +103,7 @@ public:
 	void ClearRenderQueue();
 	int GetIndexMaterial() const { return m_indexMaterial; }
 	void SetIndexMaterial(int val) { m_indexMaterial = val; }
+	virtual cSceneNode*	FindNode(std::string& nodename);
 };
 
 

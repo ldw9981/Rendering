@@ -73,7 +73,7 @@ public:
 	void				DettachChildNode(cSceneNode* pItem);
 
 	// 자신을 포함한 자식ASE오브젝트에서 ASE오브젝트를 찾는다.
-	cSceneNode*			FindNode(std::string& nodename);
+	virtual cSceneNode*	FindNode(std::string& nodename);
 
 	//Get/Set
 	void				SetNodeName( const char* nodename );

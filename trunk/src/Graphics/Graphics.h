@@ -38,7 +38,10 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseLight;
 	D3DXHANDLE				m_hTPhongDiffuseBump;
+	D3DXHANDLE				m_hTPhongDiffuseSpecular;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseOpacity;// 테크닉
+	D3DXHANDLE				m_hTPhongDiffuseBumpSpecular;
+
 	D3DXHANDLE				m_hTCreateShadowNormal;	// 쉐이더
 	D3DXHANDLE				m_hTCreateShadowBlend;	// 쉐이더
 	D3DXHANDLE				m_hTCreateShadowNormalAlphaTest;	// 쉐이더

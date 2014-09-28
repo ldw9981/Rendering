@@ -64,6 +64,9 @@ void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 	if( material.GetMapOpacity() != NULL )
 		Graphics::m_pInstance->GetEffect()->SetTexture("Opacity_Tex",material.GetMapOpacity()->GetD3DTexture());
 
+	if( material.GetMapSpecular() != NULL )
+		Graphics::m_pInstance->GetEffect()->SetTexture("Tex2",material.GetMapSpecular()->GetD3DTexture());
+
 	Graphics::m_pInstance->GetEffect()->CommitChanges();
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  

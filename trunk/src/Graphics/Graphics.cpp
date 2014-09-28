@@ -201,6 +201,8 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
 	m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
 	m_hTPhongDiffuseOpacity = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
+	m_hTPhongDiffuseSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
+	m_hTPhongDiffuseBumpSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
 
 	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
@@ -251,6 +253,18 @@ void Graphics::LoadHLSL(const char* szFileName)
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::OPACITY);
 	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacity;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::SPECULAR);
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseSpecular;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::NORMAL);
+	indexRenderQueue.set(Material::SPECULAR);
+	m_hTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBumpSpecular;
+
 
 	for (int i=0;i<TECHNIQUE_SIZE;i++)
 	{	

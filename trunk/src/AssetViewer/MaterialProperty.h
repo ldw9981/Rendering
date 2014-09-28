@@ -26,6 +26,9 @@ public:
 	property System::String^ opacityMap;	
 
 	[Category("Material")]
+	property System::String^ specularMap;	
+
+	[Category("Material")]
 	property System::Boolean alphaBlend;	
 
 	[Category("Material")]

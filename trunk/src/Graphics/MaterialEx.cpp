@@ -8,7 +8,7 @@
 namespace Sophia
 {
 
-#define MATERIAL_LASTEST 3
+#define MATERIAL_LASTEST 4
 
 
 Material::Material(void)
@@ -26,6 +26,7 @@ Material::Material(void)
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
 	m_pMapOpacity = NULL;
+	m_pMapSpecular = NULL;
 	AlphaBlend = false;
 	AlphaTestEnable = false;
 	AlphaTestRef = 0;
@@ -50,12 +51,14 @@ Material::Material( const Material &Other )
 	m_pMapNormal = NULL;
 	m_pMapLight = NULL;
 	m_pMapOpacity = NULL;
-	//m_pMapRefract = NULL;
+	m_pMapSpecular = NULL;
+
 	SetMapDiffuse(Other.m_pMapDiffuse);
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
 	SetMapOpacity(Other.m_pMapOpacity);
-	//SetMapRefract(Other.m_pMapRefract);
+	SetMapSpecular(Other.m_pMapSpecular);
+	
 }
 Material::~Material(void)
 {
@@ -63,7 +66,7 @@ Material::~Material(void)
 	SAFE_RELEASE(m_pMapNormal);
 	SAFE_RELEASE(m_pMapLight);
 	SAFE_RELEASE(m_pMapOpacity);
-//	SAFE_RELEASE(m_pMapRefract);
+	SAFE_RELEASE(m_pMapSpecular);
 }
 
 Material& Material::operator =(const Material &Other)
@@ -83,7 +86,7 @@ Material& Material::operator =(const Material &Other)
 	SetMapNormal(Other.m_pMapNormal);
 	SetMapLight(Other.m_pMapLight);
 	SetMapOpacity(Other.m_pMapOpacity);
-	//SetMapRefract(Other.m_pMapRefract);
+	SetMapSpecular(Other.m_pMapSpecular);
 	return *this;
 }
 
@@ -197,6 +200,33 @@ void Material::SetMapOpacity( cRscTexture* val )
 	}
 }
 
+cRscTexture* Material::GetMapSpecular() const
+{
+	return m_pMapSpecular;
+}
+
+void Material::SetMapSpecular( cRscTexture* val )
+{
+	if (m_pMapSpecular)
+	{
+		m_pMapSpecular->Release();
+	}	
+	m_pMapSpecular = val;
+	if (m_pMapSpecular)
+	{		
+		m_pMapSpecular->AddRef();
+	}	
+
+	if (m_pMapSpecular)
+	{
+		index_renderer_queue_.set(SPECULAR);
+	}
+	else
+	{
+		index_renderer_queue_.reset(SPECULAR);	
+	}
+}
+
 void Material::SerializeIn( std::ifstream& stream )
 {
 	unsigned short ver = 0;
@@ -268,7 +298,24 @@ void Material::SerializeIn( std::ifstream& stream )
 		}
 	}
 
-	
+	if (ver >= MATERIAL_LASTEST)
+	{
+		type = 0;
+		stream.read((char*)&type,sizeof(type));
+		fileName.clear();	
+		ReadString(stream,fileName);	
+		if (fileName.length()!=0)
+		{
+			std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+			std::string strFullPath = strDataPath;
+			strFullPath += fileName;
+			cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
+			assert(pRscTexture!=NULL);
+			if(pRscTexture)
+				SetMapSpecular(pRscTexture);
+		}
+	}
+
 	if (ver >= MATERIAL_LASTEST)
 	{
 		bool bAlphaBlend;
@@ -328,12 +375,19 @@ void Material::SerializeOut( std::ofstream& stream )
 	}
 	WriteString(stream,fileName);	
 
+	type = SPECULAR;
+	stream.write((char*)&type,sizeof(type));
+	fileName.clear();
+	if (m_pMapOpacity)
+	{
+		StringUtil::SplitPath(std::string(m_pMapSpecular->GetFilePath()),NULL,NULL,&fileName,&fileName);
+	}
+	WriteString(stream,fileName);	
 
 	stream.write((char*)&AlphaBlend,sizeof(AlphaBlend));
 	stream.write((char*)&AlphaTestEnable,sizeof(AlphaTestEnable));		
 	stream.write((char*)&AlphaTestRef,sizeof(AlphaTestRef));		
 }
-
 
 void MeshMaterials::SerializeIn( std::ifstream& stream )
 {

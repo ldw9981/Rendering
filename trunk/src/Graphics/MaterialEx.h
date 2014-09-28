@@ -22,6 +22,7 @@ public:
 		NORMAL	=0x001,		
 		LIGHT	=0x002,
 		OPACITY =0x003,
+		SPECULAR=0x004,
 		MAX
 	};
 public:
@@ -43,13 +44,14 @@ public:
 	bool					AlphaTestEnable;
 	unsigned char			AlphaTestRef;
 	unsigned char			AlphaTestOp;
-	std::bitset<4>			index_renderer_queue_;
+	std::bitset<MAX>			index_renderer_queue_;
 private:		
 	cRscTexture*			m_pMapDiffuse;
 	cRscTexture*			m_pMapNormal;
 //	cRscTexture*			m_pMapRefract;	
 	cRscTexture*			m_pMapLight;
 	cRscTexture*			m_pMapOpacity;
+	cRscTexture*			m_pMapSpecular;
 	//Light
 	//Specular
 	//Reflection
@@ -66,6 +68,8 @@ public:
 	void					SetMapLight(cRscTexture* val);
 	cRscTexture*			GetMapOpacity() const;
 	void					SetMapOpacity(cRscTexture* val);
+	cRscTexture*			GetMapSpecular() const;
+	void					SetMapSpecular(cRscTexture* val);
 
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);

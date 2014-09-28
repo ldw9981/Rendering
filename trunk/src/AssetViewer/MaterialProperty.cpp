@@ -10,6 +10,7 @@ MaterialProperty::MaterialProperty(void)
 	normalMap = gcnew System::String("");
 	lightMap = gcnew System::String("");
 	opacityMap = gcnew System::String("");
+	specularMap = gcnew System::String("");
 	alphaBlend = false;
 	alphaTestEnable = false;
 }
@@ -21,6 +22,7 @@ MaterialProperty::~MaterialProperty(void)
 	delete normalMap;
 	delete lightMap;
 	delete opacityMap;
+	delete specularMap;
 }
 
 void MaterialProperty::Read( Sophia::Material* pMaterial )
@@ -29,6 +31,7 @@ void MaterialProperty::Read( Sophia::Material* pMaterial )
 	delete normalMap;
 	delete lightMap;
 	delete opacityMap;
+	delete specularMap;
 
 	std::string fullpath;
 	if (pMaterial->GetMapDiffuse())
@@ -81,6 +84,20 @@ void MaterialProperty::Read( Sophia::Material* pMaterial )
 	{
 		opacityMap = gcnew System::String("");
 	}
+
+	if (pMaterial->GetMapSpecular())
+	{
+
+		fullpath = pMaterial->GetMapSpecular()->GetFilePath();
+		std::string name;
+		Sophia::StringUtil::SplitPath(fullpath,NULL,NULL,&name,&name);
+		specularMap = gcnew System::String(name.c_str());
+	}
+	else
+	{
+		specularMap = gcnew System::String("");
+	}
+
 
 	alphaBlend = pMaterial->AlphaBlend;
 	alphaTestEnable = pMaterial->AlphaTestEnable;

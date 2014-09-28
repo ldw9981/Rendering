@@ -891,6 +891,10 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_SUBNO:
 			case TOKENR_MAP_AMOUNT:			
 			case TOKENR_MAP_SPECULAR:
+				{
+					material.SetMapSpecular(GetTexture());
+				}
+				break;
 			case TOKENR_MAP_SHINE:
 			case TOKENR_MAP_GENERIC:
 			case TOKENR_MAP_TYPE:
@@ -1984,6 +1988,9 @@ bool cASEParser::GetSubMaterial( Material& material)
 		case TOKENR_MAP_SUBNO:
 		case TOKENR_MAP_AMOUNT:			
 		case TOKENR_MAP_SPECULAR:
+			{
+				material.SetMapSpecular(GetTexture());	
+			}
 		case TOKENR_MAP_SHINE:
 		case TOKENR_MAP_GENERIC:
 		case TOKENR_MAP_TYPE:

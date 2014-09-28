@@ -6,6 +6,7 @@ texture Tex3;
 texture Opacity_Tex;
 texture ShadowMap_Tex : RenderColorTarget;
 
+
 // 변환행렬
 float4x4 gWorldMatrix      : WORLD;
 float4x4 gViewMatrix       : VIEW;
@@ -633,6 +634,92 @@ float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
 	return float4(color,alphaSample);	
 }
 
+float4 ps_PhongDiffuseSpecular(PS_PHONG_DIFFUSE_INPUT input) : COLOR
+{  
+   float3 color;
+   float3 lambert = saturate(input.mLambert);
+   float3 worldNormal = normalize(input.mNormal);
+   float3 cameraDir = normalize(input.mCameraDir);
+   float3 reflectDir = normalize(input.mReflect);
+   float3 diffuseSample = tex2D( gDiffuseSampler , input.mTexCoord );
+   	
+   float3 specular = 0;
+   specular = dot(reflectDir,-cameraDir);
+   specular = saturate(specular);
+   specular = pow(specular, gSpecularPower);
+  
+   float4 specularIntensity = tex2D(gSpecularSampler,input.mTexCoord);
+   specular = specular * specularIntensity.xyz;
+  
+   color = diffuseSample * gAmbientColor.xyz * gAmbientIntensity;
+   color += diffuseSample * lambert;
+  
+   
+   float currentDepth = input.mClipPosition.z / input.mClipPosition.w;   
+   float2 uv = input.mClipPosition.xy / input.mClipPosition.w;
+   uv.y = -uv.y;
+   uv = uv * 0.5 + 0.5;   
+   
+   float shadowDepth = tex2D(ShadowSampler, uv).r;   
+   
+   if (currentDepth > shadowDepth + 0.00125f)
+   {
+      color *= 0.5f;
+   } 
+   else
+   {
+      color += gSpecularColor.xyz * specular;
+   }
+	  
+	return float4(color,0.0f);	
+}
+
+float4 ps_PhongDiffuseBumpSpecular(PS_PHONG_DIFFUSE_BUMP_INPUT input) : COLOR
+{  
+   float3 color;  
+   float3 cameraDir = normalize(input.mCameraDir);
+   float3 tangentNormal = tex2D(gNormalSampler,input.mTexCoord);
+   tangentNormal = normalize(tangentNormal*2 - 1);
+   float3x3 matTBN = float3x3(normalize(input.mTangent),normalize(input.mBiNormal),normalize(input.mNormal));
+   matTBN = transpose(matTBN);
+  
+   float3 worldNormal = mul(matTBN,tangentNormal);
+   float3 lambert = saturate(dot(-input.mLightDir,worldNormal));
+   float3 reflectDir = normalize(reflect(input.mLightDir, worldNormal)); 
+   
+   float3 diffuseSample = tex2D( gDiffuseSampler,input.mTexCoord);  
+  
+   float3 specular = 0;
+   specular = dot(reflectDir,-cameraDir);
+   specular = saturate(specular);
+   specular = pow(specular, gSpecularPower);   
+	float4 specularIntensity = tex2D(gSpecularSampler,input.mTexCoord);
+   specular = specular * specularIntensity.xyz;
+	
+	color = diffuseSample * gAmbientColor.xyz * gAmbientIntensity;
+   color += diffuseSample * lambert;
+   
+   
+   float currentDepth = input.mClipPosition.z / input.mClipPosition.w;   
+   float2 uv = input.mClipPosition.xy / input.mClipPosition.w;
+   uv.y = -uv.y;
+   uv = uv * 0.5 + 0.5;   
+   
+   float shadowDepth = tex2D(ShadowSampler, uv).r;   
+   if (currentDepth > shadowDepth + 0.00125f)
+   {
+      color *= 0.5f;
+   }
+   else
+   {
+      color += gSpecularColor.xyz * specular;
+   }
+  
+   
+   return float4(color,0.0f);
+}
+
+
 float4 ps_Shadow(PS_SHADOW_INPUT Input) : COLOR
 {   
    float depth = Input.mClipPosition.z / Input.mClipPosition.w;
@@ -737,6 +824,25 @@ technique TPhongDiffuseOpacity
         PixelShader  = compile ps_3_0 ps_PhongDiffuseOpacity();
     }  
 }
+
+technique TPhongDiffuseSpecular
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuseSpecular();
+    }  
+}
+
+technique TPhongDiffuseBumpSpecular
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuseBumpSpecular();
+    }  
+}
+
 
 //--------------------------------------------------------------//
 // Technique Section for CreateShadowShader

@@ -20,11 +20,9 @@ private:
 	Sophia::Entity*			m_pModel;
 	bool					m_bModifiedAnimation;
 	bool					m_bModifiedScene;
-	bool					m_bModifiedMaterial;
-	
-	Sophia::cSceneNode				m_helper;
+	bool					m_bModifiedMaterial;	
 public:
-	bool					m_bShowSkeleton;
+	Sophia::cSceneNode				m_helper;	
 public:	
 	virtual void Enter();
 	virtual void Leave();

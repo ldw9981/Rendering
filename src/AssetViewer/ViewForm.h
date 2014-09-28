@@ -161,7 +161,6 @@ namespace AssetViewer {
 			 }
 	private: System::Void ViewForm_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
 private: System::Void showHideShadowToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
-private: System::Void showHideSkeletonToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 private: System::Void resetTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 };
 

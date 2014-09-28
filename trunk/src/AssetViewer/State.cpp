@@ -30,8 +30,7 @@ State::State(void)
 	m_pModel = NULL;
 	m_bModifiedAnimation = false;
 	m_bModifiedScene = false;
-	m_bModifiedMaterial = false;
-	m_bShowSkeleton = false;
+	m_bModifiedMaterial = false;	
 }
 
 State::~State( void )

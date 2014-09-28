@@ -128,10 +128,7 @@ void cSceneNode::UpdateLocalMatrix()
 		return;
 	
 	if ( m_vecSceneAnimation.empty())
-	{
-		m_referenceAnimationKey.GetTrasnform(&m_matLocal);	
 		return;
-	}
 
 	ANMKEY anmKeyCurr;
 	ANMKEY anmKeyTemp;

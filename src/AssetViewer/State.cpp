@@ -162,17 +162,13 @@ void State::OpenASE( const char* path )
 	}
 	m_pModel = m_graphicWorld.CreateEntity();
 	m_pModel->LoadASE(path);
-	m_pModel->Build();
-	//m_pAirPlaneBake->Init();
-	//m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
+	m_pModel->Build();	
+	m_pModel->SetParentNode(&m_helper);
+	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 
 	m_bModifiedAnimation = true;
 	m_bModifiedScene = true;
 	m_bModifiedMaterial = true;
-	
-	m_pModel->SetParentNode(&m_helper);
-
-	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 }
 
 void State::SaveAsset()
@@ -204,11 +200,7 @@ void State::OpenAsset( const char* path )
 	m_pModel->LoadAnimationSet(std::string(dir+name+".aniset").c_str());
 	m_pModel->LoadMaterial(std::string(dir+name+".material").c_str());
 	m_pModel->Build();
-	//m_pAirPlaneBake->Init();
-	//m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
-	//m_pModel->SetShowSkeleton(m_bShowSkeleton);
-
-	//m_pModel->SetParentNode(&m_helper);
+	m_pModel->SetParentNode(&m_helper);
 	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 }
 

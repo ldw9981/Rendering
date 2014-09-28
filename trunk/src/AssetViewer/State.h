@@ -1,5 +1,7 @@
 #pragma once
 #include "Framework/View.h"
+#include "Scene/SceneNode.h"
+
 class Sophia::Entity;
 class State : public Sophia::cView
 {
@@ -19,6 +21,8 @@ private:
 	bool					m_bModifiedAnimation;
 	bool					m_bModifiedScene;
 	bool					m_bModifiedMaterial;
+	
+	Sophia::cSceneNode				m_helper;
 public:
 	bool					m_bShowSkeleton;
 public:	

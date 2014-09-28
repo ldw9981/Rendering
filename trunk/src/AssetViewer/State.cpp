@@ -83,7 +83,8 @@ void State::Leave()
 
 void State::Update( DWORD elapseTime )
 {
-	cView::Update(elapseTime);	
+	m_helper.Update(elapseTime);
+	cView::Update(elapseTime);		
 }
 
 void State::ProcessRender()
@@ -120,7 +121,7 @@ void State::Control()
 				int* delta = (int*)&g_pInput->GetMouseState().lX;
 
 
-				D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+				D3DXMATRIX& localTM = m_helper.GetLocalTM();
 				D3DXMATRIX rot;
 				D3DXMatrixRotationY(&rot,D3DXToRadian( *(delta) * -0.2f ));
 				localTM = rot * localTM;
@@ -133,7 +134,7 @@ void State::Control()
 			{
 				int* delta = (int*)&g_pInput->GetMouseState().lY;
 
-				D3DXMATRIX& localTM = m_pModel->GetLocalTM();
+				D3DXMATRIX& localTM = m_helper.GetLocalTM();
 				D3DXMATRIX rot;
 				D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * 0.2f ));
 				localTM = rot * localTM;
@@ -164,12 +165,15 @@ void State::OpenASE( const char* path )
 	m_pModel->LoadASE(path);
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
+	//m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
 	m_bModifiedAnimation = true;
 	m_bModifiedScene = true;
 	m_bModifiedMaterial = true;
-	m_pModel->SetShowSkeleton(m_bShowSkeleton);
+	
+	m_pModel->SetParentNode(&m_helper);
+
+	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 }
 
 void State::SaveAsset()
@@ -202,8 +206,11 @@ void State::OpenAsset( const char* path )
 	m_pModel->LoadMaterial(std::string(dir+name+".material").c_str());
 	m_pModel->Build();
 	//m_pAirPlaneBake->Init();
-	m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
-	m_pModel->SetShowSkeleton(m_bShowSkeleton);
+	//m_pModel->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
+	//m_pModel->SetShowSkeleton(m_bShowSkeleton);
+
+	//m_pModel->SetParentNode(&m_helper);
+	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 }
 
 Sophia::Entity* State::GetEntity()

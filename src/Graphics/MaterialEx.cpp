@@ -231,14 +231,16 @@ void Material::SerializeIn( std::ifstream& stream )
 {
 	unsigned short ver = 0;
 	stream.read((char*)&ver,sizeof(ver));
+	assert(ver<=MATERIAL_LASTEST);
 
 	unsigned char type = 0;
 	std::string fileName;
 	type = 0;
 	stream.read((char*)&type,sizeof(type));
+	assert(type<MAX);
+
 	fileName.clear();
 	ReadString(stream,fileName);
-
 	if (fileName.length()!=0)
 	{
 		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
@@ -252,6 +254,7 @@ void Material::SerializeIn( std::ifstream& stream )
 
 	type = 0;
 	stream.read((char*)&type,sizeof(type));
+	assert(type<MAX);
 	fileName.clear();
 	ReadString(stream,fileName);
 	if (fileName.length()!=0)
@@ -267,6 +270,7 @@ void Material::SerializeIn( std::ifstream& stream )
 
 	type = 0;
 	stream.read((char*)&type,sizeof(type));
+	assert(type<MAX);
 	fileName.clear();	
 	ReadString(stream,fileName);	
 	if (fileName.length()!=0)
@@ -284,6 +288,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	{
 		type = 0;
 		stream.read((char*)&type,sizeof(type));
+		assert(type<MAX);
 		fileName.clear();	
 		ReadString(stream,fileName);	
 		if (fileName.length()!=0)
@@ -302,6 +307,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	{
 		type = 0;
 		stream.read((char*)&type,sizeof(type));
+		assert(type<MAX);
 		fileName.clear();	
 		ReadString(stream,fileName);	
 		if (fileName.length()!=0)
@@ -378,7 +384,7 @@ void Material::SerializeOut( std::ofstream& stream )
 	type = SPECULAR;
 	stream.write((char*)&type,sizeof(type));
 	fileName.clear();
-	if (m_pMapOpacity)
+	if (m_pMapSpecular)
 	{
 		StringUtil::SplitPath(std::string(m_pMapSpecular->GetFilePath()),NULL,NULL,&fileName,&fileName);
 	}

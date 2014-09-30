@@ -111,6 +111,7 @@
     <ClCompile Include="AnimationForm.cpp" />
     <ClCompile Include="AssemblyInfo.cpp" />
     <ClCompile Include="AssetViewer.cpp" />
+    <ClCompile Include="CameraSettingForm.cpp" />
     <ClCompile Include="Framework.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="MaterialProperty.cpp" />
@@ -127,6 +128,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AnimationForm.h">
+      <FileType>CppForm</FileType>
+    </ClInclude>
+    <ClInclude Include="CameraSettingForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="Form1.h">
@@ -160,6 +164,9 @@
   <ItemGroup>
     <EmbeddedResource Include="AnimationForm.resx">
       <DependentUpon>AnimationForm.h</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CameraSettingForm.resx">
+      <DependentUpon>CameraSettingForm.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resX">
       <DependentUpon>Form1.h</DependentUpon>

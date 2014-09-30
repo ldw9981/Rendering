@@ -4,6 +4,7 @@
 #include "Framework.h"
 #include "State.h"
 #include "Input/Input.h"
+#include "CameraSettingForm.h"
 
 namespace AssetViewer {
 
@@ -27,6 +28,7 @@ namespace AssetViewer {
 			//TODO: 생성자 코드를 여기에 추가합니다.
 			//
 			m_pFramework = NULL;
+			cameraSettingForm = nullptr;
 		}
 
 	protected:
@@ -42,8 +44,14 @@ namespace AssetViewer {
 			m_pFramework->Finalize();
 			delete m_pFramework;
 			m_pFramework = NULL;
+			if (cameraSettingForm != nullptr)
+			{
+				delete cameraSettingForm;
+				cameraSettingForm = nullptr;
+			}
 		}
 	public:
+		CameraSettingForm^		cameraSettingForm;
 		Framework*		m_pFramework;
 		State*			m_pState;
 	private: System::Windows::Forms::ContextMenuStrip^  contextMenuStrip1;
@@ -52,6 +60,8 @@ namespace AssetViewer {
 
 
 	private: System::Windows::Forms::ToolStripMenuItem^  resetTransformToolStripMenuItem;
+	private: System::Windows::Forms::ToolStripMenuItem^  cameraSettingsToolStripMenuItem;
+
 	public: 
 	private: System::ComponentModel::IContainer^  components;
 	private:
@@ -71,15 +81,16 @@ namespace AssetViewer {
 			this->contextMenuStrip1 = (gcnew System::Windows::Forms::ContextMenuStrip(this->components));
 			this->showHideShadowToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->resetTransformToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->cameraSettingsToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->contextMenuStrip1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// contextMenuStrip1
 			// 
-			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->showHideShadowToolStripMenuItem, 
-				this->resetTransformToolStripMenuItem});
+			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->showHideShadowToolStripMenuItem, 
+				this->resetTransformToolStripMenuItem, this->cameraSettingsToolStripMenuItem});
 			this->contextMenuStrip1->Name = L"contextMenuStrip1";
-			this->contextMenuStrip1->Size = System::Drawing::Size(182, 48);
+			this->contextMenuStrip1->Size = System::Drawing::Size(182, 92);
 			// 
 			// showHideShadowToolStripMenuItem
 			// 
@@ -94,6 +105,13 @@ namespace AssetViewer {
 			this->resetTransformToolStripMenuItem->Size = System::Drawing::Size(181, 22);
 			this->resetTransformToolStripMenuItem->Text = L"Reset Transform";
 			this->resetTransformToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::resetTransformToolStripMenuItem_Click);
+			// 
+			// cameraSettingsToolStripMenuItem
+			// 
+			this->cameraSettingsToolStripMenuItem->Name = L"cameraSettingsToolStripMenuItem";
+			this->cameraSettingsToolStripMenuItem->Size = System::Drawing::Size(181, 22);
+			this->cameraSettingsToolStripMenuItem->Text = L"Camera Settings";
+			this->cameraSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::cameraSettingsToolStripMenuItem_Click);
 			// 
 			// ViewForm
 			// 
@@ -120,13 +138,7 @@ namespace AssetViewer {
 			MSG msg;
 			return !::PeekMessage(&msg, (HWND)(void*)(0), 0, 0, 0); 
 		}
-		System::Void OnApplicationIdle(System::Object^ sender,System::EventArgs^ e)
-		{						
-			while (AppStillIdle())
-			{
-				m_pFramework->Run();
-			}			
-		}
+		System::Void OnApplicationIdle(System::Object^ sender,System::EventArgs^ e);
 	private: System::Void ViewForm_Activated(System::Object^  sender, System::EventArgs^  e) {
 
 
@@ -160,8 +172,10 @@ namespace AssetViewer {
 				 }
 			 }
 	private: System::Void ViewForm_MouseClick(System::Object^  sender, System::Windows::Forms::MouseEventArgs^  e);
-private: System::Void showHideShadowToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
-private: System::Void resetTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void showHideShadowToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void resetTransformToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void cameraSettingsToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	 private: System::Void cameraSettingsForm_Closed(System::Object^  sender, System::EventArgs^  e);
 };
 
 }

@@ -274,177 +274,28 @@ namespace AssetViewer {
 		System::Void OnShown(System::Object^  sender, System::EventArgs^  e);
 
 
-	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			
-			 }
-	private: System::Void saveToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-		 }
-private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e) {
-		 }
-private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
+	private: System::Void openToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void saveToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void aSEToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	public: System::Void sceneTreeForm_treeView1_AfterSelect(System::Object^  sender, System::Windows::Forms::TreeViewEventArgs^  e);
+	public: System::Void sceneTreeForm_treeView1_NodeMouseClick(System::Object^  sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^  e);
+	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void viewForm_OnShown(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void materialPropertyForm_comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
-			 openFileDialog1->InitialDirectory = ".\\";
-			 openFileDialog1->Filter = "ase files (*.ase)|*.ase";
-			 openFileDialog1->FilterIndex = 1;
-			 openFileDialog1->RestoreDirectory = true;
-
-			 if ( openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK )
-			 {
-				 State* pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
-				
-				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
-				 pState->OpenASE(path.c_str());
-				 pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
-				 sceneTreeForm->Clear();
-				 sceneTreeForm->Update(pState);
-
-				 animationForm->Clear();
-				 animationForm->Update(pState,NULL);
-				 m_pNode = NULL;
-
-		
-				if ( scenePropertyForm!= nullptr )
-					 scenePropertyForm->Update(pState,NULL);
-
-				if ( materialPropertyForm!= nullptr )
-					 materialPropertyForm->Update(pState,NULL);
-			 }
-			 delete openFileDialog1;
-		 }
-private: System::Void assetToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			 OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
-
-			 openFileDialog1->InitialDirectory = ".\\";
-			 openFileDialog1->Filter = "scene files (*.scene)|*.scene";
-			 openFileDialog1->FilterIndex = 1;
-			 openFileDialog1->RestoreDirectory = true;
-
-			 if ( openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK )
-			 {
-				 State* pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
-
-				 std::string path = msclr::interop::marshal_as< std::string >( openFileDialog1->FileName); 
-				 pState->OpenAsset(path.c_str());
-	             pState->GetEntity()->SetShowSkeleton(m_bShowSkeleton);
-
-				 sceneTreeForm->Clear();
-				 sceneTreeForm->Update(pState);
-
-				 animationForm->Clear();
-                 animationForm->Update(pState,m_pNode);
-				 m_pNode = NULL;
-
-				 if ( scenePropertyForm!= nullptr )
-					scenePropertyForm->Update(pState,m_pNode);
-
-				 if ( materialPropertyForm!= nullptr )
-					 materialPropertyForm->Update(pState,m_pNode);
-				
-			 }
-			 delete openFileDialog1;
-		 }
-private: System::Void allToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e) {
-			
-			 m_pState->SaveAsset();
-		
-			 animationForm->Update(m_pState,m_pNode);
-		 }
-	public: System::Void sceneTreeForm_treeView1_AfterSelect(System::Object^  sender, System::Windows::Forms::TreeViewEventArgs^  e) {
-				
-				std::string name = msclr::interop::marshal_as< std::string >(e->Node->Text);
-				m_pNode = m_pState->GetEntity()->FindNode(name);
-				animationForm->Update(m_pState,m_pNode);
-
-				if ( scenePropertyForm != nullptr )
-					scenePropertyForm->Update(m_pState,m_pNode);
-
-				if ( materialPropertyForm!= nullptr )
-					materialPropertyForm->Update(m_pState,m_pNode);
-			}
-	public: System::Void sceneTreeForm_treeView1_NodeMouseClick(System::Object^  sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^  e) {
-				if (e->Button != System::Windows::Forms::MouseButtons::Right)
-					return;
-
-				if (m_pNode == NULL)
-					return;
-
-				std::string name = msclr::interop::marshal_as< std::string >(e->Node->Text);
-				if( m_pNode->GetNodeName() != name )
-					return;
-				
-				System::Drawing::Point pt = sceneTreeForm->PointToScreen(System::Drawing::Point(0,0));
-				pt.X += e->Location.X;
-				pt.Y += e->Location.Y;
-
-				contextMenuStrip1->Show(pt);				
-			}
-	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e) {
-				materialPropertyForm->Update(m_pState,m_pNode);
-		 }
-	private: System::Void viewForm_OnShown(System::Object^  sender, System::EventArgs^  e) {
-				  m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
-			 }
-	private: System::Void materialPropertyForm_comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
-				 materialPropertyForm->Update(m_pState,m_pNode);
-		 }
-
-	private: System::Void scenePropertyForm_Closed(System::Object^  sender, System::EventArgs^  e) 
-		{
-			//assert(scenePropertyForm!=nullptr);
-			delete scenePropertyForm;
-			scenePropertyForm = nullptr;			
-		}
-	private: System::Void materialPropertyForm_Closed(System::Object^  sender, System::EventArgs^  e) 
-		{
-			//ASSERT(materialPropertyForm!=nullptr);
-			delete materialPropertyForm;
-			materialPropertyForm = nullptr;	
-		}
-	public: void Pop_scenePropertyForm()
-		{
-			//assert(scenePropertyForm==nullptr);
-			if (scenePropertyForm!=nullptr)
-				return;
-
-			scenePropertyForm = gcnew ScenePropertyForm;
-			scenePropertyForm->Owner = this;
-			scenePropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::scenePropertyForm_Closed);
-			scenePropertyForm->Show();		
-
-		}
-	public: void Pop_materialPropertyForm()
-		{
-			//assert(materialPropertyForm==nullptr);
-			if (materialPropertyForm!=nullptr)
-				return;
-
-			materialPropertyForm = gcnew MaterialPropertyForm;
-			materialPropertyForm->Owner = this;
-			materialPropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::materialPropertyForm_Closed);
-			materialPropertyForm->Show();
-		}
-	public: System::Void contextMenuStrip1_ItemClicked(System::Object^  sender, System::Windows::Forms::ToolStripItemClickedEventArgs^  e) {
-				int index = e->ClickedItem->Owner->Items->IndexOf(e->ClickedItem);				
-				switch (index)
-				{
-				case 0:
-					Pop_scenePropertyForm();
-					if ( scenePropertyForm != nullptr )
-						scenePropertyForm->Update(m_pState,m_pNode);
-					
-					break;
-				case 1:
-					Pop_materialPropertyForm();
-					if ( materialPropertyForm!= nullptr )
-						materialPropertyForm->Update(m_pState,m_pNode);
-
-					break;
-				}				
-			}
+	private: System::Void scenePropertyForm_Closed(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void materialPropertyForm_Closed(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void cameraSettingsForm_Closed(System::Object^  sender, System::EventArgs^  e);
+	public: void Pop_scenePropertyForm();
+	public: void Pop_materialPropertyForm();
+	public: System::Void  Pop_cameraSettingsForm();
+	public: System::Void contextMenuStrip1_ItemClicked(System::Object^  sender, System::Windows::Forms::ToolStripItemClickedEventArgs^  e);
 	private: System::Void shadowOnOffToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
-private: System::Void skeletonShowHideToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
-private: System::Void MainForm_Deactivate(System::Object^  sender, System::EventArgs^  e);
-private: System::Void MainForm_Activated(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void skeletonShowHideToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void MainForm_Deactivate(System::Object^  sender, System::EventArgs^  e);
+	private: System::Void MainForm_Activated(System::Object^  sender, System::EventArgs^  e);
 };
 }

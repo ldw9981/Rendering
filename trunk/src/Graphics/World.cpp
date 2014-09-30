@@ -282,9 +282,10 @@ void World::Render()
 	m_pEffect->EndPass();
 	m_pEffect->End();
 
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	int size = Graphics::m_pInstance->m_nTechniqueSize;
+	for (int i=0;i<size ;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);			
 		m_renderQueueNormal[i].Render();
@@ -293,9 +294,9 @@ void World::Render()
 	}
 
 	
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	for (int i=0;i<size;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinned[i].Render();		
@@ -303,9 +304,9 @@ void World::Render()
 		m_pEffect->End();
 	}
 		
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	for (int i=0;i<size;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);			
 		m_renderQueueNormalAlphaTest[i].RenderAlphaTest();
@@ -313,9 +314,9 @@ void World::Render()
 		m_pEffect->End();
 	}
 	
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	for (int i=0;i<size;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinnedAlphaTest[i].RenderAlphaTest();		
@@ -323,9 +324,9 @@ void World::Render()
 		m_pEffect->End();
 	}
 
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	for (int i=0;i<size;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTNormal[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);				
 		m_renderQueueNormalAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);
@@ -333,9 +334,9 @@ void World::Render()
 		m_pEffect->End();
 	}
 
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
+	for (int i=0;i<size;i++)
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);		

@@ -9,7 +9,7 @@ class cGUIFont;
 class cView;
 class World;
 
-#define TECHNIQUE_SIZE 16
+#define TECHNIQUE_SIZE 32
 
 class Graphics
 {
@@ -65,8 +65,11 @@ public:
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
-	D3DXHANDLE				m_hTNormal[TECHNIQUE_SIZE];
-	D3DXHANDLE				m_hTBlend[TECHNIQUE_SIZE];
+	int						m_nTechniqueSize;
+	D3DXHANDLE*				m_pTNormal;
+	D3DXHANDLE*				m_pTBlend;
+
+
 	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
@@ -86,8 +89,6 @@ public:
 	void RenderDebugString(int x,int y,const char* szText);
 	LPD3DXEFFECT GetEffect() const { return m_pEffect; }
 
-	void Render(World* pWorld);
-	void RenderEX(World* pWorld);
 	void Begin();
 	void End();
 

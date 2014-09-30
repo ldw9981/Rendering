@@ -1825,6 +1825,22 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	return pNewSceneNode;
 }
 
+Skeleton* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
+{
+	Skeleton* pNewSceneNode = NULL; 
+	pNewSceneNode = new Skeleton;	
+
+	//공통적인 데이터
+	if(stInfo.pParent == NULL)
+		stInfo.pParent = m_pSceneRoot;
+
+	stInfo.pParent->AttachChildNode(pNewSceneNode);
+	SetNodeInfo(pNewSceneNode,stInfo);
+
+	m_pSceneRoot->InsertBone(pNewSceneNode);
+	return pNewSceneNode;
+}
+
 SkinnedMeshNode* 
 cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 								  cRscVertexBuffer* pVertexBuffer,
@@ -1991,6 +2007,7 @@ bool cASEParser::GetSubMaterial( Material& material)
 			{
 				material.SetMapSpecular(GetTexture());	
 			}
+			break;
 		case TOKENR_MAP_SHINE:
 		case TOKENR_MAP_GENERIC:
 		case TOKENR_MAP_TYPE:
@@ -2296,21 +2313,7 @@ cRscTexture* cASEParser::GetTexture()
 	return pRscTexture;
 }
 
-Skeleton* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
-{
-	Skeleton* pNewSceneNode = NULL; 
-	pNewSceneNode = new Skeleton;	
 
-	//공통적인 데이터
-	if(stInfo.pParent == NULL)
-		stInfo.pParent = m_pSceneRoot;
-
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
-	SetNodeInfo(pNewSceneNode,stInfo);
-
-	m_pSceneRoot->InsertBone(pNewSceneNode);
-	return pNewSceneNode;
-}
 
 
 

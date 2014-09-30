@@ -23,6 +23,7 @@ private:
 	bool					m_bModifiedMaterial;	
 public:
 	Sophia::cSceneNode				m_helper;	
+	float					m_scrollSize;
 public:	
 	virtual void Enter();
 	virtual void Leave();

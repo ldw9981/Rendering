@@ -31,6 +31,7 @@ State::State(void)
 	m_bModifiedAnimation = false;
 	m_bModifiedScene = false;
 	m_bModifiedMaterial = false;	
+	m_scrollSize = 100.0f;
 }
 
 State::~State( void )
@@ -96,14 +97,14 @@ void State::Control()
 	cView::Control();		
 	
 	
-	if (g_pInput->IsCurrDn(DIK_EQUALS))
+	if (g_pInput->IsTurnDn(DIK_EQUALS))
 	{
-		m_graphicWorld.m_WorldLightPosition.y += 50;
+		m_scrollSize *= 10.0f;
 
 	}
-	if (g_pInput->IsCurrDn(DIK_MINUS))
+	if (g_pInput->IsTurnDn(DIK_MINUS))
 	{
-		m_graphicWorld.m_WorldLightPosition.y -= 50;
+		m_scrollSize /= 10.0f;
 	}
 
 	if (g_pInput->IsTurnDn(DIK_F12))
@@ -144,10 +145,11 @@ void State::Control()
 	if (g_pInput->GetMouseState().lZ != 0)
 	{
 
-			int* iz = (int*)&g_pInput->GetMouseState().lZ;
+			int iz = *(int*)&g_pInput->GetMouseState().lZ;
+			iz /= abs(iz);
 			D3DXVECTOR3 temp;
 			m_graphicWorld.m_camera.GetLocalPos(temp);
-			temp.z += (float)*(iz) * 0.1f;		
+			temp.z += (float)(iz) * m_scrollSize;		
 			m_graphicWorld.m_camera.SetLocalPos(temp);
 	}
 	

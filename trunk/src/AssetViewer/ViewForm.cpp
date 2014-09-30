@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "ViewForm.h"
-
+#include "MainForm.h"
 
 System::Void AssetViewer::ViewForm::ViewForm_MouseClick( System::Object^ sender, System::Windows::Forms::MouseEventArgs^ e )
 {
@@ -32,4 +32,38 @@ System::Void AssetViewer::ViewForm::showHideShadowToolStripMenuItem_Click( Syste
 		return;
 
 	m_pState->m_graphicWorld.SetEnableShadow(!m_pState->m_graphicWorld.GetEnableShadow());		
+}
+
+System::Void AssetViewer::ViewForm::cameraSettingsToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (cameraSettingForm != nullptr)
+		return;
+
+	cameraSettingForm = gcnew CameraSettingForm;
+	cameraSettingForm->Owner = this->MdiParent;	
+	cameraSettingForm->Closed += gcnew System::EventHandler(this, &ViewForm::cameraSettingsForm_Closed);
+	cameraSettingForm->Show();
+	cameraSettingForm->Update(m_pState);
+}
+
+System::Void AssetViewer::ViewForm::cameraSettingsForm_Closed( System::Object^ sender, System::EventArgs^ e )
+{
+	delete cameraSettingForm;
+	cameraSettingForm = nullptr;
+}
+
+System::Void AssetViewer::ViewForm::OnApplicationIdle( System::Object^ sender,System::EventArgs^ e )
+{
+	while (AppStillIdle())
+	{
+		m_pFramework->Run();
+	}			
+
+	if (cameraSettingForm!=nullptr)
+	{
+		if (m_pState != NULL && this->Focused)
+		{
+			cameraSettingForm->Update(m_pState);
+		}
+	}
 }

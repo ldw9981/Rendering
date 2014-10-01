@@ -21,10 +21,12 @@ cRendererQueue::~cRendererQueue()
 
 void cRendererQueue::Insert( IRenderer* pItem ,MultiSub* pMultiSub,Material* pMaterial)
 {
-	Specific temp;
-	temp.pMultiSub = pMultiSub;
-	temp.pMaterial = pMaterial;
-	m_listNode.push_back(std::make_pair(pItem,temp));
+	std::pair<IRenderer*,Specific> info;
+	info.first = pItem;
+	info.second.pMaterial = pMaterial;
+	info.second.pMultiSub = pMultiSub;
+
+	m_listNode.push_back(info);
 }
 
 void cRendererQueue::Insert( cRendererQueue& renderQueue )

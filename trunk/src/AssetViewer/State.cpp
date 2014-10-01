@@ -78,6 +78,7 @@ void State::Leave()
 	{
 		m_graphicWorld.DeleteEntity(m_pModel);
 	}
+	ClearStressEntity();
 	cView::Leave();
 }
 
@@ -219,7 +220,7 @@ void State::ClearStressEntity()
 {
 	for (auto it = m_vecStress.begin();it!=m_vecStress.end();++it)
 	{
-		delete *it;
+		m_graphicWorld.DeleteEntity(*it);
 	}
 	m_vecStress.clear();
 }
@@ -241,9 +242,9 @@ void State::OpenStressEntity( const char* asset )
 		pEntity->Build();
 
 		D3DXVECTOR3 pos;
-		pos.x = (rand()%100)*100.0f;
-		pos.y = (rand()%100)*100.0f;
-		pos.z = (rand()%100)*100.0f;
+		pos.x = (rand()%100 - 50)*100.0f;
+		pos.y = (rand()%100 - 50)*1.0f;
+		pos.z = (rand()%100 - 50)*100.0f;
 		pEntity->SetLocalPos(pos);
 
 	}

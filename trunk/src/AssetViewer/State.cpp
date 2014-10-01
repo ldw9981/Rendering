@@ -129,7 +129,7 @@ void State::Control()
 
 				D3DXMATRIX& localTM = m_helper.GetLocalTM();
 				D3DXMATRIX rot;
-				D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * 0.2f ));
+				D3DXMatrixRotationX(&rot,D3DXToRadian( *(delta) * -0.2f ));
 				localTM = rot * localTM;
 			}
 		}

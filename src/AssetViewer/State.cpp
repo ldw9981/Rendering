@@ -32,6 +32,7 @@ State::State(void)
 	m_bModifiedScene = false;
 	m_bModifiedMaterial = false;	
 	m_scrollSize = 100.0f;
+	m_nStressCount = 100;
 }
 
 State::~State( void )
@@ -204,11 +205,48 @@ void State::OpenAsset( const char* path )
 	m_pModel->Build();
 	m_pModel->SetParentNode(&m_helper);
 	D3DXMatrixIdentity(&m_helper.GetLocalTM());
+
+	ClearStressEntity();
+	OpenStressEntity(path);
 }
 
 Sophia::Entity* State::GetEntity()
 {
 	return m_pModel;
+}
+
+void State::ClearStressEntity()
+{
+	for (auto it = m_vecStress.begin();it!=m_vecStress.end();++it)
+	{
+		delete *it;
+	}
+	m_vecStress.clear();
+}
+
+void State::OpenStressEntity( const char* asset )
+{
+	Sophia::Entity* pEntity=NULL;
+	
+	for (int i=0;i<m_nStressCount;i++)
+	{
+		pEntity = m_graphicWorld.CreateEntity();
+		m_vecStress.push_back(pEntity);
+
+		std::string dir,name;
+		StringUtil::SplitPath(std::string(asset),NULL,&dir,&name,NULL);
+		pEntity->LoadScene(std::string(dir+name+".scene").c_str());
+		pEntity->LoadAnimationSet(std::string(dir+name+".aniset").c_str());
+		pEntity->LoadMaterial(std::string(dir+name+".material").c_str());
+		pEntity->Build();
+
+		D3DXVECTOR3 pos;
+		pos.x = (rand()%100)*100.0f;
+		pos.y = (rand()%100)*100.0f;
+		pos.z = (rand()%100)*100.0f;
+		pEntity->SetLocalPos(pos);
+
+	}
 }
 
 

@@ -105,8 +105,11 @@ void Entity::RenderBound()
 
 void Entity::Update( DWORD elapseTime )
 {
-	UpdateAnimationDescription(elapseTime,m_basePrevAnimationDesc);
-	UpdateAnimationDescription(elapseTime,m_baseAnimationDesc);
+	if (m_basePrevAnimationDesc.playIndex != -1)
+		UpdateAnimationDescription(elapseTime,m_basePrevAnimationDesc);
+	
+	if (m_baseAnimationDesc.playIndex != -1)
+		UpdateAnimationDescription(elapseTime,m_baseAnimationDesc);	
 
 	size_t index =0;
 	for (auto it = m_listPartial.begin();it != m_listPartial.end();)
@@ -127,7 +130,9 @@ void Entity::Update( DWORD elapseTime )
 	}
 
 	cSceneNode::Update(elapseTime);
-	m_BoundingSphere.SetCenterPos(D3DXVECTOR3(m_matWorld._41,m_matWorld._42,m_matWorld._43));
+
+	const D3DXVECTOR3* pos = GetWorldPos();
+	m_BoundingSphere.SetCenterPos(*pos);
 }
 
 bool Entity::Cull( Frustum* pFrustum ,float loose)
@@ -464,34 +469,31 @@ void Entity::StopBaseAnimation()
 
 void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )
 {
-	if ( desc.playIndex != -1 )
+	assert(desc.playIndex!=-1);
+	desc.playTime += elapseTime;
+	DWORD endTime = desc.length - desc.earlyEndTime;
+	if( desc.playTime >= endTime  )
 	{
-		desc.playTime += elapseTime;
-		DWORD endTime = desc.length - desc.earlyEndTime;
-		if( desc.playTime >= endTime  )
+		if ( desc.loop)
 		{
-			if ( desc.loop)
-			{
-				desc.playTime %= (endTime - desc.skipStartTime);
-				desc.playTime += desc.skipStartTime;
-			}
-			else
-			{
-				desc.playTime = endTime;
-			}
+			desc.playTime %= (endTime - desc.skipStartTime);
+			desc.playTime += desc.skipStartTime;
 		}
-
-		if (desc.fadeInTime!=0)
+		else
 		{
-			desc.fadeTime += elapseTime;
-			if (desc.fadeTime >= desc.fadeInTime)
-			{
-				desc.fadeTime = desc.fadeInTime;
-				desc.fadeInTime = 0;
-			}
-			desc.fadeWeight = (float)desc.fadeTime/(float)desc.fadeInTime;
+			desc.playTime = endTime;
 		}
+	}
 
+	if (desc.fadeInTime!=0)
+	{
+		desc.fadeTime += elapseTime;
+		if (desc.fadeTime >= desc.fadeInTime)
+		{
+			desc.fadeTime = desc.fadeInTime;
+			desc.fadeInTime = 0;
+		}
+		desc.fadeWeight = (float)desc.fadeTime/(float)desc.fadeInTime;
 	}
 }
 

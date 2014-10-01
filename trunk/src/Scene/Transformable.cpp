@@ -105,6 +105,7 @@ void cTransformable::SetWorldPos( D3DXVECTOR3& pos )
 /*
 	속도 계산은 게임용루트에서만 작동하게한다.
 */
+/*
 void cTransformable::Update( DWORD dwElapseMS )
 {
 	float fElapseSec = float(dwElapseMS) / 1000.0f;
@@ -123,6 +124,7 @@ void cTransformable::Update( DWORD dwElapseMS )
 		m_matLocal = m_matVelocityRot * m_matLocal;	
 	}	
 }
+*/
 
 void cTransformable::SetVelocityPosition( float x,float y,float z )
 {

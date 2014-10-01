@@ -320,7 +320,6 @@ void cSceneNode::Render()
 
 void cSceneNode::Update( DWORD elapseTime )
 {
-	cTransformable::Update(elapseTime);
 	UpdateLocalMatrix();
 	UpdateWorldMatrix(m_pParentNode);
 	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)

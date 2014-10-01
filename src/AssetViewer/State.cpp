@@ -98,20 +98,11 @@ void State::Control()
 {
 	cView::Control();		
 	
-	
-	if (g_pInput->IsTurnDn(DIK_EQUALS))
-	{
-		m_scrollSize *= 10.0f;
-
-	}
-	if (g_pInput->IsTurnDn(DIK_MINUS))
-	{
-		m_scrollSize /= 10.0f;
-	}
 
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
-		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
+		
+		m_graphicWorld.m_bDebugBound = !m_graphicWorld.m_bDebugBound;
 	}	
 	
 	if (m_pModel)

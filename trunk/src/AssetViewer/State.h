@@ -21,9 +21,12 @@ private:
 	bool					m_bModifiedAnimation;
 	bool					m_bModifiedScene;
 	bool					m_bModifiedMaterial;	
+
 public:
 	Sophia::cSceneNode				m_helper;	
 	float					m_scrollSize;
+	int						m_nStressCount;
+	std::vector<Sophia::Entity*>		m_vecStress;
 public:	
 	virtual void Enter();
 	virtual void Leave();
@@ -44,5 +47,8 @@ public:
 	void SetModifiedMaterial(bool val) { m_bModifiedMaterial = val; }
 	bool GetModifiedAnimation() const { return m_bModifiedAnimation; }
 	void SetModifiedAnimation(bool val) { m_bModifiedAnimation = val; }
+
+	void ClearStressEntity();
+	void OpenStressEntity(const char* asset);
 };
 

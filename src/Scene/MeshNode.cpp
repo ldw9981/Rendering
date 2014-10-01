@@ -43,31 +43,30 @@ void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 {
 	MultiSub& multiSub = *pMultiSub;
 	Material& material = *pMaterial;
-		//m_vecMaterial[temp.materialIndex];
-	
-
-
-	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
+		
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	pEffect->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
+
 	if( material.GetMapDiffuse() != NULL )	
-		Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
+		pEffect->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
 
 	if( material.GetMapNormal() != NULL )	
-		Graphics::m_pInstance->GetEffect()->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
+		pEffect->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
 
 	if( material.GetMapLight() != NULL )
-		Graphics::m_pInstance->GetEffect()->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
+		pEffect->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
 
 	if( material.GetMapOpacity() != NULL )
-		Graphics::m_pInstance->GetEffect()->SetTexture("Opacity_Tex",material.GetMapOpacity()->GetD3DTexture());
+		pEffect->SetTexture("Opacity_Tex",material.GetMapOpacity()->GetD3DTexture());
 
 	if( material.GetMapSpecular() != NULL )
-		Graphics::m_pInstance->GetEffect()->SetTexture("Tex2",material.GetMapSpecular()->GetD3DTexture());
+		pEffect->SetTexture("Tex2",material.GetMapSpecular()->GetD3DTexture());
 
-	Graphics::m_pInstance->GetEffect()->CommitChanges();
+	pEffect->CommitChanges();
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 

@@ -57,7 +57,7 @@ public:
 
 	// 월드행렬 리턴
 	virtual void			UpdateWorldMatrix(cTransformable* pParent=NULL);
-	void					Update(DWORD dwElapseMS);
+	//void					Update(DWORD dwElapseMS);
 
 	D3DXVECTOR3				GetVelPosPerSec()  { return m_velPosPerSec; }
 	D3DXVECTOR3				GetVelRotPerSec()  { return m_velRotPerSec; }

@@ -59,13 +59,11 @@ void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 {
 	MultiSub& multiSub = *pMultiSub;
 	Material& material = *pMaterial;	
-
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
+	
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
-	int iBoneRef,nBoneRefSize = (int)m_vecBoneRef.size();
-	// 현재메쉬가 참조하는 본개수만큼
+	size_t iBoneRef,nBoneRefSize = m_vecBoneRef.size();
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
@@ -76,23 +74,26 @@ void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 
 	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
 
-	if( material.GetMapDiffuse() != NULL )
-	{
-		pEffect->SetTexture("Tex0",material.GetMapDiffuse()->GetD3DTexture());
-	}
+	cRscTexture* pRscTexture;
+	pRscTexture = material.GetMapDiffuse();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
 
-	if( material.GetMapNormal() != NULL )
-	{
-		pEffect->SetTexture("Tex1",material.GetMapNormal()->GetD3DTexture());
-	}
+	pRscTexture = material.GetMapNormal();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
 
-	if( material.GetMapLight() != NULL )
-	{
-		pEffect->SetTexture("Tex3",material.GetMapLight()->GetD3DTexture());
-	}
+	pRscTexture = material.GetMapLight();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
 
-	if( material.GetMapOpacity() != NULL )
-		pEffect->SetTexture("Opacity_Tex",material.GetMapOpacity()->GetD3DTexture());
+	pRscTexture = material.GetMapOpacity();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
+
+	pRscTexture = material.GetMapSpecular();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
 
 	pEffect->CommitChanges();
 

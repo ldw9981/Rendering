@@ -150,5 +150,8 @@
     <EmbeddedResource Include="MaterialPropertyForm.resx">
       <Filter>리소스 파일</Filter>
     </EmbeddedResource>
+    <EmbeddedResource Include="CameraSettingForm.resx">
+      <Filter>리소스 파일</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -43,9 +43,9 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseBumpSpecular;
 
 	D3DXHANDLE				m_hTCreateShadowNormal;	// ½¦ÀÌ´õ
-	D3DXHANDLE				m_hTCreateShadowBlend;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowSkinned;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTCreateShadowNormalAlphaTest;	// ½¦ÀÌ´õ
-	D3DXHANDLE				m_hTCreateShadowBlendAlphaTest;	// ½¦ÀÌ´õ
+	D3DXHANDLE				m_hTCreateShadowSkinnedAlphaTest;	// ½¦ÀÌ´õ
 	D3DXHANDLE				m_hTGUI;
 	LPD3DXEFFECT			m_pApplyShadowShader;
 	LPD3DXEFFECT			m_pCreateShadowShader;
@@ -67,7 +67,7 @@ public:
 
 	int						m_nTechniqueSize;
 	D3DXHANDLE*				m_pTNormal;
-	D3DXHANDLE*				m_pTBlend;
+	D3DXHANDLE*				m_pTSkinned;
 
 
 	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê

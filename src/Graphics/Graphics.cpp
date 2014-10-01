@@ -43,18 +43,18 @@ Graphics::Graphics(void)
 
 	m_nTechniqueSize = (int)pow(2.0f,Material::MAX);
 	m_pTNormal = new D3DXHANDLE[m_nTechniqueSize];
-	m_pTBlend = new D3DXHANDLE[m_nTechniqueSize];
+	m_pTSkinned = new D3DXHANDLE[m_nTechniqueSize];
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
 		m_pTNormal[i] = NULL;
-		m_pTBlend[i] = NULL;
+		m_pTSkinned[i] = NULL;
 	}
 }
 
 Graphics::~Graphics(void)
 {
 	delete[] m_pTNormal;
-	delete[] m_pTBlend;
+	delete[] m_pTSkinned;
 }
 
 void Graphics::SetPos( UINT x,UINT y )
@@ -214,10 +214,10 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
 	m_hTCreateShadowNormal = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
-	m_hTCreateShadowBlend = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
+	m_hTCreateShadowSkinned = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
 
 	m_hTCreateShadowNormalAlphaTest = m_pEffect->GetTechniqueByName( _T("CreateShadowAlphaTestShader") );
-	m_hTCreateShadowBlendAlphaTest = m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
+	m_hTCreateShadowSkinnedAlphaTest = m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
 
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 
@@ -279,16 +279,16 @@ void Graphics::LoadHLSL(const char* szFileName)
 	}
 
 	indexRenderQueue = 0;
-	m_pTBlend[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
+	m_pTSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_pTBlend[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuse;
+	m_pTSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuse;
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
-		if (m_pTBlend[i] == NULL )	
-			m_pTBlend[i] = m_hTSkinningPhongDiffuse;
+		if (m_pTSkinned[i] == NULL )	
+			m_pTSkinned[i] = m_hTSkinningPhongDiffuse;
 	}
 }
 

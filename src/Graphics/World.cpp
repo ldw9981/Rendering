@@ -229,34 +229,47 @@ void World::Render()
 	if (m_bEnableShadow)
 	{
 		//1. write depth
-		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		m_renderQueueNormalShadow.Render();
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
+		if (!m_renderQueueNormalShadow.IsEmpty())
+		{
+			m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
+			m_pEffect->Begin(&passes, 0);
+			m_pEffect->BeginPass(0);
+			m_renderQueueNormalShadow.Render();
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlend);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		m_renderQueueSkinnedShadow.Render();
-		m_pEffect->EndPass();
-		m_pEffect->End();
-			
-		m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		m_renderQueueNormalAlphaTestShadow.RenderAlphaTest();
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		if (!m_renderQueueNormalAlphaTestShadow.IsEmpty())
+		{		
+			m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest);
+			m_pEffect->Begin(&passes, 0);
+			m_pEffect->BeginPass(0);
+			m_renderQueueNormalAlphaTestShadow.RenderAlphaTest();
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowBlendAlphaTest);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);
-		m_renderQueueSkinnedAlphaTestShadow.RenderAlphaTest();
-		m_pEffect->EndPass();
-		m_pEffect->End();
-		
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
+		if (!m_renderQueueSkinnedShadow.IsEmpty())
+		{	
+			m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowSkinned);
+			m_pEffect->Begin(&passes, 0);
+			m_pEffect->BeginPass(0);
+			m_renderQueueSkinnedShadow.Render();
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
+
+		if (!m_renderQueueSkinnedAlphaTestShadow.IsEmpty())
+		{	
+			m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowSkinnedAlphaTest);
+			m_pEffect->Begin(&passes, 0);
+			m_pEffect->BeginPass(0);
+			m_renderQueueSkinnedAlphaTestShadow.RenderAlphaTest();
+			m_pEffect->EndPass();
+			m_pEffect->End();
+		}
 	}
 
 	//////////////////////////////
@@ -316,7 +329,7 @@ void World::Render()
 		if (m_renderQueueSkinned[i].IsEmpty())
 			continue;
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinned[i].Render();		
@@ -328,7 +341,7 @@ void World::Render()
 		if (m_renderQueueSkinnedAlphaTest[i].IsEmpty())
 			continue;
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
 		m_pEffect->Begin(&passes, 0);
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinnedAlphaTest[i].RenderAlphaTest();		
@@ -356,7 +369,7 @@ void World::Render()
 		if (m_renderQueueSkinnedAlphaBlend[i].IsEmpty())
 			continue;
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTBlend[i]);
+		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
 		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);		

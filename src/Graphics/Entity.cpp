@@ -19,7 +19,6 @@ namespace Sophia
 Entity::Entity(void)
 {
 	m_strNodeName="Entity";	
-	m_indexMaterial = -1;
 	m_type = TYPE_ROOT;
 	m_bShowBone = false;
 }
@@ -33,11 +32,13 @@ Entity::~Entity(void)
 		pAnimation->Release();
 	}	
 
-	for (auto it=m_vecMaterial.begin();it!=m_vecMaterial.end();++it )
+	for (auto it=m_material.begin();it!=m_material.end();++it)
 	{
-		EntityMaterials* pEntityMaterial = *it;
-		pEntityMaterial->Release();
-	}	
+		for (auto it_sub = (*it).begin();it_sub!=(*it).end();++it_sub)
+		{
+			(*it_sub)->Release();
+		}
+	}
 }
 void Entity::SetBoundingSphere( cSphere& Sphere )
 {
@@ -168,11 +169,6 @@ void Entity::Build()
 	m_renderQueueGUI.Clear();
 	m_renderQueueLine.Clear();
 
-	
-	if (!m_vecMaterial.empty())
-	{
-		m_indexMaterial = 0;	
-	}
 	cSceneNode::BuildComposite(this);
 }
 
@@ -295,55 +291,58 @@ bool Entity::LoadAnimation( const char* fileName )
 
 bool Entity::SaveMaterial( const char* fileName ,int index)
 {
-	if (index >= (int)m_vecMaterial.size())
-		return false;
-
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);	
 
-	EntityMaterials* pEntityMaterial = m_vecMaterial[index];
-	pEntityMaterial->SerializeOut(stream);
+	unsigned char countRef = m_material.size();
+	stream.write((char*)&countRef,sizeof(countRef));
+	if (countRef==0)
+		return true;
+
+	for (auto it=m_material.begin();it!=m_material.end();++it)
+	{
+		unsigned char countSub = (*it).size();
+		stream.write((char*)&countSub,sizeof(countSub));
+
+		for (auto it_sub = (*it).begin();it_sub!=(*it).end();++it_sub)
+		{
+			Material* pItem = *it_sub;
+			pItem->SerializeOut(stream);
+		}
+	}
+
 	return true;
 }
 
 bool Entity::LoadMaterial( const char* fileName )
 {
-	EntityMaterials* pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(fileName);
-	if (pEntityMaterial->GetRefCounter()==0)
+	std::ifstream stream;
+	stream.open(fileName, std::ios::in | std::ios::binary);
+
+	unsigned char sizeRef = 0;
+	stream.read((char*)&sizeRef,sizeof(sizeRef));
+	if (sizeRef==0)
+		return true;
+
+	for (unsigned char ref=0 ; ref<sizeRef ; ref++)
 	{
-		std::ifstream stream;
-		stream.open(fileName, std::ios::in | std::ios::binary);
-		pEntityMaterial->SerializeIn(stream);
+		unsigned char sizeSub;
+		stream.read((char*)&sizeSub,sizeof(sizeSub));
+
+		std::vector<Material*> subMaterials;
+
+		for (unsigned char sub=0 ; sub<sizeSub ; sub++)
+		{
+			Material* pItem = cResourceMng::m_pInstance->CreateMaterial(GetNodeName().c_str(),ref,sub);
+			pItem->SerializeIn(stream);
+			subMaterials.push_back(pItem);
+			pItem->AddRef();
+		}
+
+		m_material.push_back(subMaterials);
 	}
 
-	PushMaterial(pEntityMaterial);
 	return true;
-}
-
-void Entity::PushMaterial( EntityMaterials* pEntityMaterial )
-{
-	pEntityMaterial->AddRef();
-	m_vecMaterial.push_back(pEntityMaterial);
-
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
-	{
-		(*it)->PushMaterial(pEntityMaterial);
-	}	
-}
-
-void Entity::PopMaterial()
-{
-	if (m_vecMaterial.empty())
-		return;
-
-	EntityMaterials* pEntityMaterial = m_vecMaterial[m_vecMaterial.size()-1];
-	m_vecMaterial.pop_back();
-	pEntityMaterial->Release();
-
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
-	{
-		(*it)->PopMaterial();
-	}	
 }
 
 void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix )

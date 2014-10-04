@@ -395,52 +395,9 @@ void Material::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&AlphaTestRef,sizeof(AlphaTestRef));		
 }
 
-void MeshMaterials::SerializeIn( std::ifstream& stream )
-{
-	unsigned char count = 0;
-	stream.read((char*)&count,sizeof(count));
-	if (count==0)
-		return;
-
-	for (unsigned short i=0;i<count;i++)
-	{
-		Material item;
-		item.SerializeIn(stream);
-		m_container.push_back(item);
-	}
-}
-
-void MeshMaterials::SerializeOut( std::ofstream& stream )
-{
-	unsigned char count = 0;
-	count = m_container.size();
-	stream.write((char*)&count,sizeof(count));
-	if (count==0)
-		return;
-
-	for (unsigned char i=0;i<count;i++)
-	{
-		m_container[i].SerializeOut(stream);		
-	}
-}
 
 
-EntityMaterials::EntityMaterials(void)
-{
-
-}
-
-EntityMaterials::~EntityMaterials(void)
-{
-	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
-	{
-		delete it->second;
-	}
-	m_container.clear();
-}
-
-
-BOOL EntityMaterials::Create()
+BOOL Material::Create()
 {
 	assert(m_RefCounter>=0);
 	if (m_RefCounter > 0 )
@@ -449,61 +406,10 @@ BOOL EntityMaterials::Create()
 	return TRUE;
 }
 
-void EntityMaterials::Free()
+void Material::Free()
 {
-	cResourceMng::m_pInstance->EraseEntityMaterial(GetUniqueKey());
+	cResourceMng::m_pInstance->EraseMaterial(GetUniqueKey());
 	delete this;
-}
-
-MeshMaterials* EntityMaterials::CreateMeshMaterial( std::string& nodeName )
-{
-	MeshMaterials* pSceneMaterial = new MeshMaterials;
-
-	auto pairIB = m_container.insert(make_pair(nodeName,pSceneMaterial));
-	assert(pairIB.second!=false);
-	return pSceneMaterial;
-}
-
-MeshMaterials* EntityMaterials::GetMeshMaterial( std::string& nodeNAme )
-{
-	MeshMaterials* pSceneMaterial = NULL;
-	auto it = m_container.find(nodeNAme);
-	if (it != m_container.end())
-	{
-		pSceneMaterial = it->second;
-	}
-	return pSceneMaterial;
-}
-
-void EntityMaterials::SerializeIn( std::ifstream& stream )
-{
-	unsigned short count = 0;
-	stream.read((char*)&count,sizeof(count));
-	if (count==0)
-		return;
-
-	for ( unsigned short i=0 ; i<count ; i++)
-	{
-		std::string nodeName;
-		ReadString(stream,nodeName);
-		MeshMaterials* pSceneMaterial = CreateMeshMaterial(nodeName);
-		pSceneMaterial->SerializeIn(stream);
-	}
-}
-
-void EntityMaterials::SerializeOut( std::ofstream& stream )
-{
-	unsigned short count = 0;
-	count = m_container.size();
-	stream.write((char*)&count,sizeof(count));
-	if (count==0)
-		return;
-
-	for ( auto it = m_container.begin() ; it != m_container.end() ; it++)
-	{
-		WriteString(stream,std::string(it->first));
-		(it->second)->SerializeOut(stream);
-	}
 }
 
 

@@ -32,8 +32,8 @@ protected:
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
 	std::vector<MultiSub>	m_vecMultiSub;
-	std::vector<MeshMaterials*>		m_vecSceneMaterial;
-	MeshMaterials*			m_pMeshMaterials;
+	unsigned char			m_nMaterialRefIndex;
+
 public:
 	virtual void			Render(MultiSub* pMultiSub,Material* pMaterial);
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -63,11 +63,12 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
-	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
-	virtual void PopMaterial();
-	MeshMaterials* GetMeshMaterials();
 
+	int GetMaterialRefIndex() const { return m_nMaterialRefIndex; }
+	void SetMaterialRefIndex(int val) { m_nMaterialRefIndex = val; }
 	Material* GetMaterial(MultiSub* pMultiSub);
+	Material* GetMaterial(unsigned char subIndex);
+	const std::vector<Material*>& GetMaterials();
 
 	//virtual void GetRenderPosition(D3DXVECTOR3& pos);
 	virtual const D3DXVECTOR3* GetRenderWorldPos();;

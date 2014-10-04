@@ -41,9 +41,11 @@ public:
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
 	
-	std::vector<EntityMaterials*>	m_vecMaterial;		
+	//std::vector<EntityMaterials*>	m_vecMaterial;		
 	std::map<std::string,cSceneNode*>	m_mapBones;
-	int					m_indexMaterial;
+	//int					m_indexMaterial;
+	std::vector<std::vector<Material*>>	m_material;
+
 
 	bool				m_bShowBone;
 	
@@ -68,9 +70,6 @@ public:
 	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
-
-	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
-	virtual void PopMaterial();
 	virtual void UpdateLocalMatrix();
 	
 	
@@ -101,8 +100,6 @@ public:
 	void SetShowSkeleton(bool bShow);
 
 	void ClearRenderQueue();
-	int GetIndexMaterial() const { return m_indexMaterial; }
-	void SetIndexMaterial(int val) { m_indexMaterial = val; }
 	virtual cSceneNode*	FindNode(std::string& nodename);
 };
 

@@ -16,7 +16,7 @@ class Entity;
 class SceneAnimation;
 class EntityAnimation;
 class EntityMaterials;
-class MeshMaterials;
+class SubMaterials;
 
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;

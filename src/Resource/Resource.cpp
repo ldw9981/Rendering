@@ -9,6 +9,7 @@ namespace Sophia
 
 UINT cReferenceCounter::Release()
 { 
+	assert(m_RefCounter>0);
 	m_RefCounter--; 
 	if (m_RefCounter==0)	
 	{

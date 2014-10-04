@@ -134,10 +134,6 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 		m_pRscIndexBuffer->Unlock();
 		m_pRscVetextBuffer->Unlock();
 
-	size_t index = (size_t)pEntity->GetIndexMaterial();
-	ASSERT(m_vecSceneMaterial.size() > index );
-	m_pMeshMaterials = m_vecSceneMaterial[index];
-
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);
 	

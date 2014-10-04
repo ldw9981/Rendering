@@ -27,6 +27,7 @@ cMeshNode::cMeshNode(void)
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
 	m_type = TYPE_MESH;
+	m_nMaterialRefIndex = 0;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -106,10 +107,6 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	}
 	m_pRscIndexBuffer->Unlock();
 	m_pRscVetextBuffer->Unlock();
-	
-	size_t index = (size_t)pEntity->GetIndexMaterial();
-	ASSERT(m_vecSceneMaterial.size() > index );
-	m_pMeshMaterials = m_vecSceneMaterial[index];
 
 	QueueRenderer(pEntity,false);
 	QueueRendererShadow(pEntity,false);	
@@ -302,6 +299,7 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);	
+	stream.read((char*)&m_nMaterialRefIndex,sizeof(m_nMaterialRefIndex));
 
 	// multisub
 	stream.read((char*)&count,sizeof(count));
@@ -343,6 +341,7 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);	
+	stream.write((char*)&m_nMaterialRefIndex,sizeof(m_nMaterialRefIndex));
 
 	// multi/sub
 	count = m_vecMultiSub.size();
@@ -423,35 +422,31 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	SetRscVertextBuffer(pRscVetextBuffer);
 }
 
-
-void cMeshNode::PushMaterial( EntityMaterials* pEntityMaterial )
-{
-	MeshMaterials* pSceneMaterial = pEntityMaterial->GetMeshMaterial(m_strNodeName);
-	m_vecSceneMaterial.push_back(pSceneMaterial);
-
-	cSceneNode::PushMaterial(pEntityMaterial);	
-}
-
-void cMeshNode::PopMaterial()
-{
-	m_vecSceneMaterial.pop_back();
-
-	cSceneNode::PopMaterial();
-}
-
-MeshMaterials* cMeshNode::GetMeshMaterials()
-{
-	return m_vecSceneMaterial[m_pRootNode->m_indexMaterial];
-}
-
 Material* cMeshNode::GetMaterial( MultiSub* pMultiSub )
 {
-	return &m_pMeshMaterials->m_container[pMultiSub->materialIndex];
+	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
+	std::vector<Material*>& sub = m_pRootNode->m_material[m_nMaterialRefIndex];
+	assert(pMultiSub->materialIndex < sub.size());
+	return sub[pMultiSub->materialIndex];
+}
+
+Material* cMeshNode::GetMaterial( unsigned char subIndex )
+{
+	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
+	std::vector<Material*>& sub = m_pRootNode->m_material[m_nMaterialRefIndex];
+	assert(subIndex < sub.size());
+	return sub[subIndex];
 }
 
 const D3DXVECTOR3* cMeshNode::GetRenderWorldPos()
 {
 	return GetWorldPos();
+}
+
+const std::vector<Material*>& cMeshNode::GetMaterials()
+{
+	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
+	return m_pRootNode->m_material[m_nMaterialRefIndex];
 }
 
 }

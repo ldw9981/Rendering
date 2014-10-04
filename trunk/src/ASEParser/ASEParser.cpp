@@ -329,15 +329,14 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 		
 		ASSERT(bResult==TRUE);
 	}
-	
-	m_vecMaterial.clear();
+		
 
 	cSphere temp;
 	CalculateSphere(m_tempAxisMin,m_tempAxisMax,temp);
 	m_pSceneRoot->GetBoundingSphere() =  temp;
 	m_pSceneRoot->SetNodeName(m_SceneTime.FILENAME.c_str());	
 	m_pSceneRoot->PushAnimation(m_pEntityAnimation);
-	m_pSceneRoot->PushMaterial(m_pEntityMaterial);
+
 
 
 	// *************************************************************
@@ -758,7 +757,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		case TOKENR_MATERIAL_REF:	
 			{
 				nMaterialRef=GetInt();
-				assert(nMaterialRef < m_vecMaterial.size());				
+				assert(nMaterialRef < m_pSceneRoot->m_material.size());				
 			}
 			break;	
 		case TOKENR_MESH_ANIMATION:
@@ -837,17 +836,36 @@ BOOL cASEParser::Parsing_MaterialList()
 {
 	BOOL bRet=TRUE;
 
+	std::vector<std::vector<Material*>>& refMaterial = m_pSceneRoot->m_material;
+
 	std::string strMaterialClass;
 	int nMaterialCount,nMaterialIndex;
-	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	return FALSE;	
-	if (GetToken(m_TokenString) != TOKENR_MATERIAL_COUNT)	return FALSE;	// *MATERIAL_COUNT
+	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
+		return FALSE;	
+
+	if (GetToken(m_TokenString) != TOKENR_MATERIAL_COUNT)	
+		return FALSE;	// *MATERIAL_COUNT
+
 	nMaterialCount=GetInt();	
-	
+	if (nMaterialCount==0)
+	{
+		Material* pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),0,0);		
+		pMaterial->AddRef();
+
+		std::vector<Material*> vecSubMatrial;
+		vecSubMatrial.push_back(pMaterial);
+		refMaterial.push_back(vecSubMatrial);
+		return TRUE;
+	}
+
+
 	for (int i=0;i<nMaterialCount;i++)
 	{
-		Material material;		
-		std::vector<Material> vecSubMatrial;
-		m_vecMaterial.push_back(vecSubMatrial);
+		Material* pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),i,0);		
+		pMaterial->AddRef();
+
+		std::vector<Material*> vecSubMatrial;
+		vecSubMatrial.push_back(pMaterial);
 
 		if(GetToken(m_TokenString) != TOKENR_MATERIAL)		// *MATERIAL	
 			return FALSE;			
@@ -863,28 +881,28 @@ BOOL cASEParser::Parsing_MaterialList()
 				strMaterialClass = GetString();
 				break;
 			case TOKENR_MATERIAL_AMBIENT:
-				material.Ambient.r=GetFloat();
-				material.Ambient.g=GetFloat();
-				material.Ambient.b=GetFloat();
+				pMaterial->Ambient.r=GetFloat();
+				pMaterial->Ambient.g=GetFloat();
+				pMaterial->Ambient.b=GetFloat();
 				break;
 			case TOKENR_MATERIAL_DIFFUSE:
-				material.Diffuse.r=GetFloat();
-				material.Diffuse.g=GetFloat();
-				material.Diffuse.b=GetFloat();
+				pMaterial->Diffuse.r=GetFloat();
+				pMaterial->Diffuse.g=GetFloat();
+				pMaterial->Diffuse.b=GetFloat();
 				break;
 			case TOKENR_MATERIAL_SPECULAR:
-				material.Specular.r=GetFloat();
-				material.Specular.g=GetFloat();
-				material.Specular.b=GetFloat();			
+				pMaterial->Specular.r=GetFloat();
+				pMaterial->Specular.g=GetFloat();
+				pMaterial->Specular.b=GetFloat();			
 				break;
 			case TOKENR_MATERIAL_SHINE:				
-				material.Multiply =GetFloat();
+				pMaterial->Multiply =GetFloat();
 				break;
 			case TOKENR_MATERIAL_SHINESTRENGTH:				
-				material.Power=GetFloat();
+				pMaterial->Power=GetFloat();
 				break;
 			case TOKENR_MATERIAL_TRANSPARENCY:				
-				material.Transparency=GetFloat();
+				pMaterial->Transparency=GetFloat();
 				break;
 			case TOKENR_MAP_NAME:
 			case TOKENR_MAP_CLASS:		
@@ -892,7 +910,7 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_AMOUNT:			
 			case TOKENR_MAP_SPECULAR:
 				{
-					material.SetMapSpecular(GetTexture());
+					pMaterial->SetMapSpecular(GetTexture());
 				}
 				break;
 			case TOKENR_MAP_SHINE:
@@ -900,7 +918,7 @@ BOOL cASEParser::Parsing_MaterialList()
 			case TOKENR_MAP_TYPE:
 			case TOKENR_MAP_OPACITY:
 				{
-					material.SetMapOpacity(GetTexture());
+					pMaterial->SetMapOpacity(GetTexture());
 				}
 				break;
 			case TOKENR_MAP_REFLECT:
@@ -915,7 +933,7 @@ BOOL cASEParser::Parsing_MaterialList()
 				break;
 			case TOKENR_MAP_BUMP:
 				{
-					material.SetMapNormal(GetTexture());
+					pMaterial->SetMapNormal(GetTexture());
 				}
 				break;
 			case TOKENR_MAP_SELFILLUM:
@@ -927,33 +945,50 @@ BOOL cASEParser::Parsing_MaterialList()
 				break;
 			case TOKENR_MAP_DIFFUSE:
 				{
-					material.SetMapDiffuse(GetTexture());
+					pMaterial->SetMapDiffuse(GetTexture());
 				}
 				break;
 			
 			case TOKENR_NUMSUBMTLS:
 				{
-					int nNUMSUBMTLS=GetInt();
-					for (int iNUMSUBMTLS=0 ; iNUMSUBMTLS < nNUMSUBMTLS ; iNUMSUBMTLS++)
-					{
-						Material subMaterial;				
-						
-						FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
-						GetInt();						// index
-						if(!GetSubMaterial(subMaterial))
-							return false;
+					if (strMaterialClass == "Shell Material")
+					{	
+						int sizeSub=GetInt();
+						for (int indexSub=0 ; indexSub < sizeSub ; indexSub++)
+						{	
+							FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
+							GetInt();						// index
 
-						if (strMaterialClass == "Shell Material")
-						{							
-							if(iNUMSUBMTLS == 0 )
-								material.SetMapDiffuse(subMaterial.GetMapDiffuse());
-							if(iNUMSUBMTLS == 1 )
-								material.SetMapLight(subMaterial.GetMapDiffuse());
+							Material temp;
+							if(!GetSubMaterial(temp))
+								return false;			
+
+							if (indexSub == 0)	
+								pMaterial->SetMapDiffuse(temp.GetMapDiffuse());
+							else if (indexSub == 1)
+								pMaterial->SetMapLight(temp.GetMapDiffuse());							
 						}
-						else
+					}
+					else
+					{
+						int sizeSub=GetInt();
+						for (int indexSub=0 ; indexSub < sizeSub ; indexSub++)
 						{
-							m_vecMaterial[nMaterialIndex].push_back(subMaterial);			
-						}															
+							if (pMaterial==NULL)
+							{
+								pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),i,indexSub);
+								pMaterial->AddRef();
+								vecSubMatrial.push_back(pMaterial);								
+							}									
+
+							FindToken(TOKENR_SUBMATERIAL);	// *SUBMATERIAL
+							GetInt();						// index
+							if(!GetSubMaterial(*pMaterial))
+								return false;
+
+														
+							pMaterial = NULL;
+						}
 					}
 
 				}//case TOKENR_NUMSUBMTLS:
@@ -962,23 +997,12 @@ BOOL cASEParser::Parsing_MaterialList()
 
 		}//while (m_Token=GetLexer()->GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 		
-		if (m_vecMaterial[nMaterialIndex].empty())
-		{
-			m_vecMaterial[nMaterialIndex].push_back(material);					
-		}
+		refMaterial.push_back(vecSubMatrial);
+
 	}//for (int i=0;i<nNUMMaterial;i++)	
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_END) 
 		return FALSE;	// }	
 
-	if (m_vecMaterial.empty())
-	{
-		Material material;		
-		std::vector<Material> vecSubMatrial;
-		vecSubMatrial.push_back(material);
-		m_vecMaterial.push_back(vecSubMatrial);
-	}
-
-	m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
 	return bRet;
 }
 
@@ -1789,18 +1813,14 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 	SetNodeInfo(pNewSceneNode,stInfo);
 
-	if (m_pEntityMaterial->GetRefCounter()==0)
-	{
-		MeshMaterials* pSceneMaterial = m_pEntityMaterial->CreateMeshMaterial(stInfo.strNodeName);
-		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
-	}
+	pNewSceneNode->SetMaterialRefIndex(nMaterialRef);
 
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
 
 	int primitiveCount=0,startIndex=0;
 	SUBMATINDEX matIndex=0;
-	if ( m_vecMaterial[nMaterialRef].size() == 1)
+	if ( m_pSceneRoot->m_material[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
@@ -1862,12 +1882,8 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 	SetNodeInfo(pNewSceneNode,stInfo);
 	stInfo.pParent->AttachChildNode(pNewSceneNode);
 
-	//pNewSceneNode->SetMaterial(m_vecMaterial[nMaterialRef]);		
-	if (m_pEntityMaterial->GetRefCounter()==0)
-	{
-		MeshMaterials* pSceneMaterial = m_pEntityMaterial->CreateMeshMaterial(stInfo.strNodeName);
-		pSceneMaterial->m_container = m_vecMaterial[nMaterialRef];
-	}
+	pNewSceneNode->SetMaterialRefIndex(nMaterialRef);
+
 	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
 	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
 	pNewSceneNode->SetBoneRef(boneRef);
@@ -1875,7 +1891,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 
 	int primitiveCount=0,startIndex=0;
 	SUBMATINDEX matIndex=0;
-	if ( m_vecMaterial[nMaterialRef].size() == 1)
+	if ( m_pSceneRoot->m_material[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
@@ -1963,7 +1979,7 @@ cSceneNode* cASEParser::CreateSceneNode(SCENENODEINFO& stInfo)
 void cASEParser::Close()
 {
 	cASELexer::Close();
-	m_vecMaterial.clear();
+	
 	m_tempAxisMin=D3DXVECTOR3(0.0f,0.0f,0.0f);
 	m_tempAxisMax=D3DXVECTOR3(0.0f,0.0f,0.0f);	
 	m_pSceneRoot = NULL;
@@ -1984,19 +2000,19 @@ bool cASEParser::GetSubMaterial( Material& material)
 		switch(m_Token)
 		{
 		case TOKENR_MATERIAL_AMBIENT:
-			material.Ambient.r=GetFloat();
-			material.Ambient.g=GetFloat();
-			material.Ambient.b=GetFloat();
+			GetFloat();
+			GetFloat();
+			GetFloat();
 			break;
 		case TOKENR_MATERIAL_DIFFUSE:
-			material.Diffuse.r=GetFloat();
-			material.Diffuse.g=GetFloat();
-			material.Diffuse.b=GetFloat();
+			GetFloat();
+			GetFloat();
+			GetFloat();
 			break;
 		case TOKENR_MATERIAL_SPECULAR:
-			material.Specular.r=GetFloat();
-			material.Specular.g=GetFloat();
-			material.Specular.b=GetFloat();			
+			GetFloat();
+			GetFloat();
+			GetFloat();			
 			break;
 		case TOKENR_MAP_NAME:
 		case TOKENR_MAP_CLASS:

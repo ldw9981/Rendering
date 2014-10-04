@@ -85,7 +85,7 @@ public:
 private:	
 	SCENETIME						m_SceneTime;	// 씬의 시간정보 , 애니메이션 리소스를 만들기 위해 참고된다.
 	//std::vector<Material>						m_vecMaterial;	// 씬에서 사용되는 매트리얼 정보, 메쉬에 직접 복사한다.
-	std::vector<std::vector<Material>>		m_vecMaterial;
+	//std::vector<std::vector<Material>>		m_vecMaterial;
 	D3DXVECTOR3			m_tempAxisMin;
 	D3DXVECTOR3			m_tempAxisMax;	
 
@@ -96,7 +96,6 @@ private:
 	int					m_CNTOBJECT;
 	int					m_repeat;
 	EntityAnimation*			m_pEntityAnimation;
-	EntityMaterials*				m_pEntityMaterial;
 public:	
 	virtual void		Close();
 		BOOL			SkipBlock();

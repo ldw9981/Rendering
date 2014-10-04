@@ -14,6 +14,7 @@ typedef unsigned char SUBMATINDEX;
 class cRscTexture;
 class Material
 	: ISerializable
+		,public cResource
 {
 public:
 	enum MAP
@@ -73,38 +74,11 @@ public:
 
 	virtual void SerializeIn(std::ifstream& stream);
 	virtual void SerializeOut(std::ofstream& stream);
-};
 
-class MeshMaterials:
-	public ISerializable
-{
-public:
-	std::vector<Material> m_container;
-
-	virtual void SerializeIn(std::ifstream& stream);
-	virtual void SerializeOut(std::ofstream& stream);
-};
-
-class EntityMaterials:
-	public cResource
-	,public ISerializable
-{
-public:
-	EntityMaterials(void);
-	~EntityMaterials(void);
-public:
-	// SceneNodeName/SceneMaterial
-	std::map<std::string,MeshMaterials*> m_container;	// 노드 이름별 보관
-
-public:
-	MeshMaterials* GetMeshMaterial(std::string& nodeNAme);
-	MeshMaterials* CreateMeshMaterial(std::string& nodeName);
 	// cResource
 	virtual	BOOL			Create();	
 	virtual	void			Free();
-
-	virtual void SerializeIn(std::ifstream& stream);
-	virtual void SerializeOut(std::ofstream& stream);
 };
+
 
 }

@@ -9,6 +9,8 @@
 #include "ASEParser/ASEParser.h"
 #include "Foundation/StringUtil.h"
 #include "Scene/Skeleton.h"
+#include "Foundation/Define.h"
+
 namespace Sophia
 {
 
@@ -21,6 +23,7 @@ Entity::Entity(void)
 	m_strNodeName="Entity";	
 	m_type = TYPE_ROOT;
 	m_bShowBone = false;
+	m_pEntityMaterial = NULL;
 }
 
 
@@ -32,13 +35,7 @@ Entity::~Entity(void)
 		pAnimation->Release();
 	}	
 
-	for (auto it=m_material.begin();it!=m_material.end();++it)
-	{
-		for (auto it_sub = (*it).begin();it_sub!=(*it).end();++it_sub)
-		{
-			(*it_sub)->Release();
-		}
-	}
+	SAFE_RELEASE(m_pEntityMaterial);
 }
 void Entity::SetBoundingSphere( cSphere& Sphere )
 {
@@ -153,18 +150,11 @@ void Entity::Build()
 	m_renderQueueNormalShadow.Clear();
 	m_renderQueueSkinnedShadow.Clear();
 
-	m_renderQueueNormalAlphaTestShadow.Clear();
-	m_renderQueueSkinnedAlphaTestShadow.Clear();
-
-	for (unsigned i=0 ;i<TECHNIQUE_SIZE ; i++)
-	{			
-		m_renderQueueNormal[i].Clear();
-		m_renderQueueSkinned[i].Clear();
-		m_renderQueueNormalAlphaTest[i].Clear();
-		m_renderQueueSkinnedAlphaTest[i].Clear();
-		m_renderQueueNormalAlphaBlend[i].Clear();
-		m_renderQueueSkinnedAlphaBlend[i].Clear();
-	}
+	m_renderQueueNormal.Clear();
+	m_renderQueueSkinned.Clear();
+	m_renderQueueNormalAlphaBlend.Clear();
+	m_renderQueueSkinnedAlphaBlend.Clear();
+	
 	m_renderQueueTerrain.Clear();
 	m_renderQueueGUI.Clear();
 	m_renderQueueLine.Clear();
@@ -294,54 +284,25 @@ bool Entity::SaveMaterial( const char* fileName ,int index)
 	std::ofstream stream;
 	stream.open(fileName, std::ios::out | std::ios::binary);	
 
-	unsigned char countRef = m_material.size();
-	stream.write((char*)&countRef,sizeof(countRef));
-	if (countRef==0)
-		return true;
-
-	for (auto it=m_material.begin();it!=m_material.end();++it)
-	{
-		unsigned char countSub = (*it).size();
-		stream.write((char*)&countSub,sizeof(countSub));
-
-		for (auto it_sub = (*it).begin();it_sub!=(*it).end();++it_sub)
-		{
-			Material* pItem = *it_sub;
-			pItem->SerializeOut(stream);
-		}
-	}
+	
+	m_pEntityMaterial->SerializeOut(stream);
 
 	return true;
 }
 
 bool Entity::LoadMaterial( const char* fileName )
 {
-	std::ifstream stream;
-	stream.open(fileName, std::ios::in | std::ios::binary);
-
-	unsigned char sizeRef = 0;
-	stream.read((char*)&sizeRef,sizeof(sizeRef));
-	if (sizeRef==0)
-		return true;
-
-	for (unsigned char ref=0 ; ref<sizeRef ; ref++)
+	EntityMaterial* pNew = cResourceMng::m_pInstance->CreateEntityMaterial(fileName);	
+	pNew->AddRef();
+	m_pEntityMaterial = pNew;
+	if (pNew->GetRefCounter() > 1)
 	{
-		unsigned char sizeSub;
-		stream.read((char*)&sizeSub,sizeof(sizeSub));
-
-		std::vector<Material*> subMaterials;
-
-		for (unsigned char sub=0 ; sub<sizeSub ; sub++)
-		{
-			Material* pItem = cResourceMng::m_pInstance->CreateMaterial(GetNodeName().c_str(),ref,sub);
-			pItem->SerializeIn(stream);
-			subMaterials.push_back(pItem);
-			pItem->AddRef();
-		}
-
-		m_material.push_back(subMaterials);
+		return true;
 	}
 
+	std::ifstream stream;
+	stream.open(fileName, std::ios::in | std::ios::binary);
+	m_pEntityMaterial->SerializeIn(stream);
 	return true;
 }
 
@@ -569,19 +530,14 @@ void Entity::SetShowSkeleton( bool bShow )
 
 void Entity::ClearRenderQueue()
 {
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
-	{
-		m_renderQueueNormal[i].Clear();
-		m_renderQueueSkinned[i].Clear();
-	}
+	m_renderQueueNormal.Clear();
+	m_renderQueueSkinned.Clear();
 
 	m_renderQueueTerrain.Clear();
 	m_renderQueueGUI.Clear();
 
 	m_renderQueueNormalShadow.Clear();
-	m_renderQueueNormalAlphaTestShadow.Clear();
 	m_renderQueueSkinnedShadow.Clear();
-	m_renderQueueSkinnedAlphaTestShadow.Clear();
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )

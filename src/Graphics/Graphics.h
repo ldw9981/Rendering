@@ -28,8 +28,8 @@ public:
 	LPD3DXFONT				m_pFont;
 	LPD3DXEFFECT			m_pEffect;	
 	LPD3DXBUFFER			m_pError;	
-	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationNormal;
-	LPDIRECT3DVERTEXDECLARATION9 m_pVertexDeclationBlend;
+	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclation;
+	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclation;
 	D3DXHANDLE				m_hTLine;// 테크닉
 	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
@@ -66,8 +66,8 @@ public:
 	std::string m_strHLSL;
 
 	int						m_nTechniqueSize;
-	D3DXHANDLE*				m_pTNormal;
-	D3DXHANDLE*				m_pTSkinned;
+	std::vector<D3DXHANDLE>	m_vecTechniqueNormal;
+	std::vector<D3DXHANDLE>	m_vecTechniqueSkinned;
 
 
 	// 그림자맵 렌더타깃
@@ -78,6 +78,7 @@ public:
 
 	RECT				m_Rect;
 	GUIVERTEX			 g_vertices[4];
+
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

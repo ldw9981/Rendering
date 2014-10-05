@@ -11,7 +11,7 @@ class cRscVertexBuffer;
 class cRscIndexBuffer;
 class cResourceMng;
 class EntityAnimation;
-class EntityMaterials;
+class EntityMaterial;
 class Material;
 
 class cResourceMng:
@@ -26,7 +26,7 @@ private:
 	std::map<std::string,cResource*>					m_contIndexBuffer;
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
-	std::map<std::string,cResource*>					m_contMaterial;
+	std::map<std::string,cResource*>					m_contEntityMaterial;
 public:		
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
@@ -51,6 +51,9 @@ public:
 	Material*			CreateMaterial(const  char* rootName,int refIndex,int subIndex);
 	void				EraseMaterial(const std::string& strKey);	
 
+	void				GetKeyEntityMaterial(std::string& key,const  char* filePath );
+	EntityMaterial*		CreateEntityMaterial(const char* filePath);
+	void				EraseEntityMaterial(const std::string& strKey);	
 	
 	int					GetCount();
 };

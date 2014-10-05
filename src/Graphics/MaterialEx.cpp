@@ -182,7 +182,7 @@ void Material::SetMapOpacity( cRscTexture* val )
 {
 	if (m_pMapOpacity)
 	{
-		m_pMapLight->Release();
+		m_pMapOpacity->Release();
 	}	
 	m_pMapOpacity = val;
 	if (m_pMapOpacity)
@@ -229,6 +229,8 @@ void Material::SetMapSpecular( cRscTexture* val )
 
 void Material::SerializeIn( std::ifstream& stream )
 {
+	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+
 	unsigned short ver = 0;
 	stream.read((char*)&ver,sizeof(ver));
 	assert(ver<=MATERIAL_LASTEST);
@@ -243,7 +245,6 @@ void Material::SerializeIn( std::ifstream& stream )
 	ReadString(stream,fileName);
 	if (fileName.length()!=0)
 	{
-		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
 		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
@@ -258,8 +259,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	fileName.clear();
 	ReadString(stream,fileName);
 	if (fileName.length()!=0)
-	{
-		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	{		
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
 		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
@@ -274,8 +274,7 @@ void Material::SerializeIn( std::ifstream& stream )
 	fileName.clear();	
 	ReadString(stream,fileName);	
 	if (fileName.length()!=0)
-	{
-		std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+	{		
 		std::string strFullPath = strDataPath;
 		strFullPath += fileName;
 		cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
@@ -292,8 +291,7 @@ void Material::SerializeIn( std::ifstream& stream )
 		fileName.clear();	
 		ReadString(stream,fileName);	
 		if (fileName.length()!=0)
-		{
-			std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
+		{			
 			std::string strFullPath = strDataPath;
 			strFullPath += fileName;
 			cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
@@ -312,7 +310,6 @@ void Material::SerializeIn( std::ifstream& stream )
 		ReadString(stream,fileName);	
 		if (fileName.length()!=0)
 		{
-			std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 			std::string strFullPath = strDataPath;
 			strFullPath += fileName;
 			cRscTexture* pRscTexture= cResourceMng::m_pInstance->CreateRscTexture(strFullPath.c_str());
@@ -395,9 +392,26 @@ void Material::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&AlphaTestRef,sizeof(AlphaTestRef));		
 }
 
+EntityMaterial::EntityMaterial( void )
+{
 
+}
 
-BOOL Material::Create()
+EntityMaterial::~EntityMaterial( void )
+{
+	size_t refSize = m_ref.size();
+	for (size_t refIndex=0;refIndex<refSize;refIndex++)
+	{
+		size_t subSize = m_ref[refIndex].size();
+		SubMaterial& sub=m_ref[refIndex];
+		for (size_t subIndex=0;subIndex<subSize;subIndex++)
+		{
+			delete sub[subIndex];
+		}
+	}
+}
+
+BOOL EntityMaterial::Create()
 {
 	assert(m_RefCounter>=0);
 	if (m_RefCounter > 0 )
@@ -406,11 +420,53 @@ BOOL Material::Create()
 	return TRUE;
 }
 
-void Material::Free()
+void EntityMaterial::Free()
 {
-	cResourceMng::m_pInstance->EraseMaterial(GetUniqueKey());
+	cResourceMng::m_pInstance->EraseEntityMaterial(GetUniqueKey());
 	delete this;
 }
+
+void EntityMaterial::SerializeIn( std::ifstream& stream )
+{
+	unsigned char refSize;
+	stream.read((char*)&refSize,sizeof(refSize));
+
+	for (size_t refIndex=0;refIndex<refSize;refIndex++)
+	{
+		unsigned char subSize;
+		stream.read((char*)&subSize,sizeof(subSize));		
+		assert(subSize!=0);
+
+		SubMaterial sub;
+		for (size_t subIndex=0;subIndex<subSize;subIndex++)
+		{
+			Material* pMaterial = new Material;
+			pMaterial->SerializeIn(stream);
+			sub.push_back(pMaterial);
+		}		
+		m_ref.push_back(sub);		
+	}
+}
+
+void EntityMaterial::SerializeOut( std::ofstream& stream )
+{
+	unsigned char refSize = m_ref.size();
+	stream.write((char*)&refSize,sizeof(refSize));
+	for (size_t refIndex=0;refIndex<refSize;refIndex++)
+	{
+		unsigned char subSize = m_ref[refIndex].size();
+		stream.write((char*)&subSize,sizeof(subSize));
+
+		SubMaterial& sub=m_ref[refIndex];
+		for (size_t subIndex=0;subIndex<subSize;subIndex++)
+		{
+			sub[subIndex]->SerializeOut(stream);
+		}
+	}
+}
+
+
+
 
 
 }

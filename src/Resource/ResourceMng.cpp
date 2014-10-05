@@ -7,6 +7,8 @@
 #include "Graphics/RscVertexBuffer.h"
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/Animation.h"
+#include "Graphics/MaterialEx.h"
+
 namespace Sophia
 {
 
@@ -20,7 +22,8 @@ cResourceMng::cResourceMng( void )
 cResourceMng::~cResourceMng( void )
 {
 	assert(GetCount()==0);
-	m_contMaterial.clear();
+	m_contEntityAnimation.clear();
+	m_contEntityMaterial.clear();
 	m_contTexture.clear();
 	m_contIndexBuffer.clear();
 	m_contVertexBuffer.clear();	
@@ -136,7 +139,7 @@ int cResourceMng::GetCount()
 	cnt += m_contIndexBuffer.size();
 	cnt += m_contVertexBuffer.size();
 	cnt += m_contEntityAnimation.size();
-	cnt += m_contMaterial.size();
+	cnt += m_contEntityMaterial.size();
 	return cnt;
 }
 
@@ -192,27 +195,27 @@ void cResourceMng::EraseEntityAnimation( const std::string& strKey )
 	m_contEntityAnimation.erase(strKey);
 }
 
-void cResourceMng::GetKeyMaterial(std::string& key,const  char* rootName,int refIndex,int subIndex)
+void cResourceMng::GetKeyEntityMaterial( std::string& key,const char* filePath )
 {
-	char fileName[256]={0,};
-	sprintf(fileName,"%s_%.3d_%.3d",rootName,refIndex,subIndex);
+	char fileName[256];
+	_splitpath_s(filePath,NULL,0,NULL,0,fileName,256,NULL,0);
 	key += fileName;
 }
 
-Material* cResourceMng::CreateMaterial(const  char* rootName,int refIndex,int subIndex)
+EntityMaterial* cResourceMng::CreateEntityMaterial( const char* filePath )
 {
-	Material* pItem=NULL;
+	EntityMaterial* pItem=NULL;
 	std::string strKey;
-	GetKeyMaterial(strKey,rootName,refIndex,subIndex);	
+	GetKeyEntityMaterial(strKey,filePath);	
 
-	auto it=m_contMaterial.find(strKey);
-	if (it!=m_contMaterial.end())
+	auto it=m_contEntityMaterial.find(strKey);
+	if (it!=m_contEntityMaterial.end())
 	{
-		pItem=static_cast<Material*>(it->second);
+		pItem=static_cast<EntityMaterial*>(it->second);
 		return pItem;
 	}
 
-	pItem = new Material;
+	pItem = new EntityMaterial;
 	pItem->SetUniqueKey(strKey);
 	//pItem->SetFilePath(filePath);
 	if(!pItem->Create())	
@@ -220,13 +223,13 @@ Material* cResourceMng::CreateMaterial(const  char* rootName,int refIndex,int su
 		delete pItem;
 		return NULL;
 	}
-	m_contMaterial.insert(make_pair(strKey,pItem));
+	m_contEntityMaterial.insert(make_pair(strKey,pItem));
 	return pItem;	
 }
 
-void cResourceMng::EraseMaterial( const std::string& strKey )
+void cResourceMng::EraseEntityMaterial( const std::string& strKey )
 {
-	m_contMaterial.erase(strKey);
+	m_contEntityMaterial.erase(strKey);
 }
 
 

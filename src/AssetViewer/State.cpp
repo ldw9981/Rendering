@@ -32,7 +32,7 @@ State::State(void)
 	m_bModifiedScene = false;
 	m_bModifiedMaterial = false;	
 	m_scrollSize = 100.0f;
-	m_nStressCount = 0;
+	m_nStressCount = 100;
 }
 
 State::~State( void )
@@ -197,6 +197,9 @@ void State::OpenAsset( const char* path )
 	m_pModel->Build();
 	m_pModel->SetParentNode(&m_helper);
 	D3DXMatrixIdentity(&m_helper.GetLocalTM());
+
+	ClearStressEntity();
+	OpenStressEntity(path);
 }
 
 Sophia::Entity* State::GetEntity()

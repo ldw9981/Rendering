@@ -34,11 +34,17 @@ public:
 	void	Insert(IRenderer* pItem,MultiSub* pMultiSub,Material* pMaterial);
 	void	Insert(cRendererQueue& renderQueue);
 	void	Render();
-	void	RenderAlphaTest();
-	void	RenderAlphaBlendAndTest(cCameraNode* pCamera);
+
+	void	RenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera);
 	bool	IsEmpty();
 	void	Clear();
-	void	Sort(cCameraNode* pCamera);
+	void	SortByCamera(cCameraNode* pCamera);
+	void	SortByMaterial();
+
+
+	void	RenderNotAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderShadow( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest );
+	void	SetMaterial(Material& material);
 };
 
 class RendererQueue:

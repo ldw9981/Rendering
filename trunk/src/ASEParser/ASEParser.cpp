@@ -757,7 +757,7 @@ BOOL cASEParser::Parsing_GeoObject()
 		case TOKENR_MATERIAL_REF:	
 			{
 				nMaterialRef=GetInt();
-				assert(nMaterialRef < m_pSceneRoot->m_material.size());				
+				assert(nMaterialRef < m_pSceneRoot->m_pEntityMaterial->m_ref.size());				
 			}
 			break;	
 		case TOKENR_MESH_ANIMATION:
@@ -836,8 +836,17 @@ BOOL cASEParser::Parsing_MaterialList()
 {
 	BOOL bRet=TRUE;
 
-	std::vector<std::vector<Material*>>& refMaterial = m_pSceneRoot->m_material;
 
+	m_pSceneRoot->m_pEntityMaterial = cResourceMng::m_pInstance->CreateEntityMaterial(m_SceneTime.FILENAME.c_str());
+	m_pSceneRoot->m_pEntityMaterial->AddRef();
+
+	if (m_pSceneRoot->m_pEntityMaterial->GetRefCounter() > 1)
+	{
+		SkipBlock();
+		return TRUE;
+	}		
+
+	EntityMaterial& refEntityMaterial = *m_pSceneRoot->m_pEntityMaterial;
 	std::string strMaterialClass;
 	int nMaterialCount,nMaterialIndex;
 	if (GetToken(m_TokenString) != TOKEND_BLOCK_START)	
@@ -849,22 +858,19 @@ BOOL cASEParser::Parsing_MaterialList()
 	nMaterialCount=GetInt();	
 	if (nMaterialCount==0)
 	{
-		Material* pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),0,0);		
-		pMaterial->AddRef();
-
-		std::vector<Material*> vecSubMatrial;
+		Material* pMaterial = new Material;		
+		SubMaterial vecSubMatrial;
 		vecSubMatrial.push_back(pMaterial);
-		refMaterial.push_back(vecSubMatrial);
+		refEntityMaterial.m_ref.push_back(vecSubMatrial);
 		return TRUE;
 	}
 
 
 	for (int i=0;i<nMaterialCount;i++)
 	{
-		Material* pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),i,0);		
-		pMaterial->AddRef();
+		Material* pMaterial = new Material; 
 
-		std::vector<Material*> vecSubMatrial;
+		SubMaterial vecSubMatrial;
 		vecSubMatrial.push_back(pMaterial);
 
 		if(GetToken(m_TokenString) != TOKENR_MATERIAL)		// *MATERIAL	
@@ -976,8 +982,7 @@ BOOL cASEParser::Parsing_MaterialList()
 						{
 							if (pMaterial==NULL)
 							{
-								pMaterial = cResourceMng::m_pInstance->CreateMaterial(m_pSceneRoot->GetNodeName().c_str(),i,indexSub);
-								pMaterial->AddRef();
+								pMaterial = new Material;
 								vecSubMatrial.push_back(pMaterial);								
 							}									
 
@@ -997,7 +1002,7 @@ BOOL cASEParser::Parsing_MaterialList()
 
 		}//while (m_Token=GetLexer()->GetToken(m_TokenString),m_Token!=TOKEND_BLOCK_END)
 		
-		refMaterial.push_back(vecSubMatrial);
+		refEntityMaterial.m_ref.push_back(vecSubMatrial);
 
 	}//for (int i=0;i<nNUMMaterial;i++)	
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_END) 
@@ -1820,7 +1825,7 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 
 	int primitiveCount=0,startIndex=0;
 	SUBMATINDEX matIndex=0;
-	if ( m_pSceneRoot->m_material[nMaterialRef].size() == 1)
+	if ( m_pSceneRoot->m_pEntityMaterial->m_ref[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
@@ -1891,7 +1896,7 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 
 	int primitiveCount=0,startIndex=0;
 	SUBMATINDEX matIndex=0;
-	if ( m_pSceneRoot->m_material[nMaterialRef].size() == 1)
+	if ( m_pSceneRoot->m_pEntityMaterial->m_ref[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )

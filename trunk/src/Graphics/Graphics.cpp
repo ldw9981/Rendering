@@ -42,19 +42,16 @@ Graphics::Graphics(void)
 	m_bDebugBound = false;
 
 	m_nTechniqueSize = (int)pow(2.0f,Material::MAX);
-	m_pTNormal = new D3DXHANDLE[m_nTechniqueSize];
-	m_pTSkinned = new D3DXHANDLE[m_nTechniqueSize];
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
-		m_pTNormal[i] = NULL;
-		m_pTSkinned[i] = NULL;
+		m_vecTechniqueNormal.push_back(NULL);
+		m_vecTechniqueSkinned.push_back(NULL);
 	}
 }
 
 Graphics::~Graphics(void)
 {
-	delete[] m_pTNormal;
-	delete[] m_pTSkinned;
+
 }
 
 void Graphics::SetPos( UINT x,UINT y )
@@ -140,8 +137,8 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 	m_pNewFont = new cGUIFont();	
 
-	m_pDevice->CreateVertexDeclaration(declNormal, &m_pVertexDeclationNormal);
-	m_pDevice->CreateVertexDeclaration(declBlend, &m_pVertexDeclationBlend);
+	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclation);
+	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclation);
 
 
 	// ∑ª¥ı≈∏±Í¿ª ∏∏µÁ¥Ÿ.
@@ -168,8 +165,8 @@ void Graphics::Finalize()
 {
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
-	SAFE_RELEASE(m_pVertexDeclationNormal);
-	SAFE_RELEASE(m_pVertexDeclationBlend);
+	SAFE_RELEASE(m_pNormalVertexDeclation);
+	SAFE_RELEASE(m_pSkinnedVertexDeclation);
 	SAFE_DELETE(m_pNewFont);	
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);
@@ -240,55 +237,55 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	std::bitset<Material::MAX> indexRenderQueue;
 
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhong;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhong;
 
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuse;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuse;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::NORMAL);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBump;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBump;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::LIGHT);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLight;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLight;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::OPACITY);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacity;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacity;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::SPECULAR);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseSpecular;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseSpecular;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::NORMAL);
 	indexRenderQueue.set(Material::SPECULAR);
-	m_pTNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBumpSpecular;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBumpSpecular;
 
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
-		if (m_pTNormal[i] == NULL )	
-			m_pTNormal[i] = m_hTPhongDiffuse;
+		if (m_vecTechniqueNormal[i] == NULL )	
+			m_vecTechniqueNormal[i] = m_hTPhongDiffuse;
 	}
 
 	indexRenderQueue = 0;
-	m_pTSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
+	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_pTSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuse;
+	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuse;
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
-		if (m_pTSkinned[i] == NULL )	
-			m_pTSkinned[i] = m_hTSkinningPhongDiffuse;
+		if (m_vecTechniqueSkinned[i] == NULL )	
+			m_vecTechniqueSkinned[i] = m_hTSkinningPhongDiffuse;
 	}
 }
 

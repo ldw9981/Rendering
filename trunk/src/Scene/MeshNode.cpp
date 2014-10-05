@@ -52,27 +52,6 @@ void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	pEffect->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
 
-	cRscTexture* pRscTexture;
-	pRscTexture = material.GetMapDiffuse();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapNormal();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapLight();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapOpacity();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapSpecular();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
-
 	pEffect->CommitChanges();
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
@@ -159,14 +138,11 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 			if (pMaterial->AlphaBlend == false)
 			{
-				if (pMaterial->AlphaTestEnable == false)
-					pEntity->m_renderQueueNormal[i].Insert(this,pMultiSub,pMaterial);
-				else
-					pEntity->m_renderQueueNormalAlphaTest[i].Insert(this,pMultiSub,pMaterial);				
+				pEntity->m_renderQueueNormal.Insert(this,pMultiSub,pMaterial);				
 			}
 			else
 			{
-				pEntity->m_renderQueueNormalAlphaBlend[i].Insert(this,pMultiSub,pMaterial);
+				pEntity->m_renderQueueNormalAlphaBlend.Insert(this,pMultiSub,pMaterial);
 			}			
 		}
 	}
@@ -258,15 +234,7 @@ void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
 		{
 			MultiSub* pMultiSub = &(*it_sub);
 			Material* pMaterial = GetMaterial(pMultiSub);
-						
-			if (pMaterial->AlphaTestEnable && pMaterial->GetMapOpacity()!=NULL)
-			{
-				pEntity->m_renderQueueNormalAlphaTestShadow.Insert(this,pMultiSub,pMaterial);
-			}
-			else
-			{
-				pEntity->m_renderQueueNormalShadow.Insert(this,pMultiSub,pMaterial);
-			}			
+			pEntity->m_renderQueueNormalShadow.Insert(this,pMultiSub,pMaterial);						
 		}
 	}
 
@@ -424,16 +392,16 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 
 Material* cMeshNode::GetMaterial( MultiSub* pMultiSub )
 {
-	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
-	std::vector<Material*>& sub = m_pRootNode->m_material[m_nMaterialRefIndex];
+	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
 	assert(pMultiSub->materialIndex < sub.size());
 	return sub[pMultiSub->materialIndex];
 }
 
 Material* cMeshNode::GetMaterial( unsigned char subIndex )
 {
-	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
-	std::vector<Material*>& sub = m_pRootNode->m_material[m_nMaterialRefIndex];
+	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
 	assert(subIndex < sub.size());
 	return sub[subIndex];
 }
@@ -445,8 +413,8 @@ const D3DXVECTOR3* cMeshNode::GetRenderWorldPos()
 
 const std::vector<Material*>& cMeshNode::GetMaterials()
 {
-	assert(m_nMaterialRefIndex < m_pRootNode->m_material.size());
-	return m_pRootNode->m_material[m_nMaterialRefIndex];
+	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	return m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
 }
 
 }

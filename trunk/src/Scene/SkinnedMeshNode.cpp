@@ -71,30 +71,7 @@ void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 	}	
 
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-
 	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
-
-	cRscTexture* pRscTexture;
-	pRscTexture = material.GetMapDiffuse();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapNormal();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapLight();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapOpacity();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapSpecular();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
-
 	pEffect->CommitChanges();
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
@@ -158,14 +135,11 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 			if (pMaterial->AlphaBlend == false)
 			{
-				if (pMaterial->AlphaTestEnable == false)
-					pEntity->m_renderQueueSkinned[i].Insert(this,pMultiSub,pMaterial);
-				else
-					pEntity->m_renderQueueSkinnedAlphaTest[i].Insert(this,pMultiSub,pMaterial);				
+				pEntity->m_renderQueueSkinned.Insert(this,pMultiSub,pMaterial);
 			}
 			else
 			{
-				pEntity->m_renderQueueSkinnedAlphaBlend[i].Insert(this,pMultiSub,pMaterial);
+				pEntity->m_renderQueueSkinnedAlphaBlend.Insert(this,pMultiSub,pMaterial);
 			}	
 		}
 	}
@@ -190,14 +164,7 @@ void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
 			MultiSub* pMultiSub = &(*it_sub);
 			Material* pMaterial = GetMaterial(pMultiSub);
 
-			if (pMaterial->AlphaTestEnable && pMaterial->GetMapOpacity()!=NULL)
-			{
-				pEntity->m_renderQueueSkinnedAlphaTestShadow.Insert(this,pMultiSub,pMaterial);
-			}
-			else
-			{
-				pEntity->m_renderQueueSkinnedShadow.Insert(this,pMultiSub,pMaterial);
-			}			
+			pEntity->m_renderQueueSkinnedShadow.Insert(this,pMultiSub,pMaterial);						
 		}
 	}
 

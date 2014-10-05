@@ -229,47 +229,19 @@ void World::Render()
 	if (m_bEnableShadow)
 	{
 		//1. write depth
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 		if (!m_renderQueueNormalShadow.IsEmpty())
 		{
-			m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormal);
-			m_pEffect->Begin(&passes, 0);
-			m_pEffect->BeginPass(0);
-			m_renderQueueNormalShadow.Render();
-			m_pEffect->EndPass();
-			m_pEffect->End();
-		}
+			m_renderQueueNormalShadow.RenderShadow(Graphics::m_pInstance->m_hTCreateShadowNormal,
+				Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest );
+		}		
 
-		if (!m_renderQueueNormalAlphaTestShadow.IsEmpty())
-		{		
-			m_pEffect->SetTechnique( Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest);
-			m_pEffect->Begin(&passes, 0);
-			m_pEffect->BeginPass(0);
-			m_renderQueueNormalAlphaTestShadow.RenderAlphaTest();
-			m_pEffect->EndPass();
-			m_pEffect->End();
-		}
-
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 		if (!m_renderQueueSkinnedShadow.IsEmpty())
 		{	
-			m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowSkinned);
-			m_pEffect->Begin(&passes, 0);
-			m_pEffect->BeginPass(0);
-			m_renderQueueSkinnedShadow.Render();
-			m_pEffect->EndPass();
-			m_pEffect->End();
-		}
-
-		if (!m_renderQueueSkinnedAlphaTestShadow.IsEmpty())
-		{	
-			m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTCreateShadowSkinnedAlphaTest);
-			m_pEffect->Begin(&passes, 0);
-			m_pEffect->BeginPass(0);
-			m_renderQueueSkinnedAlphaTestShadow.RenderAlphaTest();
-			m_pEffect->EndPass();
-			m_pEffect->End();
-		}
+			m_renderQueueSkinnedShadow.RenderShadow(Graphics::m_pInstance->m_hTCreateShadowSkinned,
+				Graphics::m_pInstance->m_hTCreateShadowSkinnedAlphaTest );
+		}		
 	}
 
 	//////////////////////////////
@@ -296,87 +268,31 @@ void World::Render()
 		m_pEffect->End();
 	}
 
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
-	int size = Graphics::m_pInstance->m_nTechniqueSize;
-	for (int i=0;i<size ;i++)
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+	if (!m_renderQueueNormal.IsEmpty())
 	{
-		if (m_renderQueueNormal[i].IsEmpty())
-			continue;
-
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);			
-		m_renderQueueNormal[i].Render();
-		m_pEffect->EndPass();
-		m_pEffect->End();
-	}
-	for (int i=0;i<size;i++)
-	{
-		if (m_renderQueueNormalAlphaTest[i].IsEmpty())
-			continue;
-
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);			
-		m_renderQueueNormalAlphaTest[i].RenderAlphaTest();
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		m_renderQueueNormal.RenderNotAlphaBlend(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
-	for (int i=0;i<size;i++)
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+	if (!m_renderQueueSkinned.IsEmpty())
 	{
-		if (m_renderQueueSkinned[i].IsEmpty())
-			continue;
+		m_renderQueueSkinned.RenderNotAlphaBlend(Graphics::m_pInstance->m_vecTechniqueSkinned);
+	}
+	
 
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);	
-		m_renderQueueSkinned[i].Render();		
-		m_pEffect->EndPass();
-		m_pEffect->End();
-	}	
-	for (int i=0;i<size;i++)
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+	if (!m_renderQueueNormalAlphaBlend.IsEmpty())
 	{
-		if (m_renderQueueSkinnedAlphaTest[i].IsEmpty())
-			continue;
-
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
-		m_pEffect->Begin(&passes, 0);
-		m_pEffect->BeginPass(0);	
-		m_renderQueueSkinnedAlphaTest[i].RenderAlphaTest();		
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		m_renderQueueNormalAlphaBlend.RenderAlphaBlend(Graphics::m_pInstance->m_vecTechniqueNormal,&m_camera);
 	}
 
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationNormal);
-	for (int i=0;i<size;i++)
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+	if (!m_renderQueueSkinnedAlphaBlend.IsEmpty())
 	{
-		if (m_renderQueueNormalAlphaBlend[i].IsEmpty())
-			continue;
-
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTNormal[i]);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);				
-		m_renderQueueNormalAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlend(Graphics::m_pInstance->m_vecTechniqueSkinned,&m_camera);		
 	}
-
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pVertexDeclationBlend);
-	for (int i=0;i<size;i++)
-	{
-		if (m_renderQueueSkinnedAlphaBlend[i].IsEmpty())
-			continue;
-
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_pTSkinned[i]);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);	
-		m_renderQueueSkinnedAlphaBlend[i].RenderAlphaBlendAndTest(&m_camera);		
-		m_pEffect->EndPass();
-		m_pEffect->End();
-	}
-
+	
 
 	if (m_bDebugBound)
 	{
@@ -418,18 +334,13 @@ void World::Render()
 void World::GatherRender()
 {
 	m_renderQueueNormalShadow.Clear();
-	m_renderQueueNormalAlphaTestShadow.Clear();
 	m_renderQueueSkinnedShadow.Clear();
-	m_renderQueueSkinnedAlphaTestShadow.Clear();
-	for (int i=0;i<TECHNIQUE_SIZE;i++)
-	{
-		m_renderQueueNormal[i].Clear();
-		m_renderQueueSkinned[i].Clear();
-		m_renderQueueNormalAlphaTest[i].Clear();
-		m_renderQueueSkinnedAlphaTest[i].Clear();
-		m_renderQueueNormalAlphaBlend[i].Clear();
-		m_renderQueueSkinnedAlphaBlend[i].Clear();
-	}		
+
+	m_renderQueueNormal.Clear();
+	m_renderQueueSkinned.Clear();
+	m_renderQueueNormalAlphaBlend.Clear();
+	m_renderQueueSkinnedAlphaBlend.Clear();
+	
 	m_renderQueueTerrain.Clear();
 
 
@@ -438,24 +349,18 @@ void World::GatherRender()
 	for ( auto itIn = m_listEntityShadow.begin() ;itIn!=m_listEntityShadow.end() ; ++itIn )
 	{
 		m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
-		m_renderQueueNormalAlphaTestShadow.Insert((*itIn)->m_renderQueueNormalAlphaTestShadow);
 		m_renderQueueSkinnedShadow.Insert((*itIn)->m_renderQueueSkinnedShadow);
-		m_renderQueueSkinnedAlphaTestShadow.Insert((*itIn)->m_renderQueueSkinnedAlphaTestShadow);
 	}
 
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
 		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
-		for (int i=0;i<TECHNIQUE_SIZE;i++)
-		{
-			m_renderQueueNormal[i].Insert((*itIn)->m_renderQueueNormal[i]);	
-			m_renderQueueSkinned[i].Insert((*itIn)->m_renderQueueSkinned[i]);		
-			m_renderQueueNormalAlphaTest[i].Insert((*itIn)->m_renderQueueNormalAlphaTest[i]);	
-			m_renderQueueSkinnedAlphaTest[i].Insert((*itIn)->m_renderQueueSkinnedAlphaTest[i]);		
-			m_renderQueueNormalAlphaBlend[i].Insert((*itIn)->m_renderQueueNormalAlphaBlend[i]);	
-			m_renderQueueSkinnedAlphaBlend[i].Insert((*itIn)->m_renderQueueSkinnedAlphaBlend[i]);		
-		}			
+
+		m_renderQueueNormal.Insert((*itIn)->m_renderQueueNormal);	
+		m_renderQueueSkinned.Insert((*itIn)->m_renderQueueSkinned);		
+		m_renderQueueNormalAlphaBlend.Insert((*itIn)->m_renderQueueNormalAlphaBlend);	
+		m_renderQueueSkinnedAlphaBlend.Insert((*itIn)->m_renderQueueSkinnedAlphaBlend);					
 	}
 }
 

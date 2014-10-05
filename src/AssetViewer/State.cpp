@@ -198,8 +198,8 @@ void State::OpenAsset( const char* path )
 	m_pModel->SetParentNode(&m_helper);
 	D3DXMatrixIdentity(&m_helper.GetLocalTM());
 
-	ClearStressEntity();
-	OpenStressEntity(path);
+	//ClearStressEntity();
+	//OpenStressEntity(path);
 }
 
 Sophia::Entity* State::GetEntity()

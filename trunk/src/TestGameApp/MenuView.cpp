@@ -60,17 +60,18 @@ void cMenuView::Enter()
 	m_pTank->LoadMaterial(std::string(strDataPath+"Beautiful Girl.material").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	m_pTank->SetVelocityRotation(D3DXVECTOR3(0.0f,-15,0.0f));
-
-	/*
+	m_pTank->RotateOnLocal(0,180,0);
+	
 	m_pDragon = m_graphicWorld.CreateEntity();
-	m_pDragon->LoadScene(std::string(strDataPath+"dragon2.scene").c_str());
-	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon2.aniset").c_str());
-	m_pDragon->LoadMaterial(std::string(strDataPath+"dragon2.material").c_str());
+	m_pDragon->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
+	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+	m_pDragon->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 	m_pDragon->Build();
-	m_pDragon->SetLocalPos(D3DXVECTOR3(0,200.0f,0));
-	m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	*/
+	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
+	m_pDragon->RotateOnLocal(0,180,0);
+	m_pDragon->PlayBaseAnimation(0,true);
+	//m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	
 	/*
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
@@ -120,7 +121,7 @@ void cMenuView::Leave()
 
 	//m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
 
-	//m_graphicWorld.DeleteEntity(m_pDragon);
+	m_graphicWorld.DeleteEntity(m_pDragon);
 	cView::Leave();
 }
 

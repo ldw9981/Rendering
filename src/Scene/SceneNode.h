@@ -15,8 +15,8 @@ class Frustum;
 class Entity;
 class SceneAnimation;
 class EntityAnimation;
-class EntityMaterials;
-class SubMaterials;
+class EntityMaterial;
+
 
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
@@ -124,10 +124,6 @@ public:
 	virtual void PushAnimation(EntityAnimation* pEntityAnimation);
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
-
-	virtual void PushMaterial(EntityMaterials* pEntityMaterial);
-	virtual void PopMaterial();
-
 	
 	void Test(void(*Func)(cSceneNode*));
 	void AddPatialIndex();

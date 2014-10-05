@@ -259,7 +259,9 @@ void World::Render()
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
 	if (!m_renderQueueTerrain.IsEmpty())
-	{
+	{		
+		//Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+		
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	

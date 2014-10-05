@@ -42,7 +42,7 @@ void cMenuView::Enter()
 	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 800.0f, -2000.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2000.0f),
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
@@ -89,8 +89,11 @@ void cMenuView::Enter()
 		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		m_pHouse[i]->Build();
 		
-		//m_pHouse[i]->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-		m_pHouse[i]->SetLocalPos(D3DXVECTOR3(-100+i*180.0f,300.0f,100.0f+ i* 50));
+		D3DXVECTOR3 pos;
+		pos.x = (rand()%10 - 5)*100.0f;
+		pos.y = (rand()%10 - 5)*10.0f + 100;
+		pos.z = (rand()%10 - 5)*100.0f;
+		m_pHouse[i]->SetLocalPos(pos);
 	}
 	
 	

@@ -95,9 +95,7 @@ void cRendererQueue::RenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,cCam
 		pEffect->EndPass();
 		pEffect->End();	
 	}
-
-
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false); 
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false); 	
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
@@ -178,6 +176,7 @@ void cRendererQueue::RenderNotAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique)
 		pEffect->EndPass();
 		pEffect->End();	
 	}
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
 void cRendererQueue::SetMaterial( Material& material )
@@ -260,6 +259,7 @@ void cRendererQueue::RenderShadow( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE 
 		pEffect->EndPass();
 		pEffect->End();	
 	}
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
 }

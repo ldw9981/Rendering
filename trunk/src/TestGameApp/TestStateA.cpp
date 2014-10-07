@@ -63,7 +63,7 @@ void TestStateA::Update( DWORD elapseTime )
 	cView::Update(elapseTime);
 
 	D3DXVECTOR3 pos(0.0f,0.0f,0.0f);
-	m_pTank->GetWorldPos(pos);
+	m_pTank->GetWorldPosition(pos);
 
 	if(!m_pZTerrain->GetHeight(pos.x,pos.z,pos.y))
 	{

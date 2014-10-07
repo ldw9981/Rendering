@@ -22,7 +22,6 @@ class IRenderer
 public:
 	virtual void Render(){};
 	virtual void Render(MultiSub* pMultisub,Material* pMaterial){};
-	virtual const D3DXVECTOR3* GetRenderWorldPos() { return NULL; };
 };
 
 class IRenderable

@@ -50,7 +50,8 @@ private:
 	cRscTexture*		m_pRscTexture;
 	cRscVertexBuffer*	m_pRscVertexBuffer;		//버텍스 버퍼를 갖는다.
 	cRscIndexBuffer*	m_pRscIndexBuffer;
-
+	
+	cMeshNode*			m_pMesh;
 public:
 	ZTerrain();
 	~ZTerrain();

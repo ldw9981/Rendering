@@ -64,14 +64,14 @@ const D3DXVECTOR3* cTransformable::GetLocalPos()
 }
 
 
-void cTransformable::GetWorldPos(D3DXVECTOR3& pos)
+void cTransformable::GetWorldPosition(D3DXVECTOR3& pos)
 {
 	pos.x = m_matWorld._41;   
 	pos.y = m_matWorld._42;  
 	pos.z = m_matWorld._43;  
 }
 
-const D3DXVECTOR3* cTransformable::GetWorldPos()
+D3DXVECTOR3* cTransformable::GetWorldPositionPtr()
 {
 	return (D3DXVECTOR3*)&m_matWorld._41;
 }

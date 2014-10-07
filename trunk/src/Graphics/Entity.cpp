@@ -129,7 +129,7 @@ void Entity::Update( DWORD elapseTime )
 
 	cSceneNode::Update(elapseTime);
 
-	const D3DXVECTOR3* pos = GetWorldPos();
+	const D3DXVECTOR3* pos = GetWorldPositionPtr();
 	m_BoundingSphere.SetCenterPos(*pos);
 }
 
@@ -147,18 +147,7 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 
 void Entity::Build()
 {
-	m_renderQueueNormalShadow.Clear();
-	m_renderQueueSkinnedShadow.Clear();
-
-	m_renderQueueNormal.Clear();
-	m_renderQueueSkinned.Clear();
-	m_renderQueueNormalAlphaBlend.Clear();
-	m_renderQueueSkinnedAlphaBlend.Clear();
-	
-	m_renderQueueTerrain.Clear();
-	m_renderQueueGUI.Clear();
-	m_renderQueueLine.Clear();
-
+	ClearRenderQueue();
 	cSceneNode::BuildComposite(this);
 }
 
@@ -525,19 +514,18 @@ void Entity::SetShowSkeleton( bool bShow )
 	}
 	ClearRenderQueue();
 	QueueRenderer(this,true);
-	QueueRendererShadow(this,true);
 }
 
 void Entity::ClearRenderQueue()
 {
 	m_renderQueueNormal.Clear();
 	m_renderQueueSkinned.Clear();
+	m_renderQueueNormalAlphaBlend.Clear();
+	m_renderQueueSkinnedAlphaBlend.Clear();
 
 	m_renderQueueTerrain.Clear();
 	m_renderQueueGUI.Clear();
-
-	m_renderQueueNormalShadow.Clear();
-	m_renderQueueSkinnedShadow.Clear();
+	m_renderQueueLine.Clear();
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )

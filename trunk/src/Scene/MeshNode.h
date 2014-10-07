@@ -46,7 +46,6 @@ public:
 
 
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
-	virtual void			QueueRendererShadow(Entity* pEntity,bool bTraversal);
 
 	void					CalculateTangentBinormal();
 	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
@@ -69,9 +68,6 @@ public:
 	Material* GetMaterial(MultiSub* pMultiSub);
 	Material* GetMaterial(unsigned char subIndex);
 	const std::vector<Material*>& GetMaterials();
-
-	//virtual void GetRenderPosition(D3DXVECTOR3& pos);
-	virtual const D3DXVECTOR3* GetRenderWorldPos();;
 };
 
 }

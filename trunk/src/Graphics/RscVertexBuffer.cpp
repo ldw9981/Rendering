@@ -50,7 +50,10 @@ BOOL cRscVertexBuffer::Create()
 void cRscVertexBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	cResourceMng::m_pInstance->EraseRscVertexBuffer(GetUniqueKey());
+	if (!GetUniqueKey().empty())
+	{
+		cResourceMng::m_pInstance->EraseRscVertexBuffer(GetUniqueKey());
+	}	
 	delete this;
 }
 

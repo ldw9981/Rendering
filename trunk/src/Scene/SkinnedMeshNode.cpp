@@ -112,8 +112,6 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 		m_pRscVetextBuffer->Unlock();
 
 	QueueRenderer(pEntity,false);
-	QueueRendererShadow(pEntity,false);
-	
 }
 
 void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
@@ -153,29 +151,6 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	}
 }
 
-
-void SkinnedMeshNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
-{
-	if (m_bShow)
-	{	
-		unsigned char multiSubIndex=0;
-		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
-		{
-			MultiSub* pMultiSub = &(*it_sub);
-			Material* pMaterial = GetMaterial(pMultiSub);
-
-			pEntity->m_renderQueueSkinnedShadow.Insert(this,pMultiSub,pMaterial);						
-		}
-	}
-
-	if (!bTraversal)
-		return;
-	
-	for (auto it_child=m_listChildNode.begin() ; it_child!=m_listChildNode.end();++it_child )
-	{
-		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
-	}
-}
 
 void SkinnedMeshNode::Release()
 {

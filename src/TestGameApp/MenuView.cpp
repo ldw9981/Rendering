@@ -14,6 +14,7 @@ using namespace Sophia;
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)	
 
+
 cMenuView::cMenuView(void)
 {
 	
@@ -82,7 +83,7 @@ void cMenuView::Enter()
 	*/
 	
 	
-	for (int i=0;i<10;i++)
+	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
 		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
@@ -93,7 +94,7 @@ void cMenuView::Enter()
 		D3DXVECTOR3 pos;
 		pos.x = (rand()%10 - 5)*100.0f;
 		pos.y = (rand()%10 - 5)*10.0f + 100;
-		pos.z = (rand()%10 - 5)*100.0f;
+		pos.z = (rand()%20 - 10)*100.0f;
 		m_pHouse[i]->SetLocalPos(pos);
 	}
 	
@@ -108,7 +109,7 @@ void cMenuView::Leave()
 
 
 
-	for (int i=0;i<10;i++)
+	for (int i=0;i<STRESS;i++)
 	{
 
 		m_graphicWorld.DeleteEntity(m_pHouse[i]);

@@ -5,6 +5,8 @@
 #include "Graphics/MaterialEx.h"
 #include "Scene/CameraNode.h"
 #include "Graphics/RscTexture.h"
+#include "Scene/MeshNode.h"
+
 namespace Sophia
 {
 
@@ -20,42 +22,39 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::Insert( IRenderer* pItem ,MultiSub* pMultiSub,Material* pMaterial)
+void cRendererQueue::Insert( cMeshNode* pItem ,MultiSub* pMultiSub,Material* pMaterial)
 {
-	std::pair<IRenderer*,Specific> info;
+	std::pair<cMeshNode*,Specific> info;
 	info.first = pItem;
 	info.second.pMaterial = pMaterial;
 	info.second.pMultiSub = pMultiSub;
 
-	m_listNode.push_back(info);
+	m_vecNode.push_back(info);
 }
 
 void cRendererQueue::Insert( cRendererQueue& renderQueue )
 {
-	m_listNode.insert(m_listNode.end(),renderQueue.m_listNode.begin(),renderQueue.m_listNode.end());
+	m_vecNode.insert(m_vecNode.end(),renderQueue.m_vecNode.begin(),renderQueue.m_vecNode.end());
 }
 
 void cRendererQueue::Render()
 {
- 	auto it=m_listNode.begin();
- 	for ( ; it!=m_listNode.end(); ++it )
+ 	auto it=m_vecNode.begin();
+ 	for ( ; it!=m_vecNode.end(); ++it )
  	{		
  		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
  	}
 }
 
-bool cRendererQueue::IsEmpty()
-{
-	return m_listNode.empty();
-}
 
 void cRendererQueue::Clear()
 {
-	m_listNode.clear();
+	m_vecNode.clear();
+	m_materialOrder.clear();
 }
 
 
-void cRendererQueue::RenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera)
+void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera)
 {
 	SortByCamera(pCamera);
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true); 	
@@ -63,44 +62,54 @@ void cRendererQueue::RenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,cCam
 	Graphics::m_pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
-	UINT passes = 0;		
+	
+
+	std::vector<MESH_SPEC_PAIR>	containerTemp;
 
 	Material* pPrevMaterial=NULL;
-	for ( auto it=m_listNode.begin() ; it!=m_listNode.end(); ++it )
+	for ( auto it=m_vecNode.begin() ; it!=m_vecNode.end(); ++it )
 	{		
 		Specific& item = (*it).second;		
-		if (pPrevMaterial!=item.pMaterial)
+		if (pPrevMaterial!=item.pMaterial && !containerTemp.empty())
 		{
-			if (pPrevMaterial != NULL)
-			{
-				pEffect->EndPass();
-				pEffect->End();				
-			}
-
-			int i = item.pMaterial->index_renderer_queue();
-			pEffect->SetTechnique(vecTechnique[i]);
-			pEffect->Begin(&passes, 0);	
-			pEffect->BeginPass(0);	
-
-			// Material적용
-			SetMaterial(*item.pMaterial);
-		}
-
-		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
+			SubRenderAlphaBlend(vecTechnique,containerTemp);
+			containerTemp.clear();
+		}		
+		containerTemp.push_back(*it);				
 		pPrevMaterial = item.pMaterial;
 	}
+	SubRenderAlphaBlend(vecTechnique,containerTemp);
 
-	if (pPrevMaterial)
-	{
-		pEffect->EndPass();
-		pEffect->End();	
-	}
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false); 	
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
+void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_SPEC_PAIR>& containerTemp )
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
+	UINT passes = 0;		
 
-static bool GreateDistance(std::pair<IRenderer*,cRendererQueue::Specific>& a,std::pair<IRenderer*,cRendererQueue::Specific>& b)
+	for ( auto it=containerTemp.begin() ; it!=containerTemp.end(); ++it )
+	{		
+		Specific& item = (*it).second;		
+		
+		int i = item.pMaterial->index_renderer_queue();
+		pEffect->SetTechnique(vecTechnique[i]);
+		pEffect->Begin(&passes, 0);	
+		// Material적용
+		ChangeMaterial(*item.pMaterial,false);
+
+		pEffect->BeginPass(0);	
+		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
+
+		pEffect->EndPass();
+		pEffect->End();	
+	}
+}
+
+
+
+static bool GreateDistance(std::pair<cMeshNode*,cRendererQueue::Specific>& a,std::pair<cMeshNode*,cRendererQueue::Specific>& b)
 {
 	if ( a.second.distancesq > b.second.distancesq)
 		return true;
@@ -113,21 +122,21 @@ void cRendererQueue::SortByCamera(cCameraNode* pCamera)
 	D3DXVECTOR3 temp;
 	const D3DXVECTOR3* pVecCam;
 	const D3DXVECTOR3* pVecRender;
-	pVecCam = pCamera->GetWorldPos();
-	auto it=m_listNode.begin();
-	for ( ; it!=m_listNode.end(); ++it )
+	pVecCam = pCamera->GetWorldPositionPtr();
+	auto it=m_vecNode.begin();
+	for ( ; it!=m_vecNode.end(); ++it )
 	{		
 		Specific& item = (*it).second;		
-		pVecRender = (*it).first->GetRenderWorldPos();
+		pVecRender = (*it).first->GetWorldPositionPtr();
 
 		temp = *pVecCam - *pVecRender;
 		item.distancesq = D3DXVec3LengthSq(&temp);	
 	}
 
-	m_listNode.sort(&GreateDistance);
+	std::sort(m_vecNode.begin(),m_vecNode.end(),&GreateDistance);
 }
 
-static bool GreateMaterial(std::pair<IRenderer*,cRendererQueue::Specific>& a,std::pair<IRenderer*,cRendererQueue::Specific>& b)
+static bool GreateMaterial(std::pair<cMeshNode*,cRendererQueue::Specific>& a,std::pair<cMeshNode*,cRendererQueue::Specific>& b)
 {
 	if ( a.second.pMaterial > b.second.pMaterial)
 		return true;
@@ -137,49 +146,41 @@ static bool GreateMaterial(std::pair<IRenderer*,cRendererQueue::Specific>& a,std
 
 void cRendererQueue::SortByMaterial()
 {
-	m_listNode.sort(&GreateMaterial);
+	std::sort(m_vecNode.begin(),m_vecNode.end(),&GreateMaterial);	
 }
 
-void cRendererQueue::RenderNotAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique)
+
+
+void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	SortByMaterial();
+	
 	UINT passes = 0;		
-
 	Material* pPrevMaterial=NULL;
-	for ( auto it=m_listNode.begin() ; it!=m_listNode.end(); ++it )
-	{		
-		Specific& item = (*it).second;		
-		if (pPrevMaterial!=item.pMaterial)
-		{
-			if (pPrevMaterial != NULL)
-			{
-				pEffect->EndPass();
-				pEffect->End();				
-			}
 
-			int i = item.pMaterial->index_renderer_queue();
-			pEffect->SetTechnique(vecTechnique[i]);
-			pEffect->Begin(&passes, 0);	
-			pEffect->BeginPass(0);	
-
-			// Material적용
-			SetMaterial(*item.pMaterial);
-		}
-		
-		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
-		pPrevMaterial = item.pMaterial;
-	}
-
-	if (pPrevMaterial)
+	for ( auto it = m_materialOrder.begin() ; it!=m_materialOrder.end();++it)
 	{
+		Material* pMaterial = it->first;
+		int i = pMaterial->index_renderer_queue();
+		pEffect->SetTechnique(vecTechnique[i]);
+		pEffect->Begin(&passes, 0);	
+
+		ChangeMaterial(*pMaterial,false);
+	
+		pEffect->BeginPass(0);	
+		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
+		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
+		{
+			MESH_SPEC_PAIR& subItem = *it_sub;
+			subItem.first->Render( subItem.second.pMultiSub,pMaterial );
+		}
 		pEffect->EndPass();
-		pEffect->End();	
+		pEffect->End();		
 	}
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::SetMaterial( Material& material )
+void cRendererQueue::ChangeMaterial( Material& material,bool bForShadow )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
@@ -192,74 +193,130 @@ void cRendererQueue::SetMaterial( Material& material )
 	}
 
 	cRscTexture* pRscTexture;
-	pRscTexture = material.GetMapDiffuse();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapNormal();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
-
-	pRscTexture = material.GetMapLight();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
-
 	pRscTexture = material.GetMapOpacity();
 	if( pRscTexture != NULL )	
 		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
 
-	pRscTexture = material.GetMapSpecular();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
+	if(!bForShadow)
+	{
+		pRscTexture = material.GetMapDiffuse();
+		if( pRscTexture != NULL )	
+			pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+
+		pRscTexture = material.GetMapNormal();
+		if( pRscTexture != NULL )	
+			pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
+
+		pRscTexture = material.GetMapLight();
+		if( pRscTexture != NULL )	
+			pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
+
+		pRscTexture = material.GetMapSpecular();
+		if( pRscTexture != NULL )	
+			pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
+	}
 }
 
-void cRendererQueue::RenderShadow( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest )
+
+
+
+void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest )
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+	Material* pPrevMaterial=NULL;
+
+	for ( auto it = m_materialOrder.begin() ; it!=m_materialOrder.end();++it)
+	{
+		Material* pMaterial = it->first;
+
+		if (pMaterial->AlphaTestEnable)
+			pEffect->SetTechnique(hTechniqueAlphaTest);
+		else
+			pEffect->SetTechnique(hTechniqueNotAlphaTest );
+
+		pEffect->Begin(&passes, 0);	
+
+		ChangeMaterial(*pMaterial,true);
+
+		pEffect->BeginPass(0);	
+		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
+		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
+		{
+			MESH_SPEC_PAIR& subItem = *it_sub;
+			subItem.first->Render( subItem.second.pMultiSub,pMaterial );
+		}
+		pEffect->EndPass();
+		pEffect->End();		
+	}
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+}
+
+
+void cRendererQueue::RenderNotAlphaBlendInstance(std::vector<D3DXHANDLE>& vecTechnique)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	SortByMaterial();
 	UINT passes = 0;		
-	
-	//테크닉을 바꾸는 조건, material다르고 AlphaTestEnable 다를경우
-	int	 nPrevAlphaTestEnable = -1;
+
+	int nInstance=0;
+
 	Material* pPrevMaterial=NULL;
-	for ( auto it=m_listNode.begin() ; it!=m_listNode.end(); ++it )
+	for ( auto it=m_vecNode.begin() ; it!=m_vecNode.end(); ++it )
 	{		
 		Specific& item = (*it).second;		
-		if (pPrevMaterial!=item.pMaterial )
+		if (pPrevMaterial!=item.pMaterial)
 		{
-			if (nPrevAlphaTestEnable != (int)item.pMaterial->AlphaTestEnable)
+			nInstance = 0;
+			if (pPrevMaterial != NULL)
 			{
-				if (nPrevAlphaTestEnable != -1 )
-				{
-					pEffect->EndPass();
-					pEffect->End();				
-				}
-				int i = item.pMaterial->index_renderer_queue();
-
-				if (item.pMaterial->AlphaTestEnable)
-					pEffect->SetTechnique(hTechniqueAlphaTest);
-				else
-					pEffect->SetTechnique(hTechniqueNotAlphaTest );
-				
-				pEffect->Begin(&passes, 0);	
-				pEffect->BeginPass(0);	
+				pEffect->EndPass();
+				pEffect->End();				
 			}
 
+			int i = item.pMaterial->index_renderer_queue();
+			pEffect->SetTechnique(vecTechnique[i]);
+			pEffect->Begin(&passes, 0);	
+			pEffect->BeginPass(0);	
+
 			// Material적용
-			SetMaterial(*item.pMaterial);
+			ChangeMaterial(*item.pMaterial,false);
+
+			//Begin Write Buffer
+		}
+		else
+		{
+			nInstance++;
 		}
 
 		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
 		pPrevMaterial = item.pMaterial;
-		nPrevAlphaTestEnable = (int)item.pMaterial->AlphaTestEnable;
 	}
 
-	if (nPrevAlphaTestEnable!=-1)
+	if (pPrevMaterial)
 	{
 		pEffect->EndPass();
 		pEffect->End();	
 	}
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
+
+void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
+{
+	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
+	{
+		MESH_SPEC_PAIR& item = (*it);
+
+		std::list<MESH_SPEC_PAIR>& listMesh = m_materialOrder[item.second.pMaterial];
+		listMesh.push_back(item);
+	}
+
+}
+
+
+
+
+
 
 }

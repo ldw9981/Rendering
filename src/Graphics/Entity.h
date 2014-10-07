@@ -19,12 +19,10 @@ public:
 	virtual ~Entity(void);
 
 public:
-	cRendererQueue			m_renderQueueNormalShadow;	
-	cRendererQueue			m_renderQueueSkinnedShadow;
-	cRendererQueue			m_renderQueueNormal;					// sort by material
-	cRendererQueue			m_renderQueueSkinned;				// sort by material
-	cRendererQueue			m_renderQueueNormalAlphaBlend;	// sort by dist
-	cRendererQueue			m_renderQueueSkinnedAlphaBlend;	// sort by dist
+	cRendererQueue			m_renderQueueNormal;				
+	cRendererQueue			m_renderQueueSkinned;				
+	cRendererQueue			m_renderQueueNormalAlphaBlend;	
+	cRendererQueue			m_renderQueueSkinnedAlphaBlend;	
 
 	cRendererQueue			m_renderQueueTerrain;
 	cRendererQueue			m_renderQueueGUI;

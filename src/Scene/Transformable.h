@@ -35,8 +35,8 @@ public:
 
 	void					SetWorldTM(const D3DXMATRIX& val) { m_matWorld = val; }
 	D3DXMATRIX&				GetWorldTM() { return m_matWorld; }
-
-
+	virtual D3DXMATRIX*		GetWorldMatrixPtr()	{ return &m_matWorld;  }
+	
 
 	D3DXMATRIX&				GetLocalTM() { return m_matLocal; }
 	void					SetLocalTM(const D3DXMATRIX& val);
@@ -46,9 +46,9 @@ public:
 	void					GetLocalPos( D3DXVECTOR3& pos );	
 	const D3DXVECTOR3*		GetLocalPos();
 
-	void					GetWorldPos( D3DXVECTOR3& pos );
+	void					GetWorldPosition( D3DXVECTOR3& pos );
 	void					SetWorldPos( D3DXVECTOR3& pos );
-	const D3DXVECTOR3*		GetWorldPos();
+	virtual	 D3DXVECTOR3*	GetWorldPositionPtr();
 
 	
 	void					MoveOnLocal( float deltaX,float deltaY,float deltaZ );

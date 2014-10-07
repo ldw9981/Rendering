@@ -229,6 +229,6 @@ bool ZTerrain::Cull(  Frustum* pFrustum ,float loose )
 
 void ZTerrain::QueueRenderer( Entity* pEntity,bool bTraversal )
 {
-	pEntity->m_renderQueueTerrain.Insert(this,0,0);
+	//pEntity->m_renderQueueTerrain.Insert(this,0,0);
 }
 }

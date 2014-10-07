@@ -226,28 +226,6 @@ void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& ve
 }
 
 
-void cMeshNode::QueueRendererShadow( Entity* pEntity,bool bTraversal )
-{
-	if (m_bShow)
-	{
-		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
-		{
-			MultiSub* pMultiSub = &(*it_sub);
-			Material* pMaterial = GetMaterial(pMultiSub);
-			pEntity->m_renderQueueNormalShadow.Insert(this,pMultiSub,pMaterial);						
-		}
-	}
-
-	if (!bTraversal)
-		return;
-
-	auto it_child=m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
-	{
-		(*it_child)->QueueRendererShadow(pEntity,bTraversal);
-	}
-}
-
 void cMeshNode::Release()
 {
 	cSceneNode::Release();
@@ -406,10 +384,7 @@ Material* cMeshNode::GetMaterial( unsigned char subIndex )
 	return sub[subIndex];
 }
 
-const D3DXVECTOR3* cMeshNode::GetRenderWorldPos()
-{
-	return GetWorldPos();
-}
+
 
 const std::vector<Material*>& cMeshNode::GetMaterials()
 {

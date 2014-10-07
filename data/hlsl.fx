@@ -114,6 +114,20 @@ struct VS_PHONG_DIFFUSE_INPUT
    float2 mTexCoord1 : TEXCOORD1;  
 };
 
+struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
+{
+   float4 mPosition : POSITION;
+   float3 mNormal : NORMAL;    
+   float3 mTangent : TANGENT;   
+   float3 mBiNormal : BINORMAL;   
+   float2 mTexCoord : TEXCOORD0;  
+   float2 mTexCoord1 : TEXCOORD1;
+	float4 mInstanceMatrix0 : TEXCOORD2; 
+   float4 mInstanceMatrix1 : TEXCOORD3; 
+   float4 mInstanceMatrix2 : TEXCOORD4; 
+	float4 mInstanceMatrix3 : TEXCOORD5; 
+};
+
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
 {
    float3 mPosition : POSITION;
@@ -354,6 +368,30 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
     return output;
 }
 
+VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instance( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
+{
+   VS_PHONG_DIFFUSE_OUTPUT output;
+	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
+	
+   float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
+   output.mPosition = mul(worldPosition , gViewProjectionMatrix);
+   
+   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
+   float3 worldNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
+   worldNormal = normalize(worldNormal);
+      
+   output.mLambert = dot(-lightDir, worldNormal);
+   output.mNormal = worldNormal;
+   output.mCameraDir = cameraDir;
+   output.mReflect = reflect(lightDir, worldNormal);
+   output.mTexCoord = input.mTexCoord;   
+   output.mTexCoord1 = input.mTexCoord1;   
+   
+   output.mClipPosition = mul(worldPosition, gLightViewMatrix);
+   output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix); 
+   return output;
+}
 
 
 struct PS_PHONG_DIFFUSE_INPUT
@@ -883,6 +921,15 @@ technique TShadowSkinningAlphaTest
       VertexShader = compile vs_2_0 vs_Shadow_Skinning();
       PixelShader = compile ps_2_0 ps_Shadow_NormalTransparency();
    }
+}
+
+technique TPhongDiffuseInstance
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instance();
+        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+    }  
 }
 
 

@@ -53,7 +53,6 @@ public:
 
 
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
-	virtual void			QueueRendererShadow(Entity* pEntity,bool bTraversal);
 	virtual	void			Release();
 
 	// ISerialize

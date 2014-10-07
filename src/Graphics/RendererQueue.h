@@ -11,8 +11,8 @@ class IRenderer;
 class Material;
 class MultiSub;
 class cCameraNode;
-class cRendererQueue:
-	public IRenderer
+class cMeshNode;
+class cRendererQueue
 {
 public:
 	cRendererQueue();
@@ -25,40 +25,25 @@ public:
 		float distancesq;
 
 	};
-
-
-	std::list<std::pair<IRenderer*,Specific>>	m_listNode;
+	typedef std::pair<cMeshNode*,Specific> MESH_SPEC_PAIR;
+	std::vector<MESH_SPEC_PAIR>	m_vecNode;
+	std::map<Material*,std::list<MESH_SPEC_PAIR>>	m_materialOrder;
 private:
 public:
-//	void	Insert(IRenderer* pItem,unsigned char index);
-	void	Insert(IRenderer* pItem,MultiSub* pMultiSub,Material* pMaterial);
+	void	Insert(cMeshNode* pItem,MultiSub* pMultiSub,Material* pMaterial);
 	void	Insert(cRendererQueue& renderQueue);
+	void	InsertIntoMaterialOrder(cRendererQueue& renderQueue);
 	void	Render();
-
-	void	RenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera);
-	bool	IsEmpty();
 	void	Clear();
 	void	SortByCamera(cCameraNode* pCamera);
 	void	SortByMaterial();
 
-
-	void	RenderNotAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderShadow( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest );
-	void	SetMaterial(Material& material);
-};
-
-class RendererQueue:
-	public IRenderer
-{
-public:
-	RendererQueue();
-	~RendererQueue();
-
-	std::list<std::pair<IRenderer*,unsigned char>>		m_listNode;
-private:
-public:
-	void	Insert(IRenderer* pItem,unsigned char index);
-	void	Render();
-	bool	IsEmpty();
+	void	RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest );
+	void	RenderNotAlphaBlendInstance(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera);
+protected:
+	void	ChangeMaterial(Material& material,bool bForShadow);
+	void	SubRenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_SPEC_PAIR>& containerTemp );
 };
 }

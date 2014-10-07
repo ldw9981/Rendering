@@ -8,8 +8,7 @@ namespace Sophia
 class cGUIFont;
 class cView;
 class World;
-
-#define TECHNIQUE_SIZE 32
+class cRscVertexBuffer;
 
 class Graphics
 {
@@ -30,6 +29,7 @@ public:
 	LPD3DXBUFFER			m_pError;	
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclation;
 	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclation;
+	LPDIRECT3DVERTEXDECLARATION9 m_pInstanceDeclation;
 	D3DXHANDLE				m_hTLine;// 테크닉
 	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
@@ -41,6 +41,9 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseSpecular;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseOpacity;// 테크닉
 	D3DXHANDLE				m_hTPhongDiffuseBumpSpecular;
+
+	D3DXHANDLE				m_hTPhongDiffuseInstance;// 테크닉
+
 
 	D3DXHANDLE				m_hTCreateShadowNormal;	// 쉐이더
 	D3DXHANDLE				m_hTCreateShadowSkinned;	// 쉐이더
@@ -78,7 +81,8 @@ public:
 
 	RECT				m_Rect;
 	GUIVERTEX			 g_vertices[4];
-
+	
+	cRscVertexBuffer*	m_pInstanceVertexBuffer;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

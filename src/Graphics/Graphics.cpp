@@ -139,7 +139,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclation);
 	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclation);
-
+	m_pDevice->CreateVertexDeclaration(declInstance, &m_pInstanceDeclation);
 
 	// ·»´õÅ¸±êÀ» ¸¸µç´Ù.
 	const int shadowMapSize = SHADOWMAP_SIZE;
@@ -158,11 +158,18 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 		return false;
 	}
 	SetPos(1024-T_SIZE,0);
+
+	m_pInstanceVertexBuffer = new cRscVertexBuffer;
+	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*128);
+	m_pInstanceVertexBuffer->Create();
 	return true;
 }
 
 void Graphics::Finalize()
 {
+	m_pInstanceVertexBuffer->Free();
+	m_pInstanceVertexBuffer=NULL;
+
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
 	SAFE_RELEASE(m_pNormalVertexDeclation);
@@ -206,6 +213,8 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTPhongDiffuseOpacity = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
 	m_hTPhongDiffuseSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
 	m_hTPhongDiffuseBumpSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
+
+	m_hTPhongDiffuseInstance = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseInstance") );
 
 	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	

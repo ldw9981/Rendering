@@ -186,7 +186,7 @@ void World::Render()
 	D3DXMATRIX matLightView;
 	{
 		D3DXVECTOR3 vEyePt( m_WorldLightPosition.x, m_WorldLightPosition.y,  m_WorldLightPosition.z );		
-		const D3DXVECTOR3* vLookatPt = m_camera.GetWorldPos();
+		const D3DXVECTOR3* vLookatPt = m_camera.GetWorldPositionPtr();
 
 		vEyePt += *vLookatPt;
 		D3DXVECTOR3 vUpVec(    0.0f, 1.0f,  0.0f );
@@ -230,16 +230,16 @@ void World::Render()
 	{
 		//1. write depth
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
-		if (!m_renderQueueNormalShadow.IsEmpty())
+		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
 		{
-			m_renderQueueNormalShadow.RenderShadow(Graphics::m_pInstance->m_hTCreateShadowNormal,
+			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTCreateShadowNormal,
 				Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest );
 		}		
 
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
-		if (!m_renderQueueSkinnedShadow.IsEmpty())
+		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
 		{	
-			m_renderQueueSkinnedShadow.RenderShadow(Graphics::m_pInstance->m_hTCreateShadowSkinned,
+			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTCreateShadowSkinned,
 				Graphics::m_pInstance->m_hTCreateShadowSkinnedAlphaTest );
 		}		
 	}
@@ -258,7 +258,7 @@ void World::Render()
 	pHWDepthStencilBuffer = NULL;
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
-	if (!m_renderQueueTerrain.IsEmpty())
+	if (!m_renderQueueTerrain.m_vecNode.empty())
 	{		
 		//Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 		
@@ -271,28 +271,28 @@ void World::Render()
 	}
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
-	if (!m_renderQueueNormal.IsEmpty())
+	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{
-		m_renderQueueNormal.RenderNotAlphaBlend(Graphics::m_pInstance->m_vecTechniqueNormal);
+		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
-	if (!m_renderQueueSkinned.IsEmpty())
+	if (!m_renderQueueSkinned.m_materialOrder.empty())
 	{
-		m_renderQueueSkinned.RenderNotAlphaBlend(Graphics::m_pInstance->m_vecTechniqueSkinned);
+		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
 	}
 	
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
-	if (!m_renderQueueNormalAlphaBlend.IsEmpty())
+	if (!m_renderQueueNormalAlphaBlend.m_vecNode.empty())
 	{
-		m_renderQueueNormalAlphaBlend.RenderAlphaBlend(Graphics::m_pInstance->m_vecTechniqueNormal,&m_camera);
+		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal,&m_camera);
 	}
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
-	if (!m_renderQueueSkinnedAlphaBlend.IsEmpty())
+	if (!m_renderQueueSkinnedAlphaBlend.m_vecNode.empty())
 	{
-		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlend(Graphics::m_pInstance->m_vecTechniqueSkinned,&m_camera);		
+		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned,&m_camera);		
 	}
 	
 
@@ -350,17 +350,18 @@ void World::GatherRender()
 
 	for ( auto itIn = m_listEntityShadow.begin() ;itIn!=m_listEntityShadow.end() ; ++itIn )
 	{
-		m_renderQueueNormalShadow.Insert((*itIn)->m_renderQueueNormalShadow);
-		m_renderQueueSkinnedShadow.Insert((*itIn)->m_renderQueueSkinnedShadow);
+		m_renderQueueNormalShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormal);
+		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinned);
+		m_renderQueueNormalShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormalAlphaBlend);
+		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinnedAlphaBlend);
 	}
 
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
 		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
-
-		m_renderQueueNormal.Insert((*itIn)->m_renderQueueNormal);	
-		m_renderQueueSkinned.Insert((*itIn)->m_renderQueueSkinned);		
+		m_renderQueueNormal.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormal);	
+		m_renderQueueSkinned.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinned);		
 		m_renderQueueNormalAlphaBlend.Insert((*itIn)->m_renderQueueNormalAlphaBlend);	
 		m_renderQueueSkinnedAlphaBlend.Insert((*itIn)->m_renderQueueSkinnedAlphaBlend);					
 	}

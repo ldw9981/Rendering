@@ -55,11 +55,8 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 
 일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
-void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
-{
-	MultiSub& multiSub = *pMultiSub;
-	Material& material = *pMaterial;	
-	
+void SkinnedMeshNode::Render()
+{	
 	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
@@ -78,8 +75,8 @@ void SkinnedMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),
-		multiSub.startIndex,
-		multiSub.primitiveCount );			
+		m_startIndex,
+		m_primitiveCount );			
 	
 }
 
@@ -123,23 +120,16 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	if (m_bShow)
 	{	
-		unsigned char multiSubIndex=0;
-		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
+		Material* pMaterial = GetMaterial(m_materialSubIndex);
+		int i = pMaterial->index_renderer_queue();
+		if (pMaterial->AlphaBlend == false)
 		{
-			MultiSub* pMultiSub = &(*it_sub);
-			Material* pMaterial = GetMaterial(pMultiSub);
-
-			int i = pMaterial->index_renderer_queue();
-
-			if (pMaterial->AlphaBlend == false)
-			{
-				pEntity->m_renderQueueSkinned.Insert(this,pMultiSub,pMaterial);
-			}
-			else
-			{
-				pEntity->m_renderQueueSkinnedAlphaBlend.Insert(this,pMultiSub,pMaterial);
-			}	
+			pEntity->m_renderQueueSkinned.Insert(this,pMaterial);
 		}
+		else
+		{
+			pEntity->m_renderQueueSkinnedAlphaBlend.Insert(this,pMaterial);
+		}		
 	}
 	
 	if (!bTraversal)
@@ -173,17 +163,10 @@ void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);	
-
-	// multisub
-	stream.read((char*)&count,sizeof(count));
-	for ( unsigned char i = 0; i<count ; i++ )
-	{
-		MultiSub data;
-		stream.read((char*)&data.primitiveCount,sizeof(data.primitiveCount));
-		stream.read((char*)&data.startIndex,sizeof(data.startIndex));
-		stream.read((char*)&data.materialIndex,sizeof(data.materialIndex));
-		m_vecMultiSub.push_back(data);
-	}
+	stream.read((char*)&m_materialRefIndex,sizeof(m_materialRefIndex));
+	stream.read((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));
+	stream.read((char*)&m_primitiveCount,sizeof(m_primitiveCount));
+	stream.read((char*)&m_startIndex,sizeof(m_startIndex));
 
 	// mesh
 	SerializeInMesh(stream);
@@ -214,17 +197,11 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);	
-	
-	// multi/sub
-	count = m_vecMultiSub.size();
-	stream.write((char*)&count,sizeof(count));
-	for ( auto it = m_vecMultiSub.begin(); it!=m_vecMultiSub.end();++it )
-	{
-		MultiSub& data = (*it);
-		stream.write((char*)&data.primitiveCount,sizeof(data.primitiveCount));
-		stream.write((char*)&data.startIndex,sizeof(data.startIndex));
-		stream.write((char*)&data.materialIndex,sizeof(data.materialIndex));
-	}
+	stream.write((char*)&m_materialRefIndex,sizeof(m_materialRefIndex));
+	stream.write((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));	
+	stream.write((char*)&m_primitiveCount,sizeof(m_primitiveCount));	
+	stream.write((char*)&m_startIndex,sizeof(m_startIndex));	
+
 
 	// mesh 
 	SerializeOutMesh(stream);

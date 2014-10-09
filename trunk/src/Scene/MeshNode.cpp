@@ -27,7 +27,10 @@ cMeshNode::cMeshNode(void)
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
 	m_type = TYPE_MESH;
-	m_nMaterialRefIndex = 0;
+	m_primitiveCount=0;
+	m_startIndex=0;
+	m_materialRefIndex=0;
+	m_materialSubIndex=0;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -40,12 +43,8 @@ cMeshNode::~cMeshNode(void)
 	일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
 
-void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
-{
-	MultiSub& multiSub = *pMultiSub;
-	Material& material = *pMaterial;
-		
-	
+void cMeshNode::Render()
+{	
 	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
@@ -57,8 +56,8 @@ void cMeshNode::Render(MultiSub* pMultiSub,Material* pMaterial)
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetCount(),
-		multiSub.startIndex,
-		multiSub.primitiveCount );
+		m_startIndex,
+		m_primitiveCount );
 }
 
 void cMeshNode::BuildComposite(Entity* pEntity)
@@ -88,23 +87,7 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	m_pRscVetextBuffer->Unlock();
 
 	QueueRenderer(pEntity,false);
-	QueueRendererShadow(pEntity,false);	
 }
-
-/*
-	겹치면 자식까지 그냥 다 그린다. 밖이면 자식검사
-	* 논리적오류! 자식이라고해서 원 안에 항상있을까..
-*/
-
-void cMeshNode::AddMultiSub( WORD startIndex,WORD primitiveCount,unsigned char materialIndex )
-{
-	MultiSub temp;
-	temp.startIndex = startIndex;
-	temp.primitiveCount = primitiveCount;
-	temp.materialIndex = materialIndex;
-	m_vecMultiSub.push_back(temp);
-}
-
 
 void cMeshNode::SetRscIndexBuffer( cRscIndexBuffer* val )
 {
@@ -128,23 +111,16 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
 	if (m_bShow)
 	{	
-		unsigned char multiSubIndex=0;
-		for (auto it_sub=m_vecMultiSub.begin();it_sub!=m_vecMultiSub.end();++it_sub )
+		Material* pMaterial = GetMaterial(m_materialSubIndex);
+		int i = pMaterial->index_renderer_queue();
+		if (pMaterial->AlphaBlend == false)
 		{
-			MultiSub* pMultiSub = & (*it_sub);
-			Material* pMaterial = GetMaterial(pMultiSub);
-
-			int i = pMaterial->index_renderer_queue();
-
-			if (pMaterial->AlphaBlend == false)
-			{
-				pEntity->m_renderQueueNormal.Insert(this,pMultiSub,pMaterial);				
-			}
-			else
-			{
-				pEntity->m_renderQueueNormalAlphaBlend.Insert(this,pMultiSub,pMaterial);
-			}			
+			pEntity->m_renderQueueNormal.Insert(this,pMaterial);				
 		}
+		else
+		{
+			pEntity->m_renderQueueNormalAlphaBlend.Insert(this,pMaterial);
+		}					
 	}
 
 	if (!bTraversal)
@@ -240,23 +216,17 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	unsigned short ver = 0;
 	unsigned char count =0 ;
 
+	std::string temp;
 	//scene
 	stream.read((char*)&ver,sizeof(ver));
 	ReadString(stream,m_strNodeName);
 	ReadString(stream,m_strParentName);
 	ReadMatrix(stream,m_nodeTM);	
-	stream.read((char*)&m_nMaterialRefIndex,sizeof(m_nMaterialRefIndex));
+	stream.read((char*)&m_materialRefIndex,sizeof(m_materialRefIndex));
+	stream.read((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));
+	stream.read((char*)&m_primitiveCount,sizeof(m_primitiveCount));
+	stream.read((char*)&m_startIndex,sizeof(m_startIndex));
 
-	// multisub
-	stream.read((char*)&count,sizeof(count));
-	for ( unsigned char i = 0; i<count ; i++ )
-	{
-		MultiSub data;
-		stream.read((char*)&data.primitiveCount,sizeof(data.primitiveCount));
-		stream.read((char*)&data.startIndex,sizeof(data.startIndex));
-		stream.read((char*)&data.materialIndex,sizeof(data.materialIndex));
-		m_vecMultiSub.push_back(data);
-	}
 
 	// mesh
 	SerializeInMesh(stream);
@@ -287,19 +257,11 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	WriteString(stream,m_strNodeName);
 	WriteString(stream,m_strParentName);
 	WriteMatrix(stream,m_nodeTM);	
-	stream.write((char*)&m_nMaterialRefIndex,sizeof(m_nMaterialRefIndex));
-
-	// multi/sub
-	count = m_vecMultiSub.size();
-	stream.write((char*)&count,sizeof(count));	
-	for ( auto it = m_vecMultiSub.begin(); it!=m_vecMultiSub.end();++it )
-	{
-		MultiSub& data = (*it);
-		stream.write((char*)&data.primitiveCount,sizeof(data.primitiveCount));	
-		stream.write((char*)&data.startIndex,sizeof(data.startIndex));	
-		stream.write((char*)&data.materialIndex,sizeof(data.materialIndex));	
-	}
-
+	stream.write((char*)&m_materialRefIndex,sizeof(m_materialRefIndex));
+	stream.write((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));	
+	stream.write((char*)&m_primitiveCount,sizeof(m_primitiveCount));	
+	stream.write((char*)&m_startIndex,sizeof(m_startIndex));	
+	
 	// mesh 
 	SerializeOutMesh(stream);
 
@@ -368,18 +330,10 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	SetRscVertextBuffer(pRscVetextBuffer);
 }
 
-Material* cMeshNode::GetMaterial( MultiSub* pMultiSub )
-{
-	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
-	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
-	assert(pMultiSub->materialIndex < sub.size());
-	return sub[pMultiSub->materialIndex];
-}
-
 Material* cMeshNode::GetMaterial( unsigned char subIndex )
 {
-	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
-	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
+	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
 	assert(subIndex < sub.size());
 	return sub[subIndex];
 }
@@ -388,8 +342,8 @@ Material* cMeshNode::GetMaterial( unsigned char subIndex )
 
 const std::vector<Material*>& cMeshNode::GetMaterials()
 {
-	assert(m_nMaterialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
-	return m_pRootNode->m_pEntityMaterial->m_ref[m_nMaterialRefIndex];
+	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	return m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
 }
 
 }

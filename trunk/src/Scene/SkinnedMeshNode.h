@@ -44,7 +44,7 @@ protected:
 	D3DXMATRIX*				m_pArrayMatBoneRef;
 
 public:
-	virtual void			Render(MultiSub* pMultiSub,Material* pMaterial);
+	virtual void			Render();
 	virtual void			BuildComposite(Entity* pEntity);
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);

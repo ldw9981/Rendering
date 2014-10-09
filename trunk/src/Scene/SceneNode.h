@@ -103,7 +103,6 @@ public:
 
 
 	virtual void		Render();
-	virtual void		RenderShadow();
 	virtual void		Update(DWORD elapseTime);
 
 	/*
@@ -116,7 +115,6 @@ public:
 	virtual void		SerializeOut(std::ofstream& stream);
 
 	virtual void		QueueRenderer(Entity* pEntity,bool bTraversal);
-	virtual void		QueueRendererShadow(Entity* pEntity,bool bTraversal);
 	virtual void		Release();	
 
 	cSceneNode*		CreateNode(SCENETYPE type);

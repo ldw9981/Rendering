@@ -22,13 +22,11 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::Insert( cMeshNode* pItem ,MultiSub* pMultiSub,Material* pMaterial)
+void cRendererQueue::Insert( cMeshNode* pItem ,Material* pMaterial)
 {
 	std::pair<cMeshNode*,Specific> info;
 	info.first = pItem;
 	info.second.pMaterial = pMaterial;
-	info.second.pMultiSub = pMultiSub;
-
 	m_vecNode.push_back(info);
 }
 
@@ -39,11 +37,11 @@ void cRendererQueue::Insert( cRendererQueue& renderQueue )
 
 void cRendererQueue::Render()
 {
- 	auto it=m_vecNode.begin();
- 	for ( ; it!=m_vecNode.end(); ++it )
- 	{		
- 		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
- 	}
+	auto it=m_vecNode.begin();
+	for ( ; it!=m_vecNode.end(); ++it )
+	{		
+		(*it).first->Render();
+	}
 }
 
 
@@ -100,7 +98,7 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		ChangeMaterial(*item.pMaterial,false);
 
 		pEffect->BeginPass(0);	
-		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
+		(*it).first->Render();
 
 		pEffect->EndPass();
 		pEffect->End();	
@@ -172,7 +170,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
 			MESH_SPEC_PAIR& subItem = *it_sub;
-			subItem.first->Render( subItem.second.pMultiSub,pMaterial );
+			subItem.first->Render();
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -235,17 +233,17 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaT
 			pEffect->SetTechnique(hTechniqueAlphaTest);
 		else
 			pEffect->SetTechnique(hTechniqueNotAlphaTest );
-
+		
 		pEffect->Begin(&passes, 0);	
-
-		ChangeMaterial(*pMaterial,true);
+		
+		ChangeMaterial(*pMaterial,true);		
 
 		pEffect->BeginPass(0);	
 		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
 			MESH_SPEC_PAIR& subItem = *it_sub;
-			subItem.first->Render( subItem.second.pMultiSub,pMaterial );
+			subItem.first->Render();
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -253,54 +251,6 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaT
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-
-void cRendererQueue::RenderNotAlphaBlendInstance(std::vector<D3DXHANDLE>& vecTechnique)
-{
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	SortByMaterial();
-	UINT passes = 0;		
-
-	int nInstance=0;
-
-	Material* pPrevMaterial=NULL;
-	for ( auto it=m_vecNode.begin() ; it!=m_vecNode.end(); ++it )
-	{		
-		Specific& item = (*it).second;		
-		if (pPrevMaterial!=item.pMaterial)
-		{
-			nInstance = 0;
-			if (pPrevMaterial != NULL)
-			{
-				pEffect->EndPass();
-				pEffect->End();				
-			}
-
-			int i = item.pMaterial->index_renderer_queue();
-			pEffect->SetTechnique(vecTechnique[i]);
-			pEffect->Begin(&passes, 0);	
-			pEffect->BeginPass(0);	
-
-			// MaterialÀû¿ë
-			ChangeMaterial(*item.pMaterial,false);
-
-			//Begin Write Buffer
-		}
-		else
-		{
-			nInstance++;
-		}
-
-		(*it).first->Render( (*it).second.pMultiSub,(*it).second.pMaterial );
-		pPrevMaterial = item.pMaterial;
-	}
-
-	if (pPrevMaterial)
-	{
-		pEffect->EndPass();
-		pEffect->End();	
-	}
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
-}
 
 void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 {

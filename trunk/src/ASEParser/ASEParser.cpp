@@ -379,7 +379,7 @@ BOOL cASEParser::Parsing_GeoObject()
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	SceneAnimation* pSceneAnimation = NULL;
 
-	SCENENODEINFO stInfo;	
+	SCENENODEINFO stSceneNodeInfo;	
 
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -389,31 +389,29 @@ BOOL cASEParser::Parsing_GeoObject()
 		switch(m_Token)
 		{
 		case TOKENR_NODE_NAME:
-			stInfo.strNodeName = GetString();		
+			stSceneNodeInfo.strNodeName = GetString();		
 			break;
 		case TOKENR_NODE_PARENT:		
-			stInfo.strParentName = GetString();							
-			stInfo.pParent = m_pSceneRoot->FindNode(stInfo.strParentName);
+			stSceneNodeInfo.strParentName = GetString();							
+			stSceneNodeInfo.pParent = m_pSceneRoot->FindNode(stSceneNodeInfo.strParentName);
 			break;
 		case TOKENR_NODE_TM:			
-			stInfo.tmNode = GetNodeTM();
-			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);			
-
-			if (stInfo.pParent==NULL)
+			stSceneNodeInfo.tmNode = GetNodeTM();
+			if (stSceneNodeInfo.pParent==NULL)
 			{					
-				stInfo.tmLocal = stInfo.tmNode;
+				stSceneNodeInfo.tmLocal = stSceneNodeInfo.tmNode;
 			}
 			else
 			{					
 				D3DXMATRIX matNodeInv;
-				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
-				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stSceneNodeInfo.pParent->GetNodeTM());
+				stSceneNodeInfo.tmLocal = stSceneNodeInfo.tmNode * matNodeInv ;
 			}			
 			break;
 
 		case TOKENR_TM_ANIMATION:
 			{					
-				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				GetSceneAnimation(stSceneNodeInfo.strNodeName.c_str(),stSceneNodeInfo.tmLocal);
 			}
 			break;
 		case TOKENR_MESH:
@@ -437,6 +435,9 @@ BOOL cASEParser::Parsing_GeoObject()
 						break;
 					case TOKENR_MESH_VERTEX_LIST:
 						{
+							D3DXMATRIX tmInvNode;
+							D3DXMatrixInverse(&tmInvNode,NULL,&stSceneNodeInfo.tmNode);		
+
 							if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 								throw;
 
@@ -468,7 +469,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								m_tempAxisMax.z= max(vertex.z,m_tempAxisMax.z);		
 
 								// 원점중심 로컬좌표로 이동
-								D3DXVec3TransformCoord(&vertex,&vertex,&stInfo.tmInvNode);
+								D3DXVec3TransformCoord(&vertex,&vertex,&tmInvNode);
 																
 								if (totalBoneRef==0)
 								{
@@ -767,10 +768,10 @@ BOOL cASEParser::Parsing_GeoObject()
 	}	
 
 	// 부모가 없으면 루트를 부모로 한다.
-	if (stInfo.pParent==NULL)
+	if (stSceneNodeInfo.pParent==NULL)
 	{
 		assert(m_pSceneRoot!=NULL);
-		stInfo.pParent=m_pSceneRoot;
+		stSceneNodeInfo.pParent=m_pSceneRoot;
 	}
 
 	
@@ -792,15 +793,15 @@ BOOL cASEParser::Parsing_GeoObject()
 
 	// 리소스 버텍스 버퍼   생성 -> 데이터복사 -> 메쉬셋팅
 	cRscVertexBuffer* pNewRscVertexBuffer=NULL;
-	if(!bSkinned) pNewRscVertexBuffer = CreateRscVertexBuffer(stInfo.strNodeName.c_str(),vecNormalVertexForBuffer);
-	else pNewRscVertexBuffer = CreateRscVertexBuffer(stInfo.strNodeName.c_str(),vecBlendVertexForBuffer);		
+	if(!bSkinned) pNewRscVertexBuffer = CreateRscVertexBuffer(stSceneNodeInfo.strNodeName.c_str(),vecNormalVertexForBuffer);
+	else pNewRscVertexBuffer = CreateRscVertexBuffer(stSceneNodeInfo.strNodeName.c_str(),vecBlendVertexForBuffer);		
 
 	// 리소스 인덱스 버퍼 생성-> 데이터복사 -> 메쉬 세팅
-	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(stInfo.strNodeName.c_str(),vecIndexForBuffer);
+	cRscIndexBuffer* pNewRscIndexBuffer = CreateRscIndexBuffer(stSceneNodeInfo.strNodeName.c_str(),vecIndexForBuffer);
 	cSceneNode* pNewSceneNode=NULL;
 	if (pNewRscIndexBuffer==NULL || pNewRscVertexBuffer==NULL )
 	{
-		pNewSceneNode = CreateSceneNode(stInfo);		
+		pNewSceneNode = CreateSceneNode(stSceneNodeInfo);		
 	}
 	else
 	{
@@ -809,19 +810,19 @@ BOOL cASEParser::Parsing_GeoObject()
 
 
 		bool bSkeleton = false;			
-		if( stInfo.strNodeName.find("Bip") != std::string::npos || stInfo.strNodeName.find("bip") != std::string::npos ||
-			stInfo.strNodeName.find("Bone") != std::string::npos || stInfo.strNodeName.find("bone") != std::string::npos )
+		if( stSceneNodeInfo.strNodeName.find("Bip") != std::string::npos || stSceneNodeInfo.strNodeName.find("bip") != std::string::npos ||
+			stSceneNodeInfo.strNodeName.find("Bone") != std::string::npos || stSceneNodeInfo.strNodeName.find("bone") != std::string::npos )
 		{
 			bSkeleton = true;			
-			pNewSceneNode = CreateSkeleton(stInfo);
+			pNewSceneNode = CreateSkeleton(stSceneNodeInfo);
 		}
 		else if (!bSkinned)	
 		{			
-			pNewSceneNode = CreateMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);				
+			pNewSceneNode = CreateMeshNode(stSceneNodeInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef);				
 		}
 		else 
 		{
-			pNewSceneNode = CreateSkinnedMeshNode(stInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );		
+			pNewSceneNode = CreateSkinnedMeshNode(stSceneNodeInfo,pNewRscVertexBuffer,pNewRscIndexBuffer,mapIndexCount,nMaterialRef,vecBoneRef );		
 		}		
 		SAFE_RELEASE(pNewRscIndexBuffer);
 		SAFE_RELEASE(pNewRscVertexBuffer);
@@ -1032,8 +1033,7 @@ BOOL cASEParser::Parsing_HelperObject()
 			break;
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
-			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			
+					
 			if (stInfo.pParent==NULL)
 			{					
 				stInfo.tmLocal = stInfo.tmNode;
@@ -1066,7 +1066,7 @@ BOOL cASEParser::Parsing_HelperObject()
 
 BOOL cASEParser::Parsing_ShapeObject()
 {
-	SCENENODEINFO stInfo;	
+	SCENENODEINFO stSceneNodeInfo;	
 	
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -1076,30 +1076,29 @@ BOOL cASEParser::Parsing_ShapeObject()
 		switch(m_Token)
 		{
 		case TOKENR_NODE_NAME:
-			stInfo.strNodeName = GetString();		
+			stSceneNodeInfo.strNodeName = GetString();		
 			break;
 		case TOKENR_NODE_PARENT:		
-			stInfo.strParentName = GetString();							
-			stInfo.pParent = m_pSceneRoot->FindNode(stInfo.strParentName);
+			stSceneNodeInfo.strParentName = GetString();							
+			stSceneNodeInfo.pParent = m_pSceneRoot->FindNode(stSceneNodeInfo.strParentName);
 			break;
 		case TOKENR_NODE_TM:			
-			stInfo.tmNode = GetNodeTM();
-			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			
-			if (stInfo.pParent==NULL)
+			stSceneNodeInfo.tmNode = GetNodeTM();
+					
+			if (stSceneNodeInfo.pParent==NULL)
 			{					
-				stInfo.tmLocal = stInfo.tmNode;
+				stSceneNodeInfo.tmLocal = stSceneNodeInfo.tmNode;
 			}
 			else
 			{					
 				D3DXMATRIX matNodeInv;
-				D3DXMatrixInverse(&matNodeInv,NULL,&stInfo.pParent->GetNodeTM());
-				stInfo.tmLocal = stInfo.tmNode * matNodeInv ;
+				D3DXMatrixInverse(&matNodeInv,NULL,&stSceneNodeInfo.pParent->GetNodeTM());
+				stSceneNodeInfo.tmLocal = stSceneNodeInfo.tmNode * matNodeInv ;
 			}			
 			break;
 		case TOKENR_TM_ANIMATION:
 			{					
-				GetSceneAnimation(stInfo.strNodeName.c_str(),stInfo.tmLocal);
+				GetSceneAnimation(stSceneNodeInfo.strNodeName.c_str(),stSceneNodeInfo.tmLocal);
 			}
 			break;		
 		case TOKENR_SHAPE_LINECOUNT:
@@ -1121,11 +1120,11 @@ BOOL cASEParser::Parsing_ShapeObject()
 	m_pLastObject = pNewSceneNode;
 
 	//공통적인 데이터
-	if(stInfo.pParent == NULL)
-		stInfo.pParent = m_pSceneRoot;
+	if(stSceneNodeInfo.pParent == NULL)
+		stSceneNodeInfo.pParent = m_pSceneRoot;
 
-	SetNodeInfo(pNewSceneNode,stInfo);
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
+	SetNodeInfo(pNewSceneNode,stSceneNodeInfo);
+	stSceneNodeInfo.pParent->AttachChildNode(pNewSceneNode);
 	return TRUE;
 }
 
@@ -1149,8 +1148,7 @@ BOOL cASEParser::Parsing_LightObject()
 			break;
 		case TOKENR_NODE_TM:			
 			stInfo.tmNode = GetNodeTM();
-			D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-			
+					
 			if (stInfo.pParent==NULL)
 			{					
 				stInfo.tmLocal = stInfo.tmNode;
@@ -1242,8 +1240,7 @@ BOOL cASEParser::Parsing_CameraObject()
 				nodeTM = NodeRotation * nodeTM;				
 
 				stInfo.tmNode = nodeTM;
-				D3DXMatrixInverse(&stInfo.tmInvNode,NULL,&stInfo.tmNode);
-				
+							
 				if (stInfo.pParent==NULL)
 				{					
 					stInfo.tmLocal = stInfo.tmNode;
@@ -1800,31 +1797,22 @@ void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNI
 }
 
 
-cMeshNode* 
-cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
+cSceneNode* 
+cASEParser::CreateMeshNode(SCENENODEINFO& stSceneNodeInfo,
 							cRscVertexBuffer* pVertexBuffer,
 							cRscIndexBuffer* pIndexBuffer,
 							std::map<SUBMATINDEX,WORD>& mapIndexCount,
 							int nMaterialRef)
 {
+	if(stSceneNodeInfo.pParent == NULL)
+		stSceneNodeInfo.pParent = m_pSceneRoot;
+
 	assert(pIndexBuffer!=NULL);
 	assert(pVertexBuffer!=NULL);
-
-	cMeshNode* pNewSceneNode = new cMeshNode;	
-	//공통적인 데이터
-	if(stInfo.pParent == NULL)
-		stInfo.pParent = m_pSceneRoot;
-
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
-	SetNodeInfo(pNewSceneNode,stInfo);
-
-	pNewSceneNode->SetMaterialRefIndex(nMaterialRef);
-
-	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
-	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
-
+	cSceneNode* pRetNode = NULL;
+	
 	int primitiveCount=0,startIndex=0;
-	SUBMATINDEX matIndex=0;
+	SUBMATINDEX materialSubIndex=0;
 	if ( m_pSceneRoot->m_pEntityMaterial->m_ref[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
@@ -1833,26 +1821,65 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stInfo,
 			int nCount = (*it).second;
 			primitiveCount += nCount;			
 		}		
-		pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);	
+
+		cMeshNode* pMeshNode = new cMeshNode;	
+		pRetNode = pMeshNode;
+
+		stSceneNodeInfo.pParent->AttachChildNode(pMeshNode);
+		SetNodeInfo(pMeshNode,stSceneNodeInfo);
+		pMeshNode->SetMaterialRefIndex(nMaterialRef);
+		pMeshNode->SetRscVertextBuffer(pVertexBuffer);		
+		pMeshNode->SetRscIndexBuffer(pIndexBuffer);		
+		pMeshNode->SetPrimitiveCount(primitiveCount);
+		pMeshNode->SetMaterialRefIndex(nMaterialRef);
+		pMeshNode->SetMaterialSubIndex(materialSubIndex);
+		pMeshNode->SetStartIndex(startIndex);
+		
 	}
 	else
 	{		
+		pRetNode = new cSceneNode;	
+		stSceneNodeInfo.pParent->AttachChildNode(pRetNode);
+		SetNodeInfo(pRetNode,stSceneNodeInfo);
+
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
-			matIndex = (*it).first;
-			primitiveCount = (*it).second;			
-			pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);
+			materialSubIndex = (*it).first;
+			primitiveCount = (*it).second;		
+
+			SCENENODEINFO tempInfo = stSceneNodeInfo;
+			D3DXMatrixIdentity(&tempInfo.tmLocal);
+			tempInfo.pParent = pRetNode;
+
+			char szTemp[256]={0,};
+			_itoa_s(materialSubIndex,szTemp,10);
+			tempInfo.strNodeName = pRetNode->GetNodeName() + std::string("_multisub") + std::string(szTemp);
+			tempInfo.strParentName = pRetNode->GetNodeName();
+
+			cMeshNode* pChildNode = new cMeshNode;	
+			pRetNode->AttachChildNode(pChildNode);			
+			SetNodeInfo(pChildNode,tempInfo);
+
+			pChildNode->SetMaterialRefIndex(nMaterialRef);
+			pChildNode->SetRscVertextBuffer(pVertexBuffer);		
+			pChildNode->SetRscIndexBuffer(pIndexBuffer);		
+			pChildNode->SetPrimitiveCount(primitiveCount);
+			pChildNode->SetMaterialRefIndex(nMaterialRef);
+			pChildNode->SetMaterialSubIndex(materialSubIndex);
+			pChildNode->SetStartIndex(startIndex);
+			
+
 			startIndex += primitiveCount*3; //cnt
 		}			
 	}
 
-	return pNewSceneNode;
+	return pRetNode;
 }
 
-Skeleton* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
+cSceneNode* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
 {
-	Skeleton* pNewSceneNode = NULL; 
+	cSceneNode* pNewSceneNode = NULL; 
 	pNewSceneNode = new Skeleton;	
 
 	//공통적인 데이터
@@ -1866,36 +1893,24 @@ Skeleton* cASEParser::CreateSkeleton(SCENENODEINFO& stInfo )
 	return pNewSceneNode;
 }
 
-SkinnedMeshNode* 
-cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
+cSceneNode* 
+cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stSceneNodeInfo,
 								  cRscVertexBuffer* pVertexBuffer,
 								  cRscIndexBuffer* pIndexBuffer,
 								  std::map<SUBMATINDEX,WORD>& mapIndexCount,
 								  int nMaterialRef,
 								  std::vector<BONEREFINFO>& boneRef)
 {
+	if(stSceneNodeInfo.pParent == NULL)
+		stSceneNodeInfo.pParent = m_pSceneRoot;
+
+	assert(!boneRef.empty());
 	assert(pIndexBuffer!=NULL);
 	assert(pVertexBuffer!=NULL);
-
-	SkinnedMeshNode* pNewSceneNode= new SkinnedMeshNode;
-
-	//공통적인 데이터
-	if(stInfo.pParent == NULL)
-		stInfo.pParent = m_pSceneRoot;
-
-	
-	SetNodeInfo(pNewSceneNode,stInfo);
-	stInfo.pParent->AttachChildNode(pNewSceneNode);
-
-	pNewSceneNode->SetMaterialRefIndex(nMaterialRef);
-
-	pNewSceneNode->SetRscVertextBuffer(pVertexBuffer);		
-	pNewSceneNode->SetRscIndexBuffer(pIndexBuffer);
-	pNewSceneNode->SetBoneRef(boneRef);
-	
+	cSceneNode* pRetNode = NULL;
 
 	int primitiveCount=0,startIndex=0;
-	SUBMATINDEX matIndex=0;
+	SUBMATINDEX materialSubIndex=0;
 	if ( m_pSceneRoot->m_pEntityMaterial->m_ref[nMaterialRef].size() == 1)
 	{
 		std::map<SUBMATINDEX,WORD>::iterator it;		
@@ -1904,20 +1919,63 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stInfo,
 			int nCount = (*it).second;
 			primitiveCount += nCount;			
 		}		
-		pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);	
+
+		SkinnedMeshNode* pMeshNode = new SkinnedMeshNode;	
+		pRetNode = pMeshNode;
+
+		stSceneNodeInfo.pParent->AttachChildNode(pMeshNode);
+		SetNodeInfo(pMeshNode,stSceneNodeInfo);
+		pMeshNode->SetMaterialRefIndex(nMaterialRef);
+		pMeshNode->SetRscVertextBuffer(pVertexBuffer);		
+		pMeshNode->SetRscIndexBuffer(pIndexBuffer);		
+		pMeshNode->SetPrimitiveCount(primitiveCount);
+		pMeshNode->SetMaterialRefIndex(nMaterialRef);
+		pMeshNode->SetMaterialSubIndex(materialSubIndex);
+		pMeshNode->SetStartIndex(startIndex);
+		pMeshNode->SetBoneRef(boneRef);
+
 	}
 	else
 	{		
+		pRetNode = new cSceneNode;	
+		stSceneNodeInfo.pParent->AttachChildNode(pRetNode);
+		SetNodeInfo(pRetNode,stSceneNodeInfo);
+
 		std::map<SUBMATINDEX,WORD>::iterator it;		
 		for (it=mapIndexCount.begin() ; it!=mapIndexCount.end(); ++it )
 		{
-			matIndex = (*it).first;
-			primitiveCount = (*it).second;			
-			pNewSceneNode->AddMultiSub(startIndex,primitiveCount,matIndex);
+			materialSubIndex = (*it).first;
+			primitiveCount = (*it).second;		
+
+			SCENENODEINFO tempInfo = stSceneNodeInfo;
+			D3DXMatrixIdentity(&tempInfo.tmLocal);
+			tempInfo.pParent = pRetNode;
+
+			char szTemp[256]={0,};
+			_itoa_s(materialSubIndex,szTemp,10);
+			tempInfo.strNodeName = pRetNode->GetNodeName() + std::string("_multisub") + std::string(szTemp);
+			tempInfo.strParentName = pRetNode->GetNodeName();
+
+			SkinnedMeshNode* pChildNode = new SkinnedMeshNode;	
+			pRetNode->AttachChildNode(pChildNode);			
+			SetNodeInfo(pChildNode,tempInfo);
+
+			pChildNode->SetMaterialRefIndex(nMaterialRef);
+			pChildNode->SetRscVertextBuffer(pVertexBuffer);		
+			pChildNode->SetRscIndexBuffer(pIndexBuffer);		
+			pChildNode->SetPrimitiveCount(primitiveCount);
+			pChildNode->SetMaterialRefIndex(nMaterialRef);
+			pChildNode->SetMaterialSubIndex(materialSubIndex);
+			pChildNode->SetStartIndex(startIndex);
+			pChildNode->SetBoneRef(boneRef);
+
+			
+
 			startIndex += primitiveCount*3; //cnt
 		}			
 	}
-	return pNewSceneNode;
+
+	return pRetNode;
 }
 
 template <typename T>

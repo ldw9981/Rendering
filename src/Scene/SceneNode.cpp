@@ -328,23 +328,6 @@ void cSceneNode::Update( DWORD elapseTime )
 	}	
 }
 
-void cSceneNode::RenderShadow()
-{
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->RenderShadow();
-	}
-}
-
-void cSceneNode::QueueRendererShadow(Entity* pEntity,bool bTraversal )
-{
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
-	{
-		(*it)->QueueRendererShadow(pEntity,bTraversal);
-	}
-}
 
 void cSceneNode::Release()
 {

@@ -14,13 +14,6 @@ namespace Sophia
 class cMeshNode;
 class cView;
 
-class MultiSub
-{
-public:
-	unsigned short primitiveCount;
-	unsigned short startIndex;
-	unsigned char materialIndex;
-};
 
 class cMeshNode:
 	public cSceneNode
@@ -31,20 +24,19 @@ public:
 protected:	
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
-	std::vector<MultiSub>	m_vecMultiSub;
-	unsigned char			m_nMaterialRefIndex;
+
+	unsigned short			m_primitiveCount;
+	unsigned short			m_startIndex;
+	unsigned char			m_materialRefIndex;
+	unsigned char			m_materialSubIndex;
 
 public:
-	virtual void			Render(MultiSub* pMultiSub,Material* pMaterial);
+	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
 
 
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
-
-	void					AddMultiSub(WORD startIndex,WORD primitiveCount,unsigned char materialIndex);	
-
-
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
 
 	void					CalculateTangentBinormal();
@@ -62,12 +54,17 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
-
-	int GetMaterialRefIndex() const { return m_nMaterialRefIndex; }
-	void SetMaterialRefIndex(int val) { m_nMaterialRefIndex = val; }
-	Material* GetMaterial(MultiSub* pMultiSub);
 	Material* GetMaterial(unsigned char subIndex);
 	const std::vector<Material*>& GetMaterials();
+
+	unsigned short GetStartIndex() const { return m_startIndex; }
+	void SetStartIndex(unsigned short val) { m_startIndex = val; }
+	unsigned char GetMaterialRefIndex() const { return m_materialRefIndex; }
+	void SetMaterialRefIndex(unsigned char val) { m_materialRefIndex = val; }
+	unsigned short GetPrimitiveCount() const { return m_primitiveCount; }
+	void SetPrimitiveCount(unsigned short val) { m_primitiveCount = val; }
+	unsigned char GetMaterialSubIndex() const { return m_materialSubIndex; }
+	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 };
 
 }

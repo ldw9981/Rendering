@@ -20,8 +20,7 @@ public:
 class IRenderer
 {
 public:
-	virtual void Render(){};
-	virtual void Render(MultiSub* pMultisub,Material* pMaterial){};
+	virtual void Render()=0;
 };
 
 class IRenderable

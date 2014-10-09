@@ -30,14 +30,12 @@ struct SCENENODEINFO
 	std::string strNodeName;
 	std::string strParentName;
 	D3DXMATRIX tmNode;
-	D3DXMATRIX tmInvNode;
 	D3DXMATRIX tmLocal;
 	cSceneNode* pParent;
 
 	SCENENODEINFO()
 	{
 		D3DXMatrixIsIdentity(&tmNode);
-		D3DXMatrixIsIdentity(&tmInvNode);
 		D3DXMatrixIsIdentity(&tmLocal);
 		pParent=NULL;
 	}
@@ -160,9 +158,9 @@ public:
 		
 		void  ConvertAccQuaternion(std::vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM);
 		void  ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY> outRefMapAnmKey);
-		cMeshNode*  CreateMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef);
-		SkinnedMeshNode* CreateSkinnedMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef,std::vector<BONEREFINFO>& boneRef);
-		Skeleton* CreateSkeleton(SCENENODEINFO& stInfo);
+		cSceneNode*  CreateMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef);
+		cSceneNode* CreateSkinnedMeshNode(SCENENODEINFO& stInfo,cRscVertexBuffer* pVetexBuffer,cRscIndexBuffer* pIndexBuffer,std::map<SUBMATINDEX,WORD>& mapIndexCount,int nMaterialRef,std::vector<BONEREFINFO>& boneRef);
+		cSceneNode* CreateSkeleton(SCENENODEINFO& stInfo);
 
 		cSceneNode* CreateSceneNode(SCENENODEINFO& stInfo);
 

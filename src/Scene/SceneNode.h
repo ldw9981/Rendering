@@ -33,7 +33,7 @@ public:
 	
 	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH,TYPE_SKELETON};
 public:
-	std::list<cSceneNode*>		m_listChildNode;		
+	std::vector<cSceneNode*>		m_vecChildNode;		
 protected:
 	SCENETYPE 					m_type;
 	std::string					m_strNodeName;			
@@ -54,7 +54,6 @@ protected:
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bShow;
 	//DWORD					m_animationTime;
-	std::list<cSceneNode*>::iterator m_ParentListIt;
 	std::vector<size_t>		m_partialIndex;
 public:	
 

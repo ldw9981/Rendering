@@ -55,7 +55,7 @@ public:
 
 	DWORD					GetBufferSize() const { return m_BufferSize; }
 	void					SetBufferSize(DWORD val) { m_BufferSize = val; }
-	void*					Lock();
+	void*					Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags);
 	void					Unlock();
 	void					SetIndices();
 	D3DPOOL					GetType() const { return m_Type; }

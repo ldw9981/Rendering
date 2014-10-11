@@ -148,7 +148,7 @@ HRESULT	ZTerrain::_CreateVIB()
 		return E_FAIL;
  	}
 	VOID* pVertices;
-	pVertices=m_pRscVertexBuffer->Lock();
+	pVertices=m_pRscVertexBuffer->Lock(0,m_pRscVertexBuffer->GetBufferSize(),0);
 	if (pVertices == NULL)
 	{
 		_Destroy();
@@ -190,7 +190,7 @@ void	ZTerrain::Render()
 HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 {
 	LPDWORD		pI=NULL;
-	pI=(LPDWORD)m_pRscIndexBuffer->Lock();	
+	pI=(LPDWORD)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);	
 	m_nTriangles=0;
 	m_pQuadTree->GenTriIndex(frustum, m_nTriangles, pI,false );
 	m_pRscIndexBuffer->Unlock();

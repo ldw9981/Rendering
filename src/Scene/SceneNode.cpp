@@ -77,8 +77,7 @@ BOOL cSceneNode::IsExistParentName()
 
 void cSceneNode::AttachChildNode( cSceneNode* pItem )
 {
-	m_listChildNode.push_back(pItem);
-	pItem->m_ParentListIt = --m_listChildNode.end();
+	m_vecChildNode.push_back(pItem);
 }
 
 cSceneNode* cSceneNode::FindNode( std::string& nodename )
@@ -91,13 +90,12 @@ cSceneNode* cSceneNode::FindNode( std::string& nodename )
 //	}
 
 	// 아니면 자식에서 검색
-	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pItem=NULL;
 	cSceneNode* pFoundItem=NULL;
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		pItem=*iter;
-		pFoundItem=pItem->FindNode(nodename);
+		pFoundItem=m_vecChildNode[i]->FindNode(nodename);
 		if (pFoundItem!=NULL)
 		{
 			return pFoundItem;
@@ -177,7 +175,7 @@ void cSceneNode::UpdateLocalMatrix()
 
 void cSceneNode::UpdateChildren(DWORD elapseTime)
 {
-	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	for ( auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);
 	}	
@@ -193,15 +191,14 @@ D3DXMATRIX& cSceneNode::GetAnimationTM()
 
 void cSceneNode::FreeChildren()
 {
-	std::list<cSceneNode*>::iterator iter;	
 	cSceneNode* pItem=NULL;
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	for (auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
 	{
 		pItem=*iter;
 		pItem->FreeChildren();
 	}	
 	
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	for (auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
 	{
 		pItem=*iter;
 		delete pItem;
@@ -220,7 +217,16 @@ cSceneNode& cSceneNode::operator =(const cSceneNode& other)
 
 void cSceneNode::DettachChildNode( cSceneNode* pItem )
 {
-	m_listChildNode.erase(pItem->m_ParentListIt);
+	for (auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
+	{
+		cSceneNode* pNode =*iter;
+		if ( pNode == pItem)
+		{
+			delete pItem;
+			m_vecChildNode.erase(iter);
+			return;
+		}
+	}	
 }
 
 void cSceneNode::BuildComposite(Entity* pEntity)
@@ -242,12 +248,10 @@ void cSceneNode::BuildComposite(Entity* pEntity)
 		&m_referenceAnimationKey.RotationAccum,
 		&m_referenceAnimationKey.TranslationAccum,&m_matLocal);
 
-	std::list<cSceneNode*>::iterator iter;	
-	cSceneNode* pNode=NULL;
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		pNode=*iter;
-		pNode->BuildComposite(pEntity);
+		m_vecChildNode[i]->BuildComposite(pEntity);	
 	}	
 }
 
@@ -289,12 +293,12 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 	WriteMatrix(stream,m_nodeTM);
 
 	//child
-	count = m_listChildNode.size();
+	count = m_vecChildNode.size();
 	stream.write((char*)&count,sizeof(count));
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		(*it)->SerializeOut(stream);
+		m_vecChildNode[i]->SerializeOut(stream);
 	}	
 }
 
@@ -302,19 +306,19 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 
 void cSceneNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		(*it)->QueueRenderer(pEntity,bTraversal);
-	}
+		m_vecChildNode[i]->QueueRenderer(pEntity,bTraversal);
+	}	
 }
 
 void cSceneNode::Render()
 {
-	std::list<cSceneNode*>::iterator it=m_listChildNode.begin();
-	for ( ;it!=m_listChildNode.end();++it )
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		(*it)->Render();
+		m_vecChildNode[i]->Render();
 	}
 }
 
@@ -322,23 +326,23 @@ void cSceneNode::Update( DWORD elapseTime )
 {
 	UpdateLocalMatrix();
 	UpdateWorldMatrix(m_pParentNode);
-	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
-	{		
-		(*iter)->Update(elapseTime);
-	}	
+
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
+	{
+		m_vecChildNode[i]->Update(elapseTime);
+	}
 }
 
 
 void cSceneNode::Release()
 {
-	std::list<cSceneNode*>::iterator it = m_listChildNode.begin();
-	std::list<cSceneNode*>::iterator it_end = m_listChildNode.end();
-
-	for ( ;it!=it_end ; it++ )
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		delete *it;
-	}	
-	m_listChildNode.clear();
+		delete m_vecChildNode[i];
+	}
+	m_vecChildNode.clear();
 }
 
 
@@ -370,7 +374,7 @@ void cSceneNode::PushAnimation( EntityAnimation* pAnimation )
 	SceneAnimation* pSceneAnimation = pAnimation->GetSceneAnimtion(m_strNodeName);
 	m_vecSceneAnimation.push_back(pSceneAnimation);
 
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->PushAnimation(pAnimation);
 	}
@@ -380,7 +384,7 @@ void cSceneNode::PopAnimation()
 {
 	m_vecSceneAnimation.pop_back();
 
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->PopAnimation();
 	}
@@ -399,7 +403,7 @@ void cSceneNode::EraseAnimation( int index )
 		break;
 	}	
 
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->EraseAnimation(index);
 	}
@@ -411,7 +415,7 @@ void cSceneNode::EraseAnimation( int index )
 void cSceneNode::Test( void(*Func)(cSceneNode*) )
 {
 	Func(this);
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->Test(Func);
 	}
@@ -420,7 +424,7 @@ void cSceneNode::Test( void(*Func)(cSceneNode*) )
 void cSceneNode::AddPatialIndex()
 {
 	m_partialIndex.push_back(size_t(0));
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->AddPatialIndex();
 	}
@@ -429,7 +433,7 @@ void cSceneNode::AddPatialIndex()
 void cSceneNode::DelPartialIndex(size_t index)
 {
 	m_partialIndex.erase(m_partialIndex.begin()+index);
-	for ( auto it=m_listChildNode.begin() ;it!=m_listChildNode.end();++it )
+	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->DelPartialIndex(index);
 	}

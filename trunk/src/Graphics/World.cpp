@@ -72,18 +72,11 @@ void World::Update( DWORD elapseTime )
 
 void World::CullFrustum()
 {
-	m_listEntityShadow.clear();
 	m_listEntityRender.clear();
 
 	Frustum& frustum = m_camera.GetFrustum();
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
-		if( (*itIn)->Cull(&frustum,500.0f) == false )
-			continue;	
-
-
-		m_listEntityShadow.push_back(*itIn);
-
 		if( (*itIn)->Cull(&frustum,0.0f) == false )
 			continue;	
 
@@ -178,7 +171,6 @@ void World::Finalize()
 
 void World::Render()
 {
-	//Graphics::m_pDevice->SetViewport(&m_ViewPortInfo);
 	LPD3DXEFFECT m_pEffect = Graphics::m_pInstance->GetEffect();
 	
 	UINT passes = 0;
@@ -199,19 +191,20 @@ void World::Render()
 		//D3DXMatrixPerspectiveFovLH( &matLightProjection, D3DX_PI / 4.0f, 1, 3000, FAR_PLANE );
 		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, NEAR_PLANE, FAR_PLANE );
 	}
+	Graphics::m_pInstance->SetEffectVector_WorldLightPosition(&m_WorldLightPosition);
+	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
+	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 
-
-	// 현재 하드웨어 벡버퍼와 깊이버퍼
-	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
-	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
-	Graphics::m_pDevice->GetRenderTarget(0, &pHWBackBuffer);
-	Graphics::m_pDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);
-
+	
 	//////////////////////////////
 	// 1. 그림자 만들기
 	//////////////////////////////
-
-	// 그림자 맵의 렌더타깃과 깊이버퍼를 사용한다.
+	
+	// 백업후 렌더타켓,스텐실버퍼 변경
+	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
+	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
+	Graphics::m_pDevice->GetRenderTarget(0, &pHWBackBuffer);
+	Graphics::m_pDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);	
 	LPDIRECT3DSURFACE9 pShadowSurface = NULL;
 	if( SUCCEEDED( m_pShadowRenderTarget->GetSurfaceLevel( 0, &pShadowSurface ) ) )
 	{
@@ -222,28 +215,35 @@ void World::Render()
 	Graphics::m_pDevice->SetDepthStencilSurface( m_pShadowDepthStencil );
 	Graphics::m_pDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
 
-	Graphics::m_pInstance->SetEffectVector_WorldLightPosition(&m_WorldLightPosition);
-	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
-	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
-
 	if (m_bEnableShadow)
 	{
-		//1. write depth
+		/*
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
 		{
-			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTCreateShadowNormal,
-				Graphics::m_pInstance->m_hTCreateShadowNormalAlphaTest );
+			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTest,
+				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
 		}		
+		*/
+		
 
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
 		{	
-			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTCreateShadowSkinned,
-				Graphics::m_pInstance->m_hTCreateShadowSkinnedAlphaTest );
+			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTest,
+				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
 		}		
-	}
 
+		
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
+		if (!m_renderQueueNormal.m_entityMeshNameOrder.empty())
+		{
+			m_renderQueueNormal.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
+				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );
+		}
+		
+	}
+	
 	//////////////////////////////
 	// 2. 그림자 입히기
 	//////////////////////////////
@@ -259,9 +259,7 @@ void World::Render()
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
 	if (!m_renderQueueTerrain.m_vecNode.empty())
-	{		
-		//Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
-		
+	{				
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
@@ -269,7 +267,8 @@ void World::Render()
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
-
+	
+	
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{
@@ -282,7 +281,14 @@ void World::Render()
 		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
 	}
 	
+	
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
+	if (!m_renderQueueNormal.m_entityMeshNameOrder.empty())
+	{
+		m_renderQueueNormal.RenderInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+	}
 
+	
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 	if (!m_renderQueueNormalAlphaBlend.m_vecNode.empty())
 	{
@@ -326,11 +332,10 @@ void World::Render()
 		m_pEffect->End();
 	}
 	
-	// SHADOW_MAP
+	// SHADOW_MAP	
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
-	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));
-	
+	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
 }
 
 void World::GatherRender()
@@ -346,24 +351,32 @@ void World::GatherRender()
 	m_renderQueueTerrain.Clear();
 
 
-
-
-	for ( auto itIn = m_listEntityShadow.begin() ;itIn!=m_listEntityShadow.end() ; ++itIn )
-	{
-		m_renderQueueNormalShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormal);
-		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinned);
-		m_renderQueueNormalShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormalAlphaBlend);
-		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinnedAlphaBlend);
-	}
-
-
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
-		m_renderQueueTerrain.Insert((*itIn)->m_renderQueueTerrain);
-		m_renderQueueNormal.InsertIntoMaterialOrder((*itIn)->m_renderQueueNormal);	
-		m_renderQueueSkinned.InsertIntoMaterialOrder((*itIn)->m_renderQueueSkinned);		
-		m_renderQueueNormalAlphaBlend.Insert((*itIn)->m_renderQueueNormalAlphaBlend);	
-		m_renderQueueSkinnedAlphaBlend.Insert((*itIn)->m_renderQueueSkinnedAlphaBlend);					
+		auto pEntity = *itIn;
+		
+		m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);
+		m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormalAlphaBlend);
+
+		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);	
+		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinnedAlphaBlend);		
+
+
+		
+		if (pEntity->GetInstancingEnable())
+		{
+			m_renderQueueNormal.InsertIntoEntityMeshNameOrder(pEntity->GetNodeName(),pEntity->m_renderQueueNormal);
+		}
+		else
+		{
+			m_renderQueueNormal.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);	
+		}
+
+		m_renderQueueSkinned.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);		
+		m_renderQueueNormalAlphaBlend.Insert(pEntity->m_renderQueueNormalAlphaBlend);	
+		m_renderQueueSkinnedAlphaBlend.Insert(pEntity->m_renderQueueSkinnedAlphaBlend);			
+
+		m_renderQueueTerrain.Insert(pEntity->m_renderQueueTerrain);		
 	}
 }
 

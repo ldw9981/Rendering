@@ -41,7 +41,9 @@ public:
 
 	void*					Lock();
 	void					Unlock();
-	void					SetStreamSource(UINT stride);
+	void					SetStreamSource(UINT streamNumber,UINT stride);
+	void					SetStreamSourceFreq(UINT streamNumber,UINT setting);
+
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
 };

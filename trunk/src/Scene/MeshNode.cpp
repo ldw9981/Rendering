@@ -45,7 +45,7 @@ cMeshNode::~cMeshNode(void)
 
 void cMeshNode::Render()
 {	
-	m_pRscVetextBuffer->SetStreamSource(sizeof(NORMALVERTEX));
+	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMALVERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
@@ -344,6 +344,18 @@ const std::vector<Material*>& cMeshNode::GetMaterials()
 {
 	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
 	return m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
+}
+
+void cMeshNode::RenderIsntancing()
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	pEffect->CommitChanges();
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+		0,  
+		0, 
+		m_pRscVetextBuffer->GetCount(),
+		m_startIndex,
+		m_primitiveCount );
 }
 
 }

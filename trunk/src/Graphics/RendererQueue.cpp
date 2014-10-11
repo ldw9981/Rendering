@@ -49,6 +49,7 @@ void cRendererQueue::Clear()
 {
 	m_vecNode.clear();
 	m_materialOrder.clear();
+	m_entityMeshNameOrder.clear();
 }
 
 
@@ -218,7 +219,7 @@ void cRendererQueue::ChangeMaterial( Material& material,bool bForShadow )
 
 
 
-void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaTest,D3DXHANDLE hTechniqueAlphaTest )
+void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
@@ -230,9 +231,9 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaT
 		Material* pMaterial = it->first;
 
 		if (pMaterial->AlphaTestEnable)
-			pEffect->SetTechnique(hTechniqueAlphaTest);
+			pEffect->SetTechnique(hTShadowAlphaTest);
 		else
-			pEffect->SetTechnique(hTechniqueNotAlphaTest );
+			pEffect->SetTechnique(hTShadowNotAlphaTest );
 		
 		pEffect->Begin(&passes, 0);	
 		
@@ -254,14 +255,129 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTechniqueNotAlphaT
 
 void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 {
-	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
+	size_t size = renderQueue.m_vecNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		MESH_SPEC_PAIR& item = (*it);
+		MESH_SPEC_PAIR& item = renderQueue.m_vecNode[i];
 
 		std::list<MESH_SPEC_PAIR>& listMesh = m_materialOrder[item.second.pMaterial];
 		listMesh.push_back(item);
 	}
 
+}
+
+void cRendererQueue::InsertIntoEntityMeshNameOrder( std::string& strEntityName,cRendererQueue& renderQueue )
+{
+	
+	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
+	{
+		MESH_SPEC_PAIR& item = (*it);		
+
+		std::string strKey = strEntityName +":"+item.first->GetNodeName();
+		std::list<MESH_SPEC_PAIR>& list = m_entityMeshNameOrder[strKey];
+
+		list.push_back(item);
+	}
+}
+
+void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+{	
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+	Material* pPrevMaterial=NULL;
+
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+	for ( auto it = m_entityMeshNameOrder.begin() ; it!=m_entityMeshNameOrder.end();++it)
+	{
+
+		std::list<MESH_SPEC_PAIR>& list = it->second;
+		auto it_sub = list.begin();
+		cMeshNode* pMeshNode = NULL;
+		Material* pMaterial = (*it_sub).second.pMaterial;
+
+		// Set Matrix Instance
+		
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock();
+		unsigned long nCount=list.size();
+		for (  ; it_sub!=list.end();++it_sub)
+		{
+			pMeshNode = (*it_sub).first;		
+			memcpy_s(pMatrix,sizeof(D3DXMATRIX),pMeshNode->GetWorldMatrixPtr(),sizeof(D3DXMATRIX));
+			pMatrix++;
+		}
+		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
+		
+		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
+		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
+		pMeshNode->GetRscIndexBuffer()->SetIndices();
+		int i = pMaterial->index_renderer_queue();
+		pEffect->SetTechnique(vecTechnique[i]);	
+		pEffect->Begin(&passes, 0);	
+		ChangeMaterial(*pMaterial,false);		
+
+		pEffect->BeginPass(0);	
+		pMeshNode->RenderIsntancing();
+		pEffect->EndPass();
+		pEffect->End();			
+	}
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+}
+
+void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+	Material* pPrevMaterial=NULL;
+
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+	for ( auto it = m_entityMeshNameOrder.begin() ; it!=m_entityMeshNameOrder.end();++it)
+	{
+
+		std::list<MESH_SPEC_PAIR>& list = it->second;
+		auto it_sub = list.begin();
+		cMeshNode* pMeshNode = NULL;
+		Material* pMaterial = (*it_sub).second.pMaterial;
+
+		// Set Matrix Instance
+
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock();
+		unsigned long nCount=list.size();
+		for (  ; it_sub!=list.end();++it_sub)
+		{
+			pMeshNode = (*it_sub).first;		
+			memcpy_s(pMatrix,sizeof(D3DXMATRIX),pMeshNode->GetWorldMatrixPtr(),sizeof(D3DXMATRIX));
+			pMatrix++;
+		}
+		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
+
+		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
+		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
+		pMeshNode->GetRscIndexBuffer()->SetIndices();
+		
+		if (pMaterial->AlphaTestEnable)
+			pEffect->SetTechnique(hTShadowAlphaTest);
+		else
+			pEffect->SetTechnique(hTShadowNotAlphaTest );
+
+		pEffect->Begin(&passes, 0);	
+		ChangeMaterial(*pMaterial,true);		
+
+		pEffect->BeginPass(0);	
+		pMeshNode->RenderIsntancing();
+		pEffect->EndPass();
+		pEffect->End();			
+	}
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
 

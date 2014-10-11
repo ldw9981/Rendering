@@ -29,26 +29,33 @@ public:
 	LPD3DXBUFFER			m_pError;	
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclation;
 	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclation;
-	LPDIRECT3DVERTEXDECLARATION9 m_pInstanceDeclation;
-	D3DXHANDLE				m_hTLine;// 테크닉
-	D3DXHANDLE				m_hTSkinningPhong;// 테크닉	
-	D3DXHANDLE				m_hTSkinningPhongDiffuse;// 테크닉	
-	D3DXHANDLE				m_hTerrain;// 테크닉
-	D3DXHANDLE				m_hTPhong;// 테크닉
-	D3DXHANDLE				m_hTPhongDiffuse;// 테크닉
+	LPDIRECT3DVERTEXDECLARATION9 m_pNormalInstancingDeclation;
+	D3DXHANDLE				m_hTLine;
+	D3DXHANDLE				m_hTSkinningPhong;
+	D3DXHANDLE				m_hTSkinningPhongDiffuse;
+	D3DXHANDLE				m_hTerrain;
+	D3DXHANDLE				m_hTPhong;
+	D3DXHANDLE				m_hTPhongDiffuse;
 	D3DXHANDLE				m_hTPhongDiffuseLight;
 	D3DXHANDLE				m_hTPhongDiffuseBump;
-	D3DXHANDLE				m_hTPhongDiffuseSpecular;// 테크닉
-	D3DXHANDLE				m_hTPhongDiffuseOpacity;// 테크닉
+	D3DXHANDLE				m_hTPhongDiffuseSpecular;
+	D3DXHANDLE				m_hTPhongDiffuseOpacity;
 	D3DXHANDLE				m_hTPhongDiffuseBumpSpecular;
 
-	D3DXHANDLE				m_hTPhongDiffuseInstance;// 테크닉
+	D3DXHANDLE				m_hTPhongDiffuseInstancing;
+	D3DXHANDLE				m_hTPhongDiffuseOpacityInstancing;
+	D3DXHANDLE				m_hTPhongDiffuseLightInstancing;
 
 
-	D3DXHANDLE				m_hTCreateShadowNormal;	// 쉐이더
-	D3DXHANDLE				m_hTCreateShadowSkinned;	// 쉐이더
-	D3DXHANDLE				m_hTCreateShadowNormalAlphaTest;	// 쉐이더
-	D3DXHANDLE				m_hTCreateShadowSkinnedAlphaTest;	// 쉐이더
+	D3DXHANDLE				m_hTShadowNormalNotAlphaTest;	
+	D3DXHANDLE				m_hTShadowNormalAlphaTest;	
+	D3DXHANDLE				m_hTShadowNormalNotAlphaTestInstancing;	
+	D3DXHANDLE				m_hTShadowNormalAlphaTestInstancing;	
+	
+	D3DXHANDLE				m_hTShadowSkinnedNotAlphaTest;	
+	D3DXHANDLE				m_hTShadowSkinnedAlphaTest;
+
+
 	D3DXHANDLE				m_hTGUI;
 	LPD3DXEFFECT			m_pApplyShadowShader;
 	LPD3DXEFFECT			m_pCreateShadowShader;
@@ -71,7 +78,8 @@ public:
 	int						m_nTechniqueSize;
 	std::vector<D3DXHANDLE>	m_vecTechniqueNormal;
 	std::vector<D3DXHANDLE>	m_vecTechniqueSkinned;
-
+	std::vector<D3DXHANDLE>	m_vecTechniqueNormalInstancing;
+	std::vector<D3DXHANDLE>	m_vecTechniqueSkinnedInstancing;
 
 	// 그림자맵 렌더타깃
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;

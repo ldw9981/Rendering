@@ -57,7 +57,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 */
 void SkinnedMeshNode::Render()
 {	
-	m_pRscVetextBuffer->SetStreamSource(sizeof(BLENDVERTEX));
+	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLENDVERTEX));
 	m_pRscIndexBuffer->SetIndices();			
 
 	size_t iBoneRef,nBoneRefSize = m_vecBoneRef.size();

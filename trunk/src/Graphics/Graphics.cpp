@@ -46,6 +46,8 @@ Graphics::Graphics(void)
 	{	
 		m_vecTechniqueNormal.push_back(NULL);
 		m_vecTechniqueSkinned.push_back(NULL);
+		m_vecTechniqueNormalInstancing.push_back(NULL);
+		m_vecTechniqueSkinnedInstancing.push_back(NULL);
 	}
 }
 
@@ -139,7 +141,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclation);
 	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclation);
-	m_pDevice->CreateVertexDeclaration(declInstance, &m_pInstanceDeclation);
+	m_pDevice->CreateVertexDeclaration(declInstance, &m_pNormalInstancingDeclation);
 
 	// ·»´õÅ¸±êÀ» ¸¸µç´Ù.
 	const int shadowMapSize = SHADOWMAP_SIZE;
@@ -160,7 +162,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	SetPos(1024-T_SIZE,0);
 
 	m_pInstanceVertexBuffer = new cRscVertexBuffer;
-	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*128);
+	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*512);
 	m_pInstanceVertexBuffer->Create();
 	return true;
 }
@@ -204,41 +206,46 @@ void Graphics::LoadHLSL(const char* szFileName)
 	D3DXEFFECT_DESC desc;
 	hr = m_pEffect->GetDesc(&desc);
 
-	m_hTLine = m_pEffect->GetTechniqueByName( _T("TLine") );
-	m_hTerrain = m_pEffect->GetTechniqueByName( _T("TTerrain") );
-	m_hTPhong = m_pEffect->GetTechniqueByName( _T("TPhong") );
-	m_hTPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
-	m_hTPhongDiffuseLight = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
-	m_hTPhongDiffuseBump = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
-	m_hTPhongDiffuseOpacity = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
-	m_hTPhongDiffuseSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
-	m_hTPhongDiffuseBumpSpecular = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
-
-	m_hTPhongDiffuseInstance = m_pEffect->GetTechniqueByName( _T("TPhongDiffuseInstance") );
-
-	m_hTSkinningPhong = m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
-	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
-	m_hTSkinningPhongDiffuse = m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
-	m_hTCreateShadowNormal = m_pEffect->GetTechniqueByName( _T("CreateShadowShader") );
-	m_hTCreateShadowSkinned = m_pEffect->GetTechniqueByName( _T("TShadowSkinning") );
-
-	m_hTCreateShadowNormalAlphaTest = m_pEffect->GetTechniqueByName( _T("CreateShadowAlphaTestShader") );
-	m_hTCreateShadowSkinnedAlphaTest = m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
-
-	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
-
 	m_hmWorld = m_pEffect->GetParameterByName( NULL, "gWorldMatrix" );
 	m_hmView = m_pEffect->GetParameterByName( NULL, "gViewMatrix" );
 	m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
 	m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "gViewProjectionMatrix" );
 	m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );
-
-
 	m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
-
 	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
+
+
+	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
+	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );
+	m_hTPhong =								m_pEffect->GetTechniqueByName( _T("TPhong") );
+	m_hTPhongDiffuse =						m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
+	m_hTPhongDiffuseLight =					m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
+	m_hTPhongDiffuseBump =					m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
+	m_hTPhongDiffuseOpacity =				m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
+	m_hTPhongDiffuseSpecular =				m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
+	m_hTPhongDiffuseBumpSpecular =			m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
+
+	m_hTPhongDiffuseInstancing =			m_pEffect->GetTechniqueByName( _T("TPhongDiffuseInstancing") );
+	m_hTPhongDiffuseOpacityInstancing =		m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacityInstancing") );
+	m_hTPhongDiffuseLightInstancing =		m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLightInstancing") );
+
+	m_hTSkinningPhong =						m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
+	m_hTSkinningPhongDiffuse =				m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
+	m_hTSkinningPhongDiffuse =				m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
+
+	m_hTShadowNormalNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTest") );
+	m_hTShadowNormalAlphaTest =				m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTest") );
+	m_hTShadowNormalNotAlphaTestInstancing=	m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTestInstancing") );
+	m_hTShadowNormalAlphaTestInstancing =	m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTestInstancing") );
+
+	m_hTShadowSkinnedNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningNotAlphaTest") );	
+	m_hTShadowSkinnedAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
+
+	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
+
+
 
 
 	SAFE_RELEASE(pErr);
@@ -295,6 +302,29 @@ void Graphics::LoadHLSL(const char* szFileName)
 	{	
 		if (m_vecTechniqueSkinned[i] == NULL )	
 			m_vecTechniqueSkinned[i] = m_hTSkinningPhongDiffuse;
+	}
+
+
+	// m_vecTechniqueNormalInstancing
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseInstancing;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::OPACITY);
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacityInstancing;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::LIGHT);
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLightInstancing;
+	
+
+	for (int i=0;i<m_nTechniqueSize;i++)
+	{	
+		if (m_vecTechniqueNormalInstancing[i] == NULL )	
+			m_vecTechniqueNormalInstancing[i] = m_hTPhongDiffuseInstancing;
 	}
 }
 

@@ -21,6 +21,7 @@ private:
 	DWORD					m_BufferSize;
 	D3DPOOL					m_Type;
 	int						m_nCount;
+	DWORD					m_usage;
 
 public:	
 	// cResource
@@ -46,6 +47,8 @@ public:
 
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
+	DWORD GetUsage() const { return m_usage; }
+	void SetUsage(DWORD val) { m_usage = val; }
 };
 
 }

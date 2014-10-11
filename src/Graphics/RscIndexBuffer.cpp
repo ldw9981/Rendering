@@ -9,7 +9,7 @@ using namespace Sophia;
 cRscIndexBuffer::cRscIndexBuffer(void)
 {	
 	m_pD3DIndexBuffer=NULL;
-	m_Type=D3DPOOL_DEFAULT;
+	m_Type=D3DPOOL_MANAGED;
 }
 
 cRscIndexBuffer::~cRscIndexBuffer(void)

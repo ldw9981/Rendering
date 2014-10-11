@@ -10,8 +10,9 @@ using namespace Sophia;
 cRscVertexBuffer::cRscVertexBuffer(void)
 {
 	m_pD3DVertexBuffer=NULL;
-	m_Type=D3DPOOL_DEFAULT;
+	m_Type=D3DPOOL_MANAGED;
 	m_nCount=0;
+	m_usage = 0;
 }
 
 cRscVertexBuffer::~cRscVertexBuffer(void)
@@ -35,7 +36,7 @@ BOOL cRscVertexBuffer::Create()
 	// 1) FVF를 설정해서 필요한크기만큼 VertexBuffer를 만든다.	^
 	hResult=Graphics::m_pDevice->CreateVertexBuffer( 
 			m_BufferSize,
-			0,
+			m_usage,
 			0,
 			m_Type,
 			&m_pD3DVertexBuffer,

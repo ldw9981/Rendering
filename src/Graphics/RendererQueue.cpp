@@ -302,7 +302,7 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		
 		unsigned long nCount=list.size();
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
-			Graphics::m_pInstance->m_pInstanceVertexBuffer->GetBufferSize()	,0	);
+			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
 
 		for (  ; it_sub!=list.end();++it_sub)
 		{
@@ -351,7 +351,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
-			Graphics::m_pInstance->m_pInstanceVertexBuffer->GetBufferSize()	,0	);
+			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
 		
 		for (  ; it_sub!=list.end();++it_sub)
 		{

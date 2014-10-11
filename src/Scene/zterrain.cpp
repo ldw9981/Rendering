@@ -172,7 +172,7 @@ HRESULT	ZTerrain::_CreateVIB()
 void	ZTerrain::Render()
 {	
 	Graphics::m_pDevice->SetFVF( TERRAINVERTEX::FVF );
-	m_pRscVertexBuffer->SetStreamSource(sizeof(TERRAINVERTEX));		
+	m_pRscVertexBuffer->SetStreamSource(0,sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
 	Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",m_pTex);	

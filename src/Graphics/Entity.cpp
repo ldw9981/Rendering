@@ -24,6 +24,7 @@ Entity::Entity(void)
 	m_type = TYPE_ROOT;
 	m_bShowBone = false;
 	m_pEntityMaterial = NULL;
+	m_instancingEnable = false;
 }
 
 
@@ -524,8 +525,7 @@ void Entity::ClearRenderQueue()
 	m_renderQueueSkinnedAlphaBlend.Clear();
 
 	m_renderQueueTerrain.Clear();
-	m_renderQueueGUI.Clear();
-	m_renderQueueLine.Clear();
+
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )

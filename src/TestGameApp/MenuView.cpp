@@ -26,7 +26,7 @@ cMenuView::cMenuView(void)
 	m_pAirPlaneBake=NULL;
 	m_pDragon=NULL;
 
-	for (int i=0;i<10;i++)
+	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = NULL;
 	}
@@ -55,6 +55,7 @@ void cMenuView::Enter()
 		std::string(strDataPath+"ground.bmp").c_str());
 	*/
 	
+	/*
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
 	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
@@ -71,6 +72,8 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
+	*/
+	
 	//m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	
 	/*
@@ -90,12 +93,15 @@ void cMenuView::Enter()
 		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
 		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		m_pHouse[i]->Build();
+		m_pHouse[i]->SetInstancingEnable(true);
+
 		
 		D3DXVECTOR3 pos;
-		pos.x = (rand()%10 - 5)*100.0f;
-		pos.y = (rand()%10 - 5)*10.0f + 100;
+		pos.x = (rand()%20 - 10)*100.0f;
+		pos.y = (rand()%20 - 10)*10.0f + 100;
 		pos.z = (rand()%20 - 10)*100.0f;
 		m_pHouse[i]->SetLocalPos(pos);
+		
 	}
 	
 	
@@ -116,13 +122,14 @@ void cMenuView::Leave()
 	}
 
 
-
-	m_graphicWorld.DeleteEntity(m_pTank);
-
+	
+	//m_graphicWorld.DeleteEntity(m_pTank);
+	//m_graphicWorld.DeleteEntity(m_pDragon);
 
 	//m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
 
-	m_graphicWorld.DeleteEntity(m_pDragon);
+	
+	
 	cView::Leave();
 }
 
@@ -188,12 +195,13 @@ void cMenuView::Control()
 		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
 
-
+	/*
 	if (g_pInput->IsTurnDn(DIK_F12))
 	{
 		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
 		m_graphicWorld.m_bDebugBound = !m_graphicWorld.m_bDebugBound;
 	}
+	*/
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{

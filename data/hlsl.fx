@@ -146,6 +146,16 @@ struct VS_SHADOW_NORMAL_INPUT
 	float2 mTexCoord : TEXCOORD0;
 };
 
+struct VS_SHADOW_NORMAL_INSTANCING_INPUT 
+{
+   float4 mPosition: POSITION;
+	float2 mTexCoord : TEXCOORD0;
+	float4 mInstanceMatrix0 : TEXCOORD2; 
+   float4 mInstanceMatrix1 : TEXCOORD3; 
+   float4 mInstanceMatrix2 : TEXCOORD4; 
+	float4 mInstanceMatrix3 : TEXCOORD5; 	
+};
+
 struct VS_GUI_OUTPUT
 {
     float4 mPosition  : POSITION;
@@ -262,6 +272,31 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
    return output;
 }
 
+VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
+{
+   VS_PHONG_DIFFUSE_OUTPUT output;
+	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
+	
+   float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
+   output.mPosition = mul(worldPosition , gViewProjectionMatrix);
+   
+   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
+   float3 worldNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
+   worldNormal = normalize(worldNormal);
+      
+   output.mLambert = dot(-lightDir, worldNormal);
+   output.mNormal = worldNormal;
+   output.mCameraDir = cameraDir;
+   output.mReflect = reflect(lightDir, worldNormal);
+   output.mTexCoord = input.mTexCoord;   
+   output.mTexCoord1 = input.mTexCoord1;   
+   
+   output.mClipPosition = mul(worldPosition, gLightViewMatrix);
+   output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix); 
+   return output;
+}
+
 
 
 VS_PHONG_DIFFUSE_BUMP_OUTPUT vs_PhongDiffuseBump( VS_PHONG_DIFFUSE_INPUT input)
@@ -329,6 +364,44 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
     return output;
 }
 
+VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIFFUSE_INPUT input)
+{
+    VS_PHONG_DIFFUSE_OUTPUT output;
+	
+    float fLastWeight = 1.0;
+    float fWeight;
+    float afBlendWeights[3] = (float[3])input.mBlendWeights;
+	int aiIndices[4] = (int[4])input.mBlendIndices;
+	
+	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
+
+	float4x4 matWorldSkinned;
+	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
+	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
+	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
+	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+   
+	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
+    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
+    
+    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
+    float3 worldNormal = mul(input.mNormal,(float3x3)matWorldSkinned);
+    worldNormal = normalize(worldNormal);
+       
+    output.mLambert = dot(-lightDir, worldNormal);
+    output.mNormal = worldNormal;
+    output.mCameraDir = cameraDir;
+    output.mReflect = reflect(lightDir, worldNormal);
+    output.mTexCoord = input.mTexCoord;   
+	output.mTexCoord1 = input.mTexCoord1;   
+	
+    output.mClipPosition = mul(worldPosition, gLightViewMatrix);
+    output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix);
+	
+    return output;
+}
+
 VS_SHADOW_OUTPUT vs_Shadow_Normal( VS_SHADOW_NORMAL_INPUT Input )
 {
    VS_SHADOW_OUTPUT Output;
@@ -341,6 +414,22 @@ VS_SHADOW_OUTPUT vs_Shadow_Normal( VS_SHADOW_NORMAL_INPUT Input )
 	Output.mTexCoord = Input.mTexCoord;   
    
    return Output;
+}
+
+VS_SHADOW_OUTPUT vs_Shadow_Normal_Instancing( VS_SHADOW_NORMAL_INSTANCING_INPUT input )
+{
+   VS_SHADOW_OUTPUT output;
+ 
+ 	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
+
+   output.mPosition = mul(input.mPosition, mInstanceMatrix);
+   output.mPosition = mul(output.mPosition, gLightViewMatrix);
+   output.mPosition = mul(output.mPosition, gLightProjectionMatrix);
+
+   output.mClipPosition = output.mPosition;
+	output.mTexCoord = input.mTexCoord;   
+   
+   return output;
 }
 
 VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
@@ -368,30 +457,7 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
     return output;
 }
 
-VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instance( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
-{
-   VS_PHONG_DIFFUSE_OUTPUT output;
-	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
-	
-   float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
-   output.mPosition = mul(worldPosition , gViewProjectionMatrix);
-   
-   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
-   float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
-   float3 worldNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
-   worldNormal = normalize(worldNormal);
-      
-   output.mLambert = dot(-lightDir, worldNormal);
-   output.mNormal = worldNormal;
-   output.mCameraDir = cameraDir;
-   output.mReflect = reflect(lightDir, worldNormal);
-   output.mTexCoord = input.mTexCoord;   
-   output.mTexCoord1 = input.mTexCoord1;   
-   
-   output.mClipPosition = mul(worldPosition, gLightViewMatrix);
-   output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix); 
-   return output;
-}
+
 
 
 struct PS_PHONG_DIFFUSE_INPUT
@@ -764,7 +830,7 @@ float4 ps_Shadow(PS_SHADOW_INPUT Input) : COLOR
    return float4(depth.xxx, 0.0f);
 }
 
-float4 ps_Shadow_NormalTransparency(PS_SHADOW_INPUT Input) : COLOR
+float4 ps_Shadow_AlphaTest(PS_SHADOW_INPUT Input) : COLOR
 {   
 	float alphaSample = tex2D( gOpacitySampler , Input.mTexCoord ).a;
    float depth = Input.mClipPosition.z / Input.mClipPosition.w;
@@ -883,55 +949,88 @@ technique TPhongDiffuseBumpSpecular
 
 
 //--------------------------------------------------------------//
-// Technique Section for CreateShadowShader
+// Technique Section for TShadowNormal
 //--------------------------------------------------------------//
-technique CreateShadowShader
+technique TShadowNormalNotAlphaTest
 {
    pass P0
    {
-
       VertexShader = compile vs_2_0 vs_Shadow_Normal();
       PixelShader = compile ps_2_0 ps_Shadow();
    }
 }
-technique TShadowSkinning
-{
-   pass CreateShadow
-   {
 
+technique TShadowNormalNotAlphaTestInstancing
+{
+   pass P0
+   {
+      VertexShader = compile vs_2_0 vs_Shadow_Normal_Instancing();
+      PixelShader = compile ps_2_0 ps_Shadow();
+   }
+}
+
+technique TShadowSkinningNotAlphaTest
+{
+   pass P0
+   {
       VertexShader = compile vs_2_0 vs_Shadow_Skinning();
       PixelShader = compile ps_2_0 ps_Shadow();
    }
 }
 
-technique CreateShadowAlphaTestShader
+technique TShadowNormalAlphaTest
 {
    pass P0
    {
-
       VertexShader = compile vs_2_0 vs_Shadow_Normal();
-      PixelShader = compile ps_2_0 ps_Shadow_NormalTransparency();
+      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
    }
 }
+
+technique TShadowNormalAlphaTestInstancing
+{
+   pass P0
+   {
+      VertexShader = compile vs_2_0 vs_Shadow_Normal_Instancing();
+      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
+   }
+}
+
 technique TShadowSkinningAlphaTest
 {
-   pass CreateShadow
+   pass P0
    {
-
       VertexShader = compile vs_2_0 vs_Shadow_Skinning();
-      PixelShader = compile ps_2_0 ps_Shadow_NormalTransparency();
+      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
    }
 }
 
-technique TPhongDiffuseInstance
+technique TPhongDiffuseInstancing
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instance();
+        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
         PixelShader  = compile ps_2_0 ps_PhongDiffuse();
     }  
 }
 
+technique TPhongDiffuseOpacityInstancing
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuseOpacity();
+    }  
+}
+
+technique TPhongDiffuseLightInstancing
+{
+    pass P0
+    {
+        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuseLight();
+    }  
+}
 
 
 

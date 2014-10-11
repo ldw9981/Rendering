@@ -24,7 +24,6 @@ public:
 protected:	
 	cRscIndexBuffer*		m_pRscIndexBuffer;	
 	cRscVertexBuffer*		m_pRscVetextBuffer;	
-
 	unsigned short			m_primitiveCount;
 	unsigned short			m_startIndex;
 	unsigned char			m_materialRefIndex;
@@ -65,6 +64,11 @@ public:
 	void SetPrimitiveCount(unsigned short val) { m_primitiveCount = val; }
 	unsigned char GetMaterialSubIndex() const { return m_materialSubIndex; }
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
+
+	void RenderIsntancing();
+
+	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
+	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 };
 
 }

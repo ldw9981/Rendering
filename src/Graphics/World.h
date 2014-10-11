@@ -28,7 +28,7 @@ public:
 
 	// entity
 	std::list<Entity*>		m_listEntity;
-	std::list<Entity*>		m_listEntityShadow;
+
 	std::list<Entity*>		m_listEntityRender;
 	
 	cRendererQueue			m_renderQueueNormalShadow;	

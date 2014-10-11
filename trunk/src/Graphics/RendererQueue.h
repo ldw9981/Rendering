@@ -42,14 +42,14 @@ public:
 	typedef std::pair<cMeshNode*,Material*> MESH_MATERIAL_PAIR;
 	std::vector<MESH_SPEC_PAIR>	m_vecNode;
 	std::map<Material*,std::list<MESH_SPEC_PAIR>>	m_materialOrder;
-	std::map<SCENE,std::list<MESH_SPEC_PAIR>>	m_entityMeshNameOrder;	// key최적화 필요
+	std::map<SCENE,std::list<cMeshNode*>>	m_sceneOrder;	// key최적화 필요
 private:
 public:
 	void	Insert(cMeshNode* pItem,Material* pMaterial);
 
 	void	Insert(cRendererQueue& renderQueue);
 	void	InsertIntoMaterialOrder(cRendererQueue& renderQueue);
-	void	InsertIntoEntityMeshNameOrder(cRendererQueue& renderQueue);
+	void	InsertIntoSceneOrder(cRendererQueue& renderQueue);
 	
 	void	Render();
 	void	Clear();
@@ -62,7 +62,8 @@ public:
 	void	RenderInstancing(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderShadowInstancing(D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
 protected:
-	void	ChangeMaterial(Material& material,bool bForShadow);
+	void	ChangeMaterial(Material* pMaterial);
+	void	ChangeMaterialForShadow(Material* pMaterial);
 	void	SubRenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_SPEC_PAIR>& containerTemp );
 };
 }

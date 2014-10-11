@@ -233,7 +233,7 @@ void World::Render()
 
 		
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
-		if (!m_renderQueueNormal.m_entityMeshNameOrder.empty())
+		if (!m_renderQueueNormal.m_sceneOrder.empty())
 		{
 			m_renderQueueNormal.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );
@@ -282,7 +282,7 @@ void World::Render()
 	
 	
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
-	if (!m_renderQueueNormal.m_entityMeshNameOrder.empty())
+	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
 		m_renderQueueNormal.RenderInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
 	}
@@ -364,7 +364,7 @@ void World::GatherRender()
 		
 		if (pEntity->GetInstancingEnable())
 		{
-			m_renderQueueNormal.InsertIntoEntityMeshNameOrder(pEntity->m_renderQueueNormal);
+			m_renderQueueNormal.InsertIntoSceneOrder(pEntity->m_renderQueueNormal);
 		}
 		else
 		{

@@ -64,10 +64,10 @@ void cRscVertexBuffer::Restore()
 
 
 
-void* cRscVertexBuffer::Lock()
+void* cRscVertexBuffer::Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags)
 {
 	void *pVertices=NULL;
-	m_pD3DVertexBuffer->Lock( 0, m_BufferSize, (void**)&pVertices, 0 ) ;
+	m_pD3DVertexBuffer->Lock( OffsetToLock, SizeToLock, (void**)&pVertices, Flags ) ;
 	return pVertices;
 }
 

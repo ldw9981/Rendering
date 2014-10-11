@@ -300,8 +300,10 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 
 		// Set Matrix Instance
 		
-		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock();
 		unsigned long nCount=list.size();
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
+			Graphics::m_pInstance->m_pInstanceVertexBuffer->GetBufferSize()	,0	);
+
 		for (  ; it_sub!=list.end();++it_sub)
 		{
 			pMeshNode = (*it_sub).first;		
@@ -347,9 +349,10 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 		Material* pMaterial = (*it_sub).second.pMaterial;
 
 		// Set Matrix Instance
-
-		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock();
 		unsigned long nCount=list.size();
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
+			Graphics::m_pInstance->m_pInstanceVertexBuffer->GetBufferSize()	,0	);
+		
 		for (  ; it_sub!=list.end();++it_sub)
 		{
 			pMeshNode = (*it_sub).first;		

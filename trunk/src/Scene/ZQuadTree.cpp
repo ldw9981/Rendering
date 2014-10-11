@@ -319,7 +319,7 @@ BOOL ZQuadTree::GetCellIntersection( D3DXVECTOR3& pos )
 
 void ZQuadTree::Update( DWORD elapseTime )
 {
-	for ( auto iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	for ( auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
 	{		
 		(*iter)->Update(elapseTime);
 	}	

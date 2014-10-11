@@ -67,8 +67,8 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	assert(m_pRscIndexBuffer!=NULL);
 	long vertexCount = m_pRscVetextBuffer->GetCount();
 	long triangleCount = m_pRscIndexBuffer->GetCount();
-	NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
-	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock();
+	NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock(0,m_pRscVetextBuffer->GetBufferSize(),0);
+	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
 
 	for (long a = 0; a < triangleCount; a++)
 	{
@@ -126,8 +126,8 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	if (!bTraversal)
 		return;
 
-	auto it_child=m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
+	auto it_child=m_vecChildNode.begin();
+	for ( ;it_child!=m_vecChildNode.end();++it_child )
 	{
 		(*it_child)->QueueRenderer(pEntity,bTraversal);
 	}
@@ -266,10 +266,10 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	SerializeOutMesh(stream);
 
 	// child
-	count = m_listChildNode.size();
+	count = m_vecChildNode.size();
 	stream.write((char*)&count,sizeof(count));	
-	auto it_child = m_listChildNode.begin();
-	for ( ;it_child!=m_listChildNode.end();++it_child )
+	auto it_child = m_vecChildNode.begin();
+	for ( ;it_child!=m_vecChildNode.end();++it_child )
 	{
 		(*it_child)->SerializeOut(stream);
 	}	
@@ -281,14 +281,14 @@ void cMeshNode::SerializeOutMesh( std::ofstream& stream )
 	DWORD bufferSize =0;
 	bufferSize = m_pRscIndexBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
-	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock();
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
 	stream.write((char*)pIndices,bufferSize);
 	m_pRscIndexBuffer->Unlock();		
 
 	//vertex
 	bufferSize = m_pRscVetextBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
-	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock();
+	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock(0,m_pRscVetextBuffer->GetBufferSize(),0);
 	stream.write((char*)pVertices,bufferSize);
 	m_pRscVetextBuffer->Unlock();	
 
@@ -302,7 +302,7 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
-		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock();
+		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(0,pRscIndexBuffer->GetBufferSize(),0);
 		stream.read((char*)pIndices,bufferSize);
 		pRscIndexBuffer->Unlock();		
 		pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
@@ -318,7 +318,7 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
-		NORMALVERTEX* pVertices=(NORMALVERTEX*)pRscVetextBuffer->Lock();
+		NORMALVERTEX* pVertices=(NORMALVERTEX*)pRscVetextBuffer->Lock(0,pRscVetextBuffer->GetBufferSize(),0);
 		stream.read((char*)pVertices,bufferSize);
 		pRscVetextBuffer->Unlock();		
 		pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));

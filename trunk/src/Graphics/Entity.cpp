@@ -120,7 +120,7 @@ void Entity::Update( DWORD elapseTime )
 		}
 		else
 		{
-			for (auto it_child = m_listChildNode.begin();it_child!=m_listChildNode.end();it_child++)
+			for (auto it_child = m_vecChildNode.begin();it_child!=m_vecChildNode.end();it_child++)
 			{
 				(*it_child)->DelPartialIndex(index);
 			}	
@@ -190,10 +190,10 @@ void Entity::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&radius,sizeof(radius));
 
 	//child
-	count = m_listChildNode.size();
+	count = m_vecChildNode.size();
 	stream.write((char*)&count,sizeof(count));
 	
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	for (auto it=m_vecChildNode.begin();it!=m_vecChildNode.end();++it )
 	{
 		(*it)->SerializeOut(stream);
 	}	
@@ -220,7 +220,7 @@ void Entity::PushAnimation( EntityAnimation* pAnimation )
 	pAnimation->AddRef();
 	m_vecAnimation.push_back(pAnimation);
 
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	for (auto it=m_vecChildNode.begin();it!=m_vecChildNode.end();++it )
 	{
 		(*it)->PushAnimation(pAnimation);
 	}	
@@ -235,7 +235,7 @@ void Entity::PopAnimation()
 	m_vecAnimation.pop_back();
 	pAnimation->Release();
 
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	for (auto it=m_vecChildNode.begin();it!=m_vecChildNode.end();++it )
 	{
 		(*it)->PopAnimation();
 	}	
@@ -391,7 +391,7 @@ void Entity::EraseAnimation( int index )
 	assert(index<(int)m_vecAnimation.size());
 	
 	// 자식에 설정된 SceneAnimation포인터 선제거
-	for (auto it=m_listChildNode.begin();it!=m_listChildNode.end();++it )
+	for (auto it=m_vecChildNode.begin();it!=m_vecChildNode.end();++it )
 	{
 		(*it)->EraseAnimation(index);
 	}	
@@ -465,7 +465,7 @@ void Entity::PlayPartialAnimation( int index,bool loop,DWORD skipStartTime/*=0*/
 	m_listPartial.push_back(desc);
 	
 
-	for (auto it = m_listChildNode.begin();it!=m_listChildNode.end();it++)
+	for (auto it = m_vecChildNode.begin();it!=m_vecChildNode.end();it++)
 	{
 		(*it)->AddPatialIndex();
 	}
@@ -529,14 +529,13 @@ void Entity::ClearRenderQueue()
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )
-{
-	std::list<cSceneNode*>::iterator iter;	
+{	
 	cSceneNode* pItem=NULL;
 	cSceneNode* pFoundItem=NULL;
-	for ( iter=m_listChildNode.begin() ; iter!=m_listChildNode.end() ; ++iter)
+	size_t size = m_vecChildNode.size();
+	for (size_t i=0;i<size;i++)
 	{
-		pItem=*iter;
-		pFoundItem=pItem->FindNode(nodename);
+		pFoundItem=m_vecChildNode[i]->FindNode(nodename);
 		if (pFoundItem!=NULL)
 		{
 			return pFoundItem;

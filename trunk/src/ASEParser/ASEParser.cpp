@@ -1989,7 +1989,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 
 		if (pVertexBuffer->GetRefCounter()==0)
 		{
-			T* pVertices=(T*)pVertexBuffer->Lock();
+			T* pVertices=(T*)pVertexBuffer->Lock(0,pVertexBuffer->GetBufferSize(),0);
 			for (UINT i=0;i< nCount;i++)
 			{
 				memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
@@ -2013,7 +2013,7 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 
 		if (pIndexBuffer->GetRefCounter()==0)
 		{
-			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock();
+			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock(0,pIndexBuffer->GetBufferSize(),0);
 			for (UINT i=0;i< nCount;i++)
 			{
 				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			

@@ -114,7 +114,7 @@ TreeNode^ AssetViewer::SceneTreeForm::CreateTreeNode( TreeNode^ parentTreeNode,S
 	}
 
 
-	for ( auto it = pNode->m_listChildNode.begin() ; it != pNode->m_listChildNode.end() ; it++ )
+	for ( auto it = pNode->m_vecChildNode.begin() ; it != pNode->m_vecChildNode.end() ; it++ )
 	{
 		CreateTreeNode(treeNode,*it);
 	}

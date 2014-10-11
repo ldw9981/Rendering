@@ -50,7 +50,7 @@ void cRendererQueue::Clear()
 {
 	m_vecNode.clear();
 	m_materialOrder.clear();
-	m_entityMeshNameOrder.clear();
+	m_sceneOrder.clear();
 }
 
 
@@ -97,7 +97,7 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		pEffect->SetTechnique(vecTechnique[i]);
 		pEffect->Begin(&passes, 0);	
 		// MaterialÀû¿ë
-		ChangeMaterial(*item.pMaterial,false);
+		ChangeMaterial(item.pMaterial);
 
 		pEffect->BeginPass(0);	
 		(*it).first->Render();
@@ -165,7 +165,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		pEffect->SetTechnique(vecTechnique[i]);
 		pEffect->Begin(&passes, 0);	
 
-		ChangeMaterial(*pMaterial,false);
+		ChangeMaterial(pMaterial);
 	
 		pEffect->BeginPass(0);	
 		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
@@ -180,44 +180,56 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::ChangeMaterial( Material& material,bool bForShadow )
+void cRendererQueue::ChangeMaterial(Material* pMaterial )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, material.AlphaTestEnable); 	
-	if (material.AlphaTestEnable)
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, pMaterial->AlphaTestEnable); 	
+	if (pMaterial->AlphaTestEnable)
 	{
 		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)material.AlphaTestRef);
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)pMaterial->AlphaTestRef);
 	}
 
 	cRscTexture* pRscTexture;
-	pRscTexture = material.GetMapOpacity();
+	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
 		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
 
-	if(!bForShadow)
-	{
-		pRscTexture = material.GetMapDiffuse();
-		if( pRscTexture != NULL )	
-			pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+	pRscTexture = pMaterial->GetMapDiffuse();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
 
-		pRscTexture = material.GetMapNormal();
-		if( pRscTexture != NULL )	
-			pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
+	pRscTexture = pMaterial->GetMapNormal();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
 
-		pRscTexture = material.GetMapLight();
-		if( pRscTexture != NULL )	
-			pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
+	pRscTexture = pMaterial->GetMapLight();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
 
-		pRscTexture = material.GetMapSpecular();
-		if( pRscTexture != NULL )	
-			pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());
-	}
+	pRscTexture = pMaterial->GetMapSpecular();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());	
 }
 
 
+void cRendererQueue::ChangeMaterialForShadow( Material* pMaterial )
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, pMaterial->AlphaTestEnable); 	
+	if (pMaterial->AlphaTestEnable)
+	{
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
+		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)pMaterial->AlphaTestRef);
+	}
+
+	cRscTexture* pRscTexture;
+	pRscTexture = pMaterial->GetMapOpacity();
+	if( pRscTexture != NULL )	
+		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());	
+}
 
 
 void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
@@ -238,7 +250,7 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 		
 		pEffect->Begin(&passes, 0);	
 		
-		ChangeMaterial(*pMaterial,true);		
+		ChangeMaterialForShadow(pMaterial);		
 
 		pEffect->BeginPass(0);	
 		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
@@ -267,15 +279,15 @@ void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 
 }
 
-void cRendererQueue::InsertIntoEntityMeshNameOrder(cRendererQueue& renderQueue )
+void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
 {	
 	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
 	{
 		MESH_SPEC_PAIR& item = (*it);		
 
 		SCENE key(item.first->GetRscVetextBuffer(),item.second.pMaterial,item.first->GetRscIndexBuffer());
-		std::list<MESH_SPEC_PAIR>& list = m_entityMeshNameOrder[key];
-		list.push_back(item);
+		std::list<cMeshNode*>& list = m_sceneOrder[key];
+		list.push_back(item.first);
 	}
 }
 
@@ -284,40 +296,39 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;		
-	Material* pPrevMaterial=NULL;
-
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 	
-	for ( auto it = m_entityMeshNameOrder.begin() ; it!=m_entityMeshNameOrder.end();++it)
-	{
+	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
+	{	
+		const SCENE&	refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;		
 		
-		std::list<MESH_SPEC_PAIR>& list = it->second;
-		auto it_sub = list.begin();
-		cMeshNode* pMeshNode = NULL;
-		Material* pMaterial = (*it_sub).second.pMaterial;
-
-		// Set Matrix Instance
-		
+		// Set Matrix Instance		
 		unsigned long nCount=list.size();
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
 			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
 
-		for (  ; it_sub!=list.end();++it_sub)
+		cMeshNode* pMeshNode = NULL;
+		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
 		{
-			pMeshNode = (*it_sub).first;		
+			pMeshNode = *it_sub;		
 			memcpy_s(pMatrix,sizeof(D3DXMATRIX),pMeshNode->GetWorldMatrixPtr(),sizeof(D3DXMATRIX));
 			pMatrix++;
+
+			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
 		}
 		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
 		
 		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
 		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 		pMeshNode->GetRscIndexBuffer()->SetIndices();
-		int i = pMaterial->index_renderer_queue();
+
+		int i = refScene.pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);	
 		pEffect->Begin(&passes, 0);	
-		ChangeMaterial(*pMaterial,false);		
+		ChangeMaterial(refScene.pMaterial);		
 
 		pEffect->BeginPass(0);	
 		pMeshNode->RenderIsntancing();
@@ -335,30 +346,28 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
-	UINT passes = 0;		
-	Material* pPrevMaterial=NULL;
-
+	UINT passes = 0;			
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 
-	for ( auto it = m_entityMeshNameOrder.begin() ; it!=m_entityMeshNameOrder.end();++it)
+	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{
-
-		std::list<MESH_SPEC_PAIR>& list = it->second;
-		auto it_sub = list.begin();
-		cMeshNode* pMeshNode = NULL;
-		Material* pMaterial = (*it_sub).second.pMaterial;
-
+		const SCENE& refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;
+	
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
 			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
 		
-		for (  ; it_sub!=list.end();++it_sub)
+		cMeshNode* pMeshNode = NULL;
+		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
 		{
-			pMeshNode = (*it_sub).first;		
+			pMeshNode = *it_sub;		
 			memcpy_s(pMatrix,sizeof(D3DXMATRIX),pMeshNode->GetWorldMatrixPtr(),sizeof(D3DXMATRIX));
 			pMatrix++;
+			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
 		}
 		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
 
@@ -366,13 +375,13 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 		pMeshNode->GetRscIndexBuffer()->SetIndices();
 		
-		if (pMaterial->AlphaTestEnable)
+		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
 		pEffect->Begin(&passes, 0);	
-		ChangeMaterial(*pMaterial,true);		
+		ChangeMaterialForShadow(refScene.pMaterial);		
 
 		pEffect->BeginPass(0);	
 		pMeshNode->RenderIsntancing();
@@ -383,6 +392,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
+
 
 
 

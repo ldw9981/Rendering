@@ -26,21 +26,6 @@ cTransformable::~cTransformable( void )
 {
 
 }
-/*
-	이전과 같으면 FALSE
-	갱신된것이면 TRUE
-*/
-void cTransformable::UpdateWorldMatrix(cTransformable* pParent/*=NULL*/)
-{		
-	if (pParent==NULL)	
-	{
-		m_matWorld = m_matLocal;		// 부모가 없으면 LocalTM이 WorldTM이 된다.					
-	}
-	else
-	{
-		m_matWorld = m_matLocal * pParent->m_matWorld;	// 부모가 있으면 WorldTM은 LocalTM * GetWorldTM 이 된다.
-	}
-}
 
 
 void cTransformable::SetLocalPos( D3DXVECTOR3& pos )

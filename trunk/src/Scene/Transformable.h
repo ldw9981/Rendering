@@ -55,10 +55,6 @@ public:
 	// 회전 행렬 리턴
 	void					RotateOnLocal( float angleX,float angleY,float angleZ );
 
-	// 월드행렬 리턴
-	virtual void			UpdateWorldMatrix(cTransformable* pParent=NULL);
-	//void					Update(DWORD dwElapseMS);
-
 	D3DXVECTOR3				GetVelPosPerSec()  { return m_velPosPerSec; }
 	D3DXVECTOR3				GetVelRotPerSec()  { return m_velRotPerSec; }
 	void					SetVelocityPosition( float x,float y,float z );

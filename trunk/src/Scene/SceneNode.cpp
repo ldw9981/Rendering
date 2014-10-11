@@ -29,7 +29,7 @@ cSceneNode::cSceneNode(void)
 	m_pParentNode=NULL;
 //	m_NodeType=ROOT;	
 
-	m_bIsActiveAnimation = true;
+	m_bIsActiveAnimation = false;
 	m_bShow = true;
 	m_type = TYPE_SCENE;
 	D3DXMatrixIdentity(&m_nodeTM);
@@ -122,11 +122,8 @@ void cSceneNode::UpdateLocalMatrix()
 	ENTITY_ANIMATION_DESCRIPTION& basePrev = m_pRootNode->m_basePrevAnimationDesc;
 	std::list<ENTITY_ANIMATION_DESCRIPTION>& listPartial = m_pRootNode->m_listPartial;
 
-	if (!m_bIsActiveAnimation)
-		return;
-	
-	if ( m_vecSceneAnimation.empty())
-		return;
+	assert(m_bIsActiveAnimation==true);
+	assert(m_vecSceneAnimation.empty()==false);	
 
 	ANMKEY anmKeyCurr;
 	ANMKEY anmKeyTemp;
@@ -171,14 +168,6 @@ void cSceneNode::UpdateLocalMatrix()
 		}
 	}
 	anmKeyCurr.GetTrasnform(&m_matLocal);	
-}
-
-void cSceneNode::UpdateChildren(DWORD elapseTime)
-{
-	for ( auto iter=m_vecChildNode.begin() ; iter!=m_vecChildNode.end() ; ++iter)
-	{		
-		(*iter)->Update(elapseTime);
-	}	
 }
 
 
@@ -324,8 +313,19 @@ void cSceneNode::Render()
 
 void cSceneNode::Update( DWORD elapseTime )
 {
-	UpdateLocalMatrix();
-	UpdateWorldMatrix(m_pParentNode);
+	if (m_bIsActiveAnimation && !m_vecSceneAnimation.empty())
+	{
+		UpdateLocalMatrix();
+	}	
+
+	if (m_pParentNode==NULL)	
+	{
+		m_matWorld = m_matLocal;		// 부모가 없으면 LocalTM이 WorldTM이 된다.					
+	}
+	else
+	{
+		m_matWorld = m_matLocal * m_pParentNode->m_matWorld;	// 부모가 있으면 WorldTM은 LocalTM * GetWorldTM 이 된다.
+	}
 
 	size_t size = m_vecChildNode.size();
 	for (size_t i=0;i<size;i++)
@@ -371,9 +371,8 @@ cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 
 void cSceneNode::PushAnimation( EntityAnimation* pAnimation )
 {
-	SceneAnimation* pSceneAnimation = pAnimation->GetSceneAnimtion(m_strNodeName);
+	SceneAnimation* pSceneAnimation = pAnimation->GetSceneAnimtion(m_strNodeName);	
 	m_vecSceneAnimation.push_back(pSceneAnimation);
-
 	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
 		(*it)->PushAnimation(pAnimation);

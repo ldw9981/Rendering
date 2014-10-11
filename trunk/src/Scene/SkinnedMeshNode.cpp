@@ -25,6 +25,7 @@ namespace Sophia
 
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
+	m_bIsActiveAnimation = true;
 	m_pArrayMatBoneRef = NULL;
 	m_type = TYPE_SKINNEDMESH;
 }

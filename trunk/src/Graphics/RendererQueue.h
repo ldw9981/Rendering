@@ -12,6 +12,20 @@ class Material;
 class MultiSub;
 class cCameraNode;
 class cMeshNode;
+class cRscVertexBuffer;
+class cRscIndexBuffer;
+
+struct SCENE
+{
+	cRscVertexBuffer*	pVertexBuffer;
+	Material*			pMaterial;
+	cRscIndexBuffer*	pIndexBuffer;	
+
+	SCENE();
+	SCENE(cRscVertexBuffer* param0,Material* param1,cRscIndexBuffer* param2);
+	bool operator<(const SCENE& other) const;
+};
+
 class cRendererQueue
 {
 public:
@@ -23,18 +37,19 @@ public:
 		Material* pMaterial;
 		float distancesq;
 	};
+
 	typedef std::pair<cMeshNode*,Specific> MESH_SPEC_PAIR;
 	typedef std::pair<cMeshNode*,Material*> MESH_MATERIAL_PAIR;
 	std::vector<MESH_SPEC_PAIR>	m_vecNode;
 	std::map<Material*,std::list<MESH_SPEC_PAIR>>	m_materialOrder;
-	std::map<std::string,std::list<MESH_SPEC_PAIR>>	m_entityMeshNameOrder;	// key최적화 필요
+	std::map<SCENE,std::list<MESH_SPEC_PAIR>>	m_entityMeshNameOrder;	// key최적화 필요
 private:
 public:
 	void	Insert(cMeshNode* pItem,Material* pMaterial);
 
 	void	Insert(cRendererQueue& renderQueue);
 	void	InsertIntoMaterialOrder(cRendererQueue& renderQueue);
-	void	InsertIntoEntityMeshNameOrder( std::string& strEntityName,cRendererQueue& renderQueue);
+	void	InsertIntoEntityMeshNameOrder(cRendererQueue& renderQueue);
 	
 	void	Render();
 	void	Clear();

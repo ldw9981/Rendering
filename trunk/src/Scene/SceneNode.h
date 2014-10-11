@@ -50,7 +50,7 @@ protected:
 	size_t					m_basePrevAnimationKeyIndex;
 	size_t					m_partialAnimationKeyIndex;
 	size_t					m_partialPrevAnimationKeyIndex;
-	BOOL					m_bIsActiveAnimation;
+	bool					m_bIsActiveAnimation;
 	D3DXMATRIX				m_AnimationTM;			
 	bool					m_bShow;
 	//DWORD					m_animationTime;
@@ -89,12 +89,12 @@ public:
 
 	Entity*				GetRootNode() const { return m_pRootNode; }
 	void				SetRootNode(Entity* val) { m_pRootNode = val; }
-	BOOL				GetIsActiveAnimation() const { return m_bIsActiveAnimation; }
-	void				SetIsActiveAnimation(BOOL val) { m_bIsActiveAnimation = val; }
+	bool				GetIsActiveAnimation() const { return m_bIsActiveAnimation; }
+	void				SetIsActiveAnimation(bool val) { m_bIsActiveAnimation = val; }
 
 	bool GetShow() const { return m_bShow; }
 	void SetShow(bool val) { m_bShow = val; }
-	void				UpdateChildren(DWORD elapseTime);
+	
 	void				RenderChildren();
 	void				FreeChildren();
 	

@@ -7,6 +7,7 @@
 #include "Graphics/RscTexture.h"
 #include "Scene/MeshNode.h"
 
+
 namespace Sophia
 {
 
@@ -266,16 +267,14 @@ void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 
 }
 
-void cRendererQueue::InsertIntoEntityMeshNameOrder( std::string& strEntityName,cRendererQueue& renderQueue )
-{
-	
+void cRendererQueue::InsertIntoEntityMeshNameOrder(cRendererQueue& renderQueue )
+{	
 	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
 	{
 		MESH_SPEC_PAIR& item = (*it);		
 
-		std::string strKey = strEntityName +":"+item.first->GetNodeName();
-		std::list<MESH_SPEC_PAIR>& list = m_entityMeshNameOrder[strKey];
-
+		SCENE key(item.first->GetRscVetextBuffer(),item.second.pMaterial,item.first->GetRscIndexBuffer());
+		std::list<MESH_SPEC_PAIR>& list = m_entityMeshNameOrder[key];
 		list.push_back(item);
 	}
 }
@@ -289,10 +288,10 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-
+	
 	for ( auto it = m_entityMeshNameOrder.begin() ; it!=m_entityMeshNameOrder.end();++it)
 	{
-
+		
 		std::list<MESH_SPEC_PAIR>& list = it->second;
 		auto it_sub = list.begin();
 		cMeshNode* pMeshNode = NULL;
@@ -323,11 +322,13 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		pEffect->BeginPass(0);	
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();
-		pEffect->End();			
+		pEffect->End();		
+		
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+	
 }
 
 void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
@@ -387,5 +388,40 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 
 
 
+
+
+SCENE::SCENE()
+{
+	pVertexBuffer=NULL;
+	pMaterial=NULL;
+	pIndexBuffer=NULL;	
+}
+
+SCENE::SCENE(cRscVertexBuffer* param0,Material* param1,cRscIndexBuffer* param2)
+{
+	pVertexBuffer=param0;
+	pMaterial=param1;
+	pIndexBuffer=param2;	
+}
+
+bool SCENE::operator<( const SCENE& other ) const
+{
+	if (pVertexBuffer < other.pVertexBuffer)
+		return true;
+
+	else if (pVertexBuffer == other.pVertexBuffer)
+	{
+		if (pMaterial < other.pMaterial)
+			return true;
+
+		else if ( pMaterial == other.pMaterial)
+		{
+			return pIndexBuffer < other.pIndexBuffer;
+		}
+
+	}
+
+	return false;
+}
 
 }

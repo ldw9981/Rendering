@@ -217,15 +217,12 @@ void World::Render()
 
 	if (m_bEnableShadow)
 	{
-		/*
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
 		{
 			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTest,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
-		}		
-		*/
-		
+		}			
 
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
@@ -240,7 +237,9 @@ void World::Render()
 		{
 			m_renderQueueNormal.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );
+		
 		}
+		
 		
 	}
 	
@@ -365,7 +364,7 @@ void World::GatherRender()
 		
 		if (pEntity->GetInstancingEnable())
 		{
-			m_renderQueueNormal.InsertIntoEntityMeshNameOrder(pEntity->GetNodeName(),pEntity->m_renderQueueNormal);
+			m_renderQueueNormal.InsertIntoEntityMeshNameOrder(pEntity->m_renderQueueNormal);
 		}
 		else
 		{

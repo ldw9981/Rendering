@@ -31,6 +31,7 @@ cMeshNode::cMeshNode(void)
 	m_startIndex=0;
 	m_materialRefIndex=0;
 	m_materialSubIndex=0;
+	m_pMaterial = NULL;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -109,17 +110,21 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 
 void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
+	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
+	assert(m_materialSubIndex < sub.size());
+	m_pMaterial = sub[m_materialSubIndex];  
+	
 	if (m_bShow)
 	{	
-		Material* pMaterial = GetMaterial(m_materialSubIndex);
-		int i = pMaterial->index_renderer_queue();
-		if (pMaterial->AlphaBlend == false)
+		int i = m_pMaterial->index_renderer_queue();
+		if (m_pMaterial->AlphaBlend == false)
 		{
-			pEntity->m_renderQueueNormal.Insert(this,pMaterial);				
+			pEntity->m_renderQueueNormal.InsertIntoMeshList(this);				
 		}
 		else
 		{
-			pEntity->m_renderQueueNormalAlphaBlend.Insert(this,pMaterial);
+			pEntity->m_renderQueueNormalAlphaBlend.InsertIntoMeshList(this);
 		}					
 	}
 

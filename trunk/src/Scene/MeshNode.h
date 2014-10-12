@@ -28,7 +28,8 @@ protected:
 	unsigned short			m_startIndex;
 	unsigned char			m_materialRefIndex;
 	unsigned char			m_materialSubIndex;
-
+	Material*				m_pMaterial;
+	
 public:
 	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -53,6 +54,7 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
+	Material* GetMaterial() const { return m_pMaterial; }	
 	Material* GetMaterial(unsigned char subIndex);
 	const std::vector<Material*>& GetMaterials();
 

@@ -92,6 +92,7 @@ public:
 	virtual cSceneNode*	FindNode(std::string& nodename);
 	bool GetInstancingEnable() const { return m_instancingEnable; }
 	void SetInstancingEnable(bool val) { m_instancingEnable = val; }
+	void ResetRenderQueue();
 };
 
 

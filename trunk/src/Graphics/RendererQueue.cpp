@@ -23,60 +23,69 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::Insert( cMeshNode* pItem ,Material* pMaterial)
+void cRendererQueue::InsertIntoMeshList( cMeshNode* pItem)
 {
-	std::pair<cMeshNode*,Specific> info;
-	info.first = pItem;
-	info.second.pMaterial = pMaterial;
-	m_vecNode.push_back(info);
+	m_vecMesh.push_back(pItem);
 }
 
-void cRendererQueue::Insert( cRendererQueue& renderQueue )
+
+
+static bool GreateDistance(cRendererQueue::MESH_DISTANCE_PAIR& a,cRendererQueue::MESH_DISTANCE_PAIR& b)
 {
-	m_vecNode.insert(m_vecNode.end(),renderQueue.m_vecNode.begin(),renderQueue.m_vecNode.end());
+	if ( a.second > b.second)
+		return true;
+
+	return false;
 }
 
-void cRendererQueue::Render()
+void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DXVECTOR3* pCameraWorldPosition )
 {
-	auto it=m_vecNode.begin();
-	for ( ; it!=m_vecNode.end(); ++it )
+	auto it = renderQueue.m_vecMesh.begin();
+	auto it_end = renderQueue.m_vecMesh.end();
+	D3DXVECTOR3 temp;
+	for ( ; it!=it_end ; ++it )
 	{		
-		(*it).first->Render();
+		auto& pMesh = *it;		
+		temp = *pCameraWorldPosition - *(pMesh->GetWorldPositionPtr());		
+		m_distanceOrder.push_back(MESH_DISTANCE_PAIR(pMesh,D3DXVec3LengthSq(&temp)));
 	}
+
+	std::sort(m_distanceOrder.begin(),m_distanceOrder.end(),&GreateDistance);
 }
+
 
 
 void cRendererQueue::Clear()
 {
-	m_vecNode.clear();
+	m_vecMesh.clear();
 	m_materialOrder.clear();
 	m_sceneOrder.clear();
+	m_distanceOrder.clear();
 }
 
 
-void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique,cCameraNode* pCamera)
+void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique)
 {
-	SortByCamera(pCamera);
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true); 	
 	Graphics::m_pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	Graphics::m_pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
-	
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();		
 
-	std::vector<MESH_SPEC_PAIR>	containerTemp;
+	std::vector<MESH_DISTANCE_PAIR>	containerTemp;
 
 	Material* pPrevMaterial=NULL;
-	for ( auto it=m_vecNode.begin() ; it!=m_vecNode.end(); ++it )
+	for ( auto it=m_distanceOrder.begin() ; it!=m_distanceOrder.end(); ++it )
 	{		
-		Specific& item = (*it).second;		
-		if (pPrevMaterial!=item.pMaterial && !containerTemp.empty())
+		MESH_DISTANCE_PAIR& item = *it;		
+		Material* pCurrMaterial = item.first->GetMaterial();
+		if (pPrevMaterial!= pCurrMaterial && !containerTemp.empty())
 		{
 			SubRenderAlphaBlend(vecTechnique,containerTemp);
 			containerTemp.clear();
 		}		
 		containerTemp.push_back(*it);				
-		pPrevMaterial = item.pMaterial;
+		pPrevMaterial = pCurrMaterial;
 	}
 	SubRenderAlphaBlend(vecTechnique,containerTemp);
 
@@ -84,20 +93,21 @@ void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& ve
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_SPEC_PAIR>& containerTemp )
+void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
 	UINT passes = 0;		
 
 	for ( auto it=containerTemp.begin() ; it!=containerTemp.end(); ++it )
 	{		
-		Specific& item = (*it).second;		
+		MESH_DISTANCE_PAIR& item = *it;		
+		Material* pMaterial = item.first->GetMaterial();
 		
-		int i = item.pMaterial->index_renderer_queue();
+		int i = pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);
 		pEffect->Begin(&passes, 0);	
 		// MaterialÀû¿ë
-		ChangeMaterial(item.pMaterial);
+		ChangeMaterial(pMaterial);
 
 		pEffect->BeginPass(0);	
 		(*it).first->Render();
@@ -106,50 +116,6 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		pEffect->End();	
 	}
 }
-
-
-
-static bool GreateDistance(std::pair<cMeshNode*,cRendererQueue::Specific>& a,std::pair<cMeshNode*,cRendererQueue::Specific>& b)
-{
-	if ( a.second.distancesq > b.second.distancesq)
-		return true;
-
-	return false;
-}
-
-void cRendererQueue::SortByCamera(cCameraNode* pCamera)
-{
-	D3DXVECTOR3 temp;
-	const D3DXVECTOR3* pVecCam;
-	const D3DXVECTOR3* pVecRender;
-	pVecCam = pCamera->GetWorldPositionPtr();
-	auto it=m_vecNode.begin();
-	for ( ; it!=m_vecNode.end(); ++it )
-	{		
-		Specific& item = (*it).second;		
-		pVecRender = (*it).first->GetWorldPositionPtr();
-
-		temp = *pVecCam - *pVecRender;
-		item.distancesq = D3DXVec3LengthSq(&temp);	
-	}
-
-	std::sort(m_vecNode.begin(),m_vecNode.end(),&GreateDistance);
-}
-
-static bool GreateMaterial(std::pair<cMeshNode*,cRendererQueue::Specific>& a,std::pair<cMeshNode*,cRendererQueue::Specific>& b)
-{
-	if ( a.second.pMaterial > b.second.pMaterial)
-		return true;
-
-	return false;
-}
-
-void cRendererQueue::SortByMaterial()
-{
-	std::sort(m_vecNode.begin(),m_vecNode.end(),&GreateMaterial);	
-}
-
-
 
 void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique)
 {
@@ -168,11 +134,10 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		ChangeMaterial(pMaterial);
 	
 		pEffect->BeginPass(0);	
-		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
+		std::list<cMeshNode*>& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
-			MESH_SPEC_PAIR& subItem = *it_sub;
-			subItem.first->Render();
+			(*it_sub)->Render();
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -253,11 +218,10 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 		ChangeMaterialForShadow(pMaterial);		
 
 		pEffect->BeginPass(0);	
-		std::list<MESH_SPEC_PAIR>& vecMesh = it->second;
+		std::list<cMeshNode*>& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
-			MESH_SPEC_PAIR& subItem = *it_sub;
-			subItem.first->Render();
+			(*it_sub)->Render();
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -268,26 +232,26 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 
 void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 {
-	size_t size = renderQueue.m_vecNode.size();
+	size_t size = renderQueue.m_vecMesh.size();
 	for (size_t i=0;i<size;i++)
 	{
-		MESH_SPEC_PAIR& item = renderQueue.m_vecNode[i];
+		Material* pMaterial = renderQueue.m_vecMesh[i]->GetMaterial();
 
-		std::list<MESH_SPEC_PAIR>& listMesh = m_materialOrder[item.second.pMaterial];
-		listMesh.push_back(item);
+		std::list<cMeshNode*>& listMesh = m_materialOrder[pMaterial];
+		listMesh.push_back(renderQueue.m_vecMesh[i]);
 	}
 
 }
 
 void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
 {	
-	for (auto it = renderQueue.m_vecNode.begin() ; it!= renderQueue.m_vecNode.end() ; it++)
+	for (auto it = renderQueue.m_vecMesh.begin() ; it!= renderQueue.m_vecMesh.end() ; it++)
 	{
-		MESH_SPEC_PAIR& item = (*it);		
+		auto& pMesh = (*it);	
 
-		SCENE key(item.first->GetRscVetextBuffer(),item.second.pMaterial,item.first->GetRscIndexBuffer());
+		SCENE_KEY key(pMesh->GetRscVetextBuffer(),pMesh->GetMaterial(),pMesh->GetRscIndexBuffer());
 		std::list<cMeshNode*>& list = m_sceneOrder[key];
-		list.push_back(item.first);
+		list.push_back(*it);
 	}
 }
 
@@ -301,7 +265,7 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 	
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
-		const SCENE&	refScene = it->first;
+		const SCENE_KEY&	refScene = it->first;
 		std::list<cMeshNode*>& list = it->second;		
 		
 		// Set Matrix Instance		
@@ -352,7 +316,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{
-		const SCENE& refScene = it->first;
+		const SCENE_KEY& refScene = it->first;
 		std::list<cMeshNode*>& list = it->second;
 	
 		// Set Matrix Instance
@@ -400,21 +364,23 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 
 
 
-SCENE::SCENE()
+
+
+SCENE_KEY::SCENE_KEY()
 {
 	pVertexBuffer=NULL;
 	pMaterial=NULL;
 	pIndexBuffer=NULL;	
 }
 
-SCENE::SCENE(cRscVertexBuffer* param0,Material* param1,cRscIndexBuffer* param2)
+SCENE_KEY::SCENE_KEY(cRscVertexBuffer* param0,Material* param1,cRscIndexBuffer* param2)
 {
 	pVertexBuffer=param0;
 	pMaterial=param1;
 	pIndexBuffer=param2;	
 }
 
-bool SCENE::operator<( const SCENE& other ) const
+bool SCENE_KEY::operator<( const SCENE_KEY& other ) const
 {
 	if (pVertexBuffer < other.pVertexBuffer)
 		return true;

@@ -162,7 +162,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	SetPos(1024-T_SIZE,0);
 
 	m_pInstanceVertexBuffer = new cRscVertexBuffer;
-	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*1024);
+	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*256);
 	m_pInstanceVertexBuffer->SetType(D3DPOOL_DEFAULT);
 	m_pInstanceVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
 	m_pInstanceVertexBuffer->Create();
@@ -174,10 +174,12 @@ void Graphics::Finalize()
 	m_pInstanceVertexBuffer->Free();
 	m_pInstanceVertexBuffer=NULL;
 
+	
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
 	SAFE_RELEASE(m_pNormalVertexDeclation);
-	SAFE_RELEASE(m_pSkinnedVertexDeclation);
+	SAFE_RELEASE(m_pSkinnedVertexDeclation)
+	SAFE_RELEASE(m_pNormalInstancingDeclation);
 	SAFE_DELETE(m_pNewFont);	
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);

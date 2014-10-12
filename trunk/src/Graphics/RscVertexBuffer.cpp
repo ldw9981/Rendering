@@ -13,6 +13,7 @@ cRscVertexBuffer::cRscVertexBuffer(void)
 	m_Type=D3DPOOL_MANAGED;
 	m_nCount=0;
 	m_usage = 0;
+	m_OffSet =0;
 }
 
 cRscVertexBuffer::~cRscVertexBuffer(void)
@@ -34,8 +35,8 @@ BOOL cRscVertexBuffer::Create()
 	
 	// ! VertexBuffer
 	// 1) FVF를 설정해서 필요한크기만큼 VertexBuffer를 만든다.	^
-	hResult=Graphics::m_pDevice->CreateVertexBuffer( 
-			m_BufferSize,
+	hResult=Graphics::m_pDevice->CreateVertexBuffer(
+		m_BufferSize,
 			m_usage,
 			0,
 			m_Type,
@@ -65,10 +66,12 @@ void cRscVertexBuffer::Restore()
 
 
 
-void* cRscVertexBuffer::Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags)
+void* cRscVertexBuffer::Lock(UINT SizeToLock,DWORD Flags)
 {
 	void *pVertices=NULL;
-	m_pD3DVertexBuffer->Lock( OffsetToLock, SizeToLock, (void**)&pVertices, Flags ) ;
+
+	m_pD3DVertexBuffer->Lock( m_OffSet, SizeToLock, (void**)&pVertices, Flags ) ;
+	
 	return pVertices;
 }
 

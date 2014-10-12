@@ -164,7 +164,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pInstanceVertexBuffer = new cRscVertexBuffer;
 	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXMATRIX)*1024);
 	m_pInstanceVertexBuffer->SetType(D3DPOOL_DEFAULT);
-	m_pInstanceVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC);
+	m_pInstanceVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
 	m_pInstanceVertexBuffer->Create();
 	return true;
 }

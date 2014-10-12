@@ -10,6 +10,7 @@ cRscIndexBuffer::cRscIndexBuffer(void)
 {	
 	m_pD3DIndexBuffer=NULL;
 	m_Type=D3DPOOL_MANAGED;
+	m_usage=D3DUSAGE_WRITEONLY;
 }
 
 cRscIndexBuffer::~cRscIndexBuffer(void)
@@ -29,7 +30,7 @@ BOOL cRscIndexBuffer::Create()
 	// 1) 필요한 Index갯수 만큼의 크기로 IndexBuffer를 만든다.
 	hResult=Graphics::m_pDevice->CreateIndexBuffer( 
 		m_BufferSize,
-		0,
+		m_usage,
 		D3DFMT_INDEX16,
 		m_Type,
 		&m_pD3DIndexBuffer,

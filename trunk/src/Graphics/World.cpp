@@ -351,12 +351,15 @@ void World::GatherRender()
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
 		auto pEntity = *itIn;
-		
-		m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);
-		m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormalAlphaBlend);
+		if (m_bEnableShadow)
+		{
+			m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);
+			m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormalAlphaBlend);
 
-		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);	
-		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinnedAlphaBlend);		
+			m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);	
+			m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinnedAlphaBlend);
+		}
+		
 				
 		if (pEntity->GetInstancingEnable())
 		{

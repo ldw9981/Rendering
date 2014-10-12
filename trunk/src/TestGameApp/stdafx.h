@@ -35,9 +35,6 @@
 #include <tchar.h>
 
 
-// TODO: 프로그램에 필요한 추가 헤더는 여기에서 참조합니다.
-#pragma comment(lib, "D3d9.lib")
-#pragma comment(lib, "D3dx9.lib") 
 
 
 #include <D3D9.h>
@@ -60,16 +57,6 @@
 #include <MMSystem.h>
 
 #include "Foundation/Define.h"
-
-//using namespace boost;
-//using namespace std;
-//using namespace stdext;
-
-#ifdef _DEBUG
-#define D3D_DEBUG_INFO
-#else
-
-#endif
 
 
 

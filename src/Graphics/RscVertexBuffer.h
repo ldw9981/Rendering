@@ -22,7 +22,7 @@ private:
 	D3DPOOL					m_Type;
 	int						m_nCount;
 	DWORD					m_usage;
-
+	UINT					m_OffSet;
 public:	
 	// cResource
 	virtual	BOOL			Create();	
@@ -40,7 +40,7 @@ public:
 	void SetCount(int val) { m_nCount = val; }
 
 
-	void*					Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags);
+	void*					Lock(UINT SizeToLock,DWORD Flags);
 	void					Unlock();
 	void					SetStreamSource(UINT streamNumber,UINT stride);
 	void					SetStreamSourceFreq(UINT streamNumber,UINT setting);

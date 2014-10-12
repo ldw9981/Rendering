@@ -148,7 +148,7 @@ HRESULT	ZTerrain::_CreateVIB()
 		return E_FAIL;
  	}
 	VOID* pVertices;
-	pVertices=m_pRscVertexBuffer->Lock(0,m_pRscVertexBuffer->GetBufferSize(),0);
+	pVertices=m_pRscVertexBuffer->Lock(m_pRscVertexBuffer->GetBufferSize(),0);
 	if (pVertices == NULL)
 	{
 		_Destroy();

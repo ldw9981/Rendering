@@ -270,8 +270,8 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		
 		// Set Matrix Instance		
 		unsigned long nCount=list.size();
-		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
-			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(
+			nCount*sizeof(D3DXMATRIX),D3DLOCK_DISCARD	);
 
 		cMeshNode* pMeshNode = NULL;
 		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
@@ -288,7 +288,7 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
 		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 		pMeshNode->GetRscIndexBuffer()->SetIndices();
-
+		
 		int i = refScene.pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);	
 		pEffect->Begin(&passes, 0);	
@@ -297,8 +297,9 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		pEffect->BeginPass(0);	
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();
-		pEffect->End();		
 		
+		pEffect->End();		
+
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
@@ -321,8 +322,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 	
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
-		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(0,
-			nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(	nCount*sizeof(D3DXMATRIX)	,D3DLOCK_DISCARD	);
 		
 		cMeshNode* pMeshNode = NULL;
 		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)

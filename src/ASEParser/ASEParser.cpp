@@ -1989,7 +1989,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 
 		if (pVertexBuffer->GetRefCounter()==0)
 		{
-			T* pVertices=(T*)pVertexBuffer->Lock(0,pVertexBuffer->GetBufferSize(),0);
+			T* pVertices=(T*)pVertexBuffer->Lock(pVertexBuffer->GetBufferSize(),0);
 			for (UINT i=0;i< nCount;i++)
 			{
 				memcpy(&pVertices[i],&arrVertex[i],sizeof(T));

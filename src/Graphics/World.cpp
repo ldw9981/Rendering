@@ -28,7 +28,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = true;
+	m_bEnableShadow = false;
 }
 
 

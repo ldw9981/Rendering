@@ -2,6 +2,7 @@
 #include "MaterialPropertyForm.h"
 #include "Scene/MeshNode.h"
 #include "Graphics/MaterialEx.h"
+#include "Graphics/Entity.h"
 #include "MaterialProperty.h"
 
 void AssetViewer::MaterialPropertyForm::Update( State* pState,Sophia::cSceneNode* pNode )
@@ -16,49 +17,28 @@ void AssetViewer::MaterialPropertyForm::Update( State* pState,Sophia::cSceneNode
 
 	if (pMesh)
 	{
-		const std::vector<Sophia::Material*>& refMaterials = pMesh->GetMaterials();
+		this->textBoxTotal->Text = Convert::ToString(pMesh->GetRootNode()->m_pEntityMaterial->GetCount());
+		this->textBoxRefIndex->Text = Convert::ToString(pMesh->GetMaterialRefIndex()); 
+		this->textBoxSubIndex->Text = Convert::ToString(pMesh->GetMaterialSubIndex()); 
+	
 		if (bChangeNode)
 		{			
-			this->comboBox1->Items->Clear();
-			for (size_t i=0;i<refMaterials.size();i++)
-			{
-				this->comboBox1->Items->Add(Convert::ToString(i));			
-			}		
-			this->comboBox1->SelectedIndex = 0;			
+			propertyData->Read(pMesh->GetMaterial());
+			propertyGrid1->SelectedObject = propertyData;			
 		}
 	}
 	else
 	{
-		this->comboBox1->Items->Clear();
+		this->textBoxTotal->Text = "";
+		this->textBoxRefIndex->Text = "";
+		this->textBoxSubIndex->Text = "";		
 		propertyGrid1->SelectedObject = nullptr;
 	}
 
 	
 }
 
-System::Void AssetViewer::MaterialPropertyForm::comboBox1_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
-{
-	Sophia::cMeshNode* pMesh = dynamic_cast<Sophia::cMeshNode*>(m_pNode);
-	if (pMesh==NULL)
-		return;
 
-	Sophia::Material* pMaterial = NULL;
-	int index = this->comboBox1->SelectedIndex;
-	if (index != -1)
-	{
-		pMaterial = pMesh->GetMaterial(index);
-	}
-
-	if (pMaterial!=NULL)
-	{
-		propertyData->Read(pMaterial);
-		propertyGrid1->SelectedObject = propertyData;
-	}
-	else
-	{
-		propertyGrid1->SelectedObject = nullptr;
-	}
-}
 
 System::Void AssetViewer::MaterialPropertyForm::propertyGrid1_PropertyValueChanged( System::Object^ s, System::Windows::Forms::PropertyValueChangedEventArgs^ e )
 {
@@ -69,13 +49,7 @@ System::Void AssetViewer::MaterialPropertyForm::propertyGrid1_PropertyValueChang
 	if (pMesh==NULL)
 		return;
 
-	const std::vector<Sophia::Material*>& refMaterials = pMesh->GetMaterials();
-	Sophia::Material* pMaterial = NULL;
-	int index = this->comboBox1->SelectedIndex;
-	if (index != -1)
-	{
-		pMaterial = refMaterials[index];
-	}
+	Sophia::Material* pMaterial = pMesh->GetMaterial();
 
 	if (pMaterial!=NULL)
 	{

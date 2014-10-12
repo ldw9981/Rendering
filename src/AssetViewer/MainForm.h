@@ -284,7 +284,6 @@ namespace AssetViewer {
 	public: System::Void sceneTreeForm_treeView1_NodeMouseClick(System::Object^  sender, System::Windows::Forms::TreeNodeMouseClickEventArgs^  e);
 	private: System::Void materialPropertyForm_numericUpDown1_ValueChanged(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void viewForm_OnShown(System::Object^  sender, System::EventArgs^  e);
-	private: System::Void materialPropertyForm_comboBox1_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
 
 	private: System::Void scenePropertyForm_Closed(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void materialPropertyForm_Closed(System::Object^  sender, System::EventArgs^  e);

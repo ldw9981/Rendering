@@ -93,6 +93,8 @@ public:
 	// cResource
 	virtual	BOOL			Create();	
 	virtual	void			Free();
+
+	unsigned int GetCount();
 private:
 };
 

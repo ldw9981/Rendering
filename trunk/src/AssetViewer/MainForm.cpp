@@ -233,11 +233,6 @@ System::Void AssetViewer::MainForm::viewForm_OnShown( System::Object^ sender, Sy
 	m_pState = (State*)Sophia::cD3DFramework::m_pInstance->GetView();
 }
 
-System::Void AssetViewer::MainForm::materialPropertyForm_comboBox1_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
-{
-	materialPropertyForm->Update(m_pState,m_pNode);
-}
-
 System::Void AssetViewer::MainForm::openToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
 {
 

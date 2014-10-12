@@ -465,6 +465,22 @@ void EntityMaterial::SerializeOut( std::ofstream& stream )
 	}
 }
 
+unsigned int EntityMaterial::GetCount()
+{
+	unsigned int count=0;
+	unsigned char refSize = m_ref.size();
+	for (size_t refIndex=0;refIndex<refSize;refIndex++)
+	{
+		unsigned char subSize = m_ref[refIndex].size();
+		SubMaterial& sub=m_ref[refIndex];
+		for (size_t subIndex=0;subIndex<subSize;subIndex++)
+		{
+			count++;
+		}
+	}
+	return count;
+}
+
 
 
 

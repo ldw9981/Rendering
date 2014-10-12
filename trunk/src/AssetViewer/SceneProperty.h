@@ -25,6 +25,10 @@ public:
 
 	[Category("Identification")]
 	property bool show;	
+
+	[Category("Identification")]
+	property bool bIsActiveAnimation;	
+
 	[Category("Transform")]
 	property float scale0_x;
 	[Category("Transform")]

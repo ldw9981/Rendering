@@ -841,8 +841,8 @@ technique TGUI
 {
     pass P0
     { 
-		VertexShader = compile vs_2_0 vs_GUI();
-        PixelShader  = compile ps_2_0 ps_GUI();
+		VertexShader = compile vs_3_0 vs_GUI();
+        PixelShader  = compile ps_3_0 ps_GUI();
     }  
 }
 
@@ -850,8 +850,8 @@ technique TSkinningPhong
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_SkinningPhongDiffuse();
-        PixelShader  = compile ps_2_0 ps_Phong();
+        VertexShader = compile vs_3_0 vs_SkinningPhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_Phong();
     }  
 }
 
@@ -860,8 +860,8 @@ technique TSkinningPhongDiffuse
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_SkinningPhongDiffuse();
-        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_SkinningPhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuse();
     }  
 }
 
@@ -869,8 +869,8 @@ technique TLine
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_Line();
-        PixelShader  = compile ps_2_0 ps_Line();
+        VertexShader = compile vs_3_0 vs_Line();
+        PixelShader  = compile ps_3_0 ps_Line();
     }  
 }
 
@@ -878,8 +878,8 @@ technique TPhong
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
-        PixelShader  = compile ps_2_0 ps_Phong();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_Phong();
     }  
 }
 
@@ -897,8 +897,8 @@ technique TPhongDiffuse
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
-        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuse();
     }  
 }
 
@@ -906,7 +906,7 @@ technique TPhongDiffuseLight
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseLight();
     }  
 }
@@ -915,7 +915,7 @@ technique TPhongDiffuseBump
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuseBump();
+        VertexShader = compile vs_3_0 vs_PhongDiffuseBump();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseBump();
     }  
 }
@@ -924,7 +924,7 @@ technique TPhongDiffuseOpacity
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseOpacity();
     }  
 }
@@ -933,7 +933,7 @@ technique TPhongDiffuseSpecular
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseSpecular();
     }  
 }
@@ -942,7 +942,7 @@ technique TPhongDiffuseBumpSpecular
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseBumpSpecular();
     }  
 }
@@ -955,8 +955,8 @@ technique TShadowNormalNotAlphaTest
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Normal();
-      PixelShader = compile ps_2_0 ps_Shadow();
+      VertexShader = compile vs_3_0 vs_Shadow_Normal();
+      PixelShader = compile ps_3_0 ps_Shadow();
    }
 }
 
@@ -964,8 +964,8 @@ technique TShadowNormalNotAlphaTestInstancing
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Normal_Instancing();
-      PixelShader = compile ps_2_0 ps_Shadow();
+      VertexShader = compile vs_3_0 vs_Shadow_Normal_Instancing();
+      PixelShader = compile ps_3_0 ps_Shadow();
    }
 }
 
@@ -973,8 +973,8 @@ technique TShadowSkinningNotAlphaTest
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Skinning();
-      PixelShader = compile ps_2_0 ps_Shadow();
+      VertexShader = compile vs_3_0 vs_Shadow_Skinning();
+      PixelShader = compile ps_3_0 ps_Shadow();
    }
 }
 
@@ -982,8 +982,8 @@ technique TShadowNormalAlphaTest
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Normal();
-      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
+      VertexShader = compile vs_3_0 vs_Shadow_Normal();
+      PixelShader = compile ps_3_0 ps_Shadow_AlphaTest();
    }
 }
 
@@ -991,8 +991,8 @@ technique TShadowNormalAlphaTestInstancing
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Normal_Instancing();
-      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
+      VertexShader = compile vs_3_0 vs_Shadow_Normal_Instancing();
+      PixelShader = compile ps_3_0 ps_Shadow_AlphaTest();
    }
 }
 
@@ -1000,8 +1000,8 @@ technique TShadowSkinningAlphaTest
 {
    pass P0
    {
-      VertexShader = compile vs_2_0 vs_Shadow_Skinning();
-      PixelShader = compile ps_2_0 ps_Shadow_AlphaTest();
+      VertexShader = compile vs_3_0 vs_Shadow_Skinning();
+      PixelShader = compile ps_3_0 ps_Shadow_AlphaTest();
    }
 }
 
@@ -1009,8 +1009,8 @@ technique TPhongDiffuseInstancing
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
-        PixelShader  = compile ps_2_0 ps_PhongDiffuse();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse_Instancing();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuse();
     }  
 }
 
@@ -1018,7 +1018,7 @@ technique TPhongDiffuseOpacityInstancing
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse_Instancing();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseOpacity();
     }  
 }
@@ -1027,7 +1027,7 @@ technique TPhongDiffuseLightInstancing
 {
     pass P0
     {
-        VertexShader = compile vs_2_0 vs_PhongDiffuse_Instancing();
+        VertexShader = compile vs_3_0 vs_PhongDiffuse_Instancing();
         PixelShader  = compile ps_3_0 ps_PhongDiffuseLight();
     }  
 }

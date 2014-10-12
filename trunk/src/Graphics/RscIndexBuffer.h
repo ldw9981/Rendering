@@ -41,6 +41,7 @@ private:
 	LPDIRECT3DINDEXBUFFER9					m_pD3DIndexBuffer;				// D3D  Memory POOL
 	DWORD									m_BufferSize;	
 	D3DPOOL									m_Type;
+	DWORD									m_usage;
 	int										m_nCount;
 public:
 	// cResource

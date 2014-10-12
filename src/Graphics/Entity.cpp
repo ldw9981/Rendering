@@ -24,7 +24,6 @@ Entity::Entity(void)
 	m_type = TYPE_ROOT;
 	m_bShowBone = false;
 	m_pEntityMaterial = NULL;
-	m_instancingEnable = false;
 }
 
 

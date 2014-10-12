@@ -66,6 +66,9 @@ public:
 
 	void ReadFloat(std::ifstream& stream,float& var);
 	void WriteFloat(std::ofstream& stream,float& var);
+
+	void ReadBool(std::ifstream& stream,bool& var);
+	void WriteBool(std::ofstream& stream,bool& var);
 };
 
 }

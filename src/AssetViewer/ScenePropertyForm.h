@@ -49,7 +49,8 @@ namespace AssetViewer {
 		System::ComponentModel::Container ^components;
 		SceneProperty^ propertyData;
 		State* m_pState;
-		Sophia::cSceneNode* m_pNode;
+
+			 Sophia::cSceneNode* m_pNode;
 #pragma region Windows Form Designer generated code
 		/// <summary>
 		/// 디자이너 지원에 필요한 메서드입니다.
@@ -65,7 +66,7 @@ namespace AssetViewer {
 			this->propertyGrid1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->propertyGrid1->Location = System::Drawing::Point(0, 0);
 			this->propertyGrid1->Name = L"propertyGrid1";
-			this->propertyGrid1->Size = System::Drawing::Size(276, 367);
+			this->propertyGrid1->Size = System::Drawing::Size(318, 655);
 			this->propertyGrid1->TabIndex = 0;
 			this->propertyGrid1->PropertyValueChanged += gcnew System::Windows::Forms::PropertyValueChangedEventHandler(this, &ScenePropertyForm::propertyGrid1_PropertyValueChanged);
 			this->propertyGrid1->BindingContextChanged += gcnew System::EventHandler(this, &ScenePropertyForm::propertyGrid1_BindingContextChanged);
@@ -74,7 +75,7 @@ namespace AssetViewer {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(276, 367);
+			this->ClientSize = System::Drawing::Size(318, 655);
 			this->Controls->Add(this->propertyGrid1);
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
@@ -87,11 +88,6 @@ namespace AssetViewer {
 	private: System::Void propertyGrid1_BindingContextChanged(System::Object^  sender, System::EventArgs^  e) {
 			 }
 	public: void Update(State* pState,Sophia::cSceneNode* pNode);
-	private: System::Void propertyGrid1_PropertyValueChanged(System::Object^  s, System::Windows::Forms::PropertyValueChangedEventArgs^  e) {
-
-				 // 노드 이름이 바뀌었을때
-				 // 부모 노드 이름이 바뀌었을때
-				 // 나머지 데이터가 바뀌었을때
-			 }
+	private: System::Void propertyGrid1_PropertyValueChanged(System::Object^  s, System::Windows::Forms::PropertyValueChangedEventArgs^  e);
 	};
 }

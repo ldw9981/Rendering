@@ -87,11 +87,11 @@ void cMenuView::Enter()
 	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		m_pHouse[i]->LoadScene(std::string(strDataPath+"AirPlaneBake.scene").c_str());
-		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"AirPlaneBake.aniset").c_str());
-		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"AirPlaneBake.material").c_str());
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		m_pHouse[i]->Build();
-		m_pHouse[i]->SetInstancingEnable(true);
+		
 
 		
 		D3DXVECTOR3 pos;

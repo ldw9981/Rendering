@@ -29,7 +29,9 @@ protected:
 	unsigned char			m_materialRefIndex;
 	unsigned char			m_materialSubIndex;
 	Material*				m_pMaterial;
-	
+	bool					m_bInstancingEnable;
+
+
 public:
 	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -71,6 +73,8 @@ public:
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
+	bool GetInstancingEnable() const { return m_bInstancingEnable; }
+	void SetInstancingEnable(bool val) { m_bInstancingEnable = val; }
 };
 
 }

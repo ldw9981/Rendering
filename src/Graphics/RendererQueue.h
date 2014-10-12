@@ -45,6 +45,8 @@ public:
 
 	void	InsertIntoMaterialOrder(cRendererQueue& renderQueue);
 	void	InsertIntoSceneOrder(cRendererQueue& renderQueue);
+
+	void	InsertNotAlphaBlend(cRendererQueue& renderQueue); 
 	void	InsertIntoDistanceOrder(cRendererQueue& renderQueue,D3DXVECTOR3* pCameraWorldPosition );
 	
 

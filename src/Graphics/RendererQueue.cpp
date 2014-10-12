@@ -261,6 +261,8 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 
 	UINT passes = 0;		
 
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 	
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
@@ -273,11 +275,8 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
 		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 
-		Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
-		Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(
-			nCount*sizeof(D3DXMATRIX),D3DLOCK_DISCARD	);
+			0,D3DLOCK_DISCARD	);
 
 		cMeshNode* pMeshNode = NULL;
 		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
@@ -303,12 +302,10 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();
 		
-		pEffect->End();		
-
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+		pEffect->End();	
 	}
-
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 	
 }

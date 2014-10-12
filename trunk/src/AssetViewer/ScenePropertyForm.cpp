@@ -17,3 +17,17 @@ void AssetViewer::ScenePropertyForm::Update( State* pState,Sophia::cSceneNode* p
 	}
 	
 }
+
+System::Void AssetViewer::ScenePropertyForm::propertyGrid1_PropertyValueChanged( System::Object^ s, System::Windows::Forms::PropertyValueChangedEventArgs^ e )
+{
+	// 노드 이름이 바뀌었을때
+	// 부모 노드 이름이 바뀌었을때
+	// 나머지 데이터가 바뀌었을때
+
+	if (m_pNode==NULL)
+		return;
+
+	propertyData->Write(m_pNode);
+	m_pNode->GetRootNode()->ResetRenderQueue();
+	
+}

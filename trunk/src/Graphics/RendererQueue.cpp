@@ -7,7 +7,6 @@
 #include "Graphics/RscTexture.h"
 #include "Scene/MeshNode.h"
 
-
 namespace Sophia
 {
 
@@ -49,8 +48,6 @@ void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DX
 		temp = *pCameraWorldPosition - *(pMesh->GetWorldPositionPtr());		
 		m_distanceOrder.push_back(MESH_DISTANCE_PAIR(pMesh,D3DXVec3LengthSq(&temp)));
 	}
-
-	std::sort(m_distanceOrder.begin(),m_distanceOrder.end(),&GreateDistance);
 }
 
 
@@ -66,6 +63,9 @@ void cRendererQueue::Clear()
 
 void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique)
 {
+	//그릴때 한번에 정렬
+	std::sort(m_distanceOrder.begin(),m_distanceOrder.end(),&GreateDistance);
+
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, true); 	
 	Graphics::m_pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
 	Graphics::m_pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
@@ -229,6 +229,28 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
+void cRendererQueue::InsertNotAlphaBlend( cRendererQueue& renderQueue )
+{
+	size_t size = renderQueue.m_vecMesh.size();
+	for (size_t i=0;i<size;i++)
+	{
+		cMeshNode* pMesh = renderQueue.m_vecMesh[i];	
+
+		Material* pMaterial = pMesh->GetMaterial();
+		if (pMesh->GetInstancingEnable())
+		{
+			SCENE_KEY key(pMesh->GetRscVetextBuffer(),pMesh->GetMaterial(),pMesh->GetRscIndexBuffer());
+			std::list<cMeshNode*>& list = m_sceneOrder[key];
+			list.push_back(pMesh);
+		}
+		else
+		{
+			std::list<cMeshNode*>& list = m_materialOrder[pMaterial];
+			list.push_back(pMesh);
+		}
+	}
+}
+
 
 void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
 {
@@ -272,11 +294,11 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		// Set Matrix Instance		
 		unsigned long nCount=list.size();
 
-		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
+		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declInstance,0));
 		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
-
+		
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(
-			0,D3DLOCK_DISCARD	);
+			nCount*sizeof(D3DXMATRIX),D3DLOCK_DISCARD	);
 
 		cMeshNode* pMeshNode = NULL;
 		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
@@ -296,13 +318,13 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		int i = refScene.pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);	
 		pEffect->Begin(&passes, 0);	
-		ChangeMaterial(refScene.pMaterial);		
+		ChangeMaterial(refScene.pMaterial);
 
-		pEffect->BeginPass(0);	
+		pEffect->BeginPass(0);
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();
 		
-		pEffect->End();	
+		pEffect->End();		
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
@@ -359,6 +381,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
+
 
 
 

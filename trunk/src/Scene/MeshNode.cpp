@@ -32,6 +32,7 @@ cMeshNode::cMeshNode(void)
 	m_materialRefIndex=0;
 	m_materialSubIndex=0;
 	m_pMaterial = NULL;
+	m_bInstancingEnable = false;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -231,6 +232,7 @@ void cMeshNode::SerializeIn( std::ifstream& stream )
 	stream.read((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));
 	stream.read((char*)&m_primitiveCount,sizeof(m_primitiveCount));
 	stream.read((char*)&m_startIndex,sizeof(m_startIndex));
+	ReadBool(stream,m_bInstancingEnable);
 
 
 	// mesh
@@ -266,7 +268,8 @@ void cMeshNode::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));	
 	stream.write((char*)&m_primitiveCount,sizeof(m_primitiveCount));	
 	stream.write((char*)&m_startIndex,sizeof(m_startIndex));	
-	
+	WriteBool(stream,m_bInstancingEnable);
+
 	// mesh 
 	SerializeOutMesh(stream);
 

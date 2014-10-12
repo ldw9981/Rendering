@@ -27,7 +27,16 @@ public:
 	property bool show;	
 
 	[Category("Identification")]
-	property bool bIsActiveAnimation;	
+	property bool animationEnable;	
+
+	[Category("Identification")]
+	property bool instancingEnable;	
+
+	[Category("Material")]
+	property int materialRefIndex;
+
+	[Category("Material")]
+	property int materialSubIndex;
 
 	[Category("Transform")]
 	property float scale0_x;
@@ -55,6 +64,10 @@ public:
 	property float translation2_z;
 	[Category("Transform")]
 	property float translation3_w;
+
+
+
+
 
 public:
 	void Read(Sophia::cSceneNode* pNode);

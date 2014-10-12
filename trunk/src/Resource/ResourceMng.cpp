@@ -73,7 +73,7 @@ void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,co
 	key += meshName;
 }
 
-cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_DEFAULT*/ )
+cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_MANAGED*/ )
 {
 	cRscVertexBuffer* pItem=NULL;
 	std::string strKey;	
@@ -106,7 +106,7 @@ void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,con
 	key += meshName;
 }
 
-cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type )
+cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_MANAGED*/ )
 {
 	cRscIndexBuffer* pItem=NULL;
 	std::string strKey;	

@@ -47,4 +47,14 @@ void ISerializable::WriteFloat( std::ofstream& stream,float& var )
 	stream.write((char*)&var,sizeof(float));
 }
 
+void ISerializable::ReadBool( std::ifstream& stream,bool& var )
+{
+	stream.read((char*)&var,sizeof(bool));
+}
+
+void ISerializable::WriteBool( std::ofstream& stream,bool& var )
+{
+	stream.write((char*)&var,sizeof(bool));
+}
+
 }

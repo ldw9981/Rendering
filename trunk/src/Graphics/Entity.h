@@ -39,8 +39,6 @@ public:
 	ENTITY_ANIMATION_DESCRIPTION m_baseAnimationDesc;		
 	ENTITY_ANIMATION_DESCRIPTION m_basePrevAnimationDesc;	//다른 애니이션 전환할때 fadeIn 옵션 사용한다면 이전 애니메이션키를 계속 얻기위해 필요하다.
 	std::list<ENTITY_ANIMATION_DESCRIPTION> m_listPartial;
-	bool				m_instancingEnable;
-
 protected:
 	cSphere				m_BoundingSphere;		// 기본 구 (한번만설정하며 매프레임 위치만 갱신)
 	
@@ -90,8 +88,6 @@ public:
 
 	void ClearRenderQueue();
 	virtual cSceneNode*	FindNode(std::string& nodename);
-	bool GetInstancingEnable() const { return m_instancingEnable; }
-	void SetInstancingEnable(bool val) { m_instancingEnable = val; }
 	void ResetRenderQueue();
 };
 

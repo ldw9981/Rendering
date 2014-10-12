@@ -28,7 +28,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = false;
+	m_bEnableShadow = true;
 }
 
 
@@ -216,30 +216,28 @@ void World::Render()
 	Graphics::m_pDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
 
 	if (m_bEnableShadow)
-	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+	{		
 		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
-		{
+		{	
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTest,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
 		}			
 
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+		
 		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
 		{	
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTest,
 				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
-		}		
-
+		}			
 		
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
 		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
 		{
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
 			m_renderQueueNormalShadow.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
-				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );
-		
-		}
-		
+				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );		
+		}	
 		
 	}
 	
@@ -265,38 +263,36 @@ void World::Render()
 		//m_renderQueueTerrain.Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
-	}
-	
-	
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+	}	
+
 	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+	
 	if (!m_renderQueueSkinned.m_materialOrder.empty())
 	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
-	}
+	}	
 	
-	
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
 		m_renderQueueNormal.RenderInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
-	}
+	}		
 	
-	
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
 	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
 		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
-
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+	
 	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
 	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
 		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
 	
@@ -353,25 +349,19 @@ void World::GatherRender()
 		auto pEntity = *itIn;
 		if (m_bEnableShadow)
 		{
-			m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);
-			m_renderQueueNormalShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueNormalAlphaBlend);
+			// 그림자용은 알파블렌드 상관없이 모은다.그릴때는 알파테스트만 구분한다.
+			m_renderQueueNormalShadow.InsertNotAlphaBlend(pEntity->m_renderQueueNormal);
+			m_renderQueueNormalShadow.InsertNotAlphaBlend(pEntity->m_renderQueueNormalAlphaBlend);		
 
-			m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);	
-			m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinnedAlphaBlend);
+			m_renderQueueSkinnedShadow.InsertNotAlphaBlend(pEntity->m_renderQueueSkinned);				
+			m_renderQueueSkinnedShadow.InsertNotAlphaBlend(pEntity->m_renderQueueSkinnedAlphaBlend);
 		}
 		
-				
-		if (pEntity->GetInstancingEnable())
-		{
-			m_renderQueueNormal.InsertIntoSceneOrder(pEntity->m_renderQueueNormal);
-		}
-		else
-		{
-			m_renderQueueNormal.InsertIntoMaterialOrder(pEntity->m_renderQueueNormal);	
-		}
-
-		m_renderQueueSkinned.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);		
+		// 씬은 알파블렌드로 구분하여 모은다.
+		m_renderQueueNormal.InsertNotAlphaBlend(pEntity->m_renderQueueNormal);	// normal instancing 분리
 		m_renderQueueNormalAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueNormalAlphaBlend,m_camera.GetWorldPositionPtr());	
+
+		m_renderQueueSkinned.InsertNotAlphaBlend(pEntity->m_renderQueueSkinned);				
 		m_renderQueueSkinnedAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
 	}
 }

@@ -513,8 +513,7 @@ void Entity::SetShowSkeleton( bool bShow )
 		cSceneNode* pNode = (*it).second;		
 		pNode->SetShow(bShow);
 	}
-	ClearRenderQueue();
-	QueueRenderer(this,true);
+	ResetRenderQueue();
 }
 
 void Entity::ClearRenderQueue()
@@ -542,6 +541,12 @@ cSceneNode* Entity::FindNode( std::string& nodename )
 		}			 
 	}	
 	return NULL;
+}
+
+void Entity::ResetRenderQueue()
+{
+	ClearRenderQueue();
+	QueueRenderer(this,true);
 }
 
 }

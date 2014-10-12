@@ -3,7 +3,7 @@
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
 
-#define STRESS 64
+#define STRESS 10
 
 
 class cGUIButton;

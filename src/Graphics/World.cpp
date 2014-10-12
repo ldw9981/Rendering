@@ -257,12 +257,12 @@ void World::Render()
 	pHWDepthStencilBuffer = NULL;
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
-	if (!m_renderQueueTerrain.m_vecNode.empty())
+	if (!m_renderQueueTerrain.m_vecMesh.empty())
 	{				
 		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
 		m_pEffect->Begin(&passes, 0);	
 		m_pEffect->BeginPass(0);	
-		m_renderQueueTerrain.Render();
+		//m_renderQueueTerrain.Render();
 		m_pEffect->EndPass();
 		m_pEffect->End();
 	}
@@ -289,15 +289,15 @@ void World::Render()
 
 	
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
-	if (!m_renderQueueNormalAlphaBlend.m_vecNode.empty())
+	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
 	{
-		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal,&m_camera);
+		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
-	if (!m_renderQueueSkinnedAlphaBlend.m_vecNode.empty())
+	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
 	{
-		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned,&m_camera);		
+		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
 	
 
@@ -346,8 +346,6 @@ void World::GatherRender()
 	m_renderQueueSkinned.Clear();
 	m_renderQueueNormalAlphaBlend.Clear();
 	m_renderQueueSkinnedAlphaBlend.Clear();
-	
-	m_renderQueueTerrain.Clear();
 
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
@@ -359,9 +357,7 @@ void World::GatherRender()
 
 		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);	
 		m_renderQueueSkinnedShadow.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinnedAlphaBlend);		
-
-
-		
+				
 		if (pEntity->GetInstancingEnable())
 		{
 			m_renderQueueNormal.InsertIntoSceneOrder(pEntity->m_renderQueueNormal);
@@ -372,10 +368,8 @@ void World::GatherRender()
 		}
 
 		m_renderQueueSkinned.InsertIntoMaterialOrder(pEntity->m_renderQueueSkinned);		
-		m_renderQueueNormalAlphaBlend.Insert(pEntity->m_renderQueueNormalAlphaBlend);	
-		m_renderQueueSkinnedAlphaBlend.Insert(pEntity->m_renderQueueSkinnedAlphaBlend);			
-
-		m_renderQueueTerrain.Insert(pEntity->m_renderQueueTerrain);		
+		m_renderQueueNormalAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueNormalAlphaBlend,m_camera.GetWorldPositionPtr());	
+		m_renderQueueSkinnedAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
 	}
 }
 

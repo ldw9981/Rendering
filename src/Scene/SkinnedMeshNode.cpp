@@ -119,17 +119,21 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 
 void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 {
+	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
+	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
+	assert(m_materialSubIndex < sub.size());
+	m_pMaterial = sub[m_materialSubIndex];  
+
 	if (m_bShow)
 	{	
-		Material* pMaterial = GetMaterial(m_materialSubIndex);
-		int i = pMaterial->index_renderer_queue();
-		if (pMaterial->AlphaBlend == false)
+		int i = m_pMaterial->index_renderer_queue();
+		if (m_pMaterial->AlphaBlend == false)
 		{
-			pEntity->m_renderQueueSkinned.Insert(this,pMaterial);
+			pEntity->m_renderQueueSkinned.InsertIntoMeshList(this);
 		}
 		else
 		{
-			pEntity->m_renderQueueSkinnedAlphaBlend.Insert(this,pMaterial);
+			pEntity->m_renderQueueSkinnedAlphaBlend.InsertIntoMeshList(this);
 		}		
 	}
 	

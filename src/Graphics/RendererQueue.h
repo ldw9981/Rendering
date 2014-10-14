@@ -53,10 +53,15 @@ public:
 	void	Clear();	
 
 	void	RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest );
-	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderInstancing(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderShadowInstancing(D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
+	
+	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendInstancing(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendSkinnedInstancing(std::vector<D3DXHANDLE>& vecTechnique);
+
+	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
+	
+	
 protected:
 	void	ChangeMaterial(Material* pMaterial);
 	void	ChangeMaterialForShadow(Material* pMaterial);

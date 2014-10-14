@@ -139,9 +139,10 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 	m_pNewFont = new cGUIFont();	
 
-	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclation);
-	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclation);
-	m_pDevice->CreateVertexDeclaration(declInstance, &m_pNormalInstancingDeclation);
+	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclaration);
+	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclaration);
+	m_pDevice->CreateVertexDeclaration(declNormalInstance, &m_pNormalInstancingVertexDeclaration);
+	m_pDevice->CreateVertexDeclaration(declBlendInstance, &m_pSkinnedInstanceVertexDeclaration);
 
 	// ·»´õÅ¸±êÀ» ¸¸µç´Ù.
 	const int shadowMapSize = SHADOWMAP_SIZE;
@@ -166,6 +167,9 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pInstanceVertexBuffer->SetType(D3DPOOL_DEFAULT);
 	m_pInstanceVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
 	m_pInstanceVertexBuffer->Create();
+
+	//m_pInstanceTexture = new cRscTexture;
+	
 	return true;
 }
 
@@ -177,9 +181,10 @@ void Graphics::Finalize()
 	
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
-	SAFE_RELEASE(m_pNormalVertexDeclation);
-	SAFE_RELEASE(m_pSkinnedVertexDeclation)
-	SAFE_RELEASE(m_pNormalInstancingDeclation);
+	SAFE_RELEASE(m_pNormalVertexDeclaration);
+	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
+	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);
+	SAFE_RELEASE(m_pSkinnedInstanceVertexDeclaration);
 	SAFE_DELETE(m_pNewFont);	
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);
@@ -329,6 +334,28 @@ void Graphics::LoadHLSL(const char* szFileName)
 	{	
 		if (m_vecTechniqueNormalInstancing[i] == NULL )	
 			m_vecTechniqueNormalInstancing[i] = m_hTPhongDiffuseInstancing;
+	}
+
+	// m_vecTechniqueSkinnedInstancing
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseInstancing;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::OPACITY);
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacityInstancing;
+
+	indexRenderQueue = 0;
+	indexRenderQueue.set(Material::DIFFUSE);
+	indexRenderQueue.set(Material::LIGHT);
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLightInstancing;
+
+
+	for (int i=0;i<m_nTechniqueSize;i++)
+	{	
+		if (m_vecTechniqueSkinnedInstancing[i] == NULL )	
+			m_vecTechniqueSkinnedInstancing[i] = m_hTPhongDiffuseInstancing;
 	}
 }
 

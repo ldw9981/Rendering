@@ -55,7 +55,7 @@ void cMenuView::Enter()
 		std::string(strDataPath+"ground.bmp").c_str());
 	*/
 	
-	/*
+	
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
 	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
@@ -72,7 +72,7 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
-	*/
+	
 
 	/*
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();

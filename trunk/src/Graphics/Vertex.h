@@ -68,10 +68,10 @@ struct BLENDVERTEX
 
 struct NORMALINSTANCEVERTEX
 {
-	D3DXVECTOR4 instanceMatrix0;
-	D3DXVECTOR4 instanceMatrix1;
-	D3DXVECTOR4 instanceMatrix2;
-	D3DXVECTOR4 instanceMatrix3;
+	D3DXVECTOR3 instanceMatrix0;
+	D3DXVECTOR3 instanceMatrix1;
+	D3DXVECTOR3 instanceMatrix2;
+	D3DXVECTOR3 instanceMatrix3;
 };
 
 struct GUIVERTEX

@@ -6,7 +6,8 @@ namespace Sophia
 
 extern D3DVERTEXELEMENT9 declNormal[];
 extern D3DVERTEXELEMENT9 declBlend[];
-extern D3DVERTEXELEMENT9 declInstance[];
+extern D3DVERTEXELEMENT9 declNormalInstance[];
+extern D3DVERTEXELEMENT9 declBlendInstance[];
 #define FVF_GUIVERTEX (D3DFVF_XYZRHW|D3DFVF_TEX1)  
 
 struct LINEVERTEX 

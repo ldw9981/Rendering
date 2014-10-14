@@ -12,7 +12,12 @@ namespace Sophia
 cRscTexture::cRscTexture(void)
 :m_pD3DTexture(NULL)
 {	
-	
+	m_width = 0;
+	m_height = 0;
+	m_levels = 1;
+	m_pool = D3DPOOL_MANAGED;
+	m_usage = D3DUSAGE_DYNAMIC;
+	m_format = D3DFMT_R32F;
 }
 
 
@@ -29,10 +34,16 @@ BOOL cRscTexture::Create()
 	if (m_RefCounter > 0 )
 		return TRUE;
 
-	if (m_filePath.empty())
-		return FALSE;
+	HRESULT hResult;
+	if (!m_filePath.empty())
+	{
+		hResult = D3DXCreateTextureFromFile(Graphics::m_pDevice,m_filePath.c_str(),&m_pD3DTexture);
+	}
+	else
+	{
+		hResult = Graphics::m_pDevice->CreateTexture(m_width,m_height,m_levels,m_usage,m_format ,m_pool, &m_pD3DTexture, NULL );
+	}
 
-	HRESULT hResult=D3DXCreateTextureFromFile(Graphics::m_pDevice,m_filePath.c_str(),&m_pD3DTexture);
 	return SUCCEEDED(hResult);		
 }
 
@@ -46,7 +57,10 @@ void cRscTexture::Restore()
 void cRscTexture::Free()
 {
 	SAFE_RELEASE(m_pD3DTexture);
-	cResourceMng::m_pInstance->EraseRscTexture(GetUniqueKey());
+	if (!GetUniqueKey().empty())
+	{
+		cResourceMng::m_pInstance->EraseRscTexture(GetUniqueKey());
+	}	
 	delete this;
 }
 

@@ -219,7 +219,7 @@ void World::Render()
 	{		
 		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
 		{	
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
 			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTest,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
 		}			
@@ -227,14 +227,14 @@ void World::Render()
 		
 		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
 		{	
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
 			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTest,
 				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
 		}			
 		
 		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
 		{
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
 			m_renderQueueNormalShadow.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );		
 		}	
@@ -267,32 +267,35 @@ void World::Render()
 
 	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
 		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
-
 	
 	if (!m_renderQueueSkinned.m_materialOrder.empty())
 	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
 		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
 	}	
 	
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingDeclation);
-		m_renderQueueNormal.RenderInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+		m_renderQueueNormal.RenderNotAlphaBlendInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
 	}		
 	
+	if (!m_renderQueueSkinned.m_sceneOrder.empty())
+	{
+		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
+	}		
+
 	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
 	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclation);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
 		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 	
 	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
 	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclation);
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
 		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
 	

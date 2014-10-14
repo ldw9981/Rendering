@@ -277,13 +277,14 @@ void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
 	}
 }
 
-void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
-{	
+void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+{
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;		
 
-	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 	
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
@@ -294,7 +295,7 @@ void cRendererQueue::RenderInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 		// Set Matrix Instance		
 		unsigned long nCount=list.size();
 
-		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declInstance,0));
+		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declNormalInstance,0));
 		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 		
 		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(
@@ -337,7 +338,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;			
-	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
 	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
@@ -360,7 +361,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 		}
 		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
 
-		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declInstance,0));
+		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
 		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
 		pMeshNode->GetRscIndexBuffer()->SetIndices();
 		
@@ -382,15 +383,60 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
+void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+{
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstanceVertexDeclaration);
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
+	Graphics::m_pInstance->m_pInstanceVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
+	{	
+		const SCENE_KEY&	refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;		
+
+		// Set Matrix Instance		
+		unsigned long nCount=list.size();
+
+		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declBlendInstance,0));
+		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
+
+		D3DXMATRIX* pMatrix = (D3DXMATRIX*)Graphics::m_pInstance->m_pInstanceVertexBuffer->Lock(
+			nCount*sizeof(D3DXMATRIX),D3DLOCK_DISCARD	);
+
+		cMeshNode* pMeshNode = NULL;
+		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+		{
+			pMeshNode = *it_sub;		
+			memcpy_s(pMatrix,sizeof(D3DXMATRIX),pMeshNode->GetWorldMatrixPtr(),sizeof(D3DXMATRIX));
+			pMatrix++;
+
+			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+		}
+		Graphics::m_pInstance->m_pInstanceVertexBuffer->Unlock();		
 
 
+		pMeshNode->GetRscIndexBuffer()->SetIndices();
 
+		int i = refScene.pMaterial->index_renderer_queue();
+		pEffect->SetTechnique(vecTechnique[i]);	
+		pEffect->Begin(&passes, 0);	
+		ChangeMaterial(refScene.pMaterial);
 
+		pEffect->BeginPass(0);
+		pMeshNode->RenderIsntancing();
+		pEffect->EndPass();
 
-
-
-
-
+		pEffect->End();		
+	}
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+}
 
 SCENE_KEY::SCENE_KEY()
 {

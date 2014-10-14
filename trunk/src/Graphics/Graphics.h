@@ -9,6 +9,7 @@ class cGUIFont;
 class cView;
 class World;
 class cRscVertexBuffer;
+class cRscTexture;
 
 class Graphics
 {
@@ -27,9 +28,10 @@ public:
 	LPD3DXFONT				m_pFont;
 	LPD3DXEFFECT			m_pEffect;	
 	LPD3DXBUFFER			m_pError;	
-	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclation;
-	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclation;
-	LPDIRECT3DVERTEXDECLARATION9 m_pNormalInstancingDeclation;
+	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclaration;
+	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclaration;
+	LPDIRECT3DVERTEXDECLARATION9 m_pNormalInstancingVertexDeclaration;
+	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedInstanceVertexDeclaration;
 	D3DXHANDLE				m_hTLine;
 	D3DXHANDLE				m_hTSkinningPhong;
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;
@@ -91,6 +93,7 @@ public:
 	GUIVERTEX			 g_vertices[4];
 	
 	cRscVertexBuffer*	m_pInstanceVertexBuffer;
+	cRscTexture*		m_pInstnaceTexture;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

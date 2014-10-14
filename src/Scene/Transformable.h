@@ -13,7 +13,7 @@ class cTransformable
 public:
 	cTransformable(void);
 	~cTransformable(void);
-protected:
+public:
 	D3DXMATRIX				m_matWorld;		//							Transform에 의해서만 갱신된다. 
 	D3DXMATRIX				m_matLocal;
 	D3DXMATRIX				m_matVelocityPos;

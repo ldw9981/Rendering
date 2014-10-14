@@ -122,10 +122,10 @@ struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
    float3 mBiNormal : BINORMAL;   
    float2 mTexCoord : TEXCOORD0;  
    float2 mTexCoord1 : TEXCOORD1;
-	float4 mInstanceMatrix0 : TEXCOORD2; 
-   float4 mInstanceMatrix1 : TEXCOORD3; 
-   float4 mInstanceMatrix2 : TEXCOORD4; 
-	float4 mInstanceMatrix3 : TEXCOORD5; 
+	float3 mInstanceMatrix0 : TEXCOORD2; 
+   float3 mInstanceMatrix1 : TEXCOORD3; 
+   float3 mInstanceMatrix2 : TEXCOORD4; 
+	float3 mInstanceMatrix3 : TEXCOORD5; 
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
@@ -150,10 +150,10 @@ struct VS_SHADOW_NORMAL_INSTANCING_INPUT
 {
    float4 mPosition: POSITION;
 	float2 mTexCoord : TEXCOORD0;
-	float4 mInstanceMatrix0 : TEXCOORD2; 
-   float4 mInstanceMatrix1 : TEXCOORD3; 
-   float4 mInstanceMatrix2 : TEXCOORD4; 
-	float4 mInstanceMatrix3 : TEXCOORD5; 	
+	float3 mInstanceMatrix0 : TEXCOORD2; 
+   float3 mInstanceMatrix1 : TEXCOORD3; 
+   float3 mInstanceMatrix2 : TEXCOORD4; 
+	float3 mInstanceMatrix3 : TEXCOORD5; 	
 };
 
 struct VS_GUI_OUTPUT
@@ -275,7 +275,10 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
 VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
 {
    VS_PHONG_DIFFUSE_OUTPUT output;
-	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
+	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
+													float4(input.mInstanceMatrix1,0.0f),
+													float4(input.mInstanceMatrix2,0.0f),
+													float4(input.mInstanceMatrix3,1.0f));
 	
    float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
@@ -420,7 +423,10 @@ VS_SHADOW_OUTPUT vs_Shadow_Normal_Instancing( VS_SHADOW_NORMAL_INSTANCING_INPUT 
 {
    VS_SHADOW_OUTPUT output;
  
- 	float4x4 mInstanceMatrix = float4x4(input.mInstanceMatrix0,input.mInstanceMatrix1,input.mInstanceMatrix2,input.mInstanceMatrix3);
+ 	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
+													float4(input.mInstanceMatrix1,0.0f),
+													float4(input.mInstanceMatrix2,0.0f),
+													float4(input.mInstanceMatrix3,1.0f));
 
    output.mPosition = mul(input.mPosition, mInstanceMatrix);
    output.mPosition = mul(output.mPosition, gLightViewMatrix);

@@ -4,6 +4,7 @@
 #include "GUI/GUIFont.h"
 #include "GUI/GUIButton.h"
 #include "RscVertexBuffer.h"
+#include "RscTexture.h"
 #include "Vertex.h"
 #include "MaterialEx.h"
 #include "World.h"
@@ -162,21 +163,24 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	}
 	SetPos(1024-T_SIZE,0);
 
-	m_pInstanceVertexBuffer = new cRscVertexBuffer;
-	m_pInstanceVertexBuffer->SetBufferSize(sizeof(D3DXVECTOR3)*4*1024);
-	m_pInstanceVertexBuffer->SetType(D3DPOOL_DEFAULT);
-	m_pInstanceVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
-	m_pInstanceVertexBuffer->Create();
+	m_pInstancingVertexBuffer = new cRscVertexBuffer;
+	m_pInstancingVertexBuffer->SetBufferSize(sizeof(D3DXVECTOR3)*4*1024);
+	m_pInstancingVertexBuffer->SetType(D3DPOOL_DEFAULT);
+	m_pInstancingVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
+	m_pInstancingVertexBuffer->Create();
 
-	//m_pInstanceTexture = new cRscTexture;
+	m_pInstancingTexture = new cRscTexture;
 	
+
 	return true;
 }
 
 void Graphics::Finalize()
 {
-	m_pInstanceVertexBuffer->Free();
-	m_pInstanceVertexBuffer=NULL;
+	m_pInstancingTexture->Free();
+	m_pInstancingTexture=NULL;
+	m_pInstancingVertexBuffer->Free();
+	m_pInstancingVertexBuffer=NULL;
 
 	
 	SAFE_RELEASE(m_pShadowDepthStencil);

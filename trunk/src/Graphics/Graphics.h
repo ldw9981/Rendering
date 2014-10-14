@@ -92,8 +92,8 @@ public:
 	RECT				m_Rect;
 	GUIVERTEX			 g_vertices[4];
 	
-	cRscVertexBuffer*	m_pInstanceVertexBuffer;
-	cRscTexture*		m_pInstnaceTexture;
+	cRscVertexBuffer*	m_pInstancingVertexBuffer;
+	cRscTexture*		m_pInstancingTexture;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

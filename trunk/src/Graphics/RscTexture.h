@@ -13,7 +13,7 @@ class cRscTexture:
 {
 public:	
 	cRscTexture(void);
-	~cRscTexture(void);		
+	virtual ~cRscTexture(void);		
 protected:	
 	LPDIRECT3DTEXTURE9		m_pD3DTexture;			
 	std::string				m_filePath;

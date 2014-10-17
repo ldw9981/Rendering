@@ -19,7 +19,7 @@ cMenuView::cMenuView(void)
 {
 	
 	m_bControlCamera=FALSE;
-	m_instancing = false;
+	m_instancing = true;
 	m_pZTerrain=NULL;
 	
 	m_pTank=NULL;
@@ -89,9 +89,19 @@ void cMenuView::Enter()
 	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+		if (i%2 == 0)
+		{
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+		}
+		else
+		{
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
+		}		
+
 		m_pHouse[i]->Build();
 		m_pHouse[i]->SetInstanceEnable(m_instancing);
 		m_pHouse[i]->PlayBaseAnimation(0,true,0,0,0,rand()%1000);
@@ -196,13 +206,7 @@ void cMenuView::Control()
 		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
 
-	/*
-	if (g_pInput->IsTurnDn(DIK_F12))
-	{
-		Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_bDebugBound = !m_graphicWorld.m_bDebugBound;
-	}
-	*/
+	
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
@@ -215,7 +219,11 @@ void cMenuView::Control()
 
 		}
 	}	
-
+	if (g_pInput->IsTurnDn(DIK_F5))
+	{
+		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
+		m_graphicWorld.m_bEnableShadow = !m_graphicWorld.m_bEnableShadow;
+	}
 	
 	
 }

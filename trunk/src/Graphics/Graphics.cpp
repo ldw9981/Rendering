@@ -143,7 +143,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pDevice->CreateVertexDeclaration(declNormal, &m_pNormalVertexDeclaration);
 	m_pDevice->CreateVertexDeclaration(declBlend, &m_pSkinnedVertexDeclaration);
 	m_pDevice->CreateVertexDeclaration(declNormalInstance, &m_pNormalInstancingVertexDeclaration);
-	m_pDevice->CreateVertexDeclaration(declBlendInstance, &m_pSkinnedInstanceVertexDeclaration);
+	m_pDevice->CreateVertexDeclaration(declBlendInstance, &m_pSkinnedInstancingVertexDeclaration);
 
 	// ·»´õÅ¸±êÀ» ¸¸µç´Ù.
 	const int shadowMapSize = SHADOWMAP_SIZE;
@@ -205,7 +205,7 @@ void Graphics::Finalize()
 	SAFE_RELEASE(m_pNormalVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
 	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);
-	SAFE_RELEASE(m_pSkinnedInstanceVertexDeclaration);
+	SAFE_RELEASE(m_pSkinnedInstancingVertexDeclaration);
 	SAFE_DELETE(m_pNewFont);	
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);
@@ -270,9 +270,10 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hTShadowNormalNotAlphaTestInstancing=	m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTestInstancing") );
 	m_hTShadowNormalAlphaTestInstancing =	m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTestInstancing") );
 
-	m_hTShadowSkinnedNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningNotAlphaTest") );	
-	m_hTShadowSkinnedAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
-
+	m_hTShadowSkinnedNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTest") );	
+	m_hTShadowSkinnedAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTest") );
+	m_hTShadowSkinnedNotAlphaTestInstancing=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTestInstancing") );	
+	m_hTShadowSkinnedAlphaTestInstancing=	m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTestInstancing") );
 
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 

@@ -93,7 +93,7 @@ float gSpecularPower = 32;
 #define MATRIX_PALETTE_SIZE_DEFAULT 64
 #endif
 
-const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
+static const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
 float4x4 Palette[ MATRIX_PALETTE_SIZE_DEFAULT ];
 
 struct VS_GUI_INPUT
@@ -141,7 +141,7 @@ struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
 {
-   float3 mPosition : POSITION;
+   float4 mPosition : POSITION;
    float3 mNormal : NORMAL;
    float3 mTangent : TANGENT;
    float3 mBiNormal : BINORMAL;
@@ -153,7 +153,7 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
 
 struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
 {
-   float3 mPosition : POSITION;
+   float4 mPosition : POSITION;
    float3 mNormal : NORMAL;
    float3 mTangent : TANGENT;
    float3 mBiNormal : BINORMAL;
@@ -179,6 +179,20 @@ struct VS_SHADOW_NORMAL_INSTANCING_INPUT
    float3 mInstanceMatrix2 : TEXCOORD4; 
 	float3 mInstanceMatrix3 : TEXCOORD5; 	
 };
+
+struct VS_SHADOW_SKINNED_INSTANCING_INPUT 
+{
+   float4 mPosition : POSITION;
+   float3 mNormal : NORMAL;
+   float3 mTangent : TANGENT;
+   float3 mBiNormal : BINORMAL;
+   float2 mTexCoord : TEXCOORD0;
+   float2 mTexCoord1 : TEXCOORD1;   
+   float3 mBlendWeights    : BLENDWEIGHT;
+   int4   mBlendIndices    : BLENDINDICES; 
+	float3 mInstanceIndex  : TEXCOORD2; 
+};
+
 
 struct VS_GUI_OUTPUT
 {
@@ -370,7 +384,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
 	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
    
-	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
+	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
     float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
@@ -424,14 +438,8 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
 	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
    matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
  	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
-	
-//	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
-//	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
-//	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-//	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
    
-   
-	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
+	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
     float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
@@ -484,6 +492,32 @@ VS_SHADOW_OUTPUT vs_Shadow_Normal_Instancing( VS_SHADOW_NORMAL_INSTANCING_INPUT 
    return output;
 }
 
+VS_SHADOW_OUTPUT vs_Shadow_Skinned_Instancing( VS_SHADOW_SKINNED_INSTANCING_INPUT input )
+{
+    VS_SHADOW_OUTPUT output;
+	
+    float fLastWeight = 1.0;
+    float fWeight;
+    float afBlendWeights[3] = (float[3])input.mBlendWeights;
+	int aiIndices[4] = (int[4])input.mBlendIndices;
+
+	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
+		
+	float4x4 matWorldSkinned;
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+   
+   output.mPosition = mul(input.mPosition, matWorldSkinned);
+   output.mPosition = mul(output.mPosition, gLightViewMatrix);
+   output.mPosition = mul(output.mPosition, gLightProjectionMatrix);
+
+   output.mClipPosition = output.mPosition;
+	output.mTexCoord = input.mTexCoord;   
+	return output;
+}
+
 VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
 {
     VS_SHADOW_OUTPUT output;
@@ -501,7 +535,7 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
 	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
 	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
    
-	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
+	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition, gLightViewMatrix);
     output.mPosition = mul(output.mPosition, gLightProjectionMatrix);
     output.mClipPosition = output.mPosition;  
@@ -1035,7 +1069,16 @@ technique TShadowNormalNotAlphaTestInstancing
    }
 }
 
-technique TShadowSkinningNotAlphaTest
+technique TShadowSkinnedNotAlphaTestInstancing
+{
+   pass P0
+   {
+      VertexShader = compile vs_3_0 vs_Shadow_Skinned_Instancing();
+      PixelShader = compile ps_3_0 ps_Shadow();
+   }
+}
+
+technique TShadowSkinnedNotAlphaTest
 {
    pass P0
    {
@@ -1062,7 +1105,16 @@ technique TShadowNormalAlphaTestInstancing
    }
 }
 
-technique TShadowSkinningAlphaTest
+technique TShadowSkinnedAlphaTestInstancing
+{
+   pass P0
+   {
+      VertexShader = compile vs_3_0 vs_Shadow_Skinned_Instancing();
+      PixelShader = compile ps_3_0 ps_Shadow_AlphaTest();
+   }
+}
+
+technique TShadowSkinnedAlphaTest
 {
    pass P0
    {

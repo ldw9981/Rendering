@@ -29,7 +29,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = false;
+	m_bEnableShadow = true;
 }
 
 
@@ -235,8 +235,14 @@ void World::Render()
 		
 		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
 		{
-			m_renderQueueNormalShadow.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
+			m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );		
+		}	
+
+		if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
+		{
+			m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTestInstancing,
+				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTestInstancing );		
 		}	
 		
 	}
@@ -282,10 +288,12 @@ void World::Render()
 		m_renderQueueNormal.RenderNotAlphaBlendInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
 	}		
 	
+	
 	if (!m_renderQueueSkinned.m_sceneOrder.empty())
 	{
 		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
 	}		
+	
 
 	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
 	{
@@ -298,6 +306,7 @@ void World::Render()
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
 		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
+	
 	
 
 	if (m_bDebugBound)
@@ -331,14 +340,16 @@ void World::Render()
 	}
 	
 	// SHADOW_MAP	
-	/*
+	
+	
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
-	*/
+	/*
 	Graphics::m_pDevice->SetTexture (0, Graphics::m_pInstance->m_pInstancingTexture->GetD3DTexture() );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
+	*/
 }
 
 void World::GatherRender()

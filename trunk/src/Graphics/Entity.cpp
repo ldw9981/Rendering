@@ -313,7 +313,14 @@ void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,
 void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime,DWORD playTime )
 {
 	assert(index < (int)m_vecAnimation.size());
-	
+	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[index]->m_dwTimeLength );
+
+	if (  m_vecAnimation[index]->m_dwTimeLength <= (skipStartTime+playTime))
+	{
+		return;
+	}
+
+
 	m_basePrevAnimationDesc = m_baseAnimationDesc;
 	
 	m_baseAnimationDesc.playIndex = index;
@@ -326,7 +333,8 @@ void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD e
 	m_baseAnimationDesc.fadeWeight = 0.0f;
 	m_baseAnimationDesc.length = m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength;
 
-	assert( (skipStartTime + earlyEndTime ) <= m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength );
+	
+	assert( (playTime ) < m_vecAnimation[m_baseAnimationDesc.playIndex]->m_dwTimeLength - (skipStartTime+earlyEndTime));
 }
 
 bool Entity::LoadASE( const char* fileName )

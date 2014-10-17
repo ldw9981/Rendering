@@ -18,6 +18,7 @@
 #define T_SIZE 256
 
 #define SHADOWMAP_SIZE 4096
+#define SET_TEXTURE_NULL 
 
 namespace Sophia
 {
@@ -388,7 +389,7 @@ void Graphics::Begin()
 	m_pDevice->SetViewport(&m_viewPortInfo);
 	m_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pDevice->BeginScene();	
-#ifdef _DEBUG
+#ifdef SET_TEXTURE_NULL
 	for (int i=0; i< 16; i++) 
 		m_pDevice->SetTexture(i, NULL);
 #endif	

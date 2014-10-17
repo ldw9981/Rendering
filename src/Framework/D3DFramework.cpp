@@ -156,18 +156,6 @@ void cD3DFramework::Update(DWORD elapseTime)
 void cD3DFramework::Render()
 {
 	Graphics::m_pInstance->Begin();
-	int temp = m_FpsMng.GetFPS();
-	std::ostringstream stream;
-	stream << "FPS " << temp << "\n";
-
-	const DIMOUSESTATE& dims = g_pInput->GetMouseState();
-	stream << "MOUSE delta " << dims.lX << " " << dims.lY << " " << dims.lZ << "\n";
-	
-	//stream << "CURSOR pos " << pt.x << " " << pt.y << "\n";
-	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
-	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
-	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";
-	Graphics::m_pInstance->RenderDebugString(0,0,stream.str().c_str());
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
@@ -175,6 +163,23 @@ void cD3DFramework::Render()
 		(*it)->ProcessRender();	
 	}
 
+	
+
+	int temp = m_FpsMng.GetFPS();
+	std::ostringstream stream;
+	stream << "FPS " << temp << "\n";
+
+	const DIMOUSESTATE& dims = g_pInput->GetMouseState();
+	stream << "MOUSE delta " << dims.lX << " " << dims.lY << " " << dims.lZ << "\n";
+
+	//stream << "CURSOR pos " << pt.x << " " << pt.y << "\n";
+	//stream << Graphics::g_pGraphics->m_WorldLightPosition.y << " "; 
+	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
+	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";
+	Graphics::m_pInstance->RenderDebugString(0,0,stream.str().c_str());
+
+
+	
 	Graphics::m_pInstance->End();
 }
 

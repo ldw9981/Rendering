@@ -17,7 +17,7 @@ cRscTexture::cRscTexture(void)
 	m_levels = 1;
 	m_pool = D3DPOOL_MANAGED;
 	m_usage = D3DUSAGE_DYNAMIC;
-	m_format = D3DFMT_R32F;
+	m_format = D3DFMT_A32B32G32R32F ;
 }
 
 
@@ -73,6 +73,16 @@ void cRscTexture::SetTexture( UINT stage )
 void cRscTexture::SetNullTexture( UINT stage )
 {
 	Graphics::m_pDevice->SetTexture(stage,NULL);
+}
+
+void cRscTexture::Lock( D3DLOCKED_RECT* pLockRect,DWORD flags )
+{
+	FAILED(m_pD3DTexture->LockRect(0,pLockRect,NULL,flags));
+}
+
+void cRscTexture::Unlock()
+{
+	FAILED(m_pD3DTexture->UnlockRect(0));
 }
 
 }

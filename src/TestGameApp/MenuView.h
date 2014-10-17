@@ -3,7 +3,7 @@
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
 
-#define STRESS 50
+#define STRESS 128
 
 
 class cGUIButton;
@@ -24,6 +24,7 @@ private:
 	Sophia::Entity*			m_pDragon;
 	Sophia::Entity*			m_pAirPlaneBake;
 	Sophia::Entity*			m_pHouse[STRESS];
+	bool		m_instancing;
 public:	
 	virtual void Enter();
 	virtual void Leave();

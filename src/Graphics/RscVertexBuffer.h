@@ -19,7 +19,7 @@ public:
 private:
 	LPDIRECT3DVERTEXBUFFER9	m_pD3DVertexBuffer;
 	DWORD					m_BufferSize;
-	D3DPOOL					m_Type;
+	D3DPOOL					m_pool;
 	int						m_nCount;
 	DWORD					m_usage;
 	UINT					m_OffSet;
@@ -45,8 +45,8 @@ public:
 	void					SetStreamSource(UINT streamNumber,UINT stride);
 	void					SetStreamSourceFreq(UINT streamNumber,UINT setting);
 
-	D3DPOOL					GetType() const { return m_Type; }
-	void					SetType(D3DPOOL val) { m_Type = val; }
+	D3DPOOL					GetPool() const { return m_pool; }
+	void					SetPool(D3DPOOL val) { m_pool = val; }
 	DWORD GetUsage() const { return m_usage; }
 	void SetUsage(DWORD val) { m_usage = val; }
 };

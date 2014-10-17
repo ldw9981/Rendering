@@ -26,7 +26,7 @@ namespace Sophia
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
 	m_bIsActiveAnimation = true;
-	m_pArrayMatBoneRef = NULL;
+	m_pMatrixPallete = NULL;
 	m_type = TYPE_SKINNEDMESH;
 }
 
@@ -49,7 +49,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetNodeTM());
 		pBoneRefInfo->SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
 	}			
-	m_pArrayMatBoneRef = new D3DXMATRIX[m_vecBoneRef.size()];	
+	m_pMatrixPallete = new D3DXMATRIX[m_vecBoneRef.size()];	
 }
 
 /*
@@ -58,19 +58,14 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 */
 void SkinnedMeshNode::Render()
 {	
+
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLENDVERTEX));
-	m_pRscIndexBuffer->SetIndices();			
-
-	size_t iBoneRef,nBoneRefSize = m_vecBoneRef.size();
-	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
-	{
-		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-		m_pArrayMatBoneRef[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-	}	
-
+	m_pRscIndexBuffer->SetIndices();				
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pArrayMatBoneRef,nBoneRefSize);	
-	pEffect->CommitChanges();
+	UpdateMatrixPallete();
+	size_t nBoneRefSize = m_vecBoneRef.size();
+	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pMatrixPallete,nBoneRefSize);	
+	pEffect->CommitChanges();	
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
@@ -150,9 +145,9 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 void SkinnedMeshNode::Release()
 {
 	cMeshNode::Release();
-	if (m_pArrayMatBoneRef!=NULL)
+	if (m_pMatrixPallete!=NULL)
 	{
-		delete m_pArrayMatBoneRef;
+		delete m_pMatrixPallete;
 	}	
 	m_vecBoneRef.clear();	
 }
@@ -172,7 +167,7 @@ void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
 	stream.read((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));
 	stream.read((char*)&m_primitiveCount,sizeof(m_primitiveCount));
 	stream.read((char*)&m_startIndex,sizeof(m_startIndex));
-
+	ReadBool(stream,m_bInstancingEnable);
 	// mesh
 	SerializeInMesh(stream);
 
@@ -206,7 +201,7 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&m_materialSubIndex,sizeof(m_materialSubIndex));	
 	stream.write((char*)&m_primitiveCount,sizeof(m_primitiveCount));	
 	stream.write((char*)&m_startIndex,sizeof(m_startIndex));	
-
+	WriteBool(stream,m_bInstancingEnable);
 
 	// mesh 
 	SerializeOutMesh(stream);
@@ -293,6 +288,28 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 		BONEREFINFO info;
 		ReadString(stream,info.strNodeName); 
 		m_vecBoneRef.push_back(info);
+	}
+}
+
+void SkinnedMeshNode::Update( DWORD elapseTime )
+{
+	cMeshNode::Update(elapseTime);
+	m_updateBlendMatrix = false;
+}
+
+void SkinnedMeshNode::UpdateMatrixPallete()
+{
+	size_t nBoneRefSize = m_vecBoneRef.size();
+	if (!m_updateBlendMatrix)
+	{
+		size_t iBoneRef=0;
+		for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
+		{
+			BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
+//			m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+			D3DXMatrixMultiply(&m_pMatrixPallete[iBoneRef],&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());
+		}
+		m_updateBlendMatrix = true;
 	}
 }
 

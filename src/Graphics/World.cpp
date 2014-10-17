@@ -6,6 +6,7 @@
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
 #include "Foundation/Define.h"
+#include "Graphics/RscTexture.h"
 namespace Sophia
 {
 	#define PI           3.14159265f
@@ -28,7 +29,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = true;
+	m_bEnableShadow = false;
 }
 
 
@@ -234,7 +235,6 @@ void World::Render()
 		
 		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
 		{
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
 			m_renderQueueNormalShadow.RenderShadowInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );		
 		}	
@@ -331,7 +331,12 @@ void World::Render()
 	}
 	
 	// SHADOW_MAP	
+	/*
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
+	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
+	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
+	*/
+	Graphics::m_pDevice->SetTexture (0, Graphics::m_pInstance->m_pInstancingTexture->GetD3DTexture() );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
 }

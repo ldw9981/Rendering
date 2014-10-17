@@ -10,7 +10,7 @@
 #include "Foundation/StringUtil.h"
 #include "Scene/Skeleton.h"
 #include "Foundation/Define.h"
-
+#include "Scene/MeshNode.h"
 namespace Sophia
 {
 
@@ -310,7 +310,7 @@ void Entity::CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,
 	}
 }
 
-void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime )
+void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD earlyEndTime,DWORD fadeInTime,DWORD playTime )
 {
 	assert(index < (int)m_vecAnimation.size());
 	
@@ -320,7 +320,7 @@ void Entity::PlayBaseAnimation( int index,bool loop ,DWORD skipStartTime,DWORD e
 	m_baseAnimationDesc.loop = loop;
 	m_baseAnimationDesc.skipStartTime = skipStartTime;
 	m_baseAnimationDesc.earlyEndTime = earlyEndTime;
-	m_baseAnimationDesc.playTime = m_baseAnimationDesc.skipStartTime;	
+	m_baseAnimationDesc.playTime = playTime + skipStartTime;	
 	m_baseAnimationDesc.fadeInTime = fadeInTime;
 	m_baseAnimationDesc.fadeTime = 0;
 	m_baseAnimationDesc.fadeWeight = 0.0f;
@@ -546,6 +546,35 @@ void Entity::ResetRenderQueue()
 {
 	ClearRenderQueue();
 	QueueRenderer(this,true);
+}
+
+void Entity::WorkEnableInstancing(cSceneNode* pNode)
+{
+	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
+	if (pMesh)
+	{
+		pMesh->SetInstancingEnable(true);
+	}	
+}
+
+void Entity::SetInstanceEnable( bool enable )
+{
+	for (size_t i=0;i<m_vecChildNode.size();i++)
+	{
+		if (enable)
+			WorkRecursive( WorkEnableInstancing);	
+		else
+			WorkRecursive( WorkDisableInstancing);	
+	}	
+}
+
+void Entity::WorkDisableInstancing( cSceneNode* pNode )
+{
+	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
+	if (pMesh)
+	{
+		pMesh->SetInstancingEnable(false);
+	}	
 }
 
 }

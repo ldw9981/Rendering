@@ -88,7 +88,7 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const
 
 	pItem = new cRscVertexBuffer;
 	pItem->SetBufferSize(bufferSize);
-	pItem->SetType(type);
+	pItem->SetPool(type);
 	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{

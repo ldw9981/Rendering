@@ -336,7 +336,7 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 	
 }
 
-void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
@@ -394,7 +394,7 @@ void cRendererQueue::RenderShadowInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3D
 
 void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstanceVertexDeclaration);
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration);
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;		
@@ -454,6 +454,83 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 
 		pEffect->SetTexture("Bone_Tex",Graphics::m_pInstance->m_pInstancingTexture->GetD3DTexture());
 		ChangeMaterial(refScene.pMaterial);
+
+		pEffect->BeginPass(0);
+		pMeshNode->RenderIsntancing();
+		pEffect->EndPass();
+
+		pEffect->End();		
+	}
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+}
+
+void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+{
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration);
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+
+	Graphics::m_pInstance->m_pInstancingSkinned->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
+	Graphics::m_pInstance->m_pInstancingSkinned->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
+	{	
+		const SCENE_KEY&	refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;		
+
+		// Set Matrix Instance
+		unsigned long nCount=list.size();
+
+		BLENDINSTANCEVERTEX* pVertex = (BLENDINSTANCEVERTEX*)Graphics::m_pInstance->m_pInstancingSkinned->Lock(
+			nCount*sizeof(BLENDINSTANCEVERTEX),D3DLOCK_DISCARD	);
+
+		D3DLOCKED_RECT lock;	
+		Graphics::m_pInstance->m_pInstancingTexture->Lock(&lock,D3DLOCK_DISCARD);
+		D3DXMATRIX* pMatrix=NULL;
+		SkinnedMeshNode* pMeshNode = NULL;
+		unsigned int instanceIndex=0;
+		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+		{
+			pMeshNode = dynamic_cast<SkinnedMeshNode*>(*it_sub);
+			pVertex->instanceIndex = (float)instanceIndex;
+			pVertex++;
+
+			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+
+			pMeshNode->UpdateMatrixPallete();
+			size_t bone_size = pMeshNode->GetArrayBoneRef().size();
+
+			assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
+
+			pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);
+			for (size_t bi=0;bi<bone_size;bi++)
+			{				
+				pMatrix[bi]=pMeshNode->GetMatrixPallete()[bi];
+			}
+
+			instanceIndex++;
+		}
+
+		Graphics::m_pInstance->m_pInstancingTexture->Unlock();
+		Graphics::m_pInstance->m_pInstancingSkinned->Unlock();	
+
+		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declBlendInstance,0));
+		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
+		pMeshNode->GetRscIndexBuffer()->SetIndices();
+
+		if (refScene.pMaterial->AlphaTestEnable)
+			pEffect->SetTechnique(hTShadowAlphaTest);
+		else
+			pEffect->SetTechnique(hTShadowNotAlphaTest );
+
+		pEffect->Begin(&passes, 0);	
+
+		pEffect->SetTexture("Bone_Tex",Graphics::m_pInstance->m_pInstancingTexture->GetD3DTexture());
+		ChangeMaterialForShadow(refScene.pMaterial);		
 
 		pEffect->BeginPass(0);
 		pMeshNode->RenderIsntancing();

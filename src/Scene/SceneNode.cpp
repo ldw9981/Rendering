@@ -221,6 +221,7 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 void cSceneNode::BuildComposite(Entity* pEntity)
 {
 	m_pRootNode = pEntity;
+
 	D3DXMATRIX temp;
 	if (m_pParentNode == NULL)
 	{

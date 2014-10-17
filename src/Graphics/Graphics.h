@@ -33,7 +33,7 @@ public:
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalVertexDeclaration;
 	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedVertexDeclaration;
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalInstancingVertexDeclaration;
-	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedInstanceVertexDeclaration;
+	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedInstancingVertexDeclaration;
 	D3DXHANDLE				m_hTLine;
 	D3DXHANDLE				m_hTSkinningPhong;
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;
@@ -59,7 +59,8 @@ public:
 	
 	D3DXHANDLE				m_hTShadowSkinnedNotAlphaTest;	
 	D3DXHANDLE				m_hTShadowSkinnedAlphaTest;
-
+	D3DXHANDLE				m_hTShadowSkinnedNotAlphaTestInstancing;	
+	D3DXHANDLE				m_hTShadowSkinnedAlphaTestInstancing;	
 
 	D3DXHANDLE				m_hTGUI;
 	LPD3DXEFFECT			m_pApplyShadowShader;

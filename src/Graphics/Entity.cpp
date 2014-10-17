@@ -577,4 +577,5 @@ void Entity::WorkDisableInstancing( cSceneNode* pNode )
 	}	
 }
 
+
 }

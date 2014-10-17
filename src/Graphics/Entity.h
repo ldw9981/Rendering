@@ -29,7 +29,6 @@ public:
 
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
-	
 	std::map<std::string,cSceneNode*>	m_mapBones;
 	EntityMaterial*			m_pEntityMaterial;
 

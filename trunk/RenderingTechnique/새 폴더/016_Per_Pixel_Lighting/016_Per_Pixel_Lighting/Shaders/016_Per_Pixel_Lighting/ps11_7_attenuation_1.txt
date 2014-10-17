@@ -1,8 +1,0 @@
-ps.1.1
-def c3, 1, 1, 1, 1
-
-texcoord t0                   ; Object Space Light Direction. Unit length is the light's range.
-                              ; att = 1 - d2_sat = 1 - max(x*x/R*R + y*y/R*R + z*z/R*R, 1)
-dp3_sat   r0, t0_bx2, t0_bx2  ;     (Light Space Distance)^2
-sub       r0, c3, r0          ; 1 - (Light Space Distance)^2
-

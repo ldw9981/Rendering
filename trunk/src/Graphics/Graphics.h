@@ -5,6 +5,8 @@
 namespace Sophia
 {
 
+#define INSTANCING_MAX 1024
+
 class cGUIFont;
 class cView;
 class World;
@@ -35,6 +37,7 @@ public:
 	D3DXHANDLE				m_hTLine;
 	D3DXHANDLE				m_hTSkinningPhong;
 	D3DXHANDLE				m_hTSkinningPhongDiffuse;
+	D3DXHANDLE				m_hTSkinningPhongDiffuseInstancing;
 	D3DXHANDLE				m_hTerrain;
 	D3DXHANDLE				m_hTPhong;
 	D3DXHANDLE				m_hTPhongDiffuse;
@@ -93,6 +96,7 @@ public:
 	GUIVERTEX			 g_vertices[4];
 	
 	cRscVertexBuffer*	m_pInstancingVertexBuffer;
+	cRscVertexBuffer*	m_pInstancingSkinned;
 	cRscTexture*		m_pInstancingTexture;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }

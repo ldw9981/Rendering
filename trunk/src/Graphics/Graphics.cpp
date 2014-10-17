@@ -164,13 +164,26 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	SetPos(1024-T_SIZE,0);
 
 	m_pInstancingVertexBuffer = new cRscVertexBuffer;
-	m_pInstancingVertexBuffer->SetBufferSize(sizeof(D3DXVECTOR3)*4*1024);
-	m_pInstancingVertexBuffer->SetType(D3DPOOL_DEFAULT);
+	m_pInstancingVertexBuffer->SetBufferSize(sizeof(D3DXVECTOR3)*4*INSTANCING_MAX);
+	m_pInstancingVertexBuffer->SetPool(D3DPOOL_DEFAULT);
 	m_pInstancingVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
 	m_pInstancingVertexBuffer->Create();
 
+	m_pInstancingSkinned = new cRscVertexBuffer;
+	m_pInstancingSkinned->SetBufferSize(sizeof(BLENDINSTANCEVERTEX)*INSTANCING_MAX);
+	m_pInstancingSkinned->SetPool(D3DPOOL_DEFAULT);
+	m_pInstancingSkinned->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
+	m_pInstancingSkinned->Create();
+
+
+
 	m_pInstancingTexture = new cRscTexture;
-	
+	m_pInstancingTexture->SetWidth(256*4);				// 1MATRIX = 4pixel 256°³º» Àº 1024ÇÈ¼¿
+	m_pInstancingTexture->SetHeight(128);	// 1024
+	m_pInstancingTexture->SetPool(D3DPOOL_DEFAULT);
+	m_pInstancingTexture->SetUsage(D3DUSAGE_DYNAMIC);
+	m_pInstancingTexture->SetFormat(D3DFMT_A32B32G32R32F);
+	m_pInstancingTexture->Create();
 
 	return true;
 }
@@ -179,6 +192,10 @@ void Graphics::Finalize()
 {
 	m_pInstancingTexture->Free();
 	m_pInstancingTexture=NULL;
+
+	m_pInstancingSkinned->Free();
+	m_pInstancingSkinned=NULL;
+
 	m_pInstancingVertexBuffer->Free();
 	m_pInstancingVertexBuffer=NULL;
 
@@ -246,7 +263,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	m_hTSkinningPhong =						m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
 	m_hTSkinningPhongDiffuse =				m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
-	m_hTSkinningPhongDiffuse =				m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );
+	m_hTSkinningPhongDiffuseInstancing =	m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuseInstancing") );
 
 	m_hTShadowNormalNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTest") );
 	m_hTShadowNormalAlphaTest =				m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTest") );
@@ -255,6 +272,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	m_hTShadowSkinnedNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningNotAlphaTest") );	
 	m_hTShadowSkinnedAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinningAlphaTest") );
+
 
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 
@@ -343,7 +361,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	// m_vecTechniqueSkinnedInstancing
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseInstancing;
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuseInstancing;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
@@ -369,6 +387,10 @@ void Graphics::Begin()
 	m_pDevice->SetViewport(&m_viewPortInfo);
 	m_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pDevice->BeginScene();	
+#ifdef _DEBUG
+	for (int i=0; i< 16; i++) 
+		m_pDevice->SetTexture(i, NULL);
+#endif	
 }
 
 void Graphics::End()

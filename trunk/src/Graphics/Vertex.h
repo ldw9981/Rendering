@@ -81,4 +81,11 @@ struct GUIVERTEX
 	TEXCOORD	tex;
 };
 
+struct BLENDINSTANCEVERTEX
+{		
+	float instanceIndex;	
+	float a;	
+	float b;	
+};
+
 }

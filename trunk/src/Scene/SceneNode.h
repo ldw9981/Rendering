@@ -122,7 +122,7 @@ public:
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
 	
-	void Test(void(*Func)(cSceneNode*));
+	void WorkRecursive(void(*Func)(cSceneNode*));
 	void AddPatialIndex();
 	void DelPartialIndex(size_t index);
 	SceneAnimation* GetSceneAnimation(size_t index);

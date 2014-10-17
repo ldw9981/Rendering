@@ -411,12 +411,12 @@ void cSceneNode::EraseAnimation( int index )
 
 
 
-void cSceneNode::Test( void(*Func)(cSceneNode*) )
+void cSceneNode::WorkRecursive( void(*Func)(cSceneNode*) )
 {
 	Func(this);
 	for ( auto it=m_vecChildNode.begin() ;it!=m_vecChildNode.end();++it )
 	{
-		(*it)->Test(Func);
+		(*it)->WorkRecursive(Func);
 	}
 }
 

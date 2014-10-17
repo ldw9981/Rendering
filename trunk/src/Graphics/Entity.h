@@ -74,7 +74,7 @@ public:
 	bool LoadMaterial(const char* fileName);
 
 	void CutAndPushEntityAnimation( int index,DWORD timeStart,DWORD timeEnd,const char* suffix );
-	void PlayBaseAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0,DWORD fadeInTime=0);
+	void PlayBaseAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0,DWORD fadeInTime=0,DWORD playTime=0);
 	void StopBaseAnimation();
 	void PlayPartialAnimation(int index,bool loop,DWORD skipStartTime=0,DWORD earlyEndTime=0);
 	void StopPartialAnimation(int index);
@@ -89,6 +89,10 @@ public:
 	void ClearRenderQueue();
 	virtual cSceneNode*	FindNode(std::string& nodename);
 	void ResetRenderQueue();
+
+	void SetInstanceEnable(bool enable);
+	static void WorkEnableInstancing(cSceneNode* pNode);
+	static void WorkDisableInstancing(cSceneNode* pNode);
 };
 
 

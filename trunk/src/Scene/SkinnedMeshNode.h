@@ -41,9 +41,11 @@ public:
 
 protected:
 	std::vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
-	D3DXMATRIX*				m_pArrayMatBoneRef;
+	D3DXMATRIX*				m_pMatrixPallete;
 
+	bool					m_updateBlendMatrix;
 public:
+	virtual void			Update( DWORD elapseTime );
 	virtual void			Render();
 	virtual void			BuildComposite(Entity* pEntity);
 
@@ -61,5 +63,8 @@ public:
 
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
+
+	void UpdateMatrixPallete();
+	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
 };
 }

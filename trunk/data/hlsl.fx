@@ -5,6 +5,7 @@ texture Tex2;
 texture Tex3;
 texture Opacity_Tex;
 texture ShadowMap_Tex : RenderColorTarget;
+texture Bone_Tex;
 
 
 // 변환행렬
@@ -60,6 +61,16 @@ sampler gOpacitySampler = sampler_state
 sampler2D ShadowSampler = sampler_state
 {
    Texture = (ShadowMap_Tex);
+};
+
+sampler2D   gBoneSampler = sampler_state 
+{
+  texture = Bone_Tex;
+  MipFilter = NONE;
+  MagFilter = POINT;
+  MinFilter = POINT;
+  AddressU = Clamp;
+  AddressV = Clamp;
 };
 
 /////////////////////
@@ -138,6 +149,19 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
    float2 mTexCoord1 : TEXCOORD1;   
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
+};
+
+struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
+{
+   float3 mPosition : POSITION;
+   float3 mNormal : NORMAL;
+   float3 mTangent : TANGENT;
+   float3 mBiNormal : BINORMAL;
+   float2 mTexCoord : TEXCOORD0;
+   float2 mTexCoord1 : TEXCOORD1;   
+   float3 mBlendWeights    : BLENDWEIGHT;
+   int4   mBlendIndices    : BLENDINDICES; 
+	float3 mInstanceIndex  : TEXCOORD2; 
 };
 
 struct VS_SHADOW_NORMAL_INPUT 
@@ -367,7 +391,24 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
     return output;
 }
 
-VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIFFUSE_INPUT input)
+float4x4 loadBoneMatrix(int indexInstance,int indexBone)
+{	
+	int numBonePerLine=64;
+	float width= 1024.0f;	// 1Matrix = 4 , 256 Matrix = 1024  
+	float height = 128.0f;	// 128 Instance
+	float4 uvCol = float4( indexBone*4/width, (float)indexInstance/ height, 0.0f, 0.0f);
+	float4x4 mat = 
+	{
+		tex2Dlod(gBoneSampler, uvCol + float4(0.0f 			,0,0,0)),
+		tex2Dlod(gBoneSampler, uvCol + float4(1.0f / width	,0,0,0)),
+		tex2Dlod(gBoneSampler, uvCol + float4(2.0f / width	,0,0,0)),
+		tex2Dlod(gBoneSampler, uvCol + float4(3.0f / width	,0,0,0))
+	};
+ 
+	return mat; 	
+}
+
+VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT input)
 {
     VS_PHONG_DIFFUSE_OUTPUT output;
 	
@@ -375,14 +416,20 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
     float fWeight;
     float afBlendWeights[3] = (float[3])input.mBlendWeights;
 	int aiIndices[4] = (int[4])input.mBlendIndices;
-	
-	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 
+	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
+		
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
-	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
-	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+	
+//	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
+//	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
+//	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
+//	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+   
    
 	float4 worldPosition = mul(float4(input.mPosition,1) , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
@@ -400,8 +447,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
 	output.mTexCoord1 = input.mTexCoord1;   
 	
     output.mClipPosition = mul(worldPosition, gLightViewMatrix);
-    output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix);
-	
+    output.mClipPosition = mul(output.mClipPosition, gLightProjectionMatrix);	 
     return output;
 }
 
@@ -540,7 +586,12 @@ float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    return float4(color,0.0f);
 }
 
-float4 ps_Line(float4 Color   : COLOR0) : COLOR
+float4 ps_DebugColor( PS_PHONG_DIFFUSE_INPUT input)  : COLOR
+{
+	return input.mClipPosition;
+}
+
+float4 ps_Line(float4 Color: COLOR) : COLOR
 {   
    return Color;
 }
@@ -868,6 +919,15 @@ technique TSkinningPhongDiffuse
     {
         VertexShader = compile vs_3_0 vs_SkinningPhongDiffuse();
         PixelShader  = compile ps_3_0 ps_PhongDiffuse();
+    }  
+}
+
+technique TSkinningPhongDiffuseInstancing
+{
+    pass P0
+    {
+        VertexShader = compile vs_3_0 vs_SkinningPhongDiffuseInstancing();
+        PixelShader  = compile ps_3_0 ps_PhongDiffuse(); // ps_DebugColor
     }  
 }
 

@@ -22,6 +22,7 @@ protected:
 	UINT					m_levels;
 	DWORD					m_usage;
 	D3DFORMAT				m_format;
+
 	D3DPOOL					m_pool;
 
 public:		
@@ -46,6 +47,11 @@ public:
 	void SetPool(D3DPOOL val) { m_pool = val; }
 	DWORD GetUsage() const { return m_usage; }
 	void SetUsage(DWORD val) { m_usage = val; }
+	D3DFORMAT GetFormat() const { return m_format; }
+	void SetFormat(D3DFORMAT val) { m_format = val; }
+
+	void Lock(D3DLOCKED_RECT* pLockRect,DWORD Flags);
+	void Unlock();
 };
 
 }

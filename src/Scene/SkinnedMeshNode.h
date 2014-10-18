@@ -5,6 +5,8 @@ namespace Sophia
 
 class MultiSub;
 class Material;
+class IndexStreamVertexBuffer;
+class BoneStreamTexture;
 
 struct BONEREFINFO
 {
@@ -41,9 +43,12 @@ public:
 
 protected:
 	std::vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
-	D3DXMATRIX*				m_pMatrixPallete;
+	D3DXMATRIX*					m_pMatrixPallete;
+	bool						m_updateBlendMatrix;
+	IndexStreamVertexBuffer*	m_pIndexStreamVertexBuffer;
+	BoneStreamTexture*			m_pBoneStreamTexture;
 
-	bool					m_updateBlendMatrix;
+
 public:
 	virtual void			Update( DWORD elapseTime );
 	virtual void			Render();
@@ -66,5 +71,10 @@ public:
 
 	void UpdateMatrixPallete();
 	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
+	BoneStreamTexture* GetBoneStreamTexture() const { return m_pBoneStreamTexture; }
+	IndexStreamVertexBuffer* GetIndexStreamVertexBuffer() const { return m_pIndexStreamVertexBuffer; }	
+protected:
+	virtual void CreateInstancingResource();
+	virtual void ReleaseInstancingResource();
 };
 }

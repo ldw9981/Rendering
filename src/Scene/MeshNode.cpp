@@ -92,7 +92,7 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 
 	if (m_bInstancingEnable)
 	{
-		CreateMatrixStreamVertexBuffer();
+		CreateInstancingResource();
 	}
 
 	QueueRenderer(pEntity,false);
@@ -219,7 +219,7 @@ void cMeshNode::Release()
 {
 	cSceneNode::Release();
 
-	ReleaseMatrixStreamVertexBuffer();
+	ReleaseInstancingResource();
 	SAFE_RELEASE(m_pRscVetextBuffer);	
 	SAFE_RELEASE(m_pRscIndexBuffer);		
 }
@@ -379,24 +379,24 @@ void cMeshNode::SetInstancingEnable( bool val )
 	m_bInstancingEnable = val;
 	if (m_bInstancingEnable)
 	{	
-		CreateMatrixStreamVertexBuffer();		
+		CreateInstancingResource();		
 	}
 	else
 	{
-		ReleaseMatrixStreamVertexBuffer();
+		ReleaseInstancingResource();
 	}
 }
 
-void cMeshNode::CreateMatrixStreamVertexBuffer()
+void cMeshNode::CreateInstancingResource()
 {
-	if (m_pMatrixStreamVertexBuffer!=NULL)
-		return;
-
-	m_pMatrixStreamVertexBuffer = cResourceMng::m_pInstance->CreateMatrixStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
-	m_pMatrixStreamVertexBuffer->AddRef();
+	if (m_pMatrixStreamVertexBuffer==NULL)
+	{
+		m_pMatrixStreamVertexBuffer = cResourceMng::m_pInstance->CreateMatrixStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+		m_pMatrixStreamVertexBuffer->AddRef();
+	}
 }
 
-void cMeshNode::ReleaseMatrixStreamVertexBuffer()
+void cMeshNode::ReleaseInstancingResource()
 {
 	SAFE_RELEASE(m_pMatrixStreamVertexBuffer);
 }

@@ -44,17 +44,21 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 {
 	assert(!m_vecBoneRef.empty());
 	D3DXMATRIX tmBoneWorldReferenceInv;
+		
+	size_t iBoneRef=0,nBoneRefSize =m_vecBoneRef.size() ;
+	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
 
-	for (auto iter=m_vecBoneRef.begin() ; iter!=m_vecBoneRef.end() ; iter++)
+	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
-		BONEREFINFO* pBoneRefInfo=&(*iter);				
-		pBoneRefInfo->pNode = pEntity->FindNode(pBoneRefInfo->strNodeName);	
-		assert(pBoneRefInfo->pNode!=NULL);	
+		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
+
+		refItem.pNode = pEntity->FindNode(refItem.strNodeName);	
+		assert(refItem.pNode!=NULL);	
 		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로		
-		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&pBoneRefInfo->pNode->GetNodeTM());
-		pBoneRefInfo->SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
-	}			
-	m_pMatrixPallete = new D3DXMATRIX[m_vecBoneRef.size()];	
+		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&refItem.pNode->GetNodeTM());
+		refItem.SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
+		D3DXMatrixIdentity(&m_pMatrixPallete[iBoneRef]);
+	}
 }
 
 /*
@@ -317,9 +321,10 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 		for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 		{
 			BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-//			m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+			//m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
 			D3DXMatrixMultiply(&m_pMatrixPallete[iBoneRef],&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());
 		}
+		
 		m_updateBlendMatrix = true;
 	}
 }

@@ -306,7 +306,7 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 			D3DXVECTOR3* pVector = (D3DXVECTOR3*) pMatrixStreamVertexBuffer->Lock(
 				nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
 
-			for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+			for (  ; it_sub!=list.end();++it_sub)
 			{
 				pMeshNode = *it_sub;
 				memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
@@ -444,7 +444,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 			D3DXMATRIX* pMatrix=NULL;
 
 			unsigned int instanceIndex=0;
-			for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+			for (  ; it_sub!=list.end();++it_sub)
 			{
 				pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
 				pVertex->instanceIndex = (float)instanceIndex;
@@ -459,10 +459,8 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 				assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
 
 				pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);
-				for (size_t bi=0;bi<bone_size;bi++)
-				{				
-					pMatrix[bi]=pMeshNode->GetMatrixPallete()[bi];
-				}
+				memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
+				
 
 				instanceIndex++;
 			}
@@ -540,10 +538,8 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 			assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
 
 			pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);			
-			for (size_t bi=0;bi<bone_size;bi++)
-			{				
-				pMatrix[bi]=pMeshNode->GetMatrixPallete()[bi];
-			}		
+			memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
+			
 			instanceIndex++;
 		}
 		pBoneStreamTexture->Unlock();

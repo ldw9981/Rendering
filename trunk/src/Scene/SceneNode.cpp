@@ -325,7 +325,8 @@ void cSceneNode::Update( DWORD elapseTime )
 	}
 	else
 	{
-		m_matWorld = m_matLocal * m_pParentNode->m_matWorld;	// 부모가 있으면 WorldTM은 LocalTM * GetWorldTM 이 된다.
+//		m_matWorld = m_matLocal * m_pParentNode->m_matWorld;	// 부모가 있으면 WorldTM은 LocalTM * GetWorldTM 이 된다.
+		D3DXMatrixMultiply(&m_matWorld,&m_matLocal,&m_pParentNode->m_matWorld);
 	}
 
 	size_t size = m_vecChildNode.size();

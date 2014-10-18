@@ -408,7 +408,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 float4x4 loadBoneMatrix(int indexInstance,int indexBone)
 {	
 	int numBonePerLine=64;
-	float width= 1024.0f;	// 1Matrix = 4 , 256 Matrix = 1024  
+	float width= 256.0f;	// 1Matrix = 4 , 256 Matrix = 1024  
 	float height = 128.0f;	// 128 Instance
 	float4 uvCol = float4( indexBone*4/width, (float)indexInstance/ height, 0.0f, 0.0f);
 	float4x4 mat = 

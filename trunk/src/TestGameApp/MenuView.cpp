@@ -97,9 +97,9 @@ void cMenuView::Enter()
 		}
 		else
 		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 		}		
 
 		m_pHouse[i]->Build();

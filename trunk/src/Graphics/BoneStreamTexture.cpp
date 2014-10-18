@@ -6,7 +6,7 @@
 using namespace Sophia;
 BoneStreamTexture::BoneStreamTexture(void)
 {
-	m_width = 256*4;
+	m_width = 64*4;
 	m_height = 128;
 	m_levels = 1;
 	m_pool = D3DPOOL_DEFAULT;

@@ -17,6 +17,9 @@
 #include "Foundation/Define.h"
 #include "Graphics/Entity.h"
 
+#include "Graphics/IndexStreamVertexBuffer.h"
+#include "Graphics/BoneStreamTexture.h"
+
 namespace Sophia
 {
 
@@ -28,6 +31,8 @@ SkinnedMeshNode::SkinnedMeshNode(void)
 	m_bIsActiveAnimation = true;
 	m_pMatrixPallete = NULL;
 	m_type = TYPE_SKINNEDMESH;
+	m_pIndexStreamVertexBuffer=NULL;
+	m_pBoneStreamTexture=NULL;
 }
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
@@ -81,28 +86,33 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 	cSceneNode::BuildComposite(pEntity);
 	LinkToBone(pEntity);		
 
-		assert(m_pRscVetextBuffer!=NULL);
-		assert(m_pRscIndexBuffer!=NULL);
-		long vertexCount = m_pRscVetextBuffer->GetCount();
-		long triangleCount = m_pRscIndexBuffer->GetCount();
-		BLENDVERTEX* vertex=(BLENDVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
-		TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
+	assert(m_pRscVetextBuffer!=NULL);
+	assert(m_pRscIndexBuffer!=NULL);
+	long vertexCount = m_pRscVetextBuffer->GetCount();
+	long triangleCount = m_pRscIndexBuffer->GetCount();
+	BLENDVERTEX* vertex=(BLENDVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
+	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
 
-		for (long a = 0; a < triangleCount; a++)
-		{
-			long i1 = triangle->index[0];
-			long i2 = triangle->index[1];
-			long i3 = triangle->index[2];
+	for (long a = 0; a < triangleCount; a++)
+	{
+		long i1 = triangle->index[0];
+		long i2 = triangle->index[1];
+		long i3 = triangle->index[2];
 
-			CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
-				vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
-				vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
-				vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
+		CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
+			vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
+			vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
+			vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
 
-			triangle++;
-		}
-		m_pRscIndexBuffer->Unlock();
-		m_pRscVetextBuffer->Unlock();
+		triangle++;
+	}
+	m_pRscIndexBuffer->Unlock();
+	m_pRscVetextBuffer->Unlock();
+
+	if (m_bInstancingEnable)
+	{
+		CreateInstancingResource();
+	}
 
 	QueueRenderer(pEntity,false);
 }
@@ -150,6 +160,7 @@ void SkinnedMeshNode::Release()
 		delete m_pMatrixPallete;
 	}	
 	m_vecBoneRef.clear();	
+	ReleaseInstancingResource();
 }
 
 void SkinnedMeshNode::SerializeIn( std::ifstream& stream )
@@ -311,6 +322,28 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 		}
 		m_updateBlendMatrix = true;
 	}
+}
+
+void SkinnedMeshNode::CreateInstancingResource()
+{
+	if (m_pIndexStreamVertexBuffer==NULL)
+	{
+		m_pIndexStreamVertexBuffer = cResourceMng::m_pInstance->CreateIndexStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+		m_pIndexStreamVertexBuffer->AddRef();
+	}
+
+	if (m_pBoneStreamTexture==NULL)
+	{
+		m_pBoneStreamTexture = cResourceMng::m_pInstance->CreateBoneStreamTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+		m_pBoneStreamTexture->AddRef();
+	}
+	
+}
+
+void SkinnedMeshNode::ReleaseInstancingResource()
+{
+	SAFE_RELEASE(m_pIndexStreamVertexBuffer);
+	SAFE_RELEASE(m_pBoneStreamTexture);
 }
 
 }

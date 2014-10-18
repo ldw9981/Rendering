@@ -78,8 +78,8 @@ public:
 	void SetInstancingEnable(bool val);
 	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
 protected:
-	void CreateMatrixStreamVertexBuffer();
-	void ReleaseMatrixStreamVertexBuffer();
+	virtual void CreateInstancingResource();
+	virtual void ReleaseInstancingResource();
 };
 
 }

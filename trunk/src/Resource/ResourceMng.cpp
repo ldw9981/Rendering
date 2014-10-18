@@ -9,6 +9,8 @@
 #include "Graphics/Animation.h"
 #include "Graphics/MaterialEx.h"
 #include "Graphics/MatrixStreamVertexBuffer.h"
+#include "Graphics/IndexStreamVertexBuffer.h"
+#include "Graphics/BoneStreamTexture.h"
 
 namespace Sophia
 {
@@ -237,8 +239,8 @@ MatrixStreamVertexBuffer* cResourceMng::CreateMatrixStreamVertexBuffer( SCENE_KE
 {
 	MatrixStreamVertexBuffer* pItem=NULL;
 	
-	auto it=m_contWorldMatrixInstancing.find(key);
-	if (it!=m_contWorldMatrixInstancing.end())
+	auto it=m_contMatrixStreamVertexBuffer.find(key);
+	if (it!=m_contMatrixStreamVertexBuffer.end())
 	{
 		pItem = static_cast<MatrixStreamVertexBuffer*>(it->second);
 		return pItem;
@@ -252,14 +254,72 @@ MatrixStreamVertexBuffer* cResourceMng::CreateMatrixStreamVertexBuffer( SCENE_KE
 		delete pItem;
 		return NULL;
 	}
-	m_contWorldMatrixInstancing.insert(std::make_pair(key,pItem));
+	m_contMatrixStreamVertexBuffer.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
 void cResourceMng::EraseMatrixStreamVertexBuffer( SCENE_KEY& key )
 {
-	m_contWorldMatrixInstancing.erase(key);
+	m_contMatrixStreamVertexBuffer.erase(key);
 }
+
+IndexStreamVertexBuffer* cResourceMng::CreateIndexStreamVertexBuffer( SCENE_KEY& key )
+{
+	IndexStreamVertexBuffer* pItem=NULL;
+
+	auto it=m_contIndexStreamVertexBuffer.find(key);
+	if (it!=m_contIndexStreamVertexBuffer.end())
+	{
+		pItem = static_cast<IndexStreamVertexBuffer*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new IndexStreamVertexBuffer;
+	pItem->Create();
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contIndexStreamVertexBuffer.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseIndexStreamVertexBuffer( SCENE_KEY& key )
+{
+	m_contIndexStreamVertexBuffer.erase(key);
+}
+
+BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key )
+{
+	BoneStreamTexture* pItem=NULL;
+
+	auto it=m_contBoneStreamTexture.find(key);
+	if (it!=m_contBoneStreamTexture.end())
+	{
+		pItem = static_cast<BoneStreamTexture*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new BoneStreamTexture;
+	pItem->Create();
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contBoneStreamTexture.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseBoneStreamTexture( SCENE_KEY& key )
+{
+	m_contBoneStreamTexture.erase(key);
+}
+
+
 
 
 }

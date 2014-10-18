@@ -16,6 +16,8 @@ class EntityAnimation;
 class EntityMaterial;
 class Material;
 class MatrixStreamVertexBuffer;
+class IndexStreamVertexBuffer;
+class BoneStreamTexture;
 
 class cResourceMng:
 	private cStaticRestoreList
@@ -30,7 +32,9 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
-	std::map<SCENE_KEY,cResource*>						m_contWorldMatrixInstancing;
+	std::map<SCENE_KEY,cResource*>						m_contMatrixStreamVertexBuffer;
+	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
+	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
 public:		
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
@@ -61,6 +65,12 @@ public:
 	
 	MatrixStreamVertexBuffer*	CreateMatrixStreamVertexBuffer(SCENE_KEY& key);
 	void				EraseMatrixStreamVertexBuffer(SCENE_KEY& key);
+
+	IndexStreamVertexBuffer*	CreateIndexStreamVertexBuffer(SCENE_KEY& key);
+	void				EraseIndexStreamVertexBuffer(SCENE_KEY& key);
+
+	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key);
+	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
 	int					GetCount();
 };

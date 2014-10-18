@@ -14,6 +14,7 @@ cRscVertexBuffer::cRscVertexBuffer(void)
 	m_nCount=0;
 	m_usage = D3DUSAGE_WRITEONLY;
 	m_OffSet =0;
+	m_BufferSize =0;
 }
 
 cRscVertexBuffer::~cRscVertexBuffer(void)

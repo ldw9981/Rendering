@@ -105,6 +105,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="MaterialEx.h" />
+    <ClInclude Include="MatrixStreamVertexBuffer.h" />
     <ClInclude Include="RendererQueue.h" />
     <ClInclude Include="RscIndexBuffer.h" />
     <ClInclude Include="RscTexture.h" />
@@ -120,6 +121,7 @@
       <CompileAsManaged Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</CompileAsManaged>
     </ClCompile>
     <ClCompile Include="MaterialEx.cpp" />
+    <ClCompile Include="MatrixStreamVertexBuffer.cpp" />
     <ClCompile Include="RendererQueue.cpp" />
     <ClCompile Include="RscIndexBuffer.cpp" />
     <ClCompile Include="RscTexture.cpp" />

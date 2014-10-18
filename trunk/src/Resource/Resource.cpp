@@ -27,15 +27,7 @@ UINT cReferenceCounter::AddRef()
 	return m_RefCounter;
 }
 
-cResource::cResource( void )
-{
 
-}	
-
-cResource::~cResource( void )
-{
-
-}
 
 }
 

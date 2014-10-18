@@ -7,6 +7,8 @@
 #include "Graphics/RscTexture.h"
 #include "Scene/MeshNode.h"
 #include "Scene/SkinnedMeshNode.h"
+#include "Graphics/MatrixStreamVertexBuffer.h"
+
 namespace Sophia
 {
 
@@ -283,39 +285,44 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;		
-
-	Graphics::m_pInstance->m_pInstancingVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
-	Graphics::m_pInstance->m_pInstancingVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 	
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
-		const SCENE_KEY&	refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;		
-		
-		// Set Matrix Instance		
+		const SCENE_KEY& refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;
+
+		// Set Matrix Instance
 		unsigned long nCount=list.size();
+		auto it_sub = list.begin();
 
-		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declNormalInstance,0));
-		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
-		
-		D3DXVECTOR3* pVector = (D3DXVECTOR3*)Graphics::m_pInstance->m_pInstancingVertexBuffer->Lock(
-			nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
+		cMeshNode* pMeshNode = *it_sub;
 
-		cMeshNode* pMeshNode = NULL;
-		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+		MatrixStreamVertexBuffer* pMatrixStreamVertexBuffer = pMeshNode->GetMatrixStreamVertexBuffer();
+
+		if (!pMatrixStreamVertexBuffer->GetValid())
 		{
-			pMeshNode = *it_sub;
-			memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
-			memcpy_s(pVector+1,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[1],sizeof(D3DXVECTOR3));
-			memcpy_s(pVector+2,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[2],sizeof(D3DXVECTOR3));		
-			memcpy_s(pVector+3,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[3],sizeof(D3DXVECTOR3));
-			pVector+=4;
+			D3DXVECTOR3* pVector = (D3DXVECTOR3*) pMatrixStreamVertexBuffer->Lock(
+				nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
 
-			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
-		}
-		Graphics::m_pInstance->m_pInstancingVertexBuffer->Unlock();		
-		
+			for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+			{
+				pMeshNode = *it_sub;
+				memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
+				memcpy_s(pVector+1,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[1],sizeof(D3DXVECTOR3));
+				memcpy_s(pVector+2,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[2],sizeof(D3DXVECTOR3));		
+				memcpy_s(pVector+3,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[3],sizeof(D3DXVECTOR3));
+				pVector+=4;
+
+				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+			}
+			Graphics::m_pInstance->m_pInstancingVertexBuffer->Unlock();		
+		}		
+
+		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
+		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
+		pMatrixStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
+		pMatrixStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 
 		pMeshNode->GetRscIndexBuffer()->SetIndices();
 		
@@ -329,9 +336,12 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 		pEffect->EndPass();
 		
 		pEffect->End();		
+		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+
+		pMatrixStreamVertexBuffer->SetValid(false);
 	}
-	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 	
 }
@@ -342,8 +352,7 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;			
-	Graphics::m_pInstance->m_pInstancingVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
-	Graphics::m_pInstance->m_pInstancingVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{
@@ -352,11 +361,16 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 	
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
-		D3DXVECTOR3* pVector = (D3DXVECTOR3*)Graphics::m_pInstance->m_pInstancingVertexBuffer->Lock(
+		auto it_sub = list.begin();
+
+		cMeshNode* pMeshNode = *it_sub;
+		
+		MatrixStreamVertexBuffer* pMatrixStreamVertexBuffer = pMeshNode->GetMatrixStreamVertexBuffer();
+			
+		D3DXVECTOR3* pVector = (D3DXVECTOR3*) pMatrixStreamVertexBuffer->Lock(
 			nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
 
-		cMeshNode* pMeshNode = NULL;
-		for ( auto it_sub = list.begin() ; it_sub!=list.end();++it_sub)
+		for (  ; it_sub!=list.end();++it_sub)
 		{
 			pMeshNode = *it_sub;
 			memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
@@ -368,11 +382,15 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
 			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
 		}
-		Graphics::m_pInstance->m_pInstancingVertexBuffer->Unlock();	
+		pMatrixStreamVertexBuffer->Unlock();	
+		pMatrixStreamVertexBuffer->SetValid(true);
 
-		pMeshNode->GetRscVetextBuffer()->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
-		pMeshNode->GetRscVetextBuffer()->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
-		pMeshNode->GetRscIndexBuffer()->SetIndices();
+		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
+		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
+		pMatrixStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
+		pMatrixStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+		refScene.pIndexBuffer->SetIndices();
 		
 		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
@@ -385,10 +403,14 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 		pEffect->BeginPass(0);	
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();
-		pEffect->End();			
+		pEffect->End();	
+
+		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+
+		
 	}
-	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 

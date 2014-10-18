@@ -104,7 +104,7 @@ void cMenuView::Enter()
 
 		m_pHouse[i]->Build();
 		m_pHouse[i]->SetInstanceEnable(m_instancing);
-		m_pHouse[i]->PlayBaseAnimation(0,true,0,0,0,rand()%1000);
+		m_pHouse[i]->PlayBaseAnimation(0,true);
 		
 		D3DXVECTOR3 pos;
 		pos.x = i% 10 *200.0f - 1000.0f;		

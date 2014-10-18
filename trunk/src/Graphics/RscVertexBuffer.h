@@ -16,7 +16,7 @@ public:
 	cRscVertexBuffer(void);
 	virtual ~cRscVertexBuffer(void);
 
-private:
+protected:
 	LPDIRECT3DVERTEXBUFFER9	m_pD3DVertexBuffer;
 	DWORD					m_BufferSize;
 	D3DPOOL					m_pool;

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Restore.h"
+#include "Graphics/RendererQueue.h"
+
 namespace Sophia
 {
 
@@ -13,6 +15,7 @@ class cResourceMng;
 class EntityAnimation;
 class EntityMaterial;
 class Material;
+class MatrixStreamVertexBuffer;
 
 class cResourceMng:
 	private cStaticRestoreList
@@ -27,6 +30,7 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
+	std::map<SCENE_KEY,cResource*>						m_contWorldMatrixInstancing;
 public:		
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
@@ -55,6 +59,9 @@ public:
 	EntityMaterial*		CreateEntityMaterial(const char* filePath);
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
+	MatrixStreamVertexBuffer*	CreateMatrixStreamVertexBuffer(SCENE_KEY& key);
+	void				EraseMatrixStreamVertexBuffer(SCENE_KEY& key);
+
 	int					GetCount();
 };
 

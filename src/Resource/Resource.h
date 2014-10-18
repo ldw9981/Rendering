@@ -26,19 +26,34 @@ public:
 	virtual void Free()=0;	
 };
 
+//template <typename T> 
 class cResource:
 	public cReferenceCounter
 {
 public:
-	cResource(void);
-	virtual ~cResource(void);
+	cResource( void )
+	{
+
+	}
+
+	~cResource( void )
+	{
+
+	}
 protected:
 	std::string			m_strUniqeKey;			// 리소스 매니져에 사용될 맵의 키	
+
+	//T					m_key;
 public:
 	
 	const  std::string&	GetUniqueKey() const { return m_strUniqeKey; }
 	void			SetUniqueKey(std::string& val) { m_strUniqeKey = val; }
 	virtual BOOL	Create()=0;		// AddReference 호출후 실제 리소스에 해당되는 D3D API의 호출
+
+	/*
+	void SetKey(T& key) {m_key = key; }
+	const T GetKey() { return m_key; }
+	*/
 };
 
 

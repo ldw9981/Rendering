@@ -10,7 +10,7 @@
 namespace Sophia
 {
 
-
+class MatrixStreamVertexBuffer;
 class cMeshNode;
 class cView;
 
@@ -31,6 +31,7 @@ protected:
 	Material*				m_pMaterial;
 	bool					m_bInstancingEnable;
 
+	MatrixStreamVertexBuffer*	m_pMatrixStreamVertexBuffer;
 
 public:
 	virtual void			Render();
@@ -74,7 +75,11 @@ public:
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	void SetInstancingEnable(bool val) { m_bInstancingEnable = val; }
+	void SetInstancingEnable(bool val);
+	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
+protected:
+	void CreateMatrixStreamVertexBuffer();
+	void ReleaseMatrixStreamVertexBuffer();
 };
 
 }

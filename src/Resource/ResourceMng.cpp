@@ -8,6 +8,7 @@
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/Animation.h"
 #include "Graphics/MaterialEx.h"
+#include "Graphics/MatrixStreamVertexBuffer.h"
 
 namespace Sophia
 {
@@ -230,6 +231,34 @@ EntityMaterial* cResourceMng::CreateEntityMaterial( const char* filePath )
 void cResourceMng::EraseEntityMaterial( const std::string& strKey )
 {
 	m_contEntityMaterial.erase(strKey);
+}
+
+MatrixStreamVertexBuffer* cResourceMng::CreateMatrixStreamVertexBuffer( SCENE_KEY& key )
+{
+	MatrixStreamVertexBuffer* pItem=NULL;
+	
+	auto it=m_contWorldMatrixInstancing.find(key);
+	if (it!=m_contWorldMatrixInstancing.end())
+	{
+		pItem = static_cast<MatrixStreamVertexBuffer*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new MatrixStreamVertexBuffer;
+	pItem->Create();
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contWorldMatrixInstancing.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseMatrixStreamVertexBuffer( SCENE_KEY& key )
+{
+	m_contWorldMatrixInstancing.erase(key);
 }
 
 

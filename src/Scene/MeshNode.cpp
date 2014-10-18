@@ -14,6 +14,7 @@
 #include "Scene/CameraNode.h"
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
+#include "Graphics/MatrixStreamVertexBuffer.h"
 
 namespace Sophia
 {
@@ -33,6 +34,7 @@ cMeshNode::cMeshNode(void)
 	m_materialSubIndex=0;
 	m_pMaterial = NULL;
 	m_bInstancingEnable = false;
+	m_pMatrixStreamVertexBuffer=NULL;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -87,6 +89,11 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 	}
 	m_pRscIndexBuffer->Unlock();
 	m_pRscVetextBuffer->Unlock();
+
+	if (m_bInstancingEnable)
+	{
+		CreateMatrixStreamVertexBuffer();
+	}
 
 	QueueRenderer(pEntity,false);
 }
@@ -212,8 +219,9 @@ void cMeshNode::Release()
 {
 	cSceneNode::Release();
 
+	ReleaseMatrixStreamVertexBuffer();
 	SAFE_RELEASE(m_pRscVetextBuffer);	
-	SAFE_RELEASE(m_pRscIndexBuffer);	
+	SAFE_RELEASE(m_pRscIndexBuffer);		
 }
 
 void cMeshNode::SerializeIn( std::ifstream& stream )
@@ -364,6 +372,33 @@ void cMeshNode::RenderIsntancing()
 		m_pRscVetextBuffer->GetCount(),
 		m_startIndex,
 		m_primitiveCount );
+}
+
+void cMeshNode::SetInstancingEnable( bool val )
+{
+	m_bInstancingEnable = val;
+	if (m_bInstancingEnable)
+	{	
+		CreateMatrixStreamVertexBuffer();		
+	}
+	else
+	{
+		ReleaseMatrixStreamVertexBuffer();
+	}
+}
+
+void cMeshNode::CreateMatrixStreamVertexBuffer()
+{
+	if (m_pMatrixStreamVertexBuffer!=NULL)
+		return;
+
+	m_pMatrixStreamVertexBuffer = cResourceMng::m_pInstance->CreateMatrixStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+	m_pMatrixStreamVertexBuffer->AddRef();
+}
+
+void cMeshNode::ReleaseMatrixStreamVertexBuffer()
+{
+	SAFE_RELEASE(m_pMatrixStreamVertexBuffer);
 }
 
 }

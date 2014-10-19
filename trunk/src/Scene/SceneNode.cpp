@@ -125,49 +125,47 @@ void cSceneNode::UpdateLocalMatrix()
 	assert(m_bIsActiveAnimation==true);
 	assert(m_vecSceneAnimation.empty()==false);	
 
-	ANMKEY anmKeyCurr;
-	ANMKEY anmKeyTemp;
-	
-	SceneAnimation* pSceneAnimation =NULL;	
+	SceneAnimation* pSceneAnimationCurr =NULL;
+	SceneAnimation* pSceneAnimationPrev =NULL;	
 
 	// 전체 노드에서 재생되는 애니메이션
 	if ( base.playIndex != -1 )
 	{	
-		pSceneAnimation = m_vecSceneAnimation[base.playIndex];
-		if (pSceneAnimation)
-		{
-			pSceneAnimation->GetAnimationKey(anmKeyCurr,base.playTime,m_baseAnimationKeyIndex);
+		pSceneAnimationCurr = m_vecSceneAnimation[base.playIndex];
+		if (pSceneAnimationCurr)
+			pSceneAnimationCurr->GetMatrix(m_matLocal,base.playTime,m_baseAnimationKeyIndex);
 
-			if (base.fadeInTime > 0 ) 
-			{
-				if (basePrev.playIndex != -1)
-				{
-					pSceneAnimation = m_vecSceneAnimation[basePrev.playIndex];
-					assert(pSceneAnimation!=NULL);
-					pSceneAnimation->GetAnimationKey(anmKeyTemp,basePrev.playTime,m_basePrevAnimationKeyIndex);
-					SceneAnimation::InterpolateAnimationnKey(anmKeyCurr,anmKeyTemp,anmKeyCurr,base.fadeWeight);
-				}
-			}
-		}
+		if (base.fadeInTime > 0 && basePrev.playIndex != -1)
+		{
+			D3DXMATRIX matPrev;
+			pSceneAnimationPrev = m_vecSceneAnimation[basePrev.playIndex];
+			assert(pSceneAnimationPrev!=NULL);
+			pSceneAnimationPrev->GetMatrix(matPrev,basePrev.playTime,m_basePrevAnimationKeyIndex);
+
+			m_matLocal = m_matLocal * base.fadeWeight;
+			m_matLocal += matPrev * (1.0f-base.fadeWeight);
+		}		
 	}
-	
-	if (pSceneAnimation==NULL)
+
+	if (pSceneAnimationCurr==NULL)
 	{
-		anmKeyCurr=m_referenceAnimationKey;
+		m_matLocal = m_referenceTM;
 	}
 
 	size_t index=0;
 	for (auto it = listPartial.begin();it!=listPartial.end();it++,index++)
 	{
 		ENTITY_ANIMATION_DESCRIPTION& partial = *it;
-		pSceneAnimation = m_vecSceneAnimation[partial.playIndex];
-		if (pSceneAnimation)
+		pSceneAnimationCurr = m_vecSceneAnimation[partial.playIndex];
+		if (pSceneAnimationCurr)
 		{
-			pSceneAnimation->GetAnimationKey(anmKeyTemp,partial.playTime,m_partialIndex[index]);	
-			SceneAnimation::InterpolateAnimationnKey(anmKeyCurr,anmKeyCurr,anmKeyTemp,pSceneAnimation->m_partialWeight);
+			D3DXMATRIX matPartial;
+			pSceneAnimationCurr->GetMatrix(matPartial,partial.playTime,m_partialIndex[index]);	
+
+			m_matLocal = m_matLocal * (1.0f - pSceneAnimationCurr->m_partialWeight);
+			m_matLocal += matPartial * pSceneAnimationCurr->m_partialWeight;
 		}
-	}
-	anmKeyCurr.GetTrasnform(&m_matLocal);	
+	}	
 }
 
 
@@ -234,9 +232,7 @@ void cSceneNode::BuildComposite(Entity* pEntity)
 		m_matLocal = m_nodeTM * worldParentReferenceInv;
 	}
 
-	D3DXMatrixDecompose(&m_referenceAnimationKey.ScaleAccum,
-		&m_referenceAnimationKey.RotationAccum,
-		&m_referenceAnimationKey.TranslationAccum,&m_matLocal);
+	m_referenceTM = m_matLocal;
 
 	size_t size = m_vecChildNode.size();
 	for (size_t i=0;i<size;i++)

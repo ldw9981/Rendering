@@ -206,7 +206,6 @@ void cMenuView::Control()
 		m_graphicWorld.m_WorldLightPosition.y -= 50;
 	}
 
-	
 
 	if (g_pInput->IsTurnDn(DIK_F11))
 	{
@@ -222,8 +221,16 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F5))
 	{
 		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_bEnableShadow = !m_graphicWorld.m_bEnableShadow;
+		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,200.0f,-1000.0f));	
 	}
+	
+
+	if (g_pInput->IsTurnDn(DIK_F6))
+	{
+		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
+		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,-2200.0f,-1000.0f));	
+	}
+	
 	
 	
 }

@@ -25,14 +25,14 @@ struct SCLKEY
 };
 
 // 순수 에니메이션 데이터
-struct ANMKEY
+struct ANMKEY_DECOMPOSED
 {
 	DWORD AnmTick;
 	D3DXVECTOR3 ScaleAccum;
 	D3DXVECTOR3 TranslationAccum;
 	D3DXQUATERNION RotationAccum;
 
-	ANMKEY()
+	ANMKEY_DECOMPOSED()
 		:AnmTick(0),ScaleAccum(0.0f,0.0f,0.0f),TranslationAccum(0.0f,0.0f,0.0f),RotationAccum(0.0f,0.0f,0.0f,0.0f)
 	{
 
@@ -59,6 +59,18 @@ struct ANMKEY
 			TranslationAccum.z);	
 
 		*p = tmSCL * tmROT * tmPOS;		
+	}
+};
+
+struct ANMKEY_MATRIX
+{
+	DWORD AnmTick;
+	D3DXMATRIX mat;
+
+	ANMKEY_MATRIX()
+		:AnmTick(0)
+	{
+
 	}
 };
 
@@ -89,16 +101,18 @@ public:
 	SceneAnimation(void);
 	~SceneAnimation(void);
 public:
-	std::vector<ANMKEY> m_arrayANMKEY;
+	//std::vector<ANMKEY> m_arrayANMKEY;
+
+	std::vector<ANMKEY_MATRIX>	m_arrKey;
 	float	m_partialWeight;
 
 	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
-	void	GetAnimationKey(ANMKEY& out,DWORD animationTime,size_t& index);
+	void	GetMatrix(D3DXMATRIX& out,DWORD animationTime,size_t& index);
 	void	SerializeIn(std::ifstream& stream);
 	void	SerializeOut(std::ofstream& stream);
 
 	void	Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut);
-	static  void InterpolateAnimationnKey(ANMKEY& out,ANMKEY& in1,ANMKEY& in2,float v);
+	static  void BlendMatrix(D3DXMATRIX& out,D3DXMATRIX& in1,D3DXMATRIX& in2,float v1,float v2);
 };
 
 // 엔티티 즉 전체 씬을 에니메이션하는 데이터

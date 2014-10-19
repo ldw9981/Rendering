@@ -1735,7 +1735,7 @@ void cASEParser::CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisM
 // 회전키정보의 누적변환
 void cASEParser::ConvertAccQuaternion(std::vector<ROTKEY>& arrayROTKEY,const D3DXMATRIX& localTM)
 {
-	ANMKEY localTM_anmkey;
+	ANMKEY_DECOMPOSED localTM_anmkey;
 	D3DXMatrixDecompose(
 		&localTM_anmkey.ScaleAccum,
 		&localTM_anmkey.RotationAccum,
@@ -1765,9 +1765,9 @@ void cASEParser::ConvertAccQuaternion(std::vector<ROTKEY>& arrayROTKEY,const D3D
 }
 
 // 회전키정보의 누적변환
-void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY> outRefMapAnmKey)
+void cASEParser::ConvertAccQuaternionEX(std::vector<std::pair<DWORD,D3DXQUATERNION>>& inArrayROTKEY,const D3DXMATRIX& inLocalTM,std::map<DWORD,ANMKEY_DECOMPOSED> outRefMapAnmKey)
 {
-	ANMKEY localTM_anmkey;
+	ANMKEY_DECOMPOSED localTM_anmkey;
 	D3DXMatrixDecompose(
 		&localTM_anmkey.ScaleAccum,
 		&localTM_anmkey.RotationAccum,
@@ -2191,13 +2191,13 @@ void cASEParser::SetNodeInfo( cSceneNode* pNode,SCENENODEINFO& stInfo )
 SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMATRIX& localTM )
 {
 	SceneAnimation* pSceneAnimation = m_pEntityAnimation->CreateSceneAnimation(std::string(meshName));
-	if ( !pSceneAnimation->m_arrayANMKEY.empty() )
+	if ( !pSceneAnimation->m_arrKey.empty() )
 	{
 		SkipBlock();
 		return pSceneAnimation;	
 	}
 
-	ANMKEY localTM_anmkey;
+	ANMKEY_DECOMPOSED localTM_anmkey;
 	D3DXMatrixDecompose(
 		&localTM_anmkey.ScaleAccum,
 		&localTM_anmkey.RotationAccum,
@@ -2207,7 +2207,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	// time - AnmKey
 	DWORD dwTimeKey=0;
 
-	std::map<DWORD,ANMKEY> mapAnmKey;
+	std::map<DWORD,ANMKEY_DECOMPOSED> mapAnmKey;
 
 	mapAnmKey[0].AnmTick=0;
 	mapAnmKey[0].TranslationAccum=localTM_anmkey.TranslationAccum;
@@ -2316,13 +2316,12 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	} 
 
 	//assert(dwTimeKey== (DWORD)m_SceneTime.EX_LASTFRAMEMS);
-	std::vector<ANMKEY>& refArrAnmKey=pSceneAnimation->m_arrayANMKEY;
-
-	ANMKEY prevItem=localTM_anmkey;
-	std::map<DWORD,ANMKEY>::iterator iter = mapAnmKey.begin();
+	
+	ANMKEY_DECOMPOSED prevItem=localTM_anmkey;
+	std::map<DWORD,ANMKEY_DECOMPOSED>::iterator iter = mapAnmKey.begin();
 	for ( ; iter != mapAnmKey.end() ;iter++ )
 	{	
-		ANMKEY& currItem = iter->second;
+		ANMKEY_DECOMPOSED& currItem = iter->second;
 		// Scale
 		if (D3DXVec3LengthSq(&currItem.ScaleAccum)==0.0f)
 		{	
@@ -2341,7 +2340,10 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 			currItem.TranslationAccum = prevItem.TranslationAccum;		
 		}	
 
-		refArrAnmKey.push_back(currItem);
+		ANMKEY_MATRIX key;
+		key.AnmTick = currItem.AnmTick;
+		currItem.GetTrasnform(&key.mat);
+		pSceneAnimation->m_arrKey.push_back(key);	
 		prevItem=currItem;
 	}
 
@@ -2349,7 +2351,11 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	if (dwTimeKey < m_SceneTime.EX_LASTFRAMEMS)
 	{
 		prevItem.AnmTick = (DWORD)m_SceneTime.EX_LASTFRAMEMS;
-		refArrAnmKey.push_back(prevItem);
+	
+		ANMKEY_MATRIX key;
+		key.AnmTick = prevItem.AnmTick;
+		prevItem.GetTrasnform(&key.mat);
+		pSceneAnimation->m_arrKey.push_back(key);
 	}
 
 	return pSceneAnimation;

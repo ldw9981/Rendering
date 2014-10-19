@@ -42,9 +42,9 @@ void SceneAnimation::SerializeIn( std::ifstream& stream )
 
 	for (unsigned short i=0;i<count;i++)
 	{
-		ANMKEY item;
+		ANMKEY_MATRIX item;
 		stream.read((char*)&item,sizeof(item));
-		m_arrayANMKEY.push_back(item);
+		m_arrKey.push_back(item);
 	}
 
 	
@@ -55,14 +55,14 @@ void SceneAnimation::SerializeOut( std::ofstream& stream )
 	stream.write((char*)&m_partialWeight,sizeof(m_partialWeight));
 
 	unsigned short count = 0;
-	count = m_arrayANMKEY.size();
+	count = m_arrKey.size();
 	stream.write((char*)&count,sizeof(count));
 	if (count==0)
 		return;
 
 	for (unsigned short i=0;i<count;i++)
 	{
-		ANMKEY& item = m_arrayANMKEY[i];
+		ANMKEY_MATRIX& item = m_arrKey[i];
 		stream.write((char*)&item,sizeof(item));
 	}
 	
@@ -71,48 +71,50 @@ void SceneAnimation::SerializeOut( std::ofstream& stream )
 void SceneAnimation::Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut )
 {	
 	size_t index = 0;
-	ANMKEY itemFirst,itemLast;
-	GetAnimationKey(itemFirst,timeStart,index);
-	pOut->m_arrayANMKEY.push_back(itemFirst);
+	ANMKEY_MATRIX itemFirst,itemLast;
+	itemFirst.AnmTick = timeStart;
+	GetMatrix(itemFirst.mat,timeStart,index);
+
+	pOut->m_arrKey.push_back(itemFirst);
 	
-	for (unsigned short i=0;i<m_arrayANMKEY.size();i++)
+	for (unsigned short i=0;i<m_arrKey.size();i++)
 	{
-		ANMKEY& item = m_arrayANMKEY[i];
+		ANMKEY_MATRIX& item = m_arrKey[i];
 		if( item.AnmTick > timeStart && item.AnmTick < timeEnd)
 		{
-			pOut->m_arrayANMKEY.push_back(item);
+			pOut->m_arrKey.push_back(item);
 		}
 	}
-	GetAnimationKey(itemLast,timeEnd,index);
+	itemLast.AnmTick = timeEnd;
+	GetMatrix(itemLast.mat,timeEnd,index);
 	if (itemLast.AnmTick == 0)
 	{
 		__debugbreak();
 	}
-	pOut->m_arrayANMKEY.push_back(itemLast);
+	pOut->m_arrKey.push_back(itemLast);
 }
 
-void SceneAnimation::InterpolateAnimationnKey( ANMKEY& out,ANMKEY& in1,ANMKEY& in2,float v )
+void SceneAnimation::BlendMatrix( D3DXMATRIX& out,D3DXMATRIX& in1,D3DXMATRIX& in2,float v1,float v2 )
 {
-	D3DXQuaternionSlerp(&out.RotationAccum,&in1.RotationAccum,&in2.RotationAccum,v);
-	D3DXVec3Lerp(&out.TranslationAccum,&in1.TranslationAccum,&in2.TranslationAccum,v);
-	D3DXVec3Lerp(&out.ScaleAccum,&in1.ScaleAccum,&in2.ScaleAccum,v);
+	out = in1 * v1;
+	out += in2 * v2;
 }
 
-void SceneAnimation::GetAnimationKey( ANMKEY& out,DWORD animationTime,size_t& index )
+void SceneAnimation::GetMatrix( D3DXMATRIX& out,DWORD animationTime,size_t& index )
 {
-	size_t indexMax = m_arrayANMKEY.size()-1;
-	ANMKEY* pKey1=NULL;
-	ANMKEY* pKey2=NULL;
+	size_t indexMax = m_arrKey.size()-1;
+	ANMKEY_MATRIX* pKey1=NULL;
+	ANMKEY_MATRIX* pKey2=NULL;
 
-	if ( index >=indexMax ||  animationTime < m_arrayANMKEY[index].AnmTick)
+	if ( index >=indexMax ||  animationTime < m_arrKey[index].AnmTick)
 	{
 		index = 0;
 	}
 	
 	for ( ; index < indexMax ; index++)
 	{
-		pKey1 = &m_arrayANMKEY[index];
-		pKey2 = &m_arrayANMKEY[index+1];
+		pKey1 = &m_arrKey[index];
+		pKey2 = &m_arrKey[index+1];
 		
 		if( animationTime <  pKey2->AnmTick)
 		{
@@ -121,8 +123,9 @@ void SceneAnimation::GetAnimationKey( ANMKEY& out,DWORD animationTime,size_t& in
 	}
 
 	float fValue=GetInterpolateValue(pKey1->AnmTick,pKey2->AnmTick,animationTime);
-	SceneAnimation::InterpolateAnimationnKey(out,*pKey1,*pKey2,fValue);
-	out.AnmTick = animationTime;
+	
+	out = pKey1->mat * (1.0f-fValue);
+	out += pKey2->mat * fValue;
 }
 
 EntityAnimation::EntityAnimation(void)

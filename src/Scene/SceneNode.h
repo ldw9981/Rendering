@@ -45,7 +45,7 @@ protected:
 	// Transform 애니메이션 정보
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;
 	
-	ANMKEY					m_referenceAnimationKey;
+	D3DXMATRIX				m_referenceTM;
 	size_t					m_baseAnimationKeyIndex;
 	size_t					m_basePrevAnimationKeyIndex;
 	size_t					m_partialAnimationKeyIndex;

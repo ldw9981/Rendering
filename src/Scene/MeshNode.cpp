@@ -364,7 +364,6 @@ const std::vector<Material*>& cMeshNode::GetMaterials()
 
 void cMeshNode::RenderIsntancing()
 {
-	return;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	pEffect->CommitChanges();
 	

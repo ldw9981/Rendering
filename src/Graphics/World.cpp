@@ -153,7 +153,14 @@ bool World::Initialize()
 	{
 		return false;
 	}
-
+	m_pShadowTexture = new cRscTexture;
+	m_pShadowTexture->SetWidth(shadowMapSize);
+	m_pShadowTexture->SetHeight(shadowMapSize);
+	m_pShadowTexture->SetPool(D3DPOOL_DEFAULT);
+	m_pShadowTexture->SetUsage(D3DUSAGE_RENDERTARGET);
+	m_pShadowTexture->SetFormat(D3DFMT_R32F);
+	m_pShadowTexture->Create();
+	
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
 	if(FAILED(Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
 		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
@@ -166,6 +173,9 @@ bool World::Initialize()
 
 void World::Finalize()
 {
+	m_pShadowTexture->Free();
+	m_pShadowTexture=NULL;
+
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
 }
@@ -344,6 +354,7 @@ void World::Render()
 	
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
+	m_pEffect->CommitChanges();
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
 
 	

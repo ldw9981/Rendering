@@ -87,18 +87,11 @@ public:
 	std::vector<D3DXHANDLE>	m_vecTechniqueNormalInstancing;
 	std::vector<D3DXHANDLE>	m_vecTechniqueSkinnedInstancing;
 
-	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
-	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
-	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	bool					m_bDebugBound;
 	HWND					m_hWndPresent;
 
 	RECT				m_Rect;
-	GUIVERTEX			 g_vertices[4];
-	
-	cRscVertexBuffer*	m_pInstancingVertexBuffer;
-	cRscVertexBuffer*	m_pInstancingSkinned;
-	cRscTexture*		m_pInstancingTexture;
+	GUIVERTEX			 g_vertices[4];	
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }

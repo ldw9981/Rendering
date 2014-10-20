@@ -39,8 +39,6 @@ Graphics::Graphics(void)
 	m_viewPortInfo.MinZ = 0.0f;
 	m_viewPortInfo.MaxZ = 1.0f;
 
-	m_pShadowRenderTarget = NULL;
-	m_pShadowDepthStencil = NULL;
 	m_bDebugBound = false;
 
 	m_nTechniqueSize = (int)pow(2.0f,Material::MAX);
@@ -146,63 +144,12 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pDevice->CreateVertexDeclaration(declNormalInstance, &m_pNormalInstancingVertexDeclaration);
 	m_pDevice->CreateVertexDeclaration(declBlendInstance, &m_pSkinnedInstancingVertexDeclaration);
 
-	// 렌더타깃을 만든다.
-	const int shadowMapSize = SHADOWMAP_SIZE;
-	if(FAILED(m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
-		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
-		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL ) ))
-	{
-		return false;
-	}
-
-	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	if(FAILED(m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
-		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
-		&m_pShadowDepthStencil, NULL)))
-	{
-		return false;
-	}
-	SetPos(1024-T_SIZE,0);
-
-	m_pInstancingVertexBuffer = new cRscVertexBuffer;
-	m_pInstancingVertexBuffer->SetBufferSize(sizeof(D3DXVECTOR3)*4*INSTANCING_MAX);
-	m_pInstancingVertexBuffer->SetPool(D3DPOOL_DEFAULT);
-	m_pInstancingVertexBuffer->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
-	m_pInstancingVertexBuffer->Create();
-
-	m_pInstancingSkinned = new cRscVertexBuffer;
-	m_pInstancingSkinned->SetBufferSize(sizeof(BLENDINSTANCEVERTEX)*INSTANCING_MAX);
-	m_pInstancingSkinned->SetPool(D3DPOOL_DEFAULT);
-	m_pInstancingSkinned->SetUsage(D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY);
-	m_pInstancingSkinned->Create();
-
-
-
-	m_pInstancingTexture = new cRscTexture;
-	m_pInstancingTexture->SetWidth(256*4);				// 1MATRIX = 4pixel 256개본 은 1024픽셀
-	m_pInstancingTexture->SetHeight(128);	// 1024
-	m_pInstancingTexture->SetPool(D3DPOOL_DEFAULT);
-	m_pInstancingTexture->SetUsage(D3DUSAGE_DYNAMIC);
-	m_pInstancingTexture->SetFormat(D3DFMT_A32B32G32R32F);
-	m_pInstancingTexture->Create();
 
 	return true;
 }
 
 void Graphics::Finalize()
 {
-	m_pInstancingTexture->Free();
-	m_pInstancingTexture=NULL;
-
-	m_pInstancingSkinned->Free();
-	m_pInstancingSkinned=NULL;
-
-	m_pInstancingVertexBuffer->Free();
-	m_pInstancingVertexBuffer=NULL;
-
-	
-	SAFE_RELEASE(m_pShadowDepthStencil);
-	SAFE_RELEASE(m_pShadowRenderTarget);
 	SAFE_RELEASE(m_pNormalVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
 	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);

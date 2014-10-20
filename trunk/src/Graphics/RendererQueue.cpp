@@ -318,7 +318,7 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
 				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
 			}
-			Graphics::m_pInstance->m_pInstancingVertexBuffer->Unlock();		
+			pMatrixStreamVertexBuffer->Unlock();		
 		}		
 
 		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));

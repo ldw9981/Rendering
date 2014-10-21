@@ -134,8 +134,11 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	if( FAILED( hr ) )
 		MessageBox(NULL,"Call to CreateDevice failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
 
-	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
+	m_pDevice->GetDeviceCaps(&m_caps);
+	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
+	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
+	
 
 	m_pNewFont = new cGUIFont();	
 
@@ -144,6 +147,8 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pDevice->CreateVertexDeclaration(declNormalInstance, &m_pNormalInstancingVertexDeclaration);
 	m_pDevice->CreateVertexDeclaration(declBlendInstance, &m_pSkinnedInstancingVertexDeclaration);
 
+	
+	SetPos(width-T_SIZE,0);
 
 	return true;
 }
@@ -361,6 +366,19 @@ void Graphics::SetEffectMatirx_LightView(D3DXMATRIX* pMat )
 void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
 {
 	m_pEffect->SetMatrix(m_hmLightProjection,pMat);	
+}
+
+void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
+{
+	m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]);
+}
+
+void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
+{
+	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
+
+	m_vecRenderTarget[renderTargetIndex]->Release();
+	m_vecRenderTarget[renderTargetIndex] = NULL;
 }
 
 }

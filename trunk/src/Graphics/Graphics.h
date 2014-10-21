@@ -92,6 +92,8 @@ public:
 
 	RECT				m_Rect;
 	GUIVERTEX			 g_vertices[4];	
+	D3DCAPS9			m_caps;
+	std::vector<LPDIRECT3DSURFACE9> m_vecRenderTarget;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
@@ -112,6 +114,9 @@ public:
 
 	void ArrangeTechnique(unsigned int index,D3DXHANDLE hTechnique);
 	void SetPos( UINT x,UINT y );
+
+	void BackupRenderTarget(unsigned int renderTargetIndex);
+	void RestoreRenderTarget(unsigned int renderTargetIndex);
 };
 
 

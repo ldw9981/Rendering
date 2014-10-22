@@ -1,0 +1,218 @@
+#include "StdAfx.h"
+#include "ASEFile.h"
+#include ".\asefile.h"
+
+
+CG3DVECTOR3& Parsing_NumberVector3(CLexcer* p_plexcerASE)
+{
+	LONG					token;
+	CHAR					Tokenstd::string[256];
+	static	CG3DVECTOR3		tempVector3;
+
+	token			 = p_plexcerASE->GetToken(Tokenstd::string);		ASSERT(token == TOKEND_NUMBER);
+	tempVector3.x	 = (float)atof(Tokenstd::string);
+	token			 = p_plexcerASE->GetToken(Tokenstd::string);		ASSERT(token == TOKEND_NUMBER);
+	tempVector3.z	 = (float)atof(Tokenstd::string);
+	token			 = p_plexcerASE->GetToken(Tokenstd::string);		ASSERT(token == TOKEND_NUMBER);
+	tempVector3.y	 = (float)atof(Tokenstd::string);
+
+	return			tempVector3;
+}
+
+LONG Parsing_NumberLong(CLexcer* p_plexcerASE)
+{
+	LONG			token;
+	CHAR			Tokenstd::string[256];
+	LONG			tempNumber;
+
+	token			 = p_plexcerASE->GetToken(Tokenstd::string);	ASSERT(token == TOKEND_NUMBER);
+	tempNumber		 = strtoul(Tokenstd::string, NULL, 10);
+
+	return			tempNumber;
+}
+
+float Parsing_NumberFloat(CLexcer* p_plexcerASE)
+{
+	LONG			token;
+	CHAR			Tokenstd::string[256];
+	float			tempNumber;
+
+	token			 = p_plexcerASE->GetToken(Tokenstd::string);	ASSERT(token == TOKEND_NUMBER);
+	tempNumber		 = (float)atof(Tokenstd::string);
+
+	return			tempNumber;
+}
+
+
+
+
+
+
+
+// -------------------------------------------------------------
+//  이 File을 완전히 실행되는 함수는 아닙니다. 단지 보여주기 위해
+//  기본적인 형태만 꾸민 것으로 그대로 사용해서는 쓸수 없고
+//  이런 형태로 제작한다는 것만 이해한후 세부적인 것은 직접
+//  제작하도록 하여야 할 것입니다.
+// -------------------------------------------------------------
+void SampleLoad(LPSTR p_strFile)
+{
+	// Declare) 임시로...
+	CHAR	Tokenstd::string[1024];
+
+	// -------------------------------------------------------------
+	// 
+	// 1. Lexder 열기.
+	// 
+	// -------------------------------------------------------------
+	// 1) Lexer에 File을  설정하여 Open 한다.
+	CASELexcer	lexerASE(p_strFile);
+
+
+
+	// -------------------------------------------------------------
+	// 
+	// 2. Parsing
+	// 
+	// -------------------------------------------------------------
+	// 1) 3D MAX ASCII EXPORT인지 확인한다.
+
+	// - Identify를 위한 Keyword임!
+	LONG	token = lexerASE.GetToken(Tokenstd::string);
+	if(token == TOKENR_3DSMAX_ASCIIEXPORT)
+	{
+		// - version 정보
+		//float	version	 = Parsing_NumberFloat();
+		// ...
+	}
+
+	// - Comment는 여러 줄이 될 수가 있기 때문에...
+	while(token = lexerASE.GetToken(Tokenstd::string), token == TOKENR_COMMENT)
+	{
+		// - Comment는 그냥 무시한다.
+		token = lexerASE.GetToken(Tokenstd::string);
+	}
+
+	// 2) Scene Info
+	if(token == TOKENR_SCENE)
+	{
+		//Parsing_Scene(m_Scene);
+		// ...
+	}
+
+	// 3) Material List
+	//   - Material List는 무조건 있긴 하다.
+	token = lexerASE.GetToken(Tokenstd::string);
+	if(token == TOKENR_MATERIAL_LIST)
+	{
+		Parsing_MaterialList();
+		// ...
+	}
+
+	// 4) Node Objects
+	while(token = lexerASE.GetToken(Tokenstd::string), token != TOKEND_END)
+	{
+		switch(token)
+		{
+		case	TOKENR_GEOMOBJECT:
+				{
+					Parsing_GeoObject();
+				}
+				break;
+
+		case	TOKENR_HELPEROBJECT:
+				{
+					Parsing_GeoObject();
+				}
+				break;
+
+		case	TOKENR_SHAPEOBJECT:
+				{
+					Parsing_ShapeObject();
+				}
+				break;
+
+		case	TOKENR_LIGHTOBJECT:
+				{
+					Parsing_LightObject();
+				}
+				break;
+
+		case	TOKENR_CAMERAOBJECT:
+				{
+					Parsing_CameraObject();
+				}
+				break;
+
+		case	TOKENR_GROUP:
+				{
+					Parsing_Group();
+				}
+				break;
+
+		default:
+				TRACE("정의되지 않은 Command입니다. (%s,"__FUNCTION__")\n", Tokenstd::string);
+				return	FALSE;
+		};
+	}
+
+
+	// *************************************************************
+	// 
+	// 완전 끝!!!
+	// 
+	// *************************************************************
+	TRACE("Done\n");
+
+	return	0;
+}
+
+
+
+BOOL Parsing_MaterialList(CLexcer* p_plexcerASE)
+{
+	CHAR	Tokenstd::string[256];
+
+	// -------------------------------------------------------------
+	// 1. Block Start가 아니면 잘못된 것이다.
+	// -------------------------------------------------------------
+	// 1) 처음 Token을 얻는다.
+	LONG	token = p_plexcerASE->GetToken(Tokenstd::string);
+
+	// Check) Block Start가 아니면 잘못된 것임!!!
+	if(token != TOKEND_BLOCK_START)
+	{
+		return	FALSE;
+	}
+
+
+	// -------------------------------------------------------------
+	// 2. 본격적인 Parsing을 한다.
+	// -------------------------------------------------------------
+	while(token = p_plexcerASE->GetToken(Tokenstd::string), token != TOKEND_BLOCK_END)
+	{
+		switch(token)
+		{
+		case	TOKENR_MATERIAL_COUNT:
+				{
+					m_NumberOfMaterialObject		 = Parsing_NumberLong();
+				}
+				break;
+
+		case	TOKENR_MATERIAL:
+				{
+					LONG	MaterialNumber			 = Parsing_NumberLong();
+
+					m_MaterialObject[MaterialNumber] = new ASE::MATERIALOBJECT;
+					Parsing_MaterialObject(MaterialNumber, *m_MaterialObject[MaterialNumber]);
+				}
+				break;
+
+		default:
+				TRACE("정의되지 않은 Command입니다. (%s,"__FUNCTION__")\n", Tokenstd::string);
+				return	FALSE;
+		};
+	}
+
+	return	TRUE;
+}

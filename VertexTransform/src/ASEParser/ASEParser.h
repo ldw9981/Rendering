@@ -152,6 +152,10 @@ public:
 			const std::vector<TEXCOORD>& arrTexCoordIn,
 			const std::vector<TRIANGLE>& arrTFaceIndexIn);
 
+		template <typename T>
+		void			SetVertexBiNormal(std::vector<T>& arrVertex,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
+
+
 		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,cSphere& out);
 
 	
@@ -169,7 +173,14 @@ public:
 
 		
 		cRscIndexBuffer* CreateRscIndexBuffer(const char* meshName,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
+
+		void CalculateBiNormal(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
+			const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
+			D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
+			D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
 		
 };
+
+
 
 }

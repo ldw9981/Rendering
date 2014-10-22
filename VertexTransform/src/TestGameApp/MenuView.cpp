@@ -93,15 +93,15 @@ void cMenuView::Enter()
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
 		if (i%2 == 0)
 		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		}
 		else
 		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		}		
 
 		m_pHouse[i]->Build();

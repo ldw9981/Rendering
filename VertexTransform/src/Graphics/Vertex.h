@@ -39,7 +39,7 @@ struct TEXCOORD
 };
 struct NORMALVERTEX
 {	
-	D3DXVECTOR3	vertex;		//x,y,z
+	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal	
 	D3DXVECTOR3 tangent;	
 	D3DXVECTOR3 binormal;	
@@ -48,7 +48,7 @@ struct NORMALVERTEX
 };
 struct BLENDVERTEX
 {	
-	D3DXVECTOR3	vertex;		//x,y,z
+	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal
 	D3DXVECTOR3 tangent;	
 	D3DXVECTOR3 binormal;	

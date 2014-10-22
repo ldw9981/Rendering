@@ -89,30 +89,6 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 {	
 	cSceneNode::BuildComposite(pEntity);
 	LinkToBone(pEntity);		
-
-	assert(m_pRscVetextBuffer!=NULL);
-	assert(m_pRscIndexBuffer!=NULL);
-	long vertexCount = m_pRscVetextBuffer->GetCount();
-	long triangleCount = m_pRscIndexBuffer->GetCount();
-	BLENDVERTEX* vertex=(BLENDVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
-	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
-
-	for (long a = 0; a < triangleCount; a++)
-	{
-		long i1 = triangle->index[0];
-		long i2 = triangle->index[1];
-		long i3 = triangle->index[2];
-
-		CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
-			vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
-			vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
-			vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
-
-		triangle++;
-	}
-	m_pRscIndexBuffer->Unlock();
-	m_pRscVetextBuffer->Unlock();
-
 	if (m_bInstancingEnable)
 	{
 		CreateInstancingResource();

@@ -45,6 +45,7 @@ struct NORMALVERTEX
 	D3DXVECTOR3 binormal;	
 	TEXCOORD	uv0;	
 	TEXCOORD	uv1;
+	TEXCOORD	index;
 };
 struct BLENDVERTEX
 {	
@@ -54,15 +55,17 @@ struct BLENDVERTEX
 	D3DXVECTOR3 binormal;	
 	TEXCOORD	uv0;	
 	TEXCOORD	uv1;	
-	float		weight[3];		
-	BYTE		index[4];
+	float		boneWeight[3];		
+	BYTE		boneIndex[4];
+	TEXCOORD	index;
+
 	void SetWeight(float src_weight[3])
 	{
-		memcpy(&weight[0],&src_weight[0],sizeof(float)*3);
+		memcpy(&boneWeight[0],&src_weight[0],sizeof(float)*3);
 	}
 	void SetIndex(BYTE src_index[4])
 	{
-		memcpy(&index[0],&src_index[0],sizeof(BYTE)*4);
+		memcpy(&boneIndex[0],&src_index[0],sizeof(BYTE)*4);
 	}
 };
 
@@ -83,9 +86,7 @@ struct GUIVERTEX
 
 struct BLENDINSTANCEVERTEX
 {		
-	float instanceIndex;	
-	float a;	
-	float b;	
+	TEXCOORD instanceIndex;	
 };
 
 }

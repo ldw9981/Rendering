@@ -122,7 +122,8 @@ struct VS_PHONG_DIFFUSE_INPUT
    float3 mTangent : TANGENT;   
    float3 mBiNormal : BINORMAL;   
    float2 mTexCoord : TEXCOORD0;  
-   float2 mTexCoord1 : TEXCOORD1;  
+   float2 mTexCoord1 : TEXCOORD1;
+	float2 mIndex : TEXCOORD2;
 };
 
 struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
@@ -133,10 +134,12 @@ struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
    float3 mBiNormal : BINORMAL;   
    float2 mTexCoord : TEXCOORD0;  
    float2 mTexCoord1 : TEXCOORD1;
-	float3 mInstanceMatrix0 : TEXCOORD2; 
-   float3 mInstanceMatrix1 : TEXCOORD3; 
-   float3 mInstanceMatrix2 : TEXCOORD4; 
-	float3 mInstanceMatrix3 : TEXCOORD5; 
+	float2 mIndex : TEXCOORD2;
+	
+	float3 mInstanceMatrix0 : TEXCOORD5; 
+   float3 mInstanceMatrix1 : TEXCOORD6; 
+   float3 mInstanceMatrix2 : TEXCOORD7; 
+	float3 mInstanceMatrix3 : TEXCOORD8; 
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
@@ -147,6 +150,7 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
    float3 mBiNormal : BINORMAL;
    float2 mTexCoord : TEXCOORD0;
    float2 mTexCoord1 : TEXCOORD1;   
+	float2 mIndex : TEXCOORD2;
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
 };
@@ -159,25 +163,28 @@ struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
    float3 mBiNormal : BINORMAL;
    float2 mTexCoord : TEXCOORD0;
    float2 mTexCoord1 : TEXCOORD1;   
+	float2 mIndex : TEXCOORD2;
    float3 mBlendWeights    : BLENDWEIGHT;
-   int4   mBlendIndices    : BLENDINDICES; 
-	float3 mInstanceIndex  : TEXCOORD2; 
+   int4   mBlendIndices    : BLENDINDICES; 	
+	float2 mInstanceIndex  : TEXCOORD4; 
 };
 
 struct VS_SHADOW_NORMAL_INPUT 
 {
    float4 mPosition: POSITION;
 	float2 mTexCoord : TEXCOORD0;
+	float2 mIndex : TEXCOORD2;
 };
 
 struct VS_SHADOW_NORMAL_INSTANCING_INPUT 
 {
    float4 mPosition: POSITION;
 	float2 mTexCoord : TEXCOORD0;
-	float3 mInstanceMatrix0 : TEXCOORD2; 
-   float3 mInstanceMatrix1 : TEXCOORD3; 
-   float3 mInstanceMatrix2 : TEXCOORD4; 
-	float3 mInstanceMatrix3 : TEXCOORD5; 	
+	float2 mIndex : TEXCOORD2;
+	float3 mInstanceMatrix0 : TEXCOORD5; 
+   float3 mInstanceMatrix1 : TEXCOORD6; 
+   float3 mInstanceMatrix2 : TEXCOORD7; 
+	float3 mInstanceMatrix3 : TEXCOORD8; 	
 };
 
 struct VS_SHADOW_SKINNED_INSTANCING_INPUT 
@@ -188,9 +195,21 @@ struct VS_SHADOW_SKINNED_INSTANCING_INPUT
    float3 mBiNormal : BINORMAL;
    float2 mTexCoord : TEXCOORD0;
    float2 mTexCoord1 : TEXCOORD1;   
+	float2 mIndex : TEXCOORD2;
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
-	float3 mInstanceIndex  : TEXCOORD2; 
+	float2 mInstanceIndex  : TEXCOORD4; 
+};
+
+struct VS_TRANSFORMATION_INPUT 
+{
+   float4 mPosition : POSITION;
+   float3 mNormal : NORMAL;
+   float3 mTangent : TANGENT;
+   float3 mBiNormal : BINORMAL; 
+   float3 mBlendWeights    : BLENDWEIGHT;
+   int4   mBlendIndices    : BLENDINDICES; 
+	float2 mIndex : TEXCOORD2; 
 };
 
 

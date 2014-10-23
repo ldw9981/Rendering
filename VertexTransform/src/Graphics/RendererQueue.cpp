@@ -447,7 +447,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 			for (  ; it_sub!=list.end();++it_sub)
 			{
 				pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
-				pVertex->instanceIndex = (float)instanceIndex;
+				pVertex->instanceIndex.u = (float)instanceIndex;
 				pVertex++;
 
 				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
@@ -526,7 +526,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 		for (  ; it_sub!=list.end();++it_sub)
 		{
 			pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
-			pVertex->instanceIndex = (float)instanceIndex;
+			pVertex->instanceIndex.u = (float)instanceIndex;
 			pVertex++;
 
 			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());

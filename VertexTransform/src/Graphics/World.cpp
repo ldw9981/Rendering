@@ -352,10 +352,11 @@ void World::Render()
 	// SHADOW_MAP	
 	
 	
+/*
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
 	m_pEffect->CommitChanges();
-	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
+	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	*/
 
 	
 }

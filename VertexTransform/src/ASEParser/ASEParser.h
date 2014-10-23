@@ -155,6 +155,9 @@ public:
 		template <typename T>
 		void			SetVertexBiNormal(std::vector<T>& arrVertex,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
 
+		template <typename T>
+		void			SetVertexIndex(std::vector<T>& arrVertex);
+
 
 		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,cSphere& out);
 
@@ -180,6 +183,8 @@ public:
 			D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
 		
 };
+
+
 
 
 

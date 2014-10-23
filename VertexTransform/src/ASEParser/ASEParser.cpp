@@ -792,6 +792,11 @@ BOOL cASEParser::Parsing_GeoObject()
 	else 
 		SetVertexBiNormal(vecBlendVertexForBuffer,vecIndexForBuffer);
 
+	if (!bSkinned) 
+		SetVertexIndex(vecNormalVertexForBuffer);
+	else 
+		SetVertexIndex(vecBlendVertexForBuffer);
+
 
 	// 서브매트리얼 ID별로 FACEINDEX정렬
 	sort(vecIndexForBuffer.begin(),vecIndexForBuffer.end(),TRIANGLE_SUBMATERIAL::LessFaceIndex);	
@@ -2484,6 +2489,17 @@ void cASEParser::SetVertexBiNormal( std::vector<T>& arrVertex,std::vector<TRIANG
 			arrVertex[i1].uv0,		arrVertex[i2].uv0,		arrVertex[i3].uv0,
 			arrVertex[i1].tangent,	arrVertex[i2].tangent,	arrVertex[i3].tangent,
 			arrVertex[i1].binormal,	arrVertex[i2].binormal,	arrVertex[i3].binormal	);
+
+	}
+}
+
+template <typename T>
+void cASEParser::SetVertexIndex( std::vector<T>& arrVertex)
+{
+	size_t vertex_size = arrVertex.size(); 
+	for (size_t index = 0; index < vertex_size; index++)
+	{
+		arrVertex[index].index.u = (float)index;
 
 	}
 }

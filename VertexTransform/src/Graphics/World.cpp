@@ -30,6 +30,8 @@ World::World(void)
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
+	m_pHWRenderTarget[0] = NULL;
+	m_pHWDepthStencilBuffer = NULL;
 }
 
 
@@ -158,6 +160,7 @@ bool World::Initialize()
 	m_pShadowTexture->SetHeight(shadowMapSize);
 	m_pShadowTexture->SetPool(D3DPOOL_DEFAULT);
 	m_pShadowTexture->SetUsage(D3DUSAGE_RENDERTARGET);
+	m_pShadowTexture->SetLevels(1);
 	m_pShadowTexture->SetFormat(D3DFMT_R32F);
 	m_pShadowTexture->Create();
 	
@@ -212,10 +215,9 @@ void World::Render()
 	//////////////////////////////
 	
 	// 백업후 렌더타켓,스텐실버퍼 변경
-	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
-	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
-	Graphics::m_pDevice->GetRenderTarget(0, &pHWBackBuffer);
-	Graphics::m_pDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);	
+	Graphics::m_pInstance->BackupRenderTarget(0);
+	Graphics::m_pInstance->BackupDepthStencilSurface();
+
 	LPDIRECT3DSURFACE9 pShadowSurface = NULL;
 	if( SUCCEEDED( m_pShadowRenderTarget->GetSurfaceLevel( 0, &pShadowSurface ) ) )
 	{
@@ -261,14 +263,9 @@ void World::Render()
 	// 2. 그림자 입히기
 	//////////////////////////////
 
-	// 하드웨어 백버퍼/깊이버퍼를 사용한다.
-	Graphics::m_pDevice->SetRenderTarget( 0, pHWBackBuffer );
-	Graphics::m_pDevice->SetDepthStencilSurface(pHWDepthStencilBuffer);
+	Graphics::m_pInstance->RestoreRenderTarget(0);
+	Graphics::m_pInstance->RestoreDepthStencilSurface();
 
-	pHWBackBuffer->Release();
-	pHWBackBuffer = NULL;
-	pHWDepthStencilBuffer->Release();
-	pHWDepthStencilBuffer = NULL;
 	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
 
 	if (!m_renderQueueTerrain.m_vecMesh.empty())

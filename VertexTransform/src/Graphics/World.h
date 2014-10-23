@@ -46,6 +46,9 @@ public:
 
 	std::map<cGUIButton*,cGUIButton*> m_mapButton;
 	std::map<cGUIFont*,cGUIFont*> m_mapFont;
+
+	LPDIRECT3DSURFACE9 m_pHWRenderTarget[4];
+	LPDIRECT3DSURFACE9 m_pHWDepthStencilBuffer;
 public:
 	// camera
 	cCameraNode				m_camera;

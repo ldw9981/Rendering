@@ -201,7 +201,7 @@ struct VS_SHADOW_SKINNED_INSTANCING_INPUT
 	float2 mInstanceIndex  : TEXCOORD4; 
 };
 
-struct VS_TRANSFORMATION_INPUT 
+struct VS_VERTEX_TRANSFORMATION_INPUT 
 {
    float4 mPosition : POSITION;
    float3 mNormal : NORMAL;
@@ -210,6 +210,12 @@ struct VS_TRANSFORMATION_INPUT
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
 	float2 mIndex : TEXCOORD2; 
+	
+	float2 mInstanceIndex  : TEXCOORD4; 
+	float3 mInstanceMatrix0 : TEXCOORD5; 
+   float3 mInstanceMatrix1 : TEXCOORD6; 
+   float3 mInstanceMatrix2 : TEXCOORD7; 
+	float3 mInstanceMatrix3 : TEXCOORD8; 	
 };
 
 
@@ -255,6 +261,16 @@ struct VS_SHADOW_OUTPUT
    float4 mPosition: POSITION;
 	float2 mTexCoord : TEXCOORD0;
    float4 mClipPosition: TEXCOORD7;
+};
+
+struct VS_VERTEX_TRANSFORMATION_OUTPUT
+{
+   float4 mTexturePosition : POSITION;
+
+   float3 mNormal : NORMAL;
+   float3 mTangent : TANGENT;
+   float3 mBiNormal : BINORMAL; 
+	float3 mTransformedPosition: TEXCOORD0;
 };
 
 
@@ -562,6 +578,32 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
     return output;
 }
 
+VS_VERTEX_TRANSFORMATION_OUTPUT vs_VertexTransformation(VS_VERTEX_TRANSFORMATION_INPUT input)
+{ 
+	VS_VERTEX_TRANSFORMATION_OUTPUT output;
+	
+	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
+													float4(input.mInstanceMatrix1,0.0f),
+													float4(input.mInstanceMatrix2,0.0f),
+													float4(input.mInstanceMatrix3,1.0f));
+	
+	float instanceOffSet = dot( float2(input.mIndex.x,0.0f),float2(1.0f,256));
+	float2 texcoord;
+	texcoord.x = instanceOffSet / 512;
+	texcoord.y = floor(texcoord.x) / 512;
+	
+	float2 outputPos = frac(texcoord);
+	outputPos.x = outputPos.x * 2.0f - 1.0f;
+	outputPos.y = 1.0f - outputPos.y * 2.0f;	
+	
+	output.mTexturePosition = float4(outputPos,0.0f,1.0f);
+	output.mTransformedPosition = mul(input.mPosition, mInstanceMatrix);
+   output.mNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
+   output.mTangent = mul(input.mTangent,(float3x3)mInstanceMatrix);
+   output.mBiNormal = mul(input.mBiNormal,(float3x3)mInstanceMatrix);
+	
+	return output;
+}
 
 
 
@@ -594,6 +636,21 @@ struct PS_SHADOW_INPUT
 	float4 mClipPosition: TEXCOORD7;
 };
 
+struct PS_VERTEX_TRANSFORMATION_INPUT
+{
+	float3 position: TEXCOORD1;
+	float3 normal: TEXCOORD2;
+	float3 tangent : TEXCOORD4;	
+	float3 binormal : TEXCOORD5;
+};
+
+struct PS_VERTEX_TRANSFORMATION_OUTPUT
+{
+	float4 position : COLOR0;
+	float4 normal : COLOR1;
+	float4 tangent : COLOR2;
+	float4 binormal : COLOR3;
+};
 
 float4 ps_GUI(VS_GUI_OUTPUT input) : COLOR
 {
@@ -947,6 +1004,19 @@ float4 ps_Shadow_AlphaTest(PS_SHADOW_INPUT Input) : COLOR
    return float4(depth.xxx, alphaSample);
 }
 
+PS_VERTEX_TRANSFORMATION_OUTPUT ps_VertexTransformation(PS_VERTEX_TRANSFORMATION_INPUT input)
+{
+	PS_VERTEX_TRANSFORMATION_OUTPUT output;
+	output.position = float4(input.position.xyz,0.0f);
+	output.normal = float4(input.normal.xyz,0.0f);
+	output.tangent = float4(input.tangent.xyz,0.0f);
+	output.binormal = float4(input.binormal.xyz,0.0f);
+	return output;
+}
+
+
+
+
 technique TGUI
 {
     pass P0
@@ -1169,6 +1239,15 @@ technique TPhongDiffuseLightInstancing
     }  
 }
 
+
+technique TVertexTransformation
+{
+	pass P0
+	{
+        VertexShader = compile vs_3_0 vs_VertexTransformation();
+        PixelShader  = compile ps_3_0 ps_VertexTransformation();
+	}
+}
 
 
 

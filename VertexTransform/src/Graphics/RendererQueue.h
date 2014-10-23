@@ -59,7 +59,6 @@ public:
 	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderNotAlphaBlendInstancing(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderNotAlphaBlendSkinnedInstancing(std::vector<D3DXHANDLE>& vecTechnique);
-
 	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
 	
 	

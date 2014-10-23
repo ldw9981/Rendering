@@ -381,4 +381,16 @@ void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
 	m_vecRenderTarget[renderTargetIndex] = NULL;
 }
 
+void Graphics::BackupDepthStencilSurface()
+{
+	Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface);	
+}
+
+void Graphics::RestoreDepthStencilSurface()
+{
+	Graphics::m_pDevice->SetDepthStencilSurface(m_depthStencilSurface);	
+	m_depthStencilSurface->Release();
+	m_depthStencilSurface = NULL;
+}
+
 }

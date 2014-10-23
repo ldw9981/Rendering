@@ -20,6 +20,7 @@ protected:
 	UINT					m_width;
 	UINT					m_height;
 	UINT					m_levels;
+
 	DWORD					m_usage;
 	D3DFORMAT				m_format;
 
@@ -48,8 +49,9 @@ public:
 	DWORD GetUsage() const { return m_usage; }
 	void SetUsage(DWORD val) { m_usage = val; }
 	D3DFORMAT GetFormat() const { return m_format; }
-	void SetFormat(D3DFORMAT val) { m_format = val; }
-
+	void SetFormat(D3DFORMAT val) { m_format = val; }	
+	UINT GetLevels() const { return m_levels; }
+	void SetLevels(UINT val) { m_levels = val; }
 	void Lock(D3DLOCKED_RECT* pLockRect,DWORD Flags);
 	void Unlock();
 };

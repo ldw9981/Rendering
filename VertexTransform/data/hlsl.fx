@@ -18,7 +18,8 @@ float4 gWorldCameraPosition;
 
 float4x4 gLightViewMatrix;
 float4x4 gLightProjectionMatrix : Projection;
-
+float		gVertexTextureWidth = 1024;
+float    gVertexTextureHeight = 768;
 
 // 텍스처 샘플러
 sampler gDiffuseSampler = sampler_state
@@ -267,10 +268,10 @@ struct VS_VERTEX_TRANSFORMATION_OUTPUT
 {
    float4 mTexturePosition : POSITION;
 
-   float3 mNormal : NORMAL;
-   float3 mTangent : TANGENT;
-   float3 mBiNormal : BINORMAL; 
-	float3 mTransformedPosition: TEXCOORD0;
+	float3 mTransformedPosition: TEXCOORD1;
+   float3 mNormal : TEXCOORD2;
+   float3 mTangent : TEXCOORD4;
+   float3 mBiNormal : TEXCOORD5;
 };
 
 
@@ -587,20 +588,26 @@ VS_VERTEX_TRANSFORMATION_OUTPUT vs_VertexTransformation(VS_VERTEX_TRANSFORMATION
 													float4(input.mInstanceMatrix2,0.0f),
 													float4(input.mInstanceMatrix3,1.0f));
 	
-	float instanceOffSet = dot( float2(input.mIndex.x,0.0f),float2(1.0f,256));
-	float2 texcoord;
-	texcoord.x = instanceOffSet / 512;
-	texcoord.y = floor(texcoord.x) / 512;
+	float instanceOffSet = input.mInstanceIndex.x * input.mIndex.y + input.mIndex.x; 
+	float quotient = floor(instanceOffSet / gVertexTextureWidth);	//0~N
+	float2 texcoord;	
+	texcoord.y = quotient/gVertexTextureHeight;
+	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
 	
-	float2 outputPos = frac(texcoord);
+	float2 outputPos = texcoord;
+	
 	outputPos.x = outputPos.x * 2.0f - 1.0f;
-	outputPos.y = 1.0f - outputPos.y * 2.0f;	
+	outputPos.y = outputPos.y * -2.0f + 1.0f;	
+	output.mTexturePosition = float4( outputPos,0.0f,1.0f);
+		
 	
-	output.mTexturePosition = float4(outputPos,0.0f,1.0f);
-	output.mTransformedPosition = mul(input.mPosition, mInstanceMatrix);
-   output.mNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
-   output.mTangent = mul(input.mTangent,(float3x3)mInstanceMatrix);
-   output.mBiNormal = mul(input.mBiNormal,(float3x3)mInstanceMatrix);
+	// 센터가 0.0  Left,Top(-1.0f,1.0f)  RIGHT,BOTTOM(1.0f,-1.0f);
+
+	//output.mTexturePosition = float4( input.mIndex.x/input.mIndex.y,input.mInstanceIndex.x/768.0f,0.0f,1.0f);
+	output.mTransformedPosition = mul(input.mPosition, mInstanceMatrix);	
+	output.mNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
+	output.mTangent = mul(input.mTangent,(float3x3)mInstanceMatrix);
+	output.mBiNormal = mul(input.mBiNormal,(float3x3)mInstanceMatrix);		
 	
 	return output;
 }
@@ -638,18 +645,18 @@ struct PS_SHADOW_INPUT
 
 struct PS_VERTEX_TRANSFORMATION_INPUT
 {
-	float3 position: TEXCOORD1;
-	float3 normal: TEXCOORD2;
-	float3 tangent : TEXCOORD4;	
-	float3 binormal : TEXCOORD5;
+	float3 mTransformedPosition: TEXCOORD1;
+   float3 mNormal : TEXCOORD2;
+   float3 mTangent : TEXCOORD4;
+   float3 mBiNormal : TEXCOORD5;
 };
 
 struct PS_VERTEX_TRANSFORMATION_OUTPUT
 {
-	float4 position : COLOR0;
-	float4 normal : COLOR1;
-	float4 tangent : COLOR2;
-	float4 binormal : COLOR3;
+	float4 mTransformedPosition : COLOR0;
+	float4 mNormal : COLOR1;
+	float4 mTangent : COLOR2;
+	float4 mBiNormal : COLOR3;
 };
 
 float4 ps_GUI(VS_GUI_OUTPUT input) : COLOR
@@ -1007,10 +1014,10 @@ float4 ps_Shadow_AlphaTest(PS_SHADOW_INPUT Input) : COLOR
 PS_VERTEX_TRANSFORMATION_OUTPUT ps_VertexTransformation(PS_VERTEX_TRANSFORMATION_INPUT input)
 {
 	PS_VERTEX_TRANSFORMATION_OUTPUT output;
-	output.position = float4(input.position.xyz,0.0f);
-	output.normal = float4(input.normal.xyz,0.0f);
-	output.tangent = float4(input.tangent.xyz,0.0f);
-	output.binormal = float4(input.binormal.xyz,0.0f);
+	output.mTransformedPosition = float4(input.mTransformedPosition.xyz,0.0f);
+	output.mNormal = float4(input.mNormal.xyz,0.0f);
+	output.mTangent = float4(input.mTangent.xyz,0.0f);
+	output.mBiNormal = float4(input.mBiNormal.xyz,0.0f);
 	return output;
 }
 

@@ -2500,6 +2500,7 @@ void cASEParser::SetVertexIndex( std::vector<T>& arrVertex)
 	for (size_t index = 0; index < vertex_size; index++)
 	{
 		arrVertex[index].index.u = (float)index;
+		arrVertex[index].index.v = (float)vertex_size;
 
 	}
 }

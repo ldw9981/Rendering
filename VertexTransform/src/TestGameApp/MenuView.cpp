@@ -57,6 +57,7 @@ void cMenuView::Enter()
 	
 	
 
+/*
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
 	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
@@ -74,7 +75,7 @@ void cMenuView::Enter()
 	m_pDragon->Build();
 	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
-	m_pDragon->PlayBaseAnimation(0,true);
+	m_pDragon->PlayBaseAnimation(0,true);*/
 	
 
 	
@@ -95,9 +96,9 @@ void cMenuView::Enter()
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
 		if (i%2 == 0)
 		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
 		}
 		else
 		{

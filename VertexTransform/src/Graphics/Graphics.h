@@ -50,6 +50,7 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseInstancing;
 	D3DXHANDLE				m_hTPhongDiffuseOpacityInstancing;
 	D3DXHANDLE				m_hTPhongDiffuseLightInstancing;
+	D3DXHANDLE				m_hTVertexTransform;
 
 
 	D3DXHANDLE				m_hTShadowNormalNotAlphaTest;	
@@ -78,6 +79,8 @@ public:
 
 	D3DXHANDLE				m_hmLightView;
 	D3DXHANDLE				m_hmLightProjection;
+	D3DXHANDLE				m_hfVertexTextureWidth;
+	D3DXHANDLE				m_hfVertexTextureHeight;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 

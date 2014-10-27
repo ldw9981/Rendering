@@ -118,6 +118,8 @@
     <ClInclude Include="RscVertexBuffer.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexStream.h" />
+    <ClInclude Include="VertexTransformationTexture.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
@@ -137,6 +139,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="VertexStream.cpp" />
+    <ClCompile Include="VertexTransformationTexture.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>

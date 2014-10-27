@@ -15,6 +15,8 @@
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
 #include "Graphics/MatrixStreamVertexBuffer.h"
+#include "Graphics/VertexTransformationTexture.h"
+#include "Graphics/VertexStream.h"
 
 namespace Sophia
 {
@@ -35,6 +37,8 @@ cMeshNode::cMeshNode(void)
 	m_pMaterial = NULL;
 	m_bInstancingEnable = false;
 	m_pMatrixStreamVertexBuffer=NULL;
+	m_pVertexTransformTexture = NULL;
+	m_pVertexStream = NULL;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -371,11 +375,41 @@ void cMeshNode::CreateInstancingResource()
 		m_pMatrixStreamVertexBuffer = cResourceMng::m_pInstance->CreateMatrixStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
 		m_pMatrixStreamVertexBuffer->AddRef();
 	}
+
+	if (m_pVertexTransformTexture == NULL)
+	{
+		m_pVertexTransformTexture = cResourceMng::m_pInstance->CreateVertexTransformationTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+		m_pVertexTransformTexture->AddRef();
+	}
+
+	if (m_pVertexStream == NULL)
+	{
+		m_pVertexStream = cResourceMng::m_pInstance->CreateVertexStream(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),
+			m_pRscVetextBuffer->GetBufferSize()*INSTANCING_MAX
+			);
+
+		m_pVertexStream->AddRef();
+	}
+
 }
 
 void cMeshNode::ReleaseInstancingResource()
 {
+	SAFE_RELEASE(m_pVertexStream);
 	SAFE_RELEASE(m_pMatrixStreamVertexBuffer);
+	SAFE_RELEASE(m_pVertexTransformTexture);	
+}
+
+void cMeshNode::RenderTexture()
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	pEffect->CommitChanges();
+
+	Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,m_pRscVetextBuffer->GetCount());
+// 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, 
+// 				m_pRscVetextBuffer->GetCount(),
+// 				m_startIndex,
+// 				m_primitiveCount );
 }
 
 }

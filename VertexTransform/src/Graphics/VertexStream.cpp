@@ -1,36 +1,34 @@
 #include "StdAfx.h"
-#include "MatrixStreamVertexBuffer.h"
+#include "VertexStream.h"
 #include "Graphics/Graphics.h"
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
 
 using namespace Sophia;
 
-MatrixStreamVertexBuffer::MatrixStreamVertexBuffer(void)
+VertexStream::VertexStream(void)
 {
 	m_pool=D3DPOOL_DEFAULT;
-	m_BufferSize=sizeof(NORMALINSTANCE)*INSTANCING_MAX;
 	m_usage = D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY;
-
+	//m_BufferSize =sizeof(NORMALVERTEX)*INSTANCING_MAX;
 	m_key.pIndexBuffer = NULL;
 	m_key.pMaterial = NULL;
 	m_key.pVertexBuffer = NULL;
-	m_valid = false;
 }
 
 
-MatrixStreamVertexBuffer::~MatrixStreamVertexBuffer(void)
+
+VertexStream::~VertexStream(void)
 {
 }
-
-void MatrixStreamVertexBuffer::Free()
+void VertexStream::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
-	
+
 	if (m_key.pIndexBuffer != NULL && m_key.pMaterial!=NULL && m_key.pVertexBuffer!=NULL)
 	{
-		cResourceMng::m_pInstance->EraseMatrixStreamVertexBuffer(m_key);
+		cResourceMng::m_pInstance->EraseVertexTransformationTexture(m_key);
 	}	
-		
+
 	delete this;
 }

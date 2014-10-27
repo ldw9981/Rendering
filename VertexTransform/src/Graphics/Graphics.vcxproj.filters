@@ -53,6 +53,12 @@
     <ClInclude Include="IndexStreamVertexBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="VertexTransformationTexture.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexStream.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Graphics.cpp">
@@ -95,6 +101,12 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="IndexStreamVertexBuffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexTransformationTexture.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexStream.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

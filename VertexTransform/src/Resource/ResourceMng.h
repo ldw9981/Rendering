@@ -18,7 +18,8 @@ class Material;
 class MatrixStreamVertexBuffer;
 class IndexStreamVertexBuffer;
 class BoneStreamTexture;
-
+class VertexTransformationTexture;
+class VertexStream;
 class cResourceMng:
 	private cStaticRestoreList
 {
@@ -35,7 +36,10 @@ private:
 	std::map<SCENE_KEY,cResource*>						m_contMatrixStreamVertexBuffer;
 	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
 	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
+	std::map<SCENE_KEY,cResource*>						m_contVertexTransformationTexture;
+	std::map<SCENE_KEY,cResource*>						m_contVertexSteam;
 public:		
+	int					GetCount();
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
 
@@ -72,7 +76,11 @@ public:
 	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
-	int					GetCount();
+	VertexTransformationTexture*	CreateVertexTransformationTexture(SCENE_KEY& key);
+	void				EraseVertexTransformationTexture(SCENE_KEY& key);
+
+	VertexStream*		CreateVertexStream(SCENE_KEY& key,DWORD size );
+	void				EraseVertexStream(SCENE_KEY& key);
 };
 
 }

@@ -10,8 +10,9 @@
 #include "Graphics/MaterialEx.h"
 #include "Graphics/MatrixStreamVertexBuffer.h"
 #include "Graphics/IndexStreamVertexBuffer.h"
+#include "Graphics/VertexTransformationTexture.h"
 #include "Graphics/BoneStreamTexture.h"
-
+#include "Graphics/VertexStream.h"
 namespace Sophia
 {
 
@@ -317,6 +318,63 @@ BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key )
 void cResourceMng::EraseBoneStreamTexture( SCENE_KEY& key )
 {
 	m_contBoneStreamTexture.erase(key);
+}
+
+VertexTransformationTexture* cResourceMng::CreateVertexTransformationTexture( SCENE_KEY& key )
+{
+	VertexTransformationTexture* pItem=NULL;
+
+	auto it=m_contVertexTransformationTexture.find(key);
+	if (it!=m_contVertexTransformationTexture.end())
+	{
+		pItem = static_cast<VertexTransformationTexture*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new VertexTransformationTexture;
+	pItem->Create();
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contVertexTransformationTexture.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseVertexTransformationTexture( SCENE_KEY& key )
+{
+	m_contVertexTransformationTexture.erase(key);
+}
+
+VertexStream* cResourceMng::CreateVertexStream( SCENE_KEY& key ,DWORD size)
+{
+	VertexStream* pItem=NULL;
+
+	auto it=m_contVertexSteam.find(key);
+	if (it!=m_contVertexSteam.end())
+	{
+		pItem = static_cast<VertexStream*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new VertexStream;
+	pItem->SetBufferSize(size);
+	pItem->Create();
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contVertexSteam.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseVertexStream( SCENE_KEY& key )
+{
+	m_contVertexSteam.erase(key);
 }
 
 

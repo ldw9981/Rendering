@@ -13,8 +13,8 @@ namespace Sophia
 class MatrixStreamVertexBuffer;
 class cMeshNode;
 class cView;
-
-
+class VertexTransformationTexture;
+class VertexStream;
 class cMeshNode:
 	public cSceneNode
 {
@@ -32,7 +32,9 @@ protected:
 	bool					m_bInstancingEnable;
 
 	MatrixStreamVertexBuffer*	m_pMatrixStreamVertexBuffer;
-
+	VertexTransformationTexture*	m_pVertexTransformTexture;
+	
+	VertexStream*			m_pVertexStream;
 public:
 	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -71,12 +73,15 @@ public:
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 
 	void RenderIsntancing();
+	void RenderTexture();
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
 	void SetInstancingEnable(bool val);
+	VertexStream* GetVertexStream() const { return m_pVertexStream; }
 	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
+	VertexTransformationTexture* GetVertexTransformTexture() const { return m_pVertexTransformTexture; }
 protected:
 	virtual void CreateInstancingResource();
 	virtual void ReleaseInstancingResource();

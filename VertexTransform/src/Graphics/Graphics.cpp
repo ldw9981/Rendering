@@ -95,6 +95,13 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 	// 1) D3D를 생성한다.
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
+	m_pD3D9->GetDeviceCaps( 
+		D3DADAPTER_DEFAULT, // 기본 장치
+		D3DDEVTYPE_HAL,     // 장치 타입
+		&m_caps );            // 장치 특성으로 채워진다.
+
+
+	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
 
 	// 2) Device를 생성을 위한 Parameter를 설정한다.
@@ -112,7 +119,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 		m_D3DPP.BackBufferHeight = m_viewPortInfo.Height;    // set the height of the buffer
 	}
 	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; 
-	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
+	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD ;
 
 
 	// Zbuffer사용
@@ -121,6 +128,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 
 	// 3) Device를 생성한다.
+
 
 	HRESULT hr= m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
@@ -134,8 +142,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	if( FAILED( hr ) )
 		MessageBox(NULL,"Call to CreateDevice failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
 
-	m_pDevice->GetDeviceCaps(&m_caps);
-	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
+
 
 	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
 	
@@ -198,8 +205,10 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
+	m_hfVertexTextureWidth = m_pEffect->GetParameterByName( NULL, "gVertexTextureWidth" );
+	m_hfVertexTextureHeight = m_pEffect->GetParameterByName( NULL, "gVertexTextureHeight" );
 
-
+	m_hTVertexTransform =					m_pEffect->GetTechniqueByName( _T("TVertexTransformation"));
 	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );
 	m_hTPhong =								m_pEffect->GetTechniqueByName( _T("TPhong") );
@@ -333,6 +342,8 @@ void Graphics::LoadHLSL(const char* szFileName)
 		if (m_vecTechniqueSkinnedInstancing[i] == NULL )	
 			m_vecTechniqueSkinnedInstancing[i] = m_hTPhongDiffuseInstancing;
 	}
+
+
 }
 
 
@@ -375,8 +386,10 @@ void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
 
 void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
 {
-	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
+	if (m_vecRenderTarget[renderTargetIndex] == NULL)
+		return;
 
+	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
 	m_vecRenderTarget[renderTargetIndex]->Release();
 	m_vecRenderTarget[renderTargetIndex] = NULL;
 }

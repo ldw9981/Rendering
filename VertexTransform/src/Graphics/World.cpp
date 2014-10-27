@@ -29,7 +29,7 @@ World::World(void)
 	m_ViewPortInfo.Height = 0;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = true;
+	m_bEnableShadow = false;
 	m_pHWRenderTarget[0] = NULL;
 	m_pHWDepthStencilBuffer = NULL;
 }
@@ -292,7 +292,7 @@ void World::Render()
 	
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
-		m_renderQueueNormal.RenderNotAlphaBlendInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
 	}		
 	
 	

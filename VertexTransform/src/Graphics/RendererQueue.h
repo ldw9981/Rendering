@@ -57,11 +57,12 @@ public:
 	void	RenderShadowSkinnedInstancing(D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
 	
 	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderNotAlphaBlendInstancing(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendNormalInstancing(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderNotAlphaBlendSkinnedInstancing(std::vector<D3DXHANDLE>& vecTechnique);
 	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
 	
-	
+
+	void	TransformVertextNormal();
 protected:
 	void	ChangeMaterial(Material* pMaterial);
 	void	ChangeMaterialForShadow(Material* pMaterial);

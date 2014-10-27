@@ -69,12 +69,13 @@ struct BLENDVERTEX
 	}
 };
 
-struct NORMALINSTANCEVERTEX
+struct NORMALINSTANCE
 {
 	D3DXVECTOR3 instanceMatrix0;
 	D3DXVECTOR3 instanceMatrix1;
 	D3DXVECTOR3 instanceMatrix2;
 	D3DXVECTOR3 instanceMatrix3;
+	TEXCOORD instanceIndex;	
 };
 
 struct GUIVERTEX

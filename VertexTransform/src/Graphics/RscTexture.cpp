@@ -43,7 +43,7 @@ BOOL cRscTexture::Create()
 	{
 		hResult = Graphics::m_pDevice->CreateTexture(m_width,m_height,m_levels,m_usage,m_format ,m_pool, &m_pD3DTexture, NULL );
 	}
-
+	assert(SUCCEEDED(hResult));
 	return SUCCEEDED(hResult);		
 }
 

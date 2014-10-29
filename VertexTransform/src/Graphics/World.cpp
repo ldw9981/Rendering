@@ -266,7 +266,7 @@ void World::Render()
 	Graphics::m_pInstance->RestoreRenderTarget(0);
 	Graphics::m_pInstance->RestoreDepthStencilSurface();
 
-	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
+	m_pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
 
 	if (!m_renderQueueTerrain.m_vecMesh.empty())
 	{				

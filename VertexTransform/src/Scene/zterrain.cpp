@@ -175,7 +175,7 @@ void	ZTerrain::Render()
 	m_pRscVertexBuffer->SetStreamSource(0,sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
-	Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",m_pTex);	
+	Graphics::m_pInstance->GetEffect()->SetTexture("Tex_Diffuse",m_pTex);	
 	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
 	Graphics::m_pInstance->GetEffect()->CommitChanges();
 

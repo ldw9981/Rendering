@@ -27,7 +27,7 @@ void VertexStream::Free()
 
 	if (m_key.pIndexBuffer != NULL && m_key.pMaterial!=NULL && m_key.pVertexBuffer!=NULL)
 	{
-		cResourceMng::m_pInstance->EraseVertexTransformationTexture(m_key);
+		cResourceMng::m_pInstance->EraseVertexStream(m_key);
 	}	
 
 	delete this;

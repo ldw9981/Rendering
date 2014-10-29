@@ -1,12 +1,12 @@
 // 텍스처
-texture Tex0;
-texture Tex1;
-texture Tex2;
-texture Tex3;
-texture Opacity_Tex;
-texture ShadowMap_Tex : RenderColorTarget;
-texture Bone_Tex;
-
+texture Tex_Diffuse;
+texture Tex_Normal;
+texture Tex_Specular;
+texture Tex_Light;
+texture Tex_Opacity;
+texture Tex_Depth : RenderColorTarget;
+texture Tex_BoneMatrix;
+texture Tex_TransformedVertex;
 
 // 변환행렬
 float4x4 gWorldMatrix      : WORLD;
@@ -24,28 +24,28 @@ float    gVertexTextureHeight = 768;
 // 텍스처 샘플러
 sampler gDiffuseSampler = sampler_state
 {
-    Texture   = (Tex0);
+    Texture   = (Tex_Diffuse);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gNormalSampler = sampler_state
 {
-    Texture   = (Tex1);
+    Texture   = (Tex_Normal);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gSpecularSampler = sampler_state
 {
-    Texture   = (Tex2);
+    Texture   = (Tex_Specular);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gLightSampler = sampler_state
 {
-    Texture   = (Tex3);
+    Texture   = (Tex_Light);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
@@ -53,7 +53,7 @@ sampler gLightSampler = sampler_state
 
 sampler gOpacitySampler = sampler_state
 {
-    Texture   = (Opacity_Tex);
+    Texture   = (Tex_Opacity);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
@@ -61,12 +61,22 @@ sampler gOpacitySampler = sampler_state
 
 sampler2D ShadowSampler = sampler_state
 {
-   Texture = (ShadowMap_Tex);
+   Texture = (Tex_Depth);
 };
 
 sampler2D   gBoneSampler = sampler_state 
 {
-  texture = Bone_Tex;
+  texture = Tex_BoneMatrix;
+  MipFilter = NONE;
+  MagFilter = POINT;
+  MinFilter = POINT;
+  AddressU = Clamp;
+  AddressV = Clamp;
+};
+
+sampler2D   gTransformedVertexSampler = sampler_state 
+{
+  texture = Tex_TransformedVertex;
   MipFilter = NONE;
   MagFilter = POINT;
   MinFilter = POINT;
@@ -137,10 +147,12 @@ struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
    float2 mTexCoord1 : TEXCOORD1;
 	float2 mIndex : TEXCOORD2;
 	
+	
 	float3 mInstanceMatrix0 : TEXCOORD5; 
    float3 mInstanceMatrix1 : TEXCOORD6; 
    float3 mInstanceMatrix2 : TEXCOORD7; 
 	float3 mInstanceMatrix3 : TEXCOORD8; 
+	float2 mInstanceIndex  : TEXCOORD4; 
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
@@ -346,20 +358,42 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
    return output;
 }
 
+float4x4 loadTransformedVertex(float vertexIndex,float vertexSize,float instanceIndex)
+{	
+	float instanceOffSet = instanceIndex * vertexSize + vertexIndex; 
+	float quotient = floor(instanceOffSet / gVertexTextureWidth);	//0~N
+	float2 texcoord;	
+	texcoord.y = quotient/gVertexTextureHeight;		//
+	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
+
+	float4x4 mat = 
+	{
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,1)),
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,2)),
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,3))
+	};
+	return mat; 	
+}
+
+
 VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
 {
    VS_PHONG_DIFFUSE_OUTPUT output;
-	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
-													float4(input.mInstanceMatrix1,0.0f),
-													float4(input.mInstanceMatrix2,0.0f),
-													float4(input.mInstanceMatrix3,1.0f));
+/* float4
+	0. position
+	1. normal
+	2. tangent
+	3. binormal
+*/
+	float4x4 transformedVertex = loadTransformedVertex(input.mIndex.x,input.mIndex.y,input.mInstanceIndex.x);
 	
-   float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
+   float4 worldPosition = transformedVertex[0];	//position
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    
    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
-   float3 worldNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);
+   float3 worldNormal = transformedVertex[1];	//normal
    worldNormal = normalize(worldNormal);
       
    output.mLambert = dot(-lightDir, worldNormal);
@@ -591,7 +625,7 @@ VS_VERTEX_TRANSFORMATION_OUTPUT vs_VertexTransformation(VS_VERTEX_TRANSFORMATION
 	float instanceOffSet = input.mInstanceIndex.x * input.mIndex.y + input.mIndex.x; 
 	float quotient = floor(instanceOffSet / gVertexTextureWidth);	//0~N
 	float2 texcoord;	
-	texcoord.y = quotient/gVertexTextureHeight;
+	texcoord.y = quotient/gVertexTextureHeight;		//
 	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
 	
 	float2 outputPos = texcoord;

@@ -166,23 +166,23 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial )
 	cRscTexture* pRscTexture;
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapDiffuse();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Diffuse",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapNormal();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Normal",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapLight();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Light",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapSpecular();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());	
+		pEffect->SetTexture("Tex_Specular",pRscTexture->GetD3DTexture());	
 }
 
 
@@ -199,7 +199,7 @@ void cRendererQueue::ChangeMaterialForShadow( Material* pMaterial )
 	cRscTexture* pRscTexture;
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());	
+		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());	
 }
 
 
@@ -333,9 +333,8 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
 		}
 		pMatrixStreamVertexBuffer->Unlock();		
-		pVertexStream->Unlock();		
 		refScene.pVertexBuffer->Unlock();
-
+		pVertexStream->Unlock();		
 		
 		Graphics::m_pDevice->SetStreamSourceFreq(0,1);
 		Graphics::m_pDevice->SetStreamSource(0,pVertexStream->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0));		
@@ -347,7 +346,8 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
  		LPDIRECT3DSURFACE9 surface;
  		pMeshNode->GetVertexTransformTexture()->GetD3DTexture()->GetSurfaceLevel(0,&surface);
  		Graphics::m_pDevice->SetRenderTarget(0,surface);
-
+		surface->Release();
+		surface=NULL;
 
 		pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)pMeshNode->GetVertexTransformTexture()->GetWidth());
 		pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)pMeshNode->GetVertexTransformTexture()->GetHeight());
@@ -359,11 +359,19 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,refScene.pVertexBuffer->GetCount()*nCount);
 		pEffect->EndPass();
 		pEffect->End();		
+		Graphics::m_pInstance->RestoreRenderTarget(0);	
 
-		surface->Release();
- 		Graphics::m_pInstance->RestoreRenderTarget(0);
+
+		//	
+		Graphics::m_pDevice->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
+		Graphics::m_pDevice->SetStreamSource(0,refScene.pVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0));		
+
+		Graphics::m_pDevice->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+		Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1));
+
+		Graphics::m_pDevice->SetIndices(refScene.pIndexBuffer->GetD3DIndexBuffer()); 
+		pEffect->SetTexture("Tex_TransformedVertex",pMeshNode->GetVertexTransformTexture()->GetD3DTexture());	
 		
-		/*
 		int i = refScene.pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);	
 		pEffect->Begin(&passes, 0);	
@@ -372,11 +380,10 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		pMeshNode->RenderIsntancing();
 		pEffect->EndPass();		
 		pEffect->End();		
-		*/
+		
 		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-
-		pMatrixStreamVertexBuffer->SetValid(false);
+		
 	}
 
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
@@ -518,7 +525,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		pEffect->SetTechnique(vecTechnique[i]);	
 		pEffect->Begin(&passes, 0);	
 
-		pEffect->SetTexture("Bone_Tex",pBoneStreamTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_BoneMatrix",pBoneStreamTexture->GetD3DTexture());
 		ChangeMaterial(refScene.pMaterial);
 
 		pEffect->BeginPass(0);
@@ -599,7 +606,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 
 		pEffect->Begin(&passes, 0);	
 
-		pEffect->SetTexture("Bone_Tex",pBoneStreamTexture->GetD3DTexture());
+		//pEffect->SetTexture("Tex_BoneMatrix",pBoneStreamTexture->GetD3DTexture());
 		ChangeMaterialForShadow(refScene.pMaterial);		
 
 		pEffect->BeginPass(0);

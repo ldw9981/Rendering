@@ -344,13 +344,13 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		V( Graphics::m_pDevice->SetStreamSourceFreq(0,1) );
 		V( Graphics::m_pDevice->SetStreamSource(0,pVertexStream->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0)) );	
 
-		Graphics::m_pDevice->SetStreamSourceFreq(1,refScene.pVertexBuffer->GetCount());
-		Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1));
+		V( Graphics::m_pDevice->SetStreamSourceFreq(1,refScene.pVertexBuffer->GetCount()) );
+		V( Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1)) );
 
  		Graphics::m_pInstance->BackupRenderTarget(0);		
  		LPDIRECT3DSURFACE9 surface;
- 		pMeshNode->GetVertexTransformTexture()->GetD3DTexture()->GetSurfaceLevel(0,&surface);
- 		Graphics::m_pDevice->SetRenderTarget(0,surface);
+ 		V( pMeshNode->GetVertexTransformTexture()->GetD3DTexture()->GetSurfaceLevel(0,&surface) );
+ 		V( Graphics::m_pDevice->SetRenderTarget(0,surface) );
 		surface->Release();
 		surface=NULL;
 
@@ -361,7 +361,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		pEffect->Begin(&passes, 0);
 		pEffect->BeginPass(0);
 		pEffect->CommitChanges();
-		Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,refScene.pVertexBuffer->GetCount()*nCount);
+		V( Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,refScene.pVertexBuffer->GetCount()*nCount) );
 		pEffect->EndPass();
 		pEffect->End();		
 		Graphics::m_pInstance->RestoreRenderTarget(0);	

@@ -75,7 +75,8 @@ void* cRscVertexBuffer::Lock(UINT SizeToLock,DWORD Flags)
 
 void cRscVertexBuffer::Unlock()
 {
-	m_pD3DVertexBuffer->Unlock();
+	HRESULT hr;
+	V( m_pD3DVertexBuffer->Unlock());
 }
 
 

@@ -378,7 +378,8 @@ void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
 
 void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
 {
-	m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]);
+	HRESULT hr;
+	V( m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]) );
 }
 
 void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
@@ -393,7 +394,8 @@ void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
 
 void Graphics::BackupDepthStencilSurface()
 {
-	Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface);	
+	HRESULT hr;
+	V( Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface) );	
 }
 
 void Graphics::RestoreDepthStencilSurface()

@@ -66,7 +66,7 @@ sampler2D ShadowSampler = sampler_state
 
 sampler2D   gBoneSampler = sampler_state 
 {
-  texture = Tex_BoneMatrix;
+  Texture = Tex_BoneMatrix;
   MipFilter = NONE;
   MagFilter = POINT;
   MinFilter = POINT;
@@ -76,7 +76,7 @@ sampler2D   gBoneSampler = sampler_state
 
 sampler2D   gTransformedVertexSampler = sampler_state 
 {
-  texture = Tex_TransformedVertex;
+  Texture = (Tex_TransformedVertex);
   MipFilter = NONE;
   MagFilter = POINT;
   MinFilter = POINT;
@@ -431,8 +431,8 @@ float4 loadTransformedVertex(float vertexIndex,float vertexSize,float instanceIn
 	float2 texcoord;	
 	texcoord.y = quotient/gVertexTextureHeight;		//
 	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
-
-	return tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0));	 	
+		
+	return tex2Dlod( gTransformedVertexSampler,float4(texcoord,0.0f,0.0f) );
 }
 
 
@@ -447,7 +447,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_IN
 													float4(input.mInstanceMatrix3,1.0f));
 
 //	float4 worldPosition = mul(input.mPosition , mInstanceMatrix);	
-   float4 worldPosition = float4( transformedVertex.xyz , 1.0f);
+   float4 worldPosition = float4( transformedVertex.xyz , 0.0f);
 	
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    

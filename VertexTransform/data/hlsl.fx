@@ -424,7 +424,7 @@ float3 FP16ToNormal(float packed)
 
 
 
-float4x4 loadTransformedVertex(float vertexIndex,float vertexSize,float instanceIndex)
+float4 loadTransformedVertex(float vertexIndex,float vertexSize,float instanceIndex)
 {	
 	float instanceOffSet = instanceIndex * vertexSize + vertexIndex; 
 	float quotient = floor(instanceOffSet / gVertexTextureWidth);	//0~N
@@ -432,43 +432,28 @@ float4x4 loadTransformedVertex(float vertexIndex,float vertexSize,float instance
 	texcoord.y = quotient/gVertexTextureHeight;		//
 	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
 
-	float4x4 mat = 
-	{
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0))
-	};
-	return mat; 	
+	return tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0));	 	
 }
 
 
 VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_INPUT input)
 {
    VS_PHONG_DIFFUSE_OUTPUT output;
-/* float4
-	0. position
-	1. normal
-	2. tangent
-	3. binormal
-*/
-/*
-	float4x4 transformedVertex = loadTransformedVertex(input.mIndex.x,input.mIndex.y,input.mInstanceIndex.x);
-	
-   float4 worldPosition = transformedVertex[0];	//position
-*/
+
+	float4 transformedVertex = loadTransformedVertex(input.mIndex.x,input.mIndex.y,input.mInstanceIndex.x);
  	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
 													float4(input.mInstanceMatrix1,0.0f),
 													float4(input.mInstanceMatrix2,0.0f),
 													float4(input.mInstanceMatrix3,1.0f));
 
-	float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
+//	float4 worldPosition = mul(input.mPosition , mInstanceMatrix);	
+   float4 worldPosition = float4( transformedVertex.xyz , 1.0f);
 	
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    
    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
-   float3 worldNormal =  normalize(mul(input.mNormal,(float3x3)mInstanceMatrix)); //transformedVertex[1];	//normal
+   float3 worldNormal =  normalize(mul(input.mNormal,(float3x3)mInstanceMatrix)); 
        
    output.mLambert = dot(-lightDir, worldNormal);
    output.mNormal = worldNormal;

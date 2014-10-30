@@ -8,6 +8,7 @@
 #include "Vertex.h"
 #include "MaterialEx.h"
 #include "World.h"
+#include "Foundation/Trace.h"
 
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)							// 시야각
@@ -32,12 +33,13 @@ LPDIRECT3DDEVICE9 Graphics::m_pDevice;
 Graphics::Graphics(void)
 {
 	m_pInstance = this;
+/*
 	m_viewPortInfo.X = 0;
 	m_viewPortInfo.Y = 0;
 	m_viewPortInfo.Width = 1024;
 	m_viewPortInfo.Height = 768;	
 	m_viewPortInfo.MinZ = 0.0f;
-	m_viewPortInfo.MaxZ = 1.0f;
+	m_viewPortInfo.MaxZ = 1.0f;*/
 
 	m_bDebugBound = false;
 
@@ -87,18 +89,16 @@ void Graphics::SetPos( UINT x,UINT y )
 
 bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 {
-	m_viewPortInfo.Width = width;
-	m_viewPortInfo.Height = height;	
+	HRESULT hr;
+	m_width = width;
+	m_height = height;	
 	m_hWndPresent = hWndPresent;
 	char szTemp[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,szTemp);
 
 	// 1) D3D를 생성한다.
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
-	m_pD3D9->GetDeviceCaps( 
-		D3DADAPTER_DEFAULT, // 기본 장치
-		D3DDEVTYPE_HAL,     // 장치 타입
-		&m_caps );            // 장치 특성으로 채워진다.
+	V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
 
 
 	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
@@ -115,8 +115,8 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	{
 		m_D3DPP.Windowed	 = false;
 		m_D3DPP.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
-		m_D3DPP.BackBufferWidth = m_viewPortInfo.Width;    // set the width of the buffer
-		m_D3DPP.BackBufferHeight = m_viewPortInfo.Height;    // set the height of the buffer
+		m_D3DPP.BackBufferWidth = m_width;    // set the width of the buffer
+		m_D3DPP.BackBufferHeight = m_height;    // set the height of the buffer
 	}
 	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; 
 	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD ;
@@ -127,16 +127,15 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_D3DPP.AutoDepthStencilFormat	= D3DFMT_D16;
 
 
-	// 3) Device를 생성한다.
+	// 3) Device를 생성한다
 
-
-	HRESULT hr= m_pD3D9->CreateDevice( 
+	V( m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
 		hWndPresent,
 		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
-		&m_pDevice );
+		&m_pDevice ));
 
 
 	if( FAILED( hr ) )
@@ -144,8 +143,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 
 
-	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-	
+	V(m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));	
 
 	m_pNewFont = new cGUIFont();	
 
@@ -349,7 +347,6 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 void Graphics::Begin()
 {
-	m_pDevice->SetViewport(&m_viewPortInfo);
 	m_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pDevice->BeginScene();	
 #ifdef SET_TEXTURE_NULL

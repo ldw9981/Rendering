@@ -13,6 +13,8 @@
 #include "Graphics/VertexTransformationTexture.h"
 #include "Graphics/VertexStream.h"
 #include "Graphics/Vertex.h"
+#include "Foundation/Trace.h"
+
 namespace Sophia
 {
 
@@ -285,8 +287,9 @@ void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
 
 void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
+	HRESULT hr;
 //	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
+	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	UINT passes = 0;		
@@ -309,7 +312,8 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		NORMALVERTEX* pNormalVertex = (NORMALVERTEX*) pVertexStream->Lock( nCount*refScene.pVertexBuffer->GetBufferSize(),D3DLOCK_DISCARD );
 		NORMALVERTEX* pSrc = (NORMALVERTEX*)refScene.pVertexBuffer->Lock(refScene.pVertexBuffer->GetBufferSize(),0);
 		NORMALINSTANCE* pNormalInstance = (NORMALINSTANCE*) pMatrixStreamVertexBuffer->Lock( nCount*sizeof(NORMALINSTANCE),D3DLOCK_DISCARD );
-					int instanceIndex=0;
+		
+		int instanceIndex=0;
 		for (  ; it_sub!=list.end();++it_sub)
 		{
 				pMeshNode = *it_sub;
@@ -336,8 +340,9 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		refScene.pVertexBuffer->Unlock();
 		pVertexStream->Unlock();		
 		
-		Graphics::m_pDevice->SetStreamSourceFreq(0,1);
-		Graphics::m_pDevice->SetStreamSource(0,pVertexStream->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0));		
+		
+		V( Graphics::m_pDevice->SetStreamSourceFreq(0,1) );
+		V( Graphics::m_pDevice->SetStreamSource(0,pVertexStream->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0)) );	
 
 		Graphics::m_pDevice->SetStreamSourceFreq(1,refScene.pVertexBuffer->GetCount());
 		Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1));
@@ -363,30 +368,32 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 
 
 		//	
-		Graphics::m_pDevice->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
-		Graphics::m_pDevice->SetStreamSource(0,refScene.pVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0));		
+		V(Graphics::m_pDevice->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount));		
+		V(Graphics::m_pDevice->SetStreamSource(0,refScene.pVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,0)));		
 
-		Graphics::m_pDevice->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-		Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1));
+		V(Graphics::m_pDevice->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1));
+		V(Graphics::m_pDevice->SetStreamSource(1,pMatrixStreamVertexBuffer->GetD3DVertexBuffer(),0,D3DXGetDeclVertexSize(declNormalInstance,1)));
 
-		Graphics::m_pDevice->SetIndices(refScene.pIndexBuffer->GetD3DIndexBuffer()); 
-		pEffect->SetTexture("Tex_TransformedVertex",pMeshNode->GetVertexTransformTexture()->GetD3DTexture());	
+		V(Graphics::m_pDevice->SetIndices(refScene.pIndexBuffer->GetD3DIndexBuffer())); 
+		V(pEffect->SetTexture("Tex_TransformedVertex",pMeshNode->GetVertexTransformTexture()->GetD3DTexture()));
 		
 		int i = refScene.pMaterial->index_renderer_queue();
-		pEffect->SetTechnique(vecTechnique[i]);	
-		pEffect->Begin(&passes, 0);	
+		V(pEffect->SetTechnique(vecTechnique[i]));	
+		V(pEffect->Begin(&passes, 0));	
+
 		ChangeMaterial(refScene.pMaterial);
-		pEffect->BeginPass(0);
+
+		V(pEffect->BeginPass(0));
 		pMeshNode->RenderIsntancing();
-		pEffect->EndPass();		
-		pEffect->End();		
+		V(pEffect->EndPass());		
+		V(pEffect->End());		
 		
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+		V(Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 ));
+		V(Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 ));
 		
 	}
 
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));
 	
 }
 
@@ -659,6 +666,75 @@ bool SCENE_KEY::operator<( const SCENE_KEY& other ) const
 	}
 
 	return false;
+}
+
+
+void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+{
+	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+	UINT passes = 0;		
+
+	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
+	{	
+		const SCENE_KEY& refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;
+
+		// Set Matrix Instance
+		unsigned long nCount=list.size();
+		auto it_sub = list.begin();
+
+		cMeshNode* pMeshNode = *it_sub;
+
+		MatrixStreamVertexBuffer* pMatrixStreamVertexBuffer = pMeshNode->GetMatrixStreamVertexBuffer();
+
+		NORMALINSTANCE* pNormalInstance = (NORMALINSTANCE*) pMatrixStreamVertexBuffer->Lock( nCount*sizeof(NORMALINSTANCE),D3DLOCK_DISCARD );
+
+		int instanceIndex=0;
+		for (  ; it_sub!=list.end();++it_sub)
+		{
+			pMeshNode = *it_sub;
+
+			memcpy_s(&pNormalInstance->instanceMatrix0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
+			memcpy_s(&pNormalInstance->instanceMatrix1,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[1],sizeof(D3DXVECTOR3));
+			memcpy_s(&pNormalInstance->instanceMatrix2,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[2],sizeof(D3DXVECTOR3));		
+			memcpy_s(&pNormalInstance->instanceMatrix3,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[3],sizeof(D3DXVECTOR3));
+
+			pNormalInstance->instanceIndex.u = (float)instanceIndex;
+
+			pNormalInstance++;
+			instanceIndex++;
+
+			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
+			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+		}	
+
+		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
+		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
+		pMatrixStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
+		pMatrixStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+
+		pMeshNode->GetRscIndexBuffer()->SetIndices();
+
+		int i = refScene.pMaterial->index_renderer_queue();
+		pEffect->SetTechnique(vecTechnique[i]);	
+		pEffect->Begin(&passes, 0);	
+		ChangeMaterial(refScene.pMaterial);
+
+		pEffect->BeginPass(0);
+		pMeshNode->RenderIsntancing();
+		pEffect->EndPass();
+
+		pEffect->End();		
+		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+
+		pMatrixStreamVertexBuffer->SetValid(false);
+	}
+
+	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+
 }
 
 }

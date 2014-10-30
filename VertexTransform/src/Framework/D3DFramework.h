@@ -32,15 +32,17 @@ public:
 	HWND					m_hWndMain;
 	HWND					m_hWndPresent;
 protected:	
+	std::list<IRenderable*>		m_listRenderable;
+	std::list<IUpdatable*>		m_listProgressable;
+	std::list<IControlable*>	m_listControlable;
+
 	RECT					m_RequestRect;
 
 	BOOL					m_bFullScreen;
 	BOOL					m_bQuitLoop;
 
 	// 이구조를 사용하면 추가될 객체의 Update/Render/Control호출 코드를 작성하지 않아도되며 추가순서에 따른 호출순서도 보장한다.
-	std::list<IRenderable*>		m_listRenderable;
-	std::list<IUpdatable*>		m_listProgressable;
-	std::list<IControlable*>	m_listControlable;
+
 
 	DWORD					m_CurrFrameTime;	// Milli Sec	
 	DWORD					m_PrevFrameTime;	// Milli Sec	

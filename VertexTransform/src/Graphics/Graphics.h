@@ -22,9 +22,10 @@ public:
 public:
 	static Graphics* m_pInstance;
 	static LPDIRECT3DDEVICE9	m_pDevice;
-	// D3D 변수추가	
-	D3DVIEWPORT9			m_viewPortInfo;
-	
+
+	int						m_width;
+	int						m_height;
+	// D3D 변수추가		
 	D3DPRESENT_PARAMETERS	m_D3DPP;         // Parameters for CreateDevice/Reset
 	LPDIRECT3D9				m_pD3D9;
 	LPD3DXFONT				m_pFont;
@@ -100,7 +101,7 @@ public:
 	LPDIRECT3DSURFACE9	m_depthStencilSurface;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
-	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
+//	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
 	bool Init(HWND hWndPresent,bool bWindowed,int width,int height);
 	void Finalize();
 

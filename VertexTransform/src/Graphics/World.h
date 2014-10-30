@@ -22,8 +22,6 @@ public:
 	virtual ~World(void);
 
 public:
-	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
-	cRscTexture*			m_pShadowTexture;
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	D3DVIEWPORT9			m_ViewPortInfo;

@@ -3,7 +3,7 @@
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
 #include "Graphics/Graphics.h"
-
+#include "Foundation/Trace.h"
 
 using namespace Sophia;
 
@@ -32,12 +32,14 @@ BOOL cRscVertexBuffer::Create()
 	if (m_RefCounter > 0 )
 		return TRUE;
 
-	HRESULT hResult;
+	HRESULT hr;
 	
 	// ! VertexBuffer
 	// 1) FVF를 설정해서 필요한크기만큼 VertexBuffer를 만든다.	^
-	hResult=Graphics::m_pDevice->CreateVertexBuffer(m_BufferSize,m_usage,0,	m_pool,&m_pD3DVertexBuffer,NULL);
-	assert(hResult==S_OK);	
+	V( Graphics::m_pDevice->CreateVertexBuffer(m_BufferSize,m_usage,0,	m_pool,&m_pD3DVertexBuffer,NULL));
+	if (FAILED(hr))
+		return FALSE;
+
 	return TRUE;
 }
 
@@ -63,10 +65,11 @@ void cRscVertexBuffer::Restore()
 void* cRscVertexBuffer::Lock(UINT SizeToLock,DWORD Flags)
 {
 	void *pVertices=NULL;
-	if(FAILED(m_pD3DVertexBuffer->Lock( m_OffSet, SizeToLock, (void**)&pVertices, Flags )))
-	{
+	HRESULT hr;
+	V (m_pD3DVertexBuffer->Lock( m_OffSet, SizeToLock, (void**)&pVertices, Flags ));
+	if(FAILED(hr))
 		return NULL;
-	}
+
 	return pVertices;
 }
 

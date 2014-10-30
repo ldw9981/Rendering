@@ -7,6 +7,8 @@
 #include "Scene/ZTerrain.h"
 #include "Foundation/Define.h"
 #include "Graphics/RscTexture.h"
+#include "Foundation/Trace.h"
+
 namespace Sophia
 {
 	#define PI           3.14159265f
@@ -25,8 +27,8 @@ World::World(void)
 	m_ViewPortInfo.MaxZ = 1.0f;
 	m_ViewPortInfo.X = 0;
 	m_ViewPortInfo.Y = 0;
-	m_ViewPortInfo.Width = 0;
-	m_ViewPortInfo.Height = 0;
+	m_ViewPortInfo.Width = Graphics::m_pInstance->m_width;
+	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = false;
@@ -147,38 +149,25 @@ void World::DeleteFont( cGUIFont* pFont )
 
 bool World::Initialize()
 {
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetViewport(&m_ViewPortInfo));
+
 	// 렌더타깃을 만든다.
 	const int shadowMapSize = SHADOWMAP_SIZE;
-	if(FAILED(Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
+	V( Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
-		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL ) ))
-	{
-		return false;
-	}
-	m_pShadowTexture = new cRscTexture;
-	m_pShadowTexture->SetWidth(shadowMapSize);
-	m_pShadowTexture->SetHeight(shadowMapSize);
-	m_pShadowTexture->SetPool(D3DPOOL_DEFAULT);
-	m_pShadowTexture->SetUsage(D3DUSAGE_RENDERTARGET);
-	m_pShadowTexture->SetLevels(1);
-	m_pShadowTexture->SetFormat(D3DFMT_R32F);
-	m_pShadowTexture->Create();
-	
+		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL) );
+		
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	if(FAILED(Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
+	V( Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
 		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
-		&m_pShadowDepthStencil, NULL)))
-	{
-		return false;
-	}
+		&m_pShadowDepthStencil, NULL) );
+
 	return true;
 }
 
 void World::Finalize()
 {
-	m_pShadowTexture->Free();
-	m_pShadowTexture=NULL;
-
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
 }
@@ -265,8 +254,9 @@ void World::Render()
 
 	Graphics::m_pInstance->RestoreRenderTarget(0);
 	Graphics::m_pInstance->RestoreDepthStencilSurface();
-
+	
 	m_pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
+	
 
 	if (!m_renderQueueTerrain.m_vecMesh.empty())
 	{				
@@ -293,6 +283,9 @@ void World::Render()
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
 		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+
+		//m_renderQueueNormal.RenderNotAlphaBlendInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+		
 	}		
 	
 	
@@ -315,6 +308,7 @@ void World::Render()
 	}
 	
 	
+
 
 	if (m_bDebugBound)
 	{

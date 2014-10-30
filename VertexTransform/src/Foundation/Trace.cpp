@@ -4,7 +4,7 @@ namespace Sophia
 {
 
 HWND g_TraceHWND;
-
+bool g_TraceShowMsgBox;
 void Trace(const char *format, ...)
 {
 	va_list argptr;
@@ -62,6 +62,15 @@ void TraceError(const char lpszFunction)
 		ExitProcess(dw); 
 	}
 
+}
+
+HRESULT WINAPI DXUTTrace( const CHAR* strFile, DWORD dwLine, HRESULT hr, const CHAR* strMsg, bool bPopMsgBox )
+{
+	bool bShowMsgBoxOnError = g_TraceShowMsgBox;
+	if( bPopMsgBox && bShowMsgBoxOnError == false )
+		bPopMsgBox = false;
+
+	return DXTrace( strFile, dwLine, hr, strMsg, bPopMsgBox );
 }
 
 }

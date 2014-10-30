@@ -358,6 +358,72 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
    return output;
 }
 
+float NormalToFP16(float3 normal)
+{
+	// z부호를 저장한다.
+	float zSign = sign(normal.z);
+	normal.z *= zSign;
+	
+	// [ -1.1] -> [0.1]
+	// Lambert Azimuthal Equal-Araa projection
+	float f = sqrt(8* normal.z+8);
+	float2 biased = normal.xy / f + 0.5f;
+	
+	// 0.xxxxxxx -> XXXXXXX.0
+	// 0.yyyyyyy -> YYYYYYY.0
+	float2 bit7 = round(biased * 127.0f);
+	
+	// YYYYYYY -> YYYY.yyy
+	float2 split = bit7.y / 8.0f;
+	split.x = floor(split.x);
+	split.y -= split.x;
+	
+	// XXXXXXX.yyy
+	float bit10 = bit7.x + split.y;
+	
+	// 0.1xxxxxxxyyy * 2^YYYY
+	float mantissa = bit10.x / 128.0f / 2.0f + 512.0f/1024.0f;
+	float exponent = split.x;
+	float packed = ldexp(mantissa, exponent);
+	return zSign * packed;
+}
+
+float3 FP16ToNormal(float packed)
+{
+	float sgn = sign(packed);
+	float mantissa;
+	float exponent;
+	mantissa = frexp(packed,exponent);
+	mantissa = abs(mantissa);
+	
+	// XXXXXXX.yyy
+	float bit10 = (mantissa - 512.0f/1024.0f) * 2.0f * 128.0f;
+	
+	// XXXXXX. 0.yyy
+	float2 split;
+	split.x = floor(bit10);
+	split.y = bit10 - split.x;
+	
+	// XXXXXXX
+	// YYYYYYY
+	float2 bit7;
+	bit7.x = split.x;
+	bit7.y = (exponent + split.y) * 8.0f;
+	
+	// [0.1]
+	float2 biased = bit7 / 127.0f;
+	
+	// [-1.1]
+	// Lambert Azimuthal Equal-Area projection
+	float2 fenc = biased * 4 -2;
+	float f = dot(fenc, fenc);
+	float g = sqrt(1-f/4);
+	return float3(fenc * g,sgn*(1-f/2));
+}
+
+
+
+
 float4x4 loadTransformedVertex(float vertexIndex,float vertexSize,float instanceIndex)
 {	
 	float instanceOffSet = instanceIndex * vertexSize + vertexIndex; 
@@ -369,9 +435,9 @@ float4x4 loadTransformedVertex(float vertexIndex,float vertexSize,float instance
 	float4x4 mat = 
 	{
 		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,1)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,2)),
-		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,3))
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0)),
+		tex2Dlod(gTransformedVertexSampler, float4(texcoord,0,0))
 	};
 	return mat; 	
 }
@@ -386,16 +452,24 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_IN
 	2. tangent
 	3. binormal
 */
+/*
 	float4x4 transformedVertex = loadTransformedVertex(input.mIndex.x,input.mIndex.y,input.mInstanceIndex.x);
 	
    float4 worldPosition = transformedVertex[0];	//position
+*/
+ 	float4x4 mInstanceMatrix = float4x4( float4(input.mInstanceMatrix0,0.0f),
+													float4(input.mInstanceMatrix1,0.0f),
+													float4(input.mInstanceMatrix2,0.0f),
+													float4(input.mInstanceMatrix3,1.0f));
+
+	float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
+	
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    
    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
-   float3 worldNormal = transformedVertex[1];	//normal
-   worldNormal = normalize(worldNormal);
-      
+   float3 worldNormal =  normalize(mul(input.mNormal,(float3x3)mInstanceMatrix)); //transformedVertex[1];	//normal
+       
    output.mLambert = dot(-lightDir, worldNormal);
    output.mNormal = worldNormal;
    output.mCameraDir = cameraDir;
@@ -1045,14 +1119,9 @@ float4 ps_Shadow_AlphaTest(PS_SHADOW_INPUT Input) : COLOR
    return float4(depth.xxx, alphaSample);
 }
 
-PS_VERTEX_TRANSFORMATION_OUTPUT ps_VertexTransformation(PS_VERTEX_TRANSFORMATION_INPUT input)
+float4 ps_VertexTransformation(PS_VERTEX_TRANSFORMATION_INPUT input) : COLOR
 {
-	PS_VERTEX_TRANSFORMATION_OUTPUT output;
-	output.mTransformedPosition = float4(input.mTransformedPosition.xyz,0.0f);
-	output.mNormal = float4(input.mNormal.xyz,0.0f);
-	output.mTangent = float4(input.mTangent.xyz,0.0f);
-	output.mBiNormal = float4(input.mBiNormal.xyz,0.0f);
-	return output;
+	return  float4(input.mTransformedPosition.xyz, NormalToFP16(input.mNormal.xyz));
 }
 
 

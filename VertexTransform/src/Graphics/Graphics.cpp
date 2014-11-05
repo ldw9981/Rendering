@@ -95,45 +95,41 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_hWndPresent = hWndPresent;
 	char szTemp[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,szTemp);
-
-	// 1) D3D를 생성한다.
+		
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
 	V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
-
-
+	
 	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
-
-	// 2) Device를 생성을 위한 Parameter를 설정한다.
 	memset(&m_D3DPP,0,sizeof(m_D3DPP));
 	if(bWindowed)
 	{
 		m_D3DPP.Windowed	 = true;
-		m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;
+		m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;	// 현재의 디스플레이 모드 포맷을 사용
 	}
 	else
 	{
 		m_D3DPP.Windowed	 = false;
 		m_D3DPP.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
-		m_D3DPP.BackBufferWidth = m_width;    // set the width of the buffer
-		m_D3DPP.BackBufferHeight = m_height;    // set the height of the buffer
 	}
-	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; 
-	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD ;
-
+	m_D3DPP.hDeviceWindow = hWndPresent;
+	m_D3DPP.BackBufferWidth = m_width;    // set the width of the buffer
+	m_D3DPP.BackBufferHeight = m_height;    // set the height of the buffer
+	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; // dx가 모니터 수직동기화를 하지않음, 동기타임이 될때까지 기다리지않는다.
+	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD ;	//백버퍼의 내용이 변경되어도상관없다 
+	m_D3DPP.Flags = D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL; 
+	// 플래그를 설정 하면,IDirect3DDevice9::Present 또는 다른 깊이 표면에서의 IDirect3DDevice9::SetDepthStencilSurface 의 호출 후, 스텐실 버퍼의 내용은 무효가 된다. 
+	//z 버퍼 데이터의 파기는, 퍼포먼스를 향상시킬 수가 있어 드라이버에 의존한다
 
 	// Zbuffer사용
 	m_D3DPP.EnableAutoDepthStencil	= TRUE;		
 	m_D3DPP.AutoDepthStencilFormat	= D3DFMT_D16;
 
-
-	// 3) Device를 생성한다
-
 	V( m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
 		hWndPresent,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
 		&m_pDevice ));
 
@@ -182,12 +178,45 @@ void Graphics::LoadHLSL(const char* szFileName)
 		return;
 	}
 
+	// Define DEBUG_VS and/or DEBUG_PS to debug vertex and/or pixel shaders with the 
+	// shader debugger. Debugging vertex shaders requires either REF or software vertex 
+	// processing, and debugging pixel shaders requires REF.  The 
+	// D3DXSHADER_FORCE_*_SOFTWARE_NOOPT flag improves the debug experience in the 
+	// shader debugger.  It enables source level debugging, prevents instruction 
+	// reordering, prevents dead code elimination, and forces the compiler to compile 
+	// against the next higher available software target, which ensures that the 
+	// unoptimized shaders do not exceed the shader model limitations.  Setting these 
+	// flags will cause slower rendering since the shaders will be unoptimized and 
+	// forced into software.  See the DirectX documentation for more information about 
+	// using the shader debugger.
+	DWORD dwShaderFlags = D3DXFX_NOT_CLONEABLE;
+
+#if defined( DEBUG ) || defined( _DEBUG )
+	// Set the D3DXSHADER_DEBUG flag to embed debug information in the shaders.
+	// Setting this flag improves the shader debugging experience, but still allows 
+	// the shaders to be optimized and to run exactly the way they will run in 
+	// the release configuration of this program.
+	dwShaderFlags |= D3DXSHADER_DEBUG;
+	dwShaderFlags |= D3DXSHADER_SKIPOPTIMIZATION;
+#endif
+
+#ifdef DEBUG_VS
+	dwShaderFlags |= D3DXSHADER_FORCE_VS_SOFTWARE_NOOPT;
+#endif
+#ifdef DEBUG_PS
+	dwShaderFlags |= D3DXSHADER_FORCE_PS_SOFTWARE_NOOPT;
+#endif
+#ifdef D3DXFX_LARGEADDRESS_HANDLE
+	dwShaderFlags |= D3DXFX_LARGEADDRESSAWARE;
+#endif
+
 	HRESULT hr;
 	LPD3DXBUFFER pErr=NULL;
-	if( FAILED( hr = D3DXCreateEffectFromFile(m_pDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION , NULL, &m_pEffect, &pErr )))
+	if( FAILED( hr = D3DXCreateEffectFromFile(m_pDevice, szFileName, NULL,NULL, dwShaderFlags  , NULL, &m_pEffect, &pErr )))
 	{
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);
+		__debugbreak();
 		return;
 	}
 
@@ -205,6 +234,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
 	m_hfVertexTextureWidth = m_pEffect->GetParameterByName( NULL, "gVertexTextureWidth" );
 	m_hfVertexTextureHeight = m_pEffect->GetParameterByName( NULL, "gVertexTextureHeight" );
+	m_hfMatrixTextureSize = m_pEffect->GetParameterByName( NULL, "gMatrixTextureSize" );
 
 	m_hTVertexTransform =					m_pEffect->GetTechniqueByName( _T("TVertexTransformation"));
 	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );

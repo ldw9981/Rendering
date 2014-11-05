@@ -10,8 +10,8 @@ using namespace Sophia;
 cRscVertexBuffer::cRscVertexBuffer(void)
 {
 	m_pD3DVertexBuffer=NULL;
-	m_pool=D3DPOOL_MANAGED;
-	m_nCount=0;
+	m_pool=D3DPOOL_MANAGED;		// 기본메쉬의 변하지않는 베텍스이므로 백업을 허용한다.
+	m_vertexCount=0;
 	m_usage = D3DUSAGE_WRITEONLY;
 	m_OffSet =0;
 	m_BufferSize =0;

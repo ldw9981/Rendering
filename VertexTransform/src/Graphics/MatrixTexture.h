@@ -1,21 +1,22 @@
 #pragma once
-#include "rscvertexbuffer.h"
+#include "rsctexture.h"
 #include "RendererQueue.h"
 
 namespace Sophia
 {
-
-class MatrixStreamVertexBuffer :
-	public cRscVertexBuffer
+class MatrixTexture :
+	public cRscTexture
 {
 public:
-	MatrixStreamVertexBuffer(void);
-	virtual ~MatrixStreamVertexBuffer(void);
+	MatrixTexture(void);
+	virtual ~MatrixTexture(void);
 
 public:
 	SCENE_KEY	m_key;
 	bool		m_valid;
-
+	DWORD		m_size;
+	DWORD GetSize() const { return m_size; }
+	void SetSize(DWORD val);
 	const Sophia::SCENE_KEY GetKey() const { return m_key; }
 	void SetKey(Sophia::SCENE_KEY& val) { m_key = val; }
 public:
@@ -23,9 +24,7 @@ public:
 
 	bool GetValid() const { return m_valid; }
 	void SetValid(bool val) { m_valid = val; }
-
+	void UpdateMatrix(std::list<cMeshNode*>& list);
 };
-
-
 
 }

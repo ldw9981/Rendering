@@ -361,8 +361,8 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::map<SUBMATINDEX,WORD>				mapIndexCount;	
 
 	//cRscVertexBuffer에 복사할 내용
-	std::vector<NORMALVERTEX>				vecNormalVertexForBuffer; 
-	std::vector<BLENDVERTEX>				vecBlendVertexForBuffer;
+	std::vector<NORMAL_VERTEX>				vecNormalVertexForBuffer; 
+	std::vector<BLEND_VERTEX>				vecBlendVertexForBuffer;
 	//cRscIndexBuffer에 복사할 내용
 	std::vector<TRIANGLE_SUBMATERIAL>		vecIndexForBuffer;
 		
@@ -473,7 +473,7 @@ BOOL cASEParser::Parsing_GeoObject()
 																
 								if (totalBoneRef==0)
 								{
-									NORMALVERTEX Item;
+									NORMAL_VERTEX Item;
 									memset(&Item,0,sizeof(Item));
 									Item.position = vertex;
 									vecNormalVertexForBuffer.push_back(Item);				
@@ -481,7 +481,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								}
 								else
 								{
-									BLENDVERTEX Item;
+									BLEND_VERTEX Item;
 									memset(&Item,0,sizeof(Item));
 									Item.position = vertex;
 									vecBlendVertexForBuffer.push_back(Item);			
@@ -792,10 +792,11 @@ BOOL cASEParser::Parsing_GeoObject()
 	else 
 		SetVertexBiNormal(vecBlendVertexForBuffer,vecIndexForBuffer);
 
+/*
 	if (!bSkinned) 
 		SetVertexIndex(vecNormalVertexForBuffer);
 	else 
-		SetVertexIndex(vecBlendVertexForBuffer);
+		SetVertexIndex(vecBlendVertexForBuffer);*/
 
 
 	// 서브매트리얼 ID별로 FACEINDEX정렬
@@ -2006,7 +2007,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 				memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
 			}	
 			pVertexBuffer->Unlock();			
-			pVertexBuffer->SetCount(nCount);
+			pVertexBuffer->SetVertexCount(nCount);
 		}
 	}
 	return pVertexBuffer;
@@ -2024,13 +2025,13 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 
 		if (pIndexBuffer->GetRefCounter()==0)
 		{
-			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock(0,pIndexBuffer->GetBufferSize(),0);
+			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock(pIndexBuffer->GetBufferSize(),0);
 			for (UINT i=0;i< nCount;i++)
 			{
 				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
 			}
 			pIndexBuffer->Unlock();		
-			pIndexBuffer->SetCount(nCount);
+			pIndexBuffer->SetTriangleCount(nCount);
 		}
 	}			
 	return pIndexBuffer;
@@ -2493,16 +2494,17 @@ void cASEParser::SetVertexBiNormal( std::vector<T>& arrVertex,std::vector<TRIANG
 	}
 }
 
+/*
 template <typename T>
 void cASEParser::SetVertexIndex( std::vector<T>& arrVertex)
 {
 	size_t vertex_size = arrVertex.size(); 
 	for (size_t index = 0; index < vertex_size; index++)
 	{
-		arrVertex[index].index.u = (float)index;
-		arrVertex[index].index.v = (float)vertex_size;
+		arrVertex[index].vertexIndex = (float)index;
+		arrVertex[index].vertexSize = (float)vertex_size;
 
 	}
-}
+}*/
 
 }

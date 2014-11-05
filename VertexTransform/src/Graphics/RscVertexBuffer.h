@@ -20,7 +20,7 @@ protected:
 	LPDIRECT3DVERTEXBUFFER9	m_pD3DVertexBuffer;
 	DWORD					m_BufferSize;
 	D3DPOOL					m_pool;
-	int						m_nCount;
+	int						m_vertexCount;
 	DWORD					m_usage;
 	UINT					m_OffSet;
 public:	
@@ -36,8 +36,8 @@ public:
 	DWORD					GetBufferSize() const { return m_BufferSize; }
 	void					SetBufferSize(DWORD val) { m_BufferSize = val; }
 
-	int GetCount() const { return m_nCount; }
-	void SetCount(int val) { m_nCount = val; }
+	int GetVertexCount() const { return m_vertexCount; }
+	void SetVertexCount(int val) { m_vertexCount = val; }
 
 
 	void*					Lock(UINT SizeToLock,DWORD Flags);

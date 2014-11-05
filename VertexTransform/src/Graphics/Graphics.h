@@ -5,7 +5,7 @@
 namespace Sophia
 {
 
-#define INSTANCING_MAX 200
+#define INSTANCING_MAX 1024
 
 class cGUIFont;
 class cView;
@@ -82,6 +82,7 @@ public:
 	D3DXHANDLE				m_hmLightProjection;
 	D3DXHANDLE				m_hfVertexTextureWidth;
 	D3DXHANDLE				m_hfVertexTextureHeight;
+	D3DXHANDLE				m_hfMatrixTextureSize;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 

@@ -155,8 +155,9 @@ public:
 		template <typename T>
 		void			SetVertexBiNormal(std::vector<T>& arrVertex,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
 
+/*
 		template <typename T>
-		void			SetVertexIndex(std::vector<T>& arrVertex);
+		void			SetVertexIndex(std::vector<T>& arrVertex);*/
 
 
 		void			CalculateSphere(D3DXVECTOR3& tempAxisMin,D3DXVECTOR3& tempAxisMax,cSphere& out);

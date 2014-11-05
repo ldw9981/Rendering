@@ -14,9 +14,11 @@
 #include "Scene/CameraNode.h"
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
-#include "Graphics/MatrixStreamVertexBuffer.h"
-#include "Graphics/VertexTransformationTexture.h"
-#include "Graphics/VertexStream.h"
+
+#include "Graphics/VertexTexture.h"
+#include "Graphics/VertexInstancingBuffer.h"
+#include "Graphics/MatrixTexture.h"
+#include "Graphics/IndexInstancingBuffer.h"
 
 namespace Sophia
 {
@@ -36,9 +38,10 @@ cMeshNode::cMeshNode(void)
 	m_materialSubIndex=0;
 	m_pMaterial = NULL;
 	m_bInstancingEnable = false;
-	m_pMatrixStreamVertexBuffer=NULL;
-	m_pVertexTransformTexture = NULL;
-	m_pVertexStream = NULL;
+	m_pMatrixTexture=NULL;
+	m_pVertexTexture = NULL;
+	m_pVertexInstancingBuffer = NULL;
+	m_pIndexInstancingBuffer=NULL;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -53,7 +56,7 @@ cMeshNode::~cMeshNode(void)
 
 void cMeshNode::Render()
 {	
-	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMALVERTEX));
+	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMAL_VERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
@@ -63,7 +66,7 @@ void cMeshNode::Render()
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
-		m_pRscVetextBuffer->GetCount(),
+		m_pRscVetextBuffer->GetVertexCount(),
 		m_startIndex,
 		m_primitiveCount );
 }
@@ -126,74 +129,6 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	{
 		(*it_child)->QueueRenderer(pEntity,bTraversal);
 	}
-}
-
-void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
-	const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
-	D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
-	D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3)
-{
-	float vector1[3], vector2[3];
-	float tuVector[2], tvVector[2];
-
-	float den;
-	float length;
-	D3DXVECTOR3 tangent;
-	D3DXVECTOR3 binormal;
-
-
-	// Calculate the two vectors for this face.
-	vector1[0] = vertex2.x - vertex1.x;
-	vector1[1] = vertex2.y - vertex1.y;
-	vector1[2] = vertex2.z - vertex1.z;
-
-	vector2[0] = vertex3.x - vertex1.x;
-	vector2[1] = vertex3.y - vertex1.y;
-	vector2[2] = vertex3.z - vertex1.z;
-
-	// Calculate the tu and tv texture space vectors.
-	tuVector[0] = t2.u - t1.u;
-	tvVector[0] = t2.v - t1.v;
-
-	tuVector[1] = t3.u - t1.u;
-	tvVector[1] = t3.v - t1.v;
-
-	// Calculate the denominator of the tangent/binormal equation.
-	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
-
-	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
-	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
-	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
-	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
-
-	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
-	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
-	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
-
-	// Calculate the length of this normal.
-	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
-
-	// Normalize the normal and then store it
-	tangent.x = tangent.x / length;
-	tangent.y = tangent.y / length;
-	tangent.z = tangent.z / length;
-
-	// Calculate the length of this normal.
-	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
-
-	// Normalize the normal and then store it
-	binormal.x = binormal.x / length;
-	binormal.y = binormal.y / length;
-	binormal.z = binormal.z / length;
-
-	tangent1 = tangent;
-	tangent2 = tangent;
-	tangent3 = tangent;
-
-	binormal1 = binormal;
-	binormal2 = binormal;
-	binormal3 = binormal;
-
 }
 
 
@@ -279,14 +214,14 @@ void cMeshNode::SerializeOutMesh( std::ofstream& stream )
 	DWORD bufferSize =0;
 	bufferSize = m_pRscIndexBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
-	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(m_pRscIndexBuffer->GetBufferSize(),0);
 	stream.write((char*)pIndices,bufferSize);
 	m_pRscIndexBuffer->Unlock();		
 
 	//vertex
 	bufferSize = m_pRscVetextBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
-	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
+	NORMAL_VERTEX* pVertices=(NORMAL_VERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
 	stream.write((char*)pVertices,bufferSize);
 	m_pRscVetextBuffer->Unlock();	
 
@@ -300,10 +235,10 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
-		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(0,pRscIndexBuffer->GetBufferSize(),0);
+		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(pRscIndexBuffer->GetBufferSize(),0);
 		stream.read((char*)pIndices,bufferSize);
 		pRscIndexBuffer->Unlock();		
-		pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+		pRscIndexBuffer->SetTriangleCount(bufferSize/sizeof(TRIANGLE));
 	}
 	else
 	{
@@ -316,10 +251,10 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
-		NORMALVERTEX* pVertices=(NORMALVERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);
+		NORMAL_VERTEX* pVertices=(NORMAL_VERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);
 		stream.read((char*)pVertices,bufferSize);
 		pRscVetextBuffer->Unlock();		
-		pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));
+		pRscVetextBuffer->SetVertexCount(bufferSize/sizeof(NORMAL_VERTEX));
 	}
 	else
 	{
@@ -344,15 +279,22 @@ const std::vector<Material*>& cMeshNode::GetMaterials()
 	return m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
 }
 
-void cMeshNode::RenderIsntancing()
+
+void cMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 {
+	HRESULT hr;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	V(pEffect->SetTexture("Tex_VertexInstancing",m_pVertexTexture->GetD3DTexture()));
+
+	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(NORMAL_VERTEX_INSTANCEDATA)));		
+	V(Graphics::m_pDevice->SetIndices(m_pIndexInstancingBuffer->GetD3DIndexBuffer())); 
+	UINT passes;
+	V(pEffect->Begin(&passes, 0));			
+	V(pEffect->BeginPass(0));
 	pEffect->CommitChanges();
-	
-	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, 
-		m_pRscVetextBuffer->GetCount(),
-		m_startIndex,
-		m_primitiveCount );
+	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, vertexCount,0, triangleCount) );
+	V(pEffect->EndPass());		
+	V(pEffect->End());		
 }
 
 void cMeshNode::SetInstancingEnable( bool val )
@@ -370,46 +312,136 @@ void cMeshNode::SetInstancingEnable( bool val )
 
 void cMeshNode::CreateInstancingResource()
 {
-	if (m_pMatrixStreamVertexBuffer==NULL)
+	HRESULT hr=0;
+	if (m_pVertexInstancingBuffer == NULL)
 	{
-		m_pMatrixStreamVertexBuffer = cResourceMng::m_pInstance->CreateMatrixStreamVertexBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
-		m_pMatrixStreamVertexBuffer->AddRef();
+		DWORD size = sizeof(NORMAL_VERTEX_INSTANCEDATA) * m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX;
+		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
+		m_pVertexInstancingBuffer->AddRef();
+		if (m_pVertexInstancingBuffer->GetRefCounter()==1)
+		{
+			NORMAL_VERTEX_INSTANCEDATA* pDstLockPos = (NORMAL_VERTEX_INSTANCEDATA*)m_pVertexInstancingBuffer->Lock(0,0);
+			NORMAL_VERTEX* pSrcLockPos = (NORMAL_VERTEX*)m_pRscVetextBuffer->Lock(0,0);
+
+			int vertexSize = m_pRscVetextBuffer->GetVertexCount();
+
+			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
+			{
+				NORMAL_VERTEX* pSrcPos = pSrcLockPos;			
+				for (int vertexIndex = 0 ;vertexIndex<vertexSize;vertexIndex++)
+				{
+					pDstLockPos->vertex = *pSrcPos;
+
+					pDstLockPos->vertexIndex = (float)vertexIndex;
+					pDstLockPos->vertexSize =  (float)vertexSize;
+					pDstLockPos->instanceIndex = (float)instanceIndex;
+					pDstLockPos->instanceSize = (float)INSTANCING_MAX;
+					pSrcPos++;
+					pDstLockPos++;
+				}	 
+			}
+			m_pRscVetextBuffer->Unlock();
+			m_pVertexInstancingBuffer->Unlock();
+		}		
 	}
 
-	if (m_pVertexTransformTexture == NULL)
+	if (m_pIndexInstancingBuffer==NULL)
 	{
-		m_pVertexTransformTexture = cResourceMng::m_pInstance->CreateVertexTransformationTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
-		m_pVertexTransformTexture->AddRef();
+		DWORD bufferSize =  m_pRscIndexBuffer->GetBufferSize() *INSTANCING_MAX;
+		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
+		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),bufferSize,triangleCount);
+		m_pIndexInstancingBuffer->AddRef();				
+		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
+		{
+			TRIANGLE* pSrcLockPos = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,0);
+			TRIANGLE* pDstLockPos = (TRIANGLE*)m_pIndexInstancingBuffer->Lock(0,0);
+
+			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
+			{
+				for (int i=0 ; i< m_pRscIndexBuffer->GetTriangleCount() ;i++ )
+				{
+					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[0] = pSrcLockPos[i].index[0] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
+					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[1] = pSrcLockPos[i].index[1] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
+					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[2] = pSrcLockPos[i].index[2] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	//
+				}	 
+			}	
+			m_pIndexInstancingBuffer->Unlock();
+			m_pRscIndexBuffer->Unlock();
+		}
 	}
 
-	if (m_pVertexStream == NULL)
-	{
-		m_pVertexStream = cResourceMng::m_pInstance->CreateVertexStream(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),
-			m_pRscVetextBuffer->GetBufferSize()*INSTANCING_MAX
-			);
 
-		m_pVertexStream->AddRef();
+	if (m_pVertexTexture == NULL)
+	{
+		DWORD size =(DWORD) pow(2.0f,ceil(log(sqrt((float) m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX))/log(2.0f)));
+		m_pVertexTexture = cResourceMng::m_pInstance->CreateVertexTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
+		m_pVertexTexture->AddRef();
 	}
 
+	if (m_pMatrixTexture==NULL)
+	{
+		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) INSTANCING_MAX*4 ))/log(2.0f)));
+		m_pMatrixTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
+		m_pMatrixTexture->AddRef();
+	}
 }
 
 void cMeshNode::ReleaseInstancingResource()
 {
-	SAFE_RELEASE(m_pVertexStream);
-	SAFE_RELEASE(m_pMatrixStreamVertexBuffer);
-	SAFE_RELEASE(m_pVertexTransformTexture);	
+	SAFE_RELEASE(m_pVertexInstancingBuffer);
+	SAFE_RELEASE(m_pVertexTexture);	
+	SAFE_RELEASE(m_pMatrixTexture);
+	SAFE_RELEASE(m_pIndexInstancingBuffer);
 }
 
-void cMeshNode::RenderTexture()
+void cMeshNode::RenderVertexTexture(int instanceCount)
 {
+	HRESULT hr;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	pEffect->CommitChanges();
 
-	Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,m_pRscVetextBuffer->GetCount());
-// 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, 
-// 				m_pRscVetextBuffer->GetCount(),
-// 				m_startIndex,
-// 				m_primitiveCount );
+
+	LPDIRECT3DSURFACE9 pOldRT;
+	V( Graphics::m_pDevice->GetRenderTarget(0,&pOldRT) );
+	LPDIRECT3DSURFACE9 pNewRT;
+	V( m_pVertexTexture->GetD3DTexture()->GetSurfaceLevel(0,&pNewRT));
+	V( Graphics::m_pDevice->SetRenderTarget(0,pNewRT) );
+	if( SUCCEEDED(hr))
+	{
+		V( pNewRT->Release() );
+	}
+	LPDIRECT3DSURFACE9 pOldDepthStencil;
+	Graphics::m_pDevice->GetDepthStencilSurface(&pOldDepthStencil);
+	Graphics::m_pDevice->SetDepthStencilSurface(NULL);
+
+
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)m_pVertexTexture->GetWidth());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)m_pVertexTexture->GetHeight());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)m_pMatrixTexture->GetSize());		
+	pEffect->SetTexture("Tex_MatrixInstancing",m_pMatrixTexture->GetD3DTexture());
+
+	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(NORMAL_VERTEX_INSTANCEDATA)));
+
+	pEffect->SetTechnique(Graphics::m_pInstance->m_hTVertexTransform);	
+	
+	UINT passes = 0;		
+	pEffect->Begin(&passes, 0);
+	pEffect->BeginPass(0);
+	pEffect->CommitChanges();
+	V( Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,m_pRscVetextBuffer->GetVertexCount()* instanceCount) );
+	pEffect->EndPass();
+	pEffect->End();		
+
+	// ·»´õÅ¸°Ù,½ºÅÙ½Ç º¹±¸
+	V( Graphics::m_pDevice->SetRenderTarget(0,pOldRT));
+	if( SUCCEEDED(hr))
+	{
+		V( pOldRT->Release() );
+	}
+	V( Graphics::m_pDevice->SetDepthStencilSurface(pOldDepthStencil));
+	if( SUCCEEDED(hr))
+	{
+		V( pOldDepthStencil->Release() );
+	}
 }
 
 }

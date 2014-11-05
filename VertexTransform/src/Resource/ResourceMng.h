@@ -15,11 +15,10 @@ class cResourceMng;
 class EntityAnimation;
 class EntityMaterial;
 class Material;
-class MatrixStreamVertexBuffer;
-class IndexStreamVertexBuffer;
-class BoneStreamTexture;
-class VertexTransformationTexture;
-class VertexStream;
+class IndexInstancingBuffer;
+class MatrixTexture;
+class VertexTexture;
+class VertexInstancingBuffer;
 class cResourceMng:
 	private cStaticRestoreList
 {
@@ -33,7 +32,6 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
-	std::map<SCENE_KEY,cResource*>						m_contMatrixStreamVertexBuffer;
 	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
 	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
 	std::map<SCENE_KEY,cResource*>						m_contVertexTransformationTexture;
@@ -48,11 +46,11 @@ public:
 	void				EraseRscTexture(const std::string& strKey);	
 
 	void				GetKeyVertexBuffer(std::string& key, const char* rootName,const char* meshName );
-	cRscVertexBuffer*	CreateRscVertexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscVertexBuffer*	CreateRscVertexBuffer(const char* rootName,const char* meshName,DWORD bufferSize);
 	void				EraseRscVertexBuffer( const std::string& strKey );
 
 	void				GetKeyIndexBuffer(std::string& key, const char* rootName, const char* meshName );
-	cRscIndexBuffer*	CreateRscIndexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscIndexBuffer*	CreateRscIndexBuffer(const char* rootName,const char* meshName,DWORD bufferSize);
 	void				EraseRscIndexBuffer( const std::string& strKey );
 
 	void				GetKeyEntityAnimation(std::string& key,const  char* filePath );
@@ -67,20 +65,18 @@ public:
 	EntityMaterial*		CreateEntityMaterial(const char* filePath);
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
-	MatrixStreamVertexBuffer*	CreateMatrixStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseMatrixStreamVertexBuffer(SCENE_KEY& key);
 
-	IndexStreamVertexBuffer*	CreateIndexStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseIndexStreamVertexBuffer(SCENE_KEY& key);
+	IndexInstancingBuffer*	CreateIndexInstancingBuffer(SCENE_KEY& key,DWORD buffersize,DWORD count);
+	void				EraseIndexInstancingBuffer(SCENE_KEY& key);
 
-	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key);
+	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
-	VertexTransformationTexture*	CreateVertexTransformationTexture(SCENE_KEY& key);
-	void				EraseVertexTransformationTexture(SCENE_KEY& key);
+	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);
+	void				EraseVertexTexture(SCENE_KEY& key);
 
-	VertexStream*		CreateVertexStream(SCENE_KEY& key,DWORD size );
-	void				EraseVertexStream(SCENE_KEY& key);
+	VertexInstancingBuffer*	CreateVertexInstancingBuffer(SCENE_KEY& key,DWORD buffersize ,DWORD count);
+	void				EraseVertexInstancingBuffer(SCENE_KEY& key);
 };
 
 }

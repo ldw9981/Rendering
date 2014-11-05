@@ -13,8 +13,11 @@ namespace Sophia
 class MatrixStreamVertexBuffer;
 class cMeshNode;
 class cView;
-class VertexTransformationTexture;
-class VertexStream;
+class VertexTexture;
+class VertexInstancingBuffer;
+class MatrixTexture;
+class IndexInstancingBuffer;
+
 class cMeshNode:
 	public cSceneNode
 {
@@ -31,10 +34,10 @@ protected:
 	Material*				m_pMaterial;
 	bool					m_bInstancingEnable;
 
-	MatrixStreamVertexBuffer*	m_pMatrixStreamVertexBuffer;
-	VertexTransformationTexture*	m_pVertexTransformTexture;
-	
-	VertexStream*			m_pVertexStream;
+	MatrixTexture*			m_pMatrixTexture;		// world Matrix
+	VertexTexture*			m_pVertexTexture;		// Transformed-Vertex
+	VertexInstancingBuffer*		m_pVertexInstancingBuffer;		
+	IndexInstancingBuffer*		m_pIndexInstancingBuffer;	
 public:
 	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -43,13 +46,6 @@ public:
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
-
-	void					CalculateTangentBinormal();
-	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
-		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
-		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
-		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
-
 	virtual void			Release();
 
 	// ISerialize
@@ -72,16 +68,17 @@ public:
 	unsigned char GetMaterialSubIndex() const { return m_materialSubIndex; }
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 
-	void RenderIsntancing();
-	void RenderTexture();
+	virtual void RenderInstancing(int vertexCount,int triangleCount);
+	void RenderVertexTexture(int instanceCount);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
 	void SetInstancingEnable(bool val);
-	VertexStream* GetVertexStream() const { return m_pVertexStream; }
-	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
-	VertexTransformationTexture* GetVertexTransformTexture() const { return m_pVertexTransformTexture; }
+	VertexInstancingBuffer* GetVertexInstancingBuffer() const { return m_pVertexInstancingBuffer; }
+	VertexTexture*			GetVertexTexture() const { return m_pVertexTexture; }
+	MatrixTexture*			GetMatrixTexture() const { return m_pMatrixTexture; }
+	IndexInstancingBuffer*	GetIndexInstancingBuffer() const { return m_pIndexInstancingBuffer; }	
 protected:
 	virtual void CreateInstancingResource();
 	virtual void ReleaseInstancingResource();

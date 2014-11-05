@@ -165,6 +165,7 @@ void cD3DFramework::Render()
 
 	
 
+
 	int temp = m_FpsMng.GetFPS();
 	std::ostringstream stream;
 	stream << "FPS " << temp << "\n";
@@ -177,8 +178,6 @@ void cD3DFramework::Render()
 	//stream << Graphics::g_pGraphics->m_WorldLightPosition.z << " ";
 	stream << "RESOUCE " << m_pResourceMng->GetCount() << "\n";
 	Graphics::m_pInstance->RenderDebugString(0,0,stream.str().c_str());
-
-
 	
 	Graphics::m_pInstance->End();
 }

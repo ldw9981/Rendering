@@ -3,6 +3,7 @@
 #include "Foundation/Define.h"
 #include "Resource/ResourceMng.h"
 #include "Graphics/Graphics.h"
+#include "Foundation/Trace.h"
 
 using namespace Sophia;
 
@@ -20,23 +21,27 @@ cRscIndexBuffer::~cRscIndexBuffer(void)
 
 BOOL cRscIndexBuffer::Create()
 {
-	assert(m_RefCounter>=0);
-	
+	HRESULT hr;
+
+	assert(m_RefCounter>=0);	
+
 	if (m_RefCounter > 0 )
 		return TRUE;
 
-	HRESULT hResult;		
 	// ! IndexBuffer
 	// 1) 필요한 Index갯수 만큼의 크기로 IndexBuffer를 만든다.
-	hResult=Graphics::m_pDevice->CreateIndexBuffer( 
+	V(Graphics::m_pDevice->CreateIndexBuffer( 
 		m_BufferSize,
 		m_usage,
 		D3DFMT_INDEX16,
 		m_Type,
 		&m_pD3DIndexBuffer,
-		NULL);
-	assert(hResult==S_OK);
-	
+		NULL));
+
+	if (FAILED(hr))
+	{
+		return FALSE;
+	}	
 	return TRUE;
 }
 
@@ -53,10 +58,10 @@ void cRscIndexBuffer::Free()
 	delete this;
 }
 
-void* cRscIndexBuffer::Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags)
+void* cRscIndexBuffer::Lock(UINT SizeToLock,DWORD Flags)
 {
 	void *pIndices;
-	m_pD3DIndexBuffer->Lock( OffsetToLock, SizeToLock, (void**)&pIndices,Flags);		
+	m_pD3DIndexBuffer->Lock(0, SizeToLock, (void**)&pIndices,Flags);		
 	return pIndices;
 }
 

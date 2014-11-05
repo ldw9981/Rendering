@@ -37,7 +37,8 @@ struct TEXCOORD
 		return false;
 	}
 };
-struct NORMALVERTEX
+
+struct NORMAL_VERTEX
 {	
 	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal	
@@ -45,9 +46,17 @@ struct NORMALVERTEX
 	D3DXVECTOR3 binormal;	
 	TEXCOORD	uv0;	
 	TEXCOORD	uv1;
-	TEXCOORD	index;
+	
 };
-struct BLENDVERTEX
+
+struct NORMAL_VERTEX_INSTANCEDATA
+{	
+	NORMAL_VERTEX	vertex;
+	float		vertexIndex,vertexSize;
+	float		instanceIndex,instanceSize;
+};
+
+struct BLEND_VERTEX
 {	
 	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal
@@ -56,8 +65,7 @@ struct BLENDVERTEX
 	TEXCOORD	uv0;	
 	TEXCOORD	uv1;	
 	float		boneWeight[3];		
-	BYTE		boneIndex[4];
-	TEXCOORD	index;
+	BYTE		boneIndex[4];	
 
 	void SetWeight(float src_weight[3])
 	{
@@ -69,14 +77,13 @@ struct BLENDVERTEX
 	}
 };
 
-struct NORMALINSTANCE
-{
-	D3DXVECTOR3 instanceMatrix0;
-	D3DXVECTOR3 instanceMatrix1;
-	D3DXVECTOR3 instanceMatrix2;
-	D3DXVECTOR3 instanceMatrix3;
-	TEXCOORD instanceIndex;	
+struct BLEND_VERTEX_INSTANCEDATA
+{	
+	BLEND_VERTEX vertex;
+	float		vertexIndex,vertexSize;
+	float		instanceIndex,instanceSize;
 };
+
 
 struct GUIVERTEX
 {
@@ -85,9 +92,6 @@ struct GUIVERTEX
 	TEXCOORD	tex;
 };
 
-struct BLENDINSTANCEVERTEX
-{		
-	TEXCOORD instanceIndex;	
-};
+
 
 }

@@ -43,7 +43,7 @@ void cMenuView::Enter()
 	cView::Enter();
 	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2000.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 2000.0f, -3000.0f),
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
@@ -94,18 +94,11 @@ void cMenuView::Enter()
 	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		if (i%2 == 0)
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
-		}
-		else
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
-		}		
+
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+			
 
 		m_pHouse[i]->Build();
 		m_pHouse[i]->SetInstanceEnable(m_instancing);
@@ -117,12 +110,7 @@ void cMenuView::Enter()
 
 		pos.y =  100;
 		m_pHouse[i]->SetLocalPos(pos);
-		
 	}
-	
-	
-	
-
 }
 
 void cMenuView::Leave()

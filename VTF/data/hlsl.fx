@@ -1,10 +1,10 @@
 // 텍스처
-texture Tex0;
-texture Tex1;
-texture Tex2;
-texture Tex3;
-texture Opacity_Tex;
-texture ShadowMap_Tex : RenderColorTarget;
+texture Tex_Diffuse;
+texture Tex_Normal;
+texture Tex_Light;
+texture Tex_Specular;
+texture Tex_Opacity;
+texture Tex_Depth : RenderColorTarget;
 texture Bone_Tex;
 
 
@@ -23,28 +23,28 @@ float4x4 gLightProjectionMatrix : Projection;
 // 텍스처 샘플러
 sampler gDiffuseSampler = sampler_state
 {
-    Texture   = (Tex0);
+    Texture   = (Tex_Diffuse);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gNormalSampler = sampler_state
 {
-    Texture   = (Tex1);
+    Texture   = (Tex_Normal);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gSpecularSampler = sampler_state
 {
-    Texture   = (Tex2);
+    Texture   = (Tex_Specular);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
 };
 sampler gLightSampler = sampler_state
 {
-    Texture   = (Tex3);
+    Texture   = (Tex_Light);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
@@ -52,7 +52,7 @@ sampler gLightSampler = sampler_state
 
 sampler gOpacitySampler = sampler_state
 {
-    Texture   = (Opacity_Tex);
+    Texture   = (Tex_Opacity);
     MipFilter = LINEAR;
     MinFilter = LINEAR;
     MagFilter = LINEAR;
@@ -60,7 +60,7 @@ sampler gOpacitySampler = sampler_state
 
 sampler2D ShadowSampler = sampler_state
 {
-   Texture = (ShadowMap_Tex);
+   Texture = (Tex_Depth);
 };
 
 sampler2D   gBoneSampler = sampler_state 

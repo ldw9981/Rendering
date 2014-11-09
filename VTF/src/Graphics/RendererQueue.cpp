@@ -164,23 +164,23 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial )
 	cRscTexture* pRscTexture;
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapDiffuse();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Diffuse",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapNormal();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Normal",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapLight();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Light",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapSpecular();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());	
+		pEffect->SetTexture("Tex_Specular",pRscTexture->GetD3DTexture());	
 }
 
 
@@ -197,7 +197,7 @@ void cRendererQueue::ChangeMaterialForShadow( Material* pMaterial )
 	cRscTexture* pRscTexture;
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());	
+		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());	
 }
 
 

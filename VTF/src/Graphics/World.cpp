@@ -269,7 +269,7 @@ void World::Render()
 	pHWBackBuffer = NULL;
 	pHWDepthStencilBuffer->Release();
 	pHWDepthStencilBuffer = NULL;
-	m_pEffect->SetTexture("ShadowMap_Tex", m_pShadowRenderTarget);	
+	m_pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
 
 	if (!m_renderQueueTerrain.m_vecMesh.empty())
 	{				

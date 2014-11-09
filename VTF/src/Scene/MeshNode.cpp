@@ -124,75 +124,6 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	}
 }
 
-void cMeshNode::CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
-	const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
-	D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
-	D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3)
-{
-	float vector1[3], vector2[3];
-	float tuVector[2], tvVector[2];
-
-	float den;
-	float length;
-	D3DXVECTOR3 tangent;
-	D3DXVECTOR3 binormal;
-
-
-	// Calculate the two vectors for this face.
-	vector1[0] = vertex2.x - vertex1.x;
-	vector1[1] = vertex2.y - vertex1.y;
-	vector1[2] = vertex2.z - vertex1.z;
-
-	vector2[0] = vertex3.x - vertex1.x;
-	vector2[1] = vertex3.y - vertex1.y;
-	vector2[2] = vertex3.z - vertex1.z;
-
-	// Calculate the tu and tv texture space vectors.
-	tuVector[0] = t2.u - t1.u;
-	tvVector[0] = t2.v - t1.v;
-
-	tuVector[1] = t3.u - t1.u;
-	tvVector[1] = t3.v - t1.v;
-
-	// Calculate the denominator of the tangent/binormal equation.
-	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
-
-	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
-	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
-	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
-	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
-
-	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
-	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
-	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
-
-	// Calculate the length of this normal.
-	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
-
-	// Normalize the normal and then store it
-	tangent.x = tangent.x / length;
-	tangent.y = tangent.y / length;
-	tangent.z = tangent.z / length;
-
-	// Calculate the length of this normal.
-	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
-
-	// Normalize the normal and then store it
-	binormal.x = binormal.x / length;
-	binormal.y = binormal.y / length;
-	binormal.z = binormal.z / length;
-
-	tangent1 = tangent;
-	tangent2 = tangent;
-	tangent3 = tangent;
-
-	binormal1 = binormal;
-	binormal2 = binormal;
-	binormal3 = binormal;
-
-}
-
-
 void cMeshNode::Release()
 {
 	cSceneNode::Release();
@@ -351,7 +282,7 @@ void cMeshNode::RenderIsntancing()
 		m_primitiveCount );
 }
 
-void cMeshNode::SetInstancingEnable( bool val )
+void cMeshNode::ChangeInstancingEnable( bool val )
 {
 	m_bInstancingEnable = val;
 	if (m_bInstancingEnable)

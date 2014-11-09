@@ -42,11 +42,6 @@ public:
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
 
-	void					CalculateTangentBinormal();
-	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
-		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
-		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
-		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
 
 	virtual void			Release();
 
@@ -75,7 +70,7 @@ public:
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	void SetInstancingEnable(bool val);
+	void ChangeInstancingEnable(bool val);
 	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
 protected:
 	virtual void CreateInstancingResource();

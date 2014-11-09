@@ -561,11 +561,11 @@ void Entity::WorkEnableInstancing(cSceneNode* pNode)
 	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
 	if (pMesh)
 	{
-		pMesh->SetInstancingEnable(true);
+		pMesh->ChangeInstancingEnable(true);
 	}	
 }
 
-void Entity::SetInstanceEnable( bool enable )
+void Entity::ChangeInstanceEnable( bool enable )
 {
 	for (size_t i=0;i<m_vecChildNode.size();i++)
 	{
@@ -581,7 +581,7 @@ void Entity::WorkDisableInstancing( cSceneNode* pNode )
 	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
 	if (pMesh)
 	{
-		pMesh->SetInstancingEnable(false);
+		pMesh->ChangeInstancingEnable(false);
 	}	
 }
 

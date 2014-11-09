@@ -67,7 +67,7 @@ void SceneProperty::Write( Sophia::cSceneNode* pNode )
 	Sophia::cMeshNode* pMesh = dynamic_cast<Sophia::cMeshNode*>(pNode);
 	if (pMesh!=NULL)
 	{
-		pMesh->SetInstancingEnable(instancingEnable);		
+		pMesh->ChangeInstancingEnable(instancingEnable);		
 	}
 }
 

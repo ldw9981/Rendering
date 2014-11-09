@@ -475,7 +475,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								{
 									NORMALVERTEX Item;
 									memset(&Item,0,sizeof(Item));
-									Item.vertex = vertex;
+									Item.position = vertex;
 									vecNormalVertexForBuffer.push_back(Item);				
 									size = vecNormalVertexForBuffer.size();
 								}
@@ -483,7 +483,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								{
 									BLENDVERTEX Item;
 									memset(&Item,0,sizeof(Item));
-									Item.vertex = vertex;
+									Item.position = vertex;
 									vecBlendVertexForBuffer.push_back(Item);			
 									size = vecBlendVertexForBuffer.size();
 								}						
@@ -787,7 +787,11 @@ BOOL cASEParser::Parsing_GeoObject()
 	if (!bSkinned) MergeTexCoordListIntoVertexList(false,vecNormalVertexForBuffer,vecIndexForBuffer,vecTempExtraTVertex,vecTempExtraTFaceIndex);
 	else MergeTexCoordListIntoVertexList(false,vecBlendVertexForBuffer,vecIndexForBuffer,vecTempExtraTVertex,vecTempExtraTFaceIndex);
 
-	
+	if (!bSkinned) 
+		SetVertexBiNormal(vecNormalVertexForBuffer,vecIndexForBuffer);
+	else 
+		SetVertexBiNormal(vecBlendVertexForBuffer,vecIndexForBuffer);
+
 	// 서브매트리얼 ID별로 FACEINDEX정렬
 	sort(vecIndexForBuffer.begin(),vecIndexForBuffer.end(),TRIANGLE_SUBMATERIAL::LessFaceIndex);	
 
@@ -1995,7 +1999,7 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 				memcpy(&pVertices[i],&arrVertex[i],sizeof(T));
 			}	
 			pVertexBuffer->Unlock();			
-			pVertexBuffer->SetCount(nCount);
+			pVertexBuffer->SetVertexCount(nCount);
 		}
 	}
 	return pVertexBuffer;
@@ -2019,7 +2023,7 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
 			}
 			pIndexBuffer->Unlock();		
-			pIndexBuffer->SetCount(nCount);
+			pIndexBuffer->SetTriangleCount(nCount);
 		}
 	}			
 	return pIndexBuffer;
@@ -2400,6 +2404,87 @@ cRscTexture* cASEParser::GetTexture()
 
 
 
+void cASEParser::CalculateBiNormal( const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3, const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3, D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3, D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3 )
+{
+	float vector1[3], vector2[3];
+	float tuVector[2], tvVector[2];
+
+	float den;
+	float length;
+	D3DXVECTOR3 tangent;
+	D3DXVECTOR3 binormal;
+
+
+	// Calculate the two vectors for this face.
+	vector1[0] = vertex2.x - vertex1.x;
+	vector1[1] = vertex2.y - vertex1.y;
+	vector1[2] = vertex2.z - vertex1.z;
+
+	vector2[0] = vertex3.x - vertex1.x;
+	vector2[1] = vertex3.y - vertex1.y;
+	vector2[2] = vertex3.z - vertex1.z;
+
+	// Calculate the tu and tv texture space vectors.
+	tuVector[0] = t2.u - t1.u;
+	tvVector[0] = t2.v - t1.v;
+
+	tuVector[1] = t3.u - t1.u;
+	tvVector[1] = t3.v - t1.v;
+
+	// Calculate the denominator of the tangent/binormal equation.
+	den = 1.0f / (tuVector[0] * tvVector[1] - tuVector[1] * tvVector[0]);
+
+	// Calculate the cross products and multiply by the coefficient to get the tangent and binormal.
+	tangent.x = (tvVector[1] * vector1[0] - tvVector[0] * vector2[0]) * den;
+	tangent.y = (tvVector[1] * vector1[1] - tvVector[0] * vector2[1]) * den;
+	tangent.z = (tvVector[1] * vector1[2] - tvVector[0] * vector2[2]) * den;
+
+	binormal.x = (tuVector[0] * vector2[0] - tuVector[1] * vector1[0]) * den;
+	binormal.y = (tuVector[0] * vector2[1] - tuVector[1] * vector1[1]) * den;
+	binormal.z = (tuVector[0] * vector2[2] - tuVector[1] * vector1[2]) * den;
+
+	// Calculate the length of this normal.
+	length = sqrt((tangent.x * tangent.x) + (tangent.y * tangent.y) + (tangent.z * tangent.z));
+
+	// Normalize the normal and then store it
+	tangent.x = tangent.x / length;
+	tangent.y = tangent.y / length;
+	tangent.z = tangent.z / length;
+
+	// Calculate the length of this normal.
+	length = sqrt((binormal.x * binormal.x) + (binormal.y * binormal.y) + (binormal.z * binormal.z));
+
+	// Normalize the normal and then store it
+	binormal.x = binormal.x / length;
+	binormal.y = binormal.y / length;
+	binormal.z = binormal.z / length;
+
+	tangent1 = tangent;
+	tangent2 = tangent;
+	tangent3 = tangent;
+
+	binormal1 = binormal;
+	binormal2 = binormal;
+	binormal3 = binormal;
+}
+
+template <typename T>
+void cASEParser::SetVertexBiNormal( std::vector<T>& arrVertex,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex )
+{
+	size_t index_size = arrIndex.size(); 
+	for (size_t index = 0; index < index_size; index++)
+	{
+		long i1 = arrIndex[index].triangle.index[0];
+		long i2 = arrIndex[index].triangle.index[1];
+		long i3 = arrIndex[index].triangle.index[2];
+
+		CalculateBiNormal( arrVertex[i1].position,arrVertex[i2].position,arrVertex[i3].position,
+			arrVertex[i1].uv0,		arrVertex[i2].uv0,		arrVertex[i3].uv0,
+			arrVertex[i1].tangent,	arrVertex[i2].tangent,	arrVertex[i3].tangent,
+			arrVertex[i1].binormal,	arrVertex[i2].binormal,	arrVertex[i3].binormal	);
+
+	}
+}
 
 
 }

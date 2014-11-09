@@ -297,7 +297,7 @@ void cMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 	V(pEffect->End());		
 }
 
-void cMeshNode::SetInstancingEnable( bool val )
+void cMeshNode::ChangeInstancingEnable( bool val )
 {
 	m_bInstancingEnable = val;
 	if (m_bInstancingEnable)
@@ -316,7 +316,7 @@ void cMeshNode::CreateInstancingResource()
 	if (m_pVertexInstancingBuffer == NULL)
 	{
 		DWORD size = sizeof(NORMAL_VERTEX_INSTANCEDATA) * m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX;
-		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
+		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(m_pRscVetextBuffer,size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
 		m_pVertexInstancingBuffer->AddRef();
 		if (m_pVertexInstancingBuffer->GetRefCounter()==1)
 		{
@@ -335,7 +335,7 @@ void cMeshNode::CreateInstancingResource()
 					pDstLockPos->vertexIndex = (float)vertexIndex;
 					pDstLockPos->vertexSize =  (float)vertexSize;
 					pDstLockPos->instanceIndex = (float)instanceIndex;
-					pDstLockPos->instanceSize = (float)INSTANCING_MAX;
+	
 					pSrcPos++;
 					pDstLockPos++;
 				}	 
@@ -349,7 +349,7 @@ void cMeshNode::CreateInstancingResource()
 	{
 		DWORD bufferSize =  m_pRscIndexBuffer->GetBufferSize() *INSTANCING_MAX;
 		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
-		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),bufferSize,triangleCount);
+		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(m_pRscIndexBuffer,bufferSize,triangleCount);
 		m_pIndexInstancingBuffer->AddRef();				
 		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
 		{
@@ -442,6 +442,36 @@ void cMeshNode::RenderVertexTexture(int instanceCount)
 	{
 		V( pOldDepthStencil->Release() );
 	}
+}
+
+void cMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
+{
+	auto it = list.begin();
+	auto it_end = list.end();
+	int size = list.size();
+	cMeshNode* pMeshNode = NULL;
+	D3DXMATRIX* pDst=NULL;
+	DWORD offset_bytes = 0;
+	DWORD offset_line = 0;
+	DWORD bytesMatrix = sizeof(D3DXMATRIX);
+	DWORD bytesPerLine= bytesMatrix * (m_pMatrixTexture->GetSize()/4); // 1mat= 4pixel
+
+	D3DLOCKED_RECT lock;	
+	m_pMatrixTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
+
+	for ( ; it!=it_end ; it++)
+	{
+		pMeshNode = *it;	
+		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
+		memcpy_s((void*)pDst,bytesMatrix,(void*)pMeshNode->GetWorldMatrixPtr(),bytesMatrix);	// 64Byte					
+		offset_bytes += bytesMatrix;		
+		if (offset_bytes >= bytesPerLine)
+		{
+			offset_line++;			
+			offset_bytes=0;
+		}		
+	}
+	m_pMatrixTexture->GetD3DTexture()->UnlockRect(0);
 }
 
 }

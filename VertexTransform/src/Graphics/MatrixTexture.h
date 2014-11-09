@@ -24,7 +24,7 @@ public:
 
 	bool GetValid() const { return m_valid; }
 	void SetValid(bool val) { m_valid = val; }
-	void UpdateMatrix(std::list<cMeshNode*>& list);
+
 };
 
 }

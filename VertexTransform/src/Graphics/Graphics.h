@@ -5,7 +5,7 @@
 namespace Sophia
 {
 
-#define INSTANCING_MAX 1024
+#define INSTANCING_MAX 256
 
 class cGUIFont;
 class cView;
@@ -65,8 +65,6 @@ public:
 	D3DXHANDLE				m_hTShadowSkinnedAlphaTestInstancing;	
 
 	D3DXHANDLE				m_hTGUI;
-	LPD3DXEFFECT			m_pApplyShadowShader;
-	LPD3DXEFFECT			m_pCreateShadowShader;
 
 	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
 	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬

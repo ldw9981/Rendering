@@ -11,9 +11,7 @@ VertexInstancingBuffer::VertexInstancingBuffer(void)
 	m_pool=D3DPOOL_MANAGED;
 	m_usage = D3DUSAGE_WRITEONLY;
 	//m_BufferSize =sizeof(NORMALVERTEX)*INSTANCING_MAX;
-	m_key.pIndexBuffer = NULL;
-	m_key.pMaterial = NULL;
-	m_key.pVertexBuffer = NULL;
+	m_key = NULL;
 }
 
 
@@ -25,7 +23,7 @@ void VertexInstancingBuffer::Free()
 {
 	SAFE_RELEASE(m_pD3DVertexBuffer);
 
-	if (m_key.pIndexBuffer != NULL && m_key.pMaterial!=NULL && m_key.pVertexBuffer!=NULL)
+	if (m_key!=NULL)
 	{
 		cResourceMng::m_pInstance->EraseVertexInstancingBuffer(m_key);
 	}	

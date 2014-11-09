@@ -69,12 +69,13 @@ public:
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 
 	virtual void RenderInstancing(int vertexCount,int triangleCount);
-	void RenderVertexTexture(int instanceCount);
+	virtual void RenderVertexTexture(int instanceCount);
+	virtual void UpdateMatrixTexture(std::list<cMeshNode*>& list);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	void SetInstancingEnable(bool val);
+	void ChangeInstancingEnable(bool val);
 	VertexInstancingBuffer* GetVertexInstancingBuffer() const { return m_pVertexInstancingBuffer; }
 	VertexTexture*			GetVertexTexture() const { return m_pVertexTexture; }
 	MatrixTexture*			GetMatrixTexture() const { return m_pMatrixTexture; }

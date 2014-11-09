@@ -19,7 +19,7 @@ namespace Sophia
 
 	#define T_SIZE 256
 
-	#define SHADOWMAP_SIZE 4096
+	#define SHADOWMAP_SIZE 512
 
 World::World(void)
 {
@@ -31,7 +31,7 @@ World::World(void)
 	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
-	m_bEnableShadow = true;
+	m_bEnableShadow = false;
 	m_pHWRenderTarget[0] = NULL;
 	m_pHWDepthStencilBuffer = NULL;
 }
@@ -174,6 +174,8 @@ void World::Finalize()
 
 void World::Render()
 {
+	
+
 	LPD3DXEFFECT m_pEffect = Graphics::m_pInstance->GetEffect();
 	
 	UINT passes = 0;

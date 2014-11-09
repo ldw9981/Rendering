@@ -43,8 +43,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 	assert(!m_vecBoneRef.empty());
 	D3DXMATRIX tmBoneWorldReferenceInv;
 		
-	size_t iBoneRef=0,nBoneRefSize =m_vecBoneRef.size() ;
-	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
+	size_t iBoneRef=0,nBoneRefSize =m_vecBoneRef.size() ;	
 
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
@@ -54,9 +53,9 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		assert(refItem.pNode!=NULL);	
 		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로		
 		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&refItem.pNode->GetNodeTM());
-		refItem.SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
-		D3DXMatrixIdentity(&m_pMatrixPallete[iBoneRef]);
+		refItem.SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse		
 	}
+
 }
 
 /*
@@ -65,21 +64,21 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 */
 void SkinnedMeshNode::Render()
 {	
-
+	HRESULT hr;
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLEND_VERTEX));
 	m_pRscIndexBuffer->SetIndices();				
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	UpdateMatrixPallete();
 	size_t nBoneRefSize = m_vecBoneRef.size();
-	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pMatrixPallete,nBoneRefSize);	
-	pEffect->CommitChanges();	
+	V(pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pMatrixPallete,nBoneRefSize));	
+	V(pEffect->CommitChanges());	
 
-	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetVertexCount(),
 		m_startIndex,
-		m_primitiveCount );			
+		m_primitiveCount ));
 	
 }
 
@@ -90,6 +89,10 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 	if (m_bInstancingEnable)
 	{
 		CreateInstancingResource();
+	}
+	else
+	{
+		CreateMatrixPallete();
 	}
 
 	QueueRenderer(pEntity,false);
@@ -289,17 +292,13 @@ void SkinnedMeshNode::Update( DWORD elapseTime )
 void SkinnedMeshNode::UpdateMatrixPallete()
 {
 	size_t nBoneRefSize = m_vecBoneRef.size();
-	if (!m_updateBlendMatrix)
+
+	size_t iBoneRef=0;
+	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
-		size_t iBoneRef=0;
-		for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
-		{
-			BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-			//m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-			D3DXMatrixMultiply(&m_pMatrixPallete[iBoneRef],&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());
-		}
-		
-		m_updateBlendMatrix = true;
+		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
+		//m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+		D3DXMatrixMultiply(&m_pMatrixPallete[iBoneRef],&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());
 	}
 }
 
@@ -309,7 +308,7 @@ void SkinnedMeshNode::CreateInstancingResource()
 	if (m_pVertexInstancingBuffer == NULL)
 	{
 		DWORD size = sizeof(BLEND_VERTEX_INSTANCEDATA) * m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX;
-		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
+		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(m_pRscVetextBuffer,size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
 		m_pVertexInstancingBuffer->AddRef();
 		if (m_pVertexInstancingBuffer->GetRefCounter() == 1)
 		{
@@ -328,7 +327,7 @@ void SkinnedMeshNode::CreateInstancingResource()
 					pDstLockPos->vertexIndex = (float)vertexIndex;
 					pDstLockPos->vertexSize =  (float)vertexSize;
 					pDstLockPos->instanceIndex = (float)instanceIndex;
-					pDstLockPos->instanceSize = (float)INSTANCING_MAX;
+					pDstLockPos->boneSize = (float)m_vecBoneRef.size();
 					pSrcPos++;
 					pDstLockPos++;
 				}	 
@@ -342,7 +341,7 @@ void SkinnedMeshNode::CreateInstancingResource()
 	{
 		DWORD bufferSize =  m_pRscIndexBuffer->GetBufferSize() *INSTANCING_MAX;
 		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
-		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),bufferSize,triangleCount);
+		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(m_pRscIndexBuffer,bufferSize,triangleCount);
 		m_pIndexInstancingBuffer->AddRef();
 		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
 		{
@@ -398,5 +397,119 @@ void SkinnedMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 }
 
 
+
+void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
+{
+	auto it = list.begin();
+	auto it_end = list.end();
+	int size = list.size();
+	SkinnedMeshNode* pMeshNode = NULL;
+	D3DXMATRIX* pDst=NULL;
+	DWORD offset_bytes = 0;
+	DWORD offset_line = 0;
+	DWORD bytesMatrix = sizeof(D3DXMATRIX);
+	DWORD bytesPerLine= bytesMatrix * (m_pMatrixTexture->GetSize()/4); // 1mat= 4pixel
+
+	D3DLOCKED_RECT lock;	
+	m_pMatrixTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
+
+	for ( ; it!=it_end ; it++)
+	{
+		DWORD boneSize = m_vecBoneRef.size();
+		for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
+		{
+			pMeshNode =  static_cast<SkinnedMeshNode*>(*it);	
+			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);				
+
+			BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
+			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());		
+			
+			offset_bytes += bytesMatrix;		
+			if (offset_bytes >= bytesPerLine)
+			{
+				offset_line++;			
+				offset_bytes=0;
+			}	
+		}	
+	}
+	m_pMatrixTexture->GetD3DTexture()->UnlockRect(0);
+}
+
+void SkinnedMeshNode::CreateMatrixPallete()
+{
+	size_t nBoneRefSize = m_vecBoneRef.size();
+	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
+}
+
+void SkinnedMeshNode::DeleteMatrixPallete()
+{
+	SAFE_DELETEARRAY(m_pMatrixPallete);
+}
+
+void SkinnedMeshNode::ChangeInstancingEnable( bool val )
+{
+	m_bInstancingEnable = val;
+	if (m_bInstancingEnable)
+	{	
+		CreateInstancingResource();		
+		DeleteMatrixPallete();
+	}
+	else
+	{
+		ReleaseInstancingResource();
+		CreateMatrixPallete();
+	}
+}
+
+void SkinnedMeshNode::RenderVertexTexture( int instanceCount )
+{
+	HRESULT hr;
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
+
+	LPDIRECT3DSURFACE9 pOldRT;
+	V( Graphics::m_pDevice->GetRenderTarget(0,&pOldRT) );
+	LPDIRECT3DSURFACE9 pNewRT;
+	V( m_pVertexTexture->GetD3DTexture()->GetSurfaceLevel(0,&pNewRT));
+	V( Graphics::m_pDevice->SetRenderTarget(0,pNewRT) );
+	if( SUCCEEDED(hr))
+	{
+		V( pNewRT->Release() );
+	}
+	LPDIRECT3DSURFACE9 pOldDepthStencil;
+	Graphics::m_pDevice->GetDepthStencilSurface(&pOldDepthStencil);
+	Graphics::m_pDevice->SetDepthStencilSurface(NULL);
+
+
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)m_pVertexTexture->GetWidth());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)m_pVertexTexture->GetHeight());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)m_pMatrixTexture->GetSize());		
+	pEffect->SetTexture("Tex_MatrixInstancing",m_pMatrixTexture->GetD3DTexture());
+
+	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));
+
+	pEffect->SetTechnique(Graphics::m_pInstance->m_hTVertexTransform);	
+
+	UINT passes = 0;		
+	pEffect->Begin(&passes, 0);
+	pEffect->BeginPass(0);
+	pEffect->CommitChanges();
+	V( Graphics::m_pDevice->DrawPrimitive(D3DPT_POINTLIST,0,m_pRscVetextBuffer->GetVertexCount()* instanceCount) );
+	pEffect->EndPass();
+	pEffect->End();		
+
+	// 렌더타겟,스텐실 복구
+	V( Graphics::m_pDevice->SetRenderTarget(0,pOldRT));
+	if( SUCCEEDED(hr))
+	{
+		V( pOldRT->Release() );
+	}
+	V( Graphics::m_pDevice->SetDepthStencilSurface(pOldDepthStencil));
+	if( SUCCEEDED(hr))
+	{
+		V( pOldDepthStencil->Release() );
+	}
+}
 
 }

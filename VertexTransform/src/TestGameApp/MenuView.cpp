@@ -19,7 +19,7 @@ cMenuView::cMenuView(void)
 {
 	
 	m_bControlCamera=FALSE;
-	m_instancing = true;
+	m_instancing = false;
 	m_pZTerrain=NULL;
 	
 	m_pTank=NULL;
@@ -93,6 +93,7 @@ void cMenuView::Enter()
 
 	for (int i=0;i<STRESS;i++)
 	{
+		
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
 
 		m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
@@ -110,6 +111,7 @@ void cMenuView::Enter()
 
 		pos.y =  100;
 		m_pHouse[i]->SetLocalPos(pos);
+		
 	}
 }
 

@@ -21,6 +21,11 @@
 #define SHADOWMAP_SIZE 4096
 #define SET_TEXTURE_NULL 
 
+
+// #define DEBUG_VS
+// #define DEBUG_PS
+
+
 namespace Sophia
 {
 
@@ -156,13 +161,17 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 void Graphics::Finalize()
 {
+	
+
 	SAFE_RELEASE(m_pNormalVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
 	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedInstancingVertexDeclaration);
-	SAFE_DELETE(m_pNewFont);	
+	SAFE_DELETE(m_pNewFont);
+	SAFE_RELEASE(m_pEffect);
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);
+
 }
 
 
@@ -172,12 +181,8 @@ void Graphics::RenderDebugString(int x,int y,const char* szText)
 }
 
 void Graphics::LoadHLSL(const char* szFileName)
-{
-	if (!szFileName)
-	{
-		return;
-	}
-
+{	
+	assert(szFileName!=NULL);
 	// Define DEBUG_VS and/or DEBUG_PS to debug vertex and/or pixel shaders with the 
 	// shader debugger. Debugging vertex shaders requires either REF or software vertex 
 	// processing, and debugging pixel shaders requires REF.  The 
@@ -220,6 +225,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 		return;
 	}
 
+	
 	D3DXEFFECT_DESC desc;
 	hr = m_pEffect->GetDesc(&desc);
 
@@ -236,6 +242,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hfVertexTextureHeight = m_pEffect->GetParameterByName( NULL, "gVertexTextureHeight" );
 	m_hfMatrixTextureSize = m_pEffect->GetParameterByName( NULL, "gMatrixTextureSize" );
 
+	
 	m_hTVertexTransform =					m_pEffect->GetTechniqueByName( _T("TVertexTransformation"));
 	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );
@@ -370,7 +377,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 		if (m_vecTechniqueSkinnedInstancing[i] == NULL )	
 			m_vecTechniqueSkinnedInstancing[i] = m_hTPhongDiffuseInstancing;
 	}
-
+	
 
 }
 

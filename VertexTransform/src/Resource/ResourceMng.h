@@ -32,10 +32,10 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
-	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
-	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
-	std::map<SCENE_KEY,cResource*>						m_contVertexTransformationTexture;
-	std::map<SCENE_KEY,cResource*>						m_contVertexSteam;
+	std::map<SCENE_KEY,cResource*>						m_contMatrixTexture;
+	std::map<SCENE_KEY,cResource*>						m_contVertexTexture;
+	std::map<cRscIndexBuffer*,cResource*>						m_contIndexInstancingBuffer;
+	std::map<cRscVertexBuffer*,cResource*>						m_contVertexInstancingBuffer;
 public:		
 	int					GetCount();
 	BOOL				InsertResource(cResource* in);
@@ -66,8 +66,8 @@ public:
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
 
-	IndexInstancingBuffer*	CreateIndexInstancingBuffer(SCENE_KEY& key,DWORD buffersize,DWORD count);
-	void				EraseIndexInstancingBuffer(SCENE_KEY& key);
+	IndexInstancingBuffer*	CreateIndexInstancingBuffer(cRscIndexBuffer* key,DWORD buffersize,DWORD count);
+	void				EraseIndexInstancingBuffer(cRscIndexBuffer* key);
 
 	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
@@ -75,8 +75,8 @@ public:
 	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);
 	void				EraseVertexTexture(SCENE_KEY& key);
 
-	VertexInstancingBuffer*	CreateVertexInstancingBuffer(SCENE_KEY& key,DWORD buffersize ,DWORD count);
-	void				EraseVertexInstancingBuffer(SCENE_KEY& key);
+	VertexInstancingBuffer*	CreateVertexInstancingBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
+	void				EraseVertexInstancingBuffer(cRscVertexBuffer* pKey);
 };
 
 }

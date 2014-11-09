@@ -73,7 +73,12 @@ public:
 	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
 	
 	virtual void RenderInstancing(int vertexCount,int triangleCount);
+	virtual void RenderVertexTexture(int instanceCount);
+	virtual void UpdateMatrixTexture( std::list<cMeshNode*>& list );
+	void ChangeInstancingEnable(bool val);
 protected:
 	virtual void CreateInstancingResource();
+	void CreateMatrixPallete();
+	void DeleteMatrixPallete();
 };
 }

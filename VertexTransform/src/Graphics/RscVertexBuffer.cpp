@@ -83,11 +83,13 @@ void cRscVertexBuffer::Unlock()
 
 void cRscVertexBuffer::SetStreamSource(UINT streamNumber,  UINT stride )
 {
-	Graphics::m_pDevice->SetStreamSource( streamNumber, m_pD3DVertexBuffer, 0,  stride );	
+	HRESULT hr;
+	V(Graphics::m_pDevice->SetStreamSource( streamNumber, m_pD3DVertexBuffer, 0,  stride ));	
 }
 
 
 void Sophia::cRscVertexBuffer::SetStreamSourceFreq( UINT streamNumber,UINT setting )
 {
-	Graphics::m_pDevice->SetStreamSourceFreq(streamNumber,setting);	
+	HRESULT hr;
+	V(Graphics::m_pDevice->SetStreamSourceFreq(streamNumber,setting));	
 }

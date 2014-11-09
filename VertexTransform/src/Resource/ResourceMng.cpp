@@ -234,12 +234,12 @@ void cResourceMng::EraseEntityMaterial( const std::string& strKey )
 	m_contEntityMaterial.erase(strKey);
 }
 
-IndexInstancingBuffer* cResourceMng::CreateIndexInstancingBuffer( SCENE_KEY& key ,DWORD buffersize,DWORD count)
+IndexInstancingBuffer* cResourceMng::CreateIndexInstancingBuffer( cRscIndexBuffer* key ,DWORD buffersize,DWORD count)
 {
 	IndexInstancingBuffer* pItem=NULL;
 
-	auto it=m_contIndexStreamVertexBuffer.find(key);
-	if (it!=m_contIndexStreamVertexBuffer.end())
+	auto it=m_contIndexInstancingBuffer.find(key);
+	if (it!=m_contIndexInstancingBuffer.end())
 	{
 		pItem = static_cast<IndexInstancingBuffer*>(it->second);
 		return pItem;
@@ -254,21 +254,21 @@ IndexInstancingBuffer* cResourceMng::CreateIndexInstancingBuffer( SCENE_KEY& key
 		delete pItem;
 		return NULL;
 	}
-	m_contIndexStreamVertexBuffer.insert(std::make_pair(key,pItem));
+	m_contIndexInstancingBuffer.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
-void cResourceMng::EraseIndexInstancingBuffer( SCENE_KEY& key )
+void cResourceMng::EraseIndexInstancingBuffer( cRscIndexBuffer* key)
 {
-	m_contIndexStreamVertexBuffer.erase(key);
+	m_contIndexInstancingBuffer.erase(key);
 }
 
 MatrixTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
 {
 	MatrixTexture* pItem=NULL;
 
-	auto it=m_contBoneStreamTexture.find(key);
-	if (it!=m_contBoneStreamTexture.end())
+	auto it=m_contMatrixTexture.find(key);
+	if (it!=m_contMatrixTexture.end())
 	{
 		pItem = static_cast<MatrixTexture*>(it->second);
 		return pItem;
@@ -282,21 +282,21 @@ MatrixTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
 		delete pItem;
 		return NULL;
 	}
-	m_contBoneStreamTexture.insert(std::make_pair(key,pItem));
+	m_contMatrixTexture.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
 void cResourceMng::EraseBoneStreamTexture( SCENE_KEY& key )
 {
-	m_contBoneStreamTexture.erase(key);
+	m_contMatrixTexture.erase(key);
 }
 
 VertexTexture* cResourceMng::CreateVertexTexture( SCENE_KEY& key ,DWORD size)
 {
 	VertexTexture* pItem=NULL;
 
-	auto it=m_contVertexTransformationTexture.find(key);
-	if (it!=m_contVertexTransformationTexture.end())
+	auto it=m_contVertexTexture.find(key);
+	if (it!=m_contVertexTexture.end())
 	{
 		pItem = static_cast<VertexTexture*>(it->second);
 		return pItem;
@@ -311,21 +311,21 @@ VertexTexture* cResourceMng::CreateVertexTexture( SCENE_KEY& key ,DWORD size)
 		delete pItem;
 		return NULL;
 	}
-	m_contVertexTransformationTexture.insert(std::make_pair(key,pItem));
+	m_contVertexTexture.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
 void cResourceMng::EraseVertexTexture( SCENE_KEY& key )
 {
-	m_contVertexTransformationTexture.erase(key);
+	m_contVertexTexture.erase(key);
 }
 
-VertexInstancingBuffer* cResourceMng::CreateVertexInstancingBuffer( SCENE_KEY& key ,DWORD buffersize,DWORD count)
+VertexInstancingBuffer* cResourceMng::CreateVertexInstancingBuffer( cRscVertexBuffer* key ,DWORD buffersize,DWORD count)
 {
 	VertexInstancingBuffer* pItem=NULL;
 
-	auto it=m_contVertexSteam.find(key);
-	if (it!=m_contVertexSteam.end())
+	auto it=m_contVertexInstancingBuffer.find(key);
+	if (it!=m_contVertexInstancingBuffer.end())
 	{
 		pItem = static_cast<VertexInstancingBuffer*>(it->second);
 		return pItem;
@@ -340,13 +340,13 @@ VertexInstancingBuffer* cResourceMng::CreateVertexInstancingBuffer( SCENE_KEY& k
 		delete pItem;
 		return NULL;
 	}
-	m_contVertexSteam.insert(std::make_pair(key,pItem));
+	m_contVertexInstancingBuffer.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
-void cResourceMng::EraseVertexInstancingBuffer( SCENE_KEY& key )
+void cResourceMng::EraseVertexInstancingBuffer( cRscVertexBuffer* key )
 {
-	m_contVertexSteam.erase(key);
+	m_contVertexInstancingBuffer.erase(key);
 }
 
 

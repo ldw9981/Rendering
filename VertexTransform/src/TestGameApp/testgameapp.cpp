@@ -47,6 +47,7 @@ bool TestGameApp::Initialize()
 	strHLSL+= "hlsl.fx";
 	m_pGraphics->LoadHLSL(strHLSL.c_str());
 	
+
 	m_pView = new cMenuView;
 	AttachObject(m_pView);
 	m_pView->Enter();

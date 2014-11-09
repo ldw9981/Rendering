@@ -13,10 +13,10 @@ public:
 	virtual ~VertexInstancingBuffer(void);
 
 public:
-	SCENE_KEY	m_key;
+	cRscVertexBuffer*	m_key;
 
-	const Sophia::SCENE_KEY GetKey() const { return m_key; }
-	void SetKey(Sophia::SCENE_KEY& val) { m_key = val; }
+	const cRscVertexBuffer* GetKey() const { return m_key; }
+	void SetKey(cRscVertexBuffer* val) { m_key = val; }
 public:
 	void Free();
 

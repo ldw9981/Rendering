@@ -158,10 +158,8 @@ struct VS_SKINNING_PHONG_DIFFUSE_INPUT
 	float3 mBiNormal		: BINORMAL;
 	float2 mTexCoord		: TEXCOORD0;
 	float2 mTexCoord1		: TEXCOORD1;   
-	float2 mVertexIndex		: TEXCOORD2;
-	float2 mInstanceIndex	: TEXCOORD3; 
-	float3 mBlendWeights	: BLENDWEIGHT;
-	int4   mBlendIndices	: BLENDINDICES; 
+	float3 mBlendWeights    : BLENDWEIGHT;
+	int4   mBlendIndices    : BLENDINDICES; 
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
@@ -171,11 +169,11 @@ struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
 	float3 mTangent			: TANGENT;
 	float3 mBiNormal		: BINORMAL;
 	float2 mTexCoord		: TEXCOORD0;
-	float2 mTexCoord1		: TEXCOORD1;    
-	float2 mVertexIndex		: TEXCOORD2;
-	float2 mInstanceIndex	: TEXCOORD3; 
-	float3 mBlendWeights	: BLENDWEIGHT;
-	int4   mBlendIndices	: BLENDINDICES; 
+	float2 mTexCoord1		: TEXCOORD1;   
+	float3 mBlendWeights    : BLENDWEIGHT;
+	int4   mBlendIndices    : BLENDINDICES; 
+	float2 mVertexIndex		: TEXCOORD2; 	
+	float2 mInstanceIndex	: TEXCOORD3; 	
 };
 
 struct VS_SHADOW_NORMAL_INPUT 
@@ -194,16 +192,16 @@ struct VS_SHADOW_NORMAL_INSTANCING_INPUT
 
 struct VS_SHADOW_SKINNED_INSTANCING_INPUT 
 {
-   float4 mPosition : POSITION;
-   float3 mNormal : NORMAL;
-   float3 mTangent : TANGENT;
-   float3 mBiNormal : BINORMAL;
-   float2 mTexCoord : TEXCOORD0;
-   float2 mTexCoord1 : TEXCOORD1;   
-	float2 mVertexIndex : TEXCOORD2;
-   float3 mBlendWeights    : BLENDWEIGHT;
-   int4   mBlendIndices    : BLENDINDICES; 
-	float2 mInstanceIndex  : TEXCOORD4; 
+	float4 mPosition		: POSITION;
+	float3 mNormal			: NORMAL;
+	float3 mTangent			: TANGENT;
+	float3 mBiNormal		: BINORMAL;
+	float2 mTexCoord		: TEXCOORD0;
+	float2 mTexCoord1		: TEXCOORD1;   
+	float3 mBlendWeights    : BLENDWEIGHT;
+	int4   mBlendIndices    : BLENDINDICES; 
+	float2 mVertexIndex		: TEXCOORD2; 	
+	float2 mInstanceIndex	: TEXCOORD3; 	
 };
 
 struct VS_VERTEX_TRANSFORMATION_INPUT 
@@ -514,18 +512,23 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
     return output;
 }
 
-float4x4 loadBoneMatrix(int indexInstance,int indexBone)
+
+float4x4 loadBoneMatrix(float instanceIndex,float boneIndex,float boneSize )
 {	
-	int numBonePerLine=64;
-	float width= 256.0f;	// 1Matrix = 4 , 256 Matrix = 1024  
-	float height = 128.0f;	// 128 Instance
-	float4 uvCol = float4( indexBone*4/width, (float)indexInstance/ height, 0.0f, 0.0f);
+	float result = 4* (boneSize*instanceIndex+boneIndex) / gMatrixTextureSize;
+	float quotient = floor(result);	//0~N
+	float4 texcoord;		
+	texcoord.x = result - quotient;
+	texcoord.y = quotient/gMatrixTextureSize;		//
+	texcoord.z = 0.0f;
+	texcoord.w = 0.0f;
+
 	float4x4 mat = 
 	{
-		tex2Dlod(gMatrixInstancingSampler, uvCol + float4(0.0f 			,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, uvCol + float4(1.0f / width	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, uvCol + float4(2.0f / width	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, uvCol + float4(3.0f / width	,0,0,0))
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(0.0f 						,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
 	};
  
 	return mat; 	
@@ -543,10 +546,10 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 		
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
-	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
-   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
- 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
    
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
@@ -606,10 +609,10 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinned_Instancing( VS_SHADOW_SKINNED_INSTANCING_INPU
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 		
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
-	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
-   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
- 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
    
    output.mPosition = mul(input.mPosition, matWorldSkinned);
    output.mPosition = mul(output.mPosition, gLightViewMatrix);
@@ -647,10 +650,10 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
 
 float4x4 loadMatrix(float indexInstance)
 {	
-	float instanceSizePerLine = gMatrixTextureSize/4.0f;	
-	float quotient = floor(indexInstance / instanceSizePerLine);	//0~N
+	float result = 4*indexInstance / gMatrixTextureSize;
+	float quotient = floor(result);	//0~N
 	float4 texcoord;		
-	texcoord.x = 4.0f *(indexInstance - quotient * instanceSizePerLine) / gMatrixTextureSize;
+	texcoord.x = result - quotient;
 	texcoord.y = quotient/gMatrixTextureSize;		//
 	texcoord.z = 0.0f;
 	texcoord.w = 0.0f;

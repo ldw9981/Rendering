@@ -33,35 +33,6 @@ void MatrixTexture::Free()
 	delete this;
 }
 
-void Sophia::MatrixTexture::UpdateMatrix( std::list<cMeshNode*>& list )
-{
-	auto it = list.begin();
-	auto it_end = list.end();
-	int size = list.size();
-	cMeshNode* pMeshNode = NULL;
-	D3DXMATRIX* pDst=NULL;
-	DWORD offset_bytes = 0;
-	DWORD offset_line = 0;
-	DWORD bytesMatrix = sizeof(D3DXMATRIX);
-	DWORD bytesPerLine= bytesMatrix * (m_size/4); // 1mat= 4pixel
-
-	D3DLOCKED_RECT lock;	
-	m_pD3DTexture->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
-
-	for ( ; it!=it_end ; it++)
-	{
-		pMeshNode = *it;	
-		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
-		memcpy_s((void*)pDst,bytesMatrix,(void*)pMeshNode->GetWorldMatrixPtr(),bytesMatrix);	// 64Byte					
-		offset_bytes += bytesMatrix;		
-		if (offset_bytes >= bytesPerLine)
-		{
-			offset_line++;			
-			offset_bytes=0;
-		}		
-	}
-	m_pD3DTexture->UnlockRect(0);
-}
 
 void Sophia::MatrixTexture::SetSize( DWORD val )
 {

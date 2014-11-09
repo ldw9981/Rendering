@@ -53,7 +53,7 @@ struct NORMAL_VERTEX_INSTANCEDATA
 {	
 	NORMAL_VERTEX	vertex;
 	float		vertexIndex,vertexSize;
-	float		instanceIndex,instanceSize;
+	float		instanceIndex,boneSize;
 };
 
 struct BLEND_VERTEX
@@ -81,7 +81,7 @@ struct BLEND_VERTEX_INSTANCEDATA
 {	
 	BLEND_VERTEX vertex;
 	float		vertexIndex,vertexSize;
-	float		instanceIndex,instanceSize;
+	float		instanceIndex,boneSize;
 };
 
 

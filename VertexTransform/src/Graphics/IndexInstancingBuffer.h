@@ -11,11 +11,11 @@ public:
 	virtual ~IndexInstancingBuffer(void);
 
 public:
-	SCENE_KEY	m_key;
+	cRscIndexBuffer*	m_key;
 	bool		m_valid;
 
-	const Sophia::SCENE_KEY GetKey() const { return m_key; }
-	void SetKey(Sophia::SCENE_KEY& val) { m_key = val; }
+	const cRscIndexBuffer* GetKey() const { return m_key; }
+	void SetKey(cRscIndexBuffer* val) { m_key = val; }
 public:
 	void Free();
 

@@ -1,0 +1,22 @@
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asciiexp", "asciiexp.vcproj", "{6872903F-03A5-43C4-B5FA-2B6232BD44CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Hybrid|Win32 = Hybrid|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug|Win32.ActiveCfg = Debug|Win32
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug|Win32.Build.0 = Debug|Win32
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Hybrid|Win32.ActiveCfg = Hybrid|Win32
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Hybrid|Win32.Build.0 = Hybrid|Win32
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Release|Win32.ActiveCfg = Release|Win32
+		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

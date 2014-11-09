@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <DirectXSDKDir>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29</DirectXSDKDir>
+  </PropertyGroup>
+  <PropertyGroup>
+    <IncludePath>$(DirectXSDKDir)\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <LibraryPath>$(DirectXSDKDir)\Lib\x86;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Lib>
+      <AdditionalDependencies>d3d9.lib;d3dx9d.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Link>
+      <AdditionalDependencies>d3d9.lib;d3dx9d.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+	 <ClCompile>
+		<PreprocessorDefinitions>D3D_DEBUG_INFO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+	 </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+ 	 <Lib>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Link>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup> 
+  <ItemGroup>
+    <BuildMacro Include="DirectXSDKDir">
+      <Value>$(DirectXSDKDir)</Value>
+    </BuildMacro>
+  </ItemGroup>
+</Project>

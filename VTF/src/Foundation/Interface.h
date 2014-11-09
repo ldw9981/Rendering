@@ -1,0 +1,74 @@
+#pragma once
+
+namespace Sophia
+{
+
+class IRenderable;
+class IControlable;
+class INotifiable;
+class cGUIBase;
+class IUpdatable;
+class Material;
+class MultiSub;
+
+class IUnknownObject
+{
+public:
+	virtual ~IUnknownObject(){};
+};
+
+class IRenderer
+{
+public:
+	virtual void Render()=0;
+};
+
+class IRenderable
+{
+public:
+	std::list<IRenderable*>::iterator m_ItRenderable;
+	virtual void ProcessRender()=0;
+};
+
+class IControlable
+{
+public:
+	std::list<IControlable*>::iterator m_ItControlable;
+	virtual void Control()=0;
+};
+
+class IUpdatable
+{
+public:
+	std::list<IUpdatable*>::iterator m_ItProgressable;
+	virtual void Update(DWORD elapseTime)=0;
+};
+
+
+class INotifiable
+{
+public:
+	virtual void Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam)=0;
+};
+
+
+class ISerializable
+{
+public:
+	virtual void SerializeIn(std::ifstream& stream)=0;
+	virtual void SerializeOut(std::ofstream& stream)=0;
+
+	void ReadString( std::ifstream& stream,std::string& str );
+	void WriteString( std::ofstream& stream,std::string& str );
+
+	void ReadMatrix(std::ifstream& stream,D3DXMATRIX& mat);
+	void WriteMatrix(std::ofstream& stream,D3DXMATRIX& mat);
+
+	void ReadFloat(std::ifstream& stream,float& var);
+	void WriteFloat(std::ofstream& stream,float& var);
+
+	void ReadBool(std::ifstream& stream,bool& var);
+	void WriteBool(std::ofstream& stream,bool& var);
+};
+
+}

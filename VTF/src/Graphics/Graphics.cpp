@@ -155,6 +155,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 void Graphics::Finalize()
 {
+	SAFE_RELEASE(m_pEffect);
 	SAFE_RELEASE(m_pNormalVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
 	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);

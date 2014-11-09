@@ -247,7 +247,6 @@ MatrixStreamVertexBuffer* cResourceMng::CreateMatrixStreamVertexBuffer( SCENE_KE
 	}	
 
 	pItem = new MatrixStreamVertexBuffer;
-	pItem->Create();
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{
@@ -275,7 +274,6 @@ IndexStreamVertexBuffer* cResourceMng::CreateIndexStreamVertexBuffer( SCENE_KEY&
 	}	
 
 	pItem = new IndexStreamVertexBuffer;
-	pItem->Create();
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{
@@ -303,7 +301,6 @@ BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key )
 	}	
 
 	pItem = new BoneStreamTexture;
-	pItem->Create();
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{

@@ -37,18 +37,18 @@ struct TEXCOORD
 		return false;
 	}
 };
-struct NORMALVERTEX
+struct NORMAL_VERTEX
 {	
-	D3DXVECTOR3	vertex;		//x,y,z
+	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal	
 	D3DXVECTOR3 tangent;	
 	D3DXVECTOR3 binormal;	
 	TEXCOORD	uv0;	
 	TEXCOORD	uv1;
 };
-struct BLENDVERTEX
+struct BLEND_VERTEX
 {	
-	D3DXVECTOR3	vertex;		//x,y,z
+	D3DXVECTOR3	position;		//x,y,z
 	D3DXVECTOR3 normal;		//normal
 	D3DXVECTOR3 tangent;	
 	D3DXVECTOR3 binormal;	

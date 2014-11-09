@@ -61,8 +61,8 @@ public:
 	void					SetIndices();
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
-	int GetCount() const { return m_nCount; }
-	void SetCount(int val) { m_nCount = val; }
+	int GetTriangleCount() const { return m_nCount; }
+	void SetTriangleCount(int val) { m_nCount = val; }
 };
 
 }

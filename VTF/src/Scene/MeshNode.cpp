@@ -49,7 +49,7 @@ cMeshNode::~cMeshNode(void)
 
 void cMeshNode::Render()
 {	
-	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMALVERTEX));
+	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMAL_VERTEX));
 	m_pRscIndexBuffer->SetIndices();		
 
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
@@ -59,36 +59,14 @@ void cMeshNode::Render()
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
-		m_pRscVetextBuffer->GetCount(),
+		m_pRscVetextBuffer->GetVertexCount(),
 		m_startIndex,
 		m_primitiveCount );
 }
 
 void cMeshNode::BuildComposite(Entity* pEntity)
 {
-	cSceneNode::BuildComposite(pEntity);	
-	assert(m_pRscVetextBuffer!=NULL);
-	assert(m_pRscIndexBuffer!=NULL);
-	long vertexCount = m_pRscVetextBuffer->GetCount();
-	long triangleCount = m_pRscIndexBuffer->GetCount();
-	NORMALVERTEX* vertex=(NORMALVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
-	TRIANGLE* triangle = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
-
-	for (long a = 0; a < triangleCount; a++)
-	{
-		long i1 = triangle->index[0];
-		long i2 = triangle->index[1];
-		long i3 = triangle->index[2];
-
-		CalculateVector( vertex[i1].vertex,vertex[i2].vertex,vertex[i3].vertex,
-			vertex[i1].uv0,vertex[i2].uv0,vertex[i3].uv0,
-			vertex[i1].tangent,vertex[i2].tangent,vertex[i3].tangent,
-			vertex[i1].binormal,vertex[i2].binormal,vertex[i3].binormal	);
-
-		triangle++;
-	}
-	m_pRscIndexBuffer->Unlock();
-	m_pRscVetextBuffer->Unlock();
+	cSceneNode::BuildComposite(pEntity);		
 
 	if (m_bInstancingEnable)
 	{
@@ -304,7 +282,7 @@ void cMeshNode::SerializeOutMesh( std::ofstream& stream )
 	//vertex
 	bufferSize = m_pRscVetextBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
-	NORMALVERTEX* pVertices=(NORMALVERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
+	NORMAL_VERTEX* pVertices=(NORMAL_VERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
 	stream.write((char*)pVertices,bufferSize);
 	m_pRscVetextBuffer->Unlock();	
 
@@ -321,7 +299,7 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(0,pRscIndexBuffer->GetBufferSize(),0);
 		stream.read((char*)pIndices,bufferSize);
 		pRscIndexBuffer->Unlock();		
-		pRscIndexBuffer->SetCount(bufferSize/sizeof(TRIANGLE));
+		pRscIndexBuffer->SetTriangleCount(bufferSize/sizeof(TRIANGLE));
 	}
 	else
 	{
@@ -334,10 +312,10 @@ void cMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
-		NORMALVERTEX* pVertices=(NORMALVERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);
+		NORMAL_VERTEX* pVertices=(NORMAL_VERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);
 		stream.read((char*)pVertices,bufferSize);
 		pRscVetextBuffer->Unlock();		
-		pRscVetextBuffer->SetCount(bufferSize/sizeof(NORMALVERTEX));
+		pRscVetextBuffer->SetVertexCount(bufferSize/sizeof(NORMAL_VERTEX));
 	}
 	else
 	{
@@ -368,7 +346,7 @@ void cMeshNode::RenderIsntancing()
 	pEffect->CommitChanges();
 	
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, 
-		m_pRscVetextBuffer->GetCount(),
+		m_pRscVetextBuffer->GetVertexCount(),
 		m_startIndex,
 		m_primitiveCount );
 }

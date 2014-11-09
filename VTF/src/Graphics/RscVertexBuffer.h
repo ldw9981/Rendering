@@ -36,8 +36,8 @@ public:
 	DWORD					GetBufferSize() const { return m_BufferSize; }
 	void					SetBufferSize(DWORD val) { m_BufferSize = val; }
 
-	int GetCount() const { return m_nCount; }
-	void SetCount(int val) { m_nCount = val; }
+	int GetVertexCount() const { return m_nCount; }
+	void SetVertexCount(int val) { m_nCount = val; }
 
 
 	void*					Lock(UINT SizeToLock,DWORD Flags);

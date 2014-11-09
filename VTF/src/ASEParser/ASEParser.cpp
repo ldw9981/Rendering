@@ -361,8 +361,8 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::map<SUBMATINDEX,WORD>				mapIndexCount;	
 
 	//cRscVertexBuffer에 복사할 내용
-	std::vector<NORMALVERTEX>				vecNormalVertexForBuffer; 
-	std::vector<BLENDVERTEX>				vecBlendVertexForBuffer;
+	std::vector<NORMAL_VERTEX>				vecNormalVertexForBuffer; 
+	std::vector<BLEND_VERTEX>				vecBlendVertexForBuffer;
 	//cRscIndexBuffer에 복사할 내용
 	std::vector<TRIANGLE_SUBMATERIAL>		vecIndexForBuffer;
 		
@@ -473,7 +473,7 @@ BOOL cASEParser::Parsing_GeoObject()
 																
 								if (totalBoneRef==0)
 								{
-									NORMALVERTEX Item;
+									NORMAL_VERTEX Item;
 									memset(&Item,0,sizeof(Item));
 									Item.position = vertex;
 									vecNormalVertexForBuffer.push_back(Item);				
@@ -481,7 +481,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								}
 								else
 								{
-									BLENDVERTEX Item;
+									BLEND_VERTEX Item;
 									memset(&Item,0,sizeof(Item));
 									Item.position = vertex;
 									vecBlendVertexForBuffer.push_back(Item);			

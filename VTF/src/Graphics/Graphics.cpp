@@ -126,7 +126,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
 		hWndPresent,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
 		&m_pDevice );
 

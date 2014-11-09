@@ -100,5 +100,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="..\..\data\hlsl.fx" />
   </ItemGroup>
 </Project>

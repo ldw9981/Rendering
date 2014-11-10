@@ -78,6 +78,7 @@ public:
 
 	D3DXHANDLE				m_hmLightView;
 	D3DXHANDLE				m_hmLightProjection;
+	D3DXHANDLE				m_hfMatrixTextureSize;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 

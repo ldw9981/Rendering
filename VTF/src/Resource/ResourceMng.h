@@ -69,7 +69,7 @@ public:
 	IndexStreamVertexBuffer*	CreateIndexStreamVertexBuffer(SCENE_KEY& key);
 	void				EraseIndexStreamVertexBuffer(SCENE_KEY& key);
 
-	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key);
+	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key,UINT textureSize);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
 	int					GetCount();

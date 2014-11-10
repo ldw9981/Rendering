@@ -442,24 +442,36 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 			D3DLOCKED_RECT lock;	
 			pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
 			D3DXMATRIX* pMatrix=NULL;
+			D3DXMATRIX* pDst=NULL;
+			DWORD offset_bytes = 0;
+			DWORD offset_line = 0;
+			DWORD bytesMatrix = sizeof(D3DXMATRIX);
+			DWORD bytesPerLine= bytesMatrix * (pBoneStreamTexture->GetSize()/4); // 1mat= 4pixel
 
 			unsigned int instanceIndex=0;
 			for (  ; it_sub!=list.end();++it_sub)
 			{
+				DWORD boneSize = pMeshNode->GetArrayBoneRef().size();
+
 				pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
 				pVertex->instanceIndex = (float)instanceIndex;
+				pVertex->boneSize = (float)boneSize;
 				pVertex++;
 
-				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
-
-				pMeshNode->UpdateMatrixPallete();
-				size_t bone_size = pMeshNode->GetArrayBoneRef().size();
-
-				assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
-
-				pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);
-				memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
+				auto& refArrBone = pMeshNode->GetArrayBoneRef();
+				for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
+				{			
+					pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);							
+					BONEREFINFO& refItem= refArrBone[boneIndex];
+					// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+					D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());	
+					offset_bytes += bytesMatrix;		
+					if (offset_bytes >= bytesPerLine)
+					{
+						offset_line++;			
+						offset_bytes=0;
+					}	
+				}	
 				
 
 				instanceIndex++;
@@ -471,6 +483,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		pBoneStreamTexture->SetValid(false);
 		pIndexStreamVertexBuffer->SetValid(false);
 
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pBoneStreamTexture->GetSize());
 		pIndexStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
 		pIndexStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
 		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declBlendInstance,0));
@@ -521,25 +534,38 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 		D3DLOCKED_RECT lock;	
 		pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
 		D3DXMATRIX* pMatrix=NULL;
+		D3DXMATRIX* pDst=NULL;
+		DWORD offset_bytes = 0;
+		DWORD offset_line = 0;
+		DWORD bytesMatrix = sizeof(D3DXMATRIX);
+		DWORD bytesPerLine= bytesMatrix * (pBoneStreamTexture->GetSize()/4); // 1mat= 4pixel
+
 
 		unsigned int instanceIndex=0;
 		for (  ; it_sub!=list.end();++it_sub)
 		{
+			DWORD boneSize = pMeshNode->GetArrayBoneRef().size();
+
 			pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
 			pVertex->instanceIndex = (float)instanceIndex;
+			pVertex->boneSize = (float)boneSize;
 			pVertex++;
 
-			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+			auto& refArrBone = pMeshNode->GetArrayBoneRef();
+			for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
+			{			
+				pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);							
+				BONEREFINFO& refItem= refArrBone[boneIndex];
+				// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+				D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());	
+				offset_bytes += bytesMatrix;		
+				if (offset_bytes >= bytesPerLine)
+				{
+					offset_line++;			
+					offset_bytes=0;
+				}	
+			}	
 
-			pMeshNode->UpdateMatrixPallete();
-			size_t bone_size = pMeshNode->GetArrayBoneRef().size();
-
-			assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
-
-			pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);			
-			memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
-			
 			instanceIndex++;
 		}
 		pBoneStreamTexture->Unlock();
@@ -560,6 +586,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pBoneStreamTexture->GetSize());
 		pEffect->Begin(&passes, 0);	
 
 		pEffect->SetTexture("Bone_Tex",pBoneStreamTexture->GetD3DTexture());

@@ -105,7 +105,7 @@ void cMenuView::Enter()
 		}		
 
 		m_pHouse[i]->Build();
-		m_pHouse[i]->SetInstanceEnable(m_instancing);
+		m_pHouse[i]->ChangeInstanceEnable(m_instancing);
 		m_pHouse[i]->PlayBaseAnimation(0,true);
 		
 		D3DXVECTOR3 pos;
@@ -217,7 +217,7 @@ void cMenuView::Control()
 		for (int i=0;i<STRESS;i++)
 		{
 			
-			m_pHouse[i]->SetInstanceEnable(m_instancing);
+			m_pHouse[i]->ChangeInstanceEnable(m_instancing);
 			m_pHouse[i]->ResetRenderQueue();
 
 		}

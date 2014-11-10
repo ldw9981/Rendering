@@ -84,8 +84,7 @@ struct GUIVERTEX
 struct BLENDINSTANCEVERTEX
 {		
 	float instanceIndex;	
-	float a;	
-	float b;	
+	float boneSize;
 };
 
 }

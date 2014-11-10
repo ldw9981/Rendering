@@ -199,7 +199,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
-
+	m_hfMatrixTextureSize = m_pEffect->GetParameterByName( NULL, "gMatrixTextureSize");
 
 	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );

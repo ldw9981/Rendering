@@ -18,6 +18,7 @@ float4 gWorldCameraPosition;
 
 float4x4 gLightViewMatrix;
 float4x4 gLightProjectionMatrix : Projection;
+float	gMatrixTextureSize;
 
 
 // 텍스처 샘플러
@@ -63,7 +64,7 @@ sampler2D ShadowSampler = sampler_state
    Texture = (Tex_Depth);
 };
 
-sampler2D   gBoneSampler = sampler_state 
+sampler2D   gMatrixInstancingSampler = sampler_state 
 {
   texture = Bone_Tex;
   MipFilter = NONE;
@@ -161,7 +162,7 @@ struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
    float2 mTexCoord1 : TEXCOORD1;   
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
-	float3 mInstanceIndex  : TEXCOORD2; 
+	float2 mInstanceIndex  : TEXCOORD2; 
 };
 
 struct VS_SHADOW_NORMAL_INPUT 
@@ -190,7 +191,7 @@ struct VS_SHADOW_SKINNED_INSTANCING_INPUT
    float2 mTexCoord1 : TEXCOORD1;   
    float3 mBlendWeights    : BLENDWEIGHT;
    int4   mBlendIndices    : BLENDINDICES; 
-	float3 mInstanceIndex  : TEXCOORD2; 
+	float2 mInstanceIndex  : TEXCOORD2; 
 };
 
 
@@ -405,18 +406,22 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
     return output;
 }
 
-float4x4 loadBoneMatrix(int indexInstance,int indexBone)
+float4x4 loadBoneMatrix(float instanceIndex,float boneIndex,float boneSize )
 {	
-	int numBonePerLine=64;
-	float width= 256.0f;	// 1Matrix = 4 , 256 Matrix = 1024  
-	float height = 128.0f;	// 128 Instance
-	float4 uvCol = float4( indexBone*4/width, (float)indexInstance/ height, 0.0f, 0.0f);
+	float result = 4* (boneSize*instanceIndex+boneIndex) / gMatrixTextureSize;
+	float quotient = floor(result);	//0~N
+	float4 texcoord;		
+	texcoord.x = result - quotient;
+	texcoord.y = quotient/gMatrixTextureSize;		//
+	texcoord.z = 0.0f;
+	texcoord.w = 0.0f;
+
 	float4x4 mat = 
 	{
-		tex2Dlod(gBoneSampler, uvCol + float4(0.0f 			,0,0,0)),
-		tex2Dlod(gBoneSampler, uvCol + float4(1.0f / width	,0,0,0)),
-		tex2Dlod(gBoneSampler, uvCol + float4(2.0f / width	,0,0,0)),
-		tex2Dlod(gBoneSampler, uvCol + float4(3.0f / width	,0,0,0))
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(0.0f 						,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
 	};
  
 	return mat; 	
@@ -434,10 +439,10 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 		
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
-	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
-   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
- 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
    
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
@@ -504,10 +509,10 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinned_Instancing( VS_SHADOW_SKINNED_INSTANCING_INPU
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 		
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x));
-	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y));
-   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z));
- 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w));
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
+   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
    
    output.mPosition = mul(input.mPosition, matWorldSkinned);
    output.mPosition = mul(output.mPosition, gLightViewMatrix);

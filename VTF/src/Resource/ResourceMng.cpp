@@ -289,7 +289,7 @@ void cResourceMng::EraseIndexStreamVertexBuffer( SCENE_KEY& key )
 	m_contIndexStreamVertexBuffer.erase(key);
 }
 
-BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key )
+BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key ,UINT textureSize)
 {
 	BoneStreamTexture* pItem=NULL;
 
@@ -301,6 +301,7 @@ BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key )
 	}	
 
 	pItem = new BoneStreamTexture;
+	pItem->SetSize(textureSize);
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{

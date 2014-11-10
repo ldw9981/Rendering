@@ -316,7 +316,9 @@ void SkinnedMeshNode::CreateInstancingResource()
 
 	if (m_pBoneStreamTexture==NULL)
 	{
-		m_pBoneStreamTexture = cResourceMng::m_pInstance->CreateBoneStreamTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer));
+		size_t nBoneRefSize = m_vecBoneRef.size();
+		DWORD textureSize = (DWORD) pow(2.0f,ceil(log(sqrt((float) 4*nBoneRefSize *INSTANCING_MAX ))/log(2.0f)));
+		m_pBoneStreamTexture = cResourceMng::m_pInstance->CreateBoneStreamTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),textureSize);
 		m_pBoneStreamTexture->AddRef();
 	}
 	

@@ -81,7 +81,7 @@ struct GUIVERTEX
 	TEXCOORD	tex;
 };
 
-struct BLENDINSTANCEVERTEX
+struct INSTANCEVERTEX
 {		
 	float instanceIndex;	
 	float boneSize;

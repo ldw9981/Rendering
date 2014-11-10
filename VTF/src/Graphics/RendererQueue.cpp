@@ -437,7 +437,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		BoneStreamTexture* pBoneStreamTexture = pMeshNode->GetBoneStreamTexture();
 		if (!pIndexStreamVertexBuffer->GetValid() || !pBoneStreamTexture->GetValid())
 		{
-			BLENDINSTANCEVERTEX* pVertex = (BLENDINSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(BLENDINSTANCEVERTEX),D3DLOCK_DISCARD	);
+			INSTANCEVERTEX* pVertex = (INSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(INSTANCEVERTEX),D3DLOCK_DISCARD	);
 
 			D3DLOCKED_RECT lock;	
 			pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
@@ -530,7 +530,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 		BoneStreamTexture* pBoneStreamTexture = pMeshNode->GetBoneStreamTexture();
 
 
-		BLENDINSTANCEVERTEX* pVertex = (BLENDINSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(BLENDINSTANCEVERTEX),D3DLOCK_DISCARD	);
+		INSTANCEVERTEX* pVertex = (INSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(INSTANCEVERTEX),D3DLOCK_DISCARD	);
 		D3DLOCKED_RECT lock;	
 		pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
 		D3DXMATRIX* pMatrix=NULL;

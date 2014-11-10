@@ -9,7 +9,7 @@ using namespace Sophia;
 IndexStreamVertexBuffer::IndexStreamVertexBuffer(void)
 {
 	m_pool=D3DPOOL_DEFAULT;
-	m_BufferSize=sizeof(BLENDINSTANCEVERTEX)*4*INSTANCING_MAX;
+	m_BufferSize=sizeof(INSTANCEVERTEX)*INSTANCING_MAX;
 	m_usage = D3DUSAGE_DYNAMIC|D3DUSAGE_WRITEONLY;
 	
 	m_key.pIndexBuffer = NULL;

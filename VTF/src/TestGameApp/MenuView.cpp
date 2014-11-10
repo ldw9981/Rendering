@@ -29,6 +29,7 @@ cMenuView::cMenuView(void)
 	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = NULL;
+		m_pSkinned[i]=NULL;
 	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
 }
@@ -91,18 +92,10 @@ void cMenuView::Enter()
 	for (int i=0;i<STRESS;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		if (i%2 == 0)
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
-		}
-		else
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
-		}		
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
+	
 
 		m_pHouse[i]->Build();
 		m_pHouse[i]->ChangeInstanceEnable(m_instancing);
@@ -113,25 +106,42 @@ void cMenuView::Enter()
 		pos.z = i/10 *200.0f - 400.0f;
 
 		pos.y =  100;
-		m_pHouse[i]->SetLocalPos(pos);
-		
+		m_pHouse[i]->SetLocalPos(pos);		
 	}
 	
 	
+	for (int i=0;i<STRESS;i++)
+	{
+		m_pSkinned[i] = m_graphicWorld.CreateEntity();		
+		m_pSkinned[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
+		m_pSkinned[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
+		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 	
+		m_pSkinned[i]->Build();
+		m_pSkinned[i]->ChangeInstanceEnable(m_instancing);
+		m_pSkinned[i]->PlayBaseAnimation(0,true);
+
+		D3DXVECTOR3 pos;
+		pos.x = i% 10 *200.0f - 1000.0f;		
+		pos.z = i/10 *200.0f - 400.0f;
+
+		pos.y =  100;
+		m_pSkinned[i]->SetLocalPos(pos);		
+	}
 
 }
 
 void cMenuView::Leave()
 {
 	//m_graphicWorld.DeleteTerrain(m_pZTerrain);
-
-
-
+	
 	for (int i=0;i<STRESS;i++)
 	{
 		if (m_pHouse[i])
 			m_graphicWorld.DeleteEntity(m_pHouse[i]);
+
+		if (m_pSkinned[i])
+			m_graphicWorld.DeleteEntity(m_pSkinned[i]);
 	}
 	
 	if (m_pTank)

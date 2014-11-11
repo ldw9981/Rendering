@@ -24,7 +24,11 @@ private:
 	Sophia::Entity*			m_pDragon;
 	Sophia::Entity*			m_pAirPlaneBake;
 	Sophia::Entity*			m_pHouse[STRESS];
-	bool		m_instancing;
+	Sophia::Entity*			m_pSkinned[STRESS];
+	bool		m_instancingNormal;
+	bool		m_instancingSkinned;
+	bool		m_showNormal;
+	bool		m_showSkinned;
 public:	
 	virtual void Enter();
 	virtual void Leave();

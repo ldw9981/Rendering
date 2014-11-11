@@ -565,15 +565,12 @@ void Entity::WorkEnableInstancing(cSceneNode* pNode)
 	}	
 }
 
-void Entity::SetInstanceEnable( bool enable )
+void Entity::ChangeInstanceEnable( bool enable )
 {
-	for (size_t i=0;i<m_vecChildNode.size();i++)
-	{
-		if (enable)
-			WorkRecursive( WorkEnableInstancing);	
-		else
-			WorkRecursive( WorkDisableInstancing);	
-	}	
+	if (enable)
+		WorkRecursive( WorkEnableInstancing);	
+	else
+		WorkRecursive( WorkDisableInstancing);			
 }
 
 void Entity::WorkDisableInstancing( cSceneNode* pNode )

@@ -136,10 +136,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 void SkinnedMeshNode::Release()
 {
 	cMeshNode::Release();
-	if (m_pMatrixPallete!=NULL)
-	{
-		delete m_pMatrixPallete;
-	}	
+	DeleteMatrixPallete();
 	m_vecBoneRef.clear();	
 	ReleaseInstancingResource();
 }
@@ -211,6 +208,7 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 {
 	// index
+	WriteString(stream,m_pRscIndexBuffer->GetUniqueKey());
 	DWORD bufferSize =0;
 	bufferSize = m_pRscIndexBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
@@ -220,6 +218,7 @@ void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 	m_pRscIndexBuffer->Unlock();		
 
 	//vertex
+	WriteString(stream,m_pRscVetextBuffer->GetUniqueKey());
 	bufferSize = m_pRscVetextBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
 	BLEND_VERTEX* pVertices=(BLEND_VERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
@@ -240,9 +239,11 @@ void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 {
 	// index
+	std::string strKey;
+	ReadString(stream,strKey);
 	DWORD bufferSize =0;
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
 		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(pRscIndexBuffer->GetBufferSize(),0);
@@ -257,8 +258,9 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	SetRscIndexBuffer(pRscIndexBuffer);
 
 	// vertex
+	ReadString(stream,strKey);
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(strKey,bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
 		BLEND_VERTEX* pVertices=(BLEND_VERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);
@@ -384,7 +386,6 @@ void SkinnedMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 	HRESULT hr;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	V(pEffect->SetTexture("Tex_VertexInstancing",m_pVertexTexture->GetD3DTexture()));
-
 	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));		
 	V(Graphics::m_pDevice->SetIndices(m_pIndexInstancingBuffer->GetD3DIndexBuffer())); 
 	UINT passes;
@@ -489,7 +490,7 @@ void SkinnedMeshNode::RenderVertexTexture( int instanceCount )
 
 	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));
 
-	pEffect->SetTechnique(Graphics::m_pInstance->m_hTVertexTransform);	
+	pEffect->SetTechnique(Graphics::m_pInstance->m_hTSkinnedVertexTransform);	
 
 	UINT passes = 0;		
 	pEffect->Begin(&passes, 0);

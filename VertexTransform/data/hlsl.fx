@@ -103,7 +103,7 @@ float gSpecularPower = 32;
 
 
 #ifndef MATRIX_PALETTE_SIZE_DEFAULT
-#define MATRIX_PALETTE_SIZE_DEFAULT 64
+#define MATRIX_PALETTE_SIZE_DEFAULT 50
 #endif
 
 static const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
@@ -537,27 +537,16 @@ float4x4 loadBoneMatrix(float instanceIndex,float boneIndex,float boneSize )
 VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT input)
 {
     VS_PHONG_DIFFUSE_OUTPUT output;
-	
-    float fLastWeight = 1.0;
-    float fWeight;
-    float afBlendWeights[3] = (float[3])input.mBlendWeights;
-	int aiIndices[4] = (int[4])input.mBlendIndices;
+  
+	 float4 transformedVertex = loadTransformedVertex(input.mVertexIndex.x,input.mVertexIndex.y,input.mInstanceIndex.x); 
 
-	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
-		
-	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
-	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
-   matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
- 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
-   
-	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
+	float4 worldPosition = float4(transformedVertex.xyz,1.0f);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
     float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
     float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
-    float3 worldNormal = mul(input.mNormal,(float3x3)matWorldSkinned);
-    worldNormal = normalize(worldNormal);
+   	float3 worldNormal;// =  normalize(mul(input.mNormal,(float3x3)mInstanceMatrix)); 
+	worldNormal = FP16ToNormal(transformedVertex.w);
        
     output.mLambert = dot(-lightDir, worldNormal);
     output.mNormal = worldNormal;
@@ -669,7 +658,7 @@ float4x4 loadMatrix(float indexInstance)
 	return mat; 	
 }
 
-VS_VERTEX_TRANSFORMATION_OUTPUT vs_VertexTransformation(VS_VERTEX_TRANSFORMATION_INPUT input)
+VS_VERTEX_TRANSFORMATION_OUTPUT vs_NormalVertexTransformation(VS_VERTEX_TRANSFORMATION_INPUT input)
 { 
 	VS_VERTEX_TRANSFORMATION_OUTPUT output;
 	
@@ -692,7 +681,40 @@ VS_VERTEX_TRANSFORMATION_OUTPUT vs_VertexTransformation(VS_VERTEX_TRANSFORMATION
 	output.mNormal = mul(input.mNormal,(float3x3)mInstanceMatrix);	
 	return output;
 }
+VS_VERTEX_TRANSFORMATION_OUTPUT vs_SkinnedVertexTransformation(VS_VERTEX_TRANSFORMATION_INPUT input)
+{ 
+	VS_VERTEX_TRANSFORMATION_OUTPUT output;
+	
+	    float fLastWeight = 1.0;
+    float fWeight;
+    float afBlendWeights[3] = (float[3])input.mBlendWeights;
+	int aiIndices[4] = (int[4])input.mBlendIndices;
+	
+	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 
+	float4x4 matWorldSkinned;
+	matWorldSkinned = mul(input.mBlendWeights.x,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.x,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.y,input.mInstanceIndex.y));
+	matWorldSkinned += mul(input.mBlendWeights.z,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.z,input.mInstanceIndex.y));
+ 	matWorldSkinned += mul(fLastWeight,loadBoneMatrix(input.mInstanceIndex.x,input.mBlendIndices.w,input.mInstanceIndex.y));
+	
+	float instanceOffSet = input.mInstanceIndex.x * input.mVertexIndex.y + input.mVertexIndex.x; 
+	float quotient = floor(instanceOffSet / gVertexTextureWidth);	//0~N
+	float2 texcoord;	
+	texcoord.y = quotient/gVertexTextureHeight;		//
+	texcoord.x = (instanceOffSet - gVertexTextureWidth *quotient) / gVertexTextureWidth;
+	
+	float2 outputPos = texcoord;
+	
+	outputPos.x = outputPos.x * 2.0f - 1.0f;
+	outputPos.y = outputPos.y * -2.0f + 1.0f;	
+	output.mTexturePosition = float4( outputPos,0.0f,1.0f);		
+	
+	// ºæ≈Õ∞° 0.0  Left,Top(-1.0f,1.0f)  RIGHT,BOTTOM(1.0f,-1.0f);
+	output.mTransformedPosition = mul(input.mPosition, matWorldSkinned);	
+	output.mNormal = mul(input.mNormal,(float3x3)matWorldSkinned);	
+	return output;
+}
 
 
 struct PS_PHONG_DIFFUSE_INPUT
@@ -1249,11 +1271,19 @@ technique TPhongDiffuseLightInstancing
 }
 
 
-technique TVertexTransformation
+technique TNormalVertexTransformation
 {
 	pass P0
 	{
-        VertexShader = compile vs_3_0 vs_VertexTransformation();
+        VertexShader = compile vs_3_0 vs_NormalVertexTransformation();
+        PixelShader  = compile ps_3_0 ps_VertexTransformation();
+	}
+}
+technique TSkinnedVertexTransformation
+{
+	pass P0
+	{
+        VertexShader = compile vs_3_0 vs_SkinnedVertexTransformation();
         PixelShader  = compile ps_3_0 ps_VertexTransformation();
 	}
 }

@@ -89,7 +89,7 @@ public:
 	virtual cSceneNode*	FindNode(std::string& nodename);
 	void ResetRenderQueue();
 
-	void SetInstanceEnable(bool enable);
+	void ChangeInstanceEnable(bool enable);
 	static void WorkEnableInstancing(cSceneNode* pNode);
 	static void WorkDisableInstancing(cSceneNode* pNode);
 };

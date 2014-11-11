@@ -243,7 +243,8 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hfMatrixTextureSize = m_pEffect->GetParameterByName( NULL, "gMatrixTextureSize" );
 
 	
-	m_hTVertexTransform =					m_pEffect->GetTechniqueByName( _T("TVertexTransformation"));
+	m_hTNormalVertexTransform =					m_pEffect->GetTechniqueByName( _T("TNormalVertexTransformation"));
+	m_hTSkinnedVertexTransform =			m_pEffect->GetTechniqueByName( _T("TSkinnedVertexTransformation"));
 	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );
 	m_hTPhong =								m_pEffect->GetTechniqueByName( _T("TPhong") );

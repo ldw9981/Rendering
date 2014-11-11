@@ -1997,7 +1997,9 @@ cRscVertexBuffer* cASEParser::CreateRscVertexBuffer(const char* meshName,std::ve
 	if (!arrVertex.empty())
 	{
 		DWORD nCount=(DWORD)arrVertex.size();
-		pVertexBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_SceneTime.FILENAME.c_str(),meshName,sizeof(T)*nCount);
+		std::string strKey;
+		cResourceMng::m_pInstance->GetKeyVertexBuffer(strKey,m_SceneTime.FILENAME.c_str(),meshName);
+		pVertexBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(strKey,sizeof(T)*nCount);
 
 		if (pVertexBuffer->GetRefCounter()==0)
 		{
@@ -2020,8 +2022,9 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 	if (!arrIndex.empty())
 	{
 		DWORD nCount=(DWORD)arrIndex.size();
-		pIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_SceneTime.FILENAME.c_str(),meshName,
-			sizeof(TRIANGLE)*nCount);
+		std::string strKey;
+		cResourceMng::m_pInstance->GetKeyIndexBuffer(strKey,m_SceneTime.FILENAME.c_str(),meshName);
+		pIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,sizeof(TRIANGLE)*nCount);
 
 		if (pIndexBuffer->GetRefCounter()==0)
 		{

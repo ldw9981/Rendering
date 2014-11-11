@@ -51,7 +51,8 @@ public:
 	D3DXHANDLE				m_hTPhongDiffuseInstancing;
 	D3DXHANDLE				m_hTPhongDiffuseOpacityInstancing;
 	D3DXHANDLE				m_hTPhongDiffuseLightInstancing;
-	D3DXHANDLE				m_hTVertexTransform;
+	D3DXHANDLE				m_hTNormalVertexTransform;
+	D3DXHANDLE				m_hTSkinnedVertexTransform;
 
 
 	D3DXHANDLE				m_hTShadowNormalNotAlphaTest;	

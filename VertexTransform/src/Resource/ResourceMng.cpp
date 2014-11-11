@@ -77,11 +77,9 @@ void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,co
 	key += meshName;
 }
 
-cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const char* meshName, DWORD bufferSize)
+cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(std::string& strKey, DWORD bufferSize)
 {
 	cRscVertexBuffer* pItem=NULL;
-	std::string strKey;	
-	GetKeyVertexBuffer(strKey,rootName,meshName);
 
 	std::map<std::string,cResource*>::iterator it=m_contVertexBuffer.find(strKey);
 	if (it!=m_contVertexBuffer.end())
@@ -109,11 +107,9 @@ void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,con
 	key += meshName;
 }
 
-cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const char* meshName, DWORD bufferSize )
+cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(std::string& strKey, DWORD bufferSize )
 {
 	cRscIndexBuffer* pItem=NULL;
-	std::string strKey;	
-	GetKeyIndexBuffer(strKey,rootName,meshName);
 
 	std::map<std::string,cResource*>::iterator it=m_contIndexBuffer.find(strKey);
 	if (it!=m_contIndexBuffer.end())

@@ -59,16 +59,16 @@ public:
 	virtual void SerializeOut(std::ofstream& stream)=0;
 
 	void ReadString( std::ifstream& stream,std::string& str );
-	void WriteString( std::ofstream& stream,std::string& str );
+	void WriteString( std::ofstream& stream,const std::string& str );
 
 	void ReadMatrix(std::ifstream& stream,D3DXMATRIX& mat);
-	void WriteMatrix(std::ofstream& stream,D3DXMATRIX& mat);
+	void WriteMatrix(std::ofstream& stream,const D3DXMATRIX& mat);
 
 	void ReadFloat(std::ifstream& stream,float& var);
-	void WriteFloat(std::ofstream& stream,float& var);
+	void WriteFloat(std::ofstream& stream,const float& var);
 
 	void ReadBool(std::ifstream& stream,bool& var);
-	void WriteBool(std::ofstream& stream,bool& var);
+	void WriteBool(std::ofstream& stream,const bool& var);
 };
 
 }

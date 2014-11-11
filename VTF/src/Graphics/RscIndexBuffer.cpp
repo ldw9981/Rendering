@@ -53,10 +53,10 @@ void cRscIndexBuffer::Free()
 	delete this;
 }
 
-void* cRscIndexBuffer::Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags)
+void* cRscIndexBuffer::Lock(UINT SizeToLock,DWORD Flags)
 {
 	void *pIndices;
-	m_pD3DIndexBuffer->Lock( OffsetToLock, SizeToLock, (void**)&pIndices,Flags);		
+	m_pD3DIndexBuffer->Lock( 0, SizeToLock, (void**)&pIndices,Flags);		
 	return pIndices;
 }
 

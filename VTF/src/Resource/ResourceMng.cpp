@@ -76,12 +76,9 @@ void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,co
 	key += meshName;
 }
 
-cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_MANAGED*/ )
+cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(std::string& strKey, DWORD bufferSize )
 {
 	cRscVertexBuffer* pItem=NULL;
-	std::string strKey;	
-	GetKeyVertexBuffer(strKey,rootName,meshName);
-
 	std::map<std::string,cResource*>::iterator it=m_contVertexBuffer.find(strKey);
 	if (it!=m_contVertexBuffer.end())
 	{
@@ -91,7 +88,6 @@ cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(const char* rootName,const
 
 	pItem = new cRscVertexBuffer;
 	pItem->SetBufferSize(bufferSize);
-	pItem->SetPool(type);
 	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{
@@ -109,12 +105,9 @@ void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,con
 	key += meshName;
 }
 
-cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const char* meshName, DWORD bufferSize,D3DPOOL type/*D3DPOOL_MANAGED*/ )
+cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(std::string& strKey, DWORD bufferSize)
 {
 	cRscIndexBuffer* pItem=NULL;
-	std::string strKey;	
-	GetKeyIndexBuffer(strKey,rootName,meshName);
-
 	std::map<std::string,cResource*>::iterator it=m_contIndexBuffer.find(strKey);
 	if (it!=m_contIndexBuffer.end())
 	{
@@ -124,7 +117,6 @@ cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(const char* rootName,const c
 
 	pItem = new cRscIndexBuffer;	
 	pItem->SetBufferSize(bufferSize);
-	pItem->SetType(type);
 	pItem->SetUniqueKey(strKey);
 	if(!pItem->Create())	
 	{

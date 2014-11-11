@@ -44,11 +44,11 @@ public:
 	void				EraseRscTexture(const std::string& strKey);	
 
 	void				GetKeyVertexBuffer(std::string& key, const char* rootName,const char* meshName );
-	cRscVertexBuffer*	CreateRscVertexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscVertexBuffer*	CreateRscVertexBuffer(std::string& strKey,DWORD bufferSize);
 	void				EraseRscVertexBuffer( const std::string& strKey );
 
 	void				GetKeyIndexBuffer(std::string& key, const char* rootName, const char* meshName );
-	cRscIndexBuffer*	CreateRscIndexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscIndexBuffer*	CreateRscIndexBuffer(std::string& strKey,DWORD bufferSize);
 	void				EraseRscIndexBuffer( const std::string& strKey );
 
 	void				GetKeyEntityAnimation(std::string& key,const  char* filePath );

@@ -215,15 +215,17 @@ void SkinnedMeshNode::SerializeOut( std::ofstream& stream )
 void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 {
 	// index
+	WriteString(stream,m_pRscIndexBuffer->GetUniqueKey());
 	DWORD bufferSize =0;
 	bufferSize = m_pRscIndexBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
 
-	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);
+	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(m_pRscIndexBuffer->GetBufferSize(),0);
 	stream.write((char*)pIndices,bufferSize);
 	m_pRscIndexBuffer->Unlock();		
 
 	//vertex
+	WriteString(stream,m_pRscVetextBuffer->GetUniqueKey());
 	bufferSize = m_pRscVetextBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
 	BLEND_VERTEX* pVertices=(BLEND_VERTEX*)m_pRscVetextBuffer->Lock(m_pRscVetextBuffer->GetBufferSize(),0);
@@ -244,12 +246,14 @@ void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 {
 	// index
+	std::string strKey;
+	ReadString(stream,strKey);
 	DWORD bufferSize =0;
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
-		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(0,pRscIndexBuffer->GetBufferSize(),0);
+		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(pRscIndexBuffer->GetBufferSize(),0);
 		stream.read((char*)pIndices,bufferSize);
 		pRscIndexBuffer->Unlock();		
 		pRscIndexBuffer->SetTriangleCount(bufferSize/sizeof(TRIANGLE));
@@ -261,8 +265,9 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	SetRscIndexBuffer(pRscIndexBuffer);
 
 	// vertex
+	ReadString(stream,strKey);
 	stream.read((char*)&bufferSize,sizeof(bufferSize));
-	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_pRootNode->GetNodeName().c_str(),m_strNodeName.c_str(),bufferSize);
+	cRscVertexBuffer* pRscVetextBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(strKey,bufferSize);
 	if(pRscVetextBuffer->GetRefCounter() == 0)
 	{
 		BLEND_VERTEX* pVertices=(BLEND_VERTEX*)pRscVetextBuffer->Lock(pRscVetextBuffer->GetBufferSize(),0);

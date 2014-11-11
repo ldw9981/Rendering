@@ -281,7 +281,7 @@ void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
 	}
 }
 
-void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
 	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();

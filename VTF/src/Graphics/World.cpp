@@ -295,7 +295,7 @@ void World::Render()
 	
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
-		m_renderQueueNormal.RenderNotAlphaBlendInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
+		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
 	}		
 	
 	

@@ -33,7 +33,6 @@ SkinnedMeshNode::SkinnedMeshNode(void)
 	m_type = TYPE_SKINNEDMESH;
 	m_pIndexStreamVertexBuffer=NULL;
 	m_pBoneStreamTexture=NULL;
-	m_pMatrixPalleteTexture = NULL;
 }
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
@@ -335,40 +334,6 @@ void SkinnedMeshNode::ReleaseInstancingResource()
 	SAFE_RELEASE(m_pBoneStreamTexture);
 }
 
-void SkinnedMeshNode::UpdateMatrixPalleteTexture()
-{
-/*
-	if (!m_updateBlendMatrix)
-	{
-		D3DXMATRIX* pDst=NULL;
-		DWORD offset_bytes = 0;
-		DWORD offset_line = 0;
-		DWORD bytesMatrix = sizeof(D3DXMATRIX);
-		DWORD bytesPerLine= bytesMatrix * (m_pMatrixPalleteTexture->GetWidth()/4); // 1mat= 4pixel
-
-		D3DLOCKED_RECT lock;	
-		m_pMatrixPalleteTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
-
-
-		DWORD boneSize = m_vecBoneRef.size();
-		for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
-		{
-			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);				
-			BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
-			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());		
-
-			offset_bytes += bytesMatrix;		
-			if (offset_bytes >= bytesPerLine)
-			{
-				offset_line++;			
-				offset_bytes=0;
-			}	
-		}	
-		m_pMatrixPalleteTexture->GetD3DTexture()->UnlockRect(0);
-		m_updateBlendMatrix = true;
-	}*/
-}
 
 void SkinnedMeshNode::CreateMatrixPallete()
 {

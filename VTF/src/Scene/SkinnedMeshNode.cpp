@@ -33,6 +33,7 @@ SkinnedMeshNode::SkinnedMeshNode(void)
 	m_type = TYPE_SKINNEDMESH;
 	m_pIndexStreamVertexBuffer=NULL;
 	m_pBoneStreamTexture=NULL;
+	m_pMatrixPalleteTexture = NULL;
 }
 
 SkinnedMeshNode::~SkinnedMeshNode(void)
@@ -46,7 +47,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 	D3DXMATRIX tmBoneWorldReferenceInv;
 		
 	size_t iBoneRef=0,nBoneRefSize =m_vecBoneRef.size() ;
-	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
+
 
 	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
 	{
@@ -57,7 +58,6 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로		
 		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&refItem.pNode->GetNodeTM());
 		refItem.SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse
-		D3DXMatrixIdentity(&m_pMatrixPallete[iBoneRef]);
 	}
 }
 
@@ -71,9 +71,13 @@ void SkinnedMeshNode::Render()
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLEND_VERTEX));
 	m_pRscIndexBuffer->SetIndices();				
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+
 	UpdateMatrixPallete();
 	size_t nBoneRefSize = m_vecBoneRef.size();
 	pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pMatrixPallete,nBoneRefSize);	
+
+
+
 	pEffect->CommitChanges();	
 
 	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
@@ -93,6 +97,10 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 	if (m_bInstancingEnable)
 	{
 		CreateInstancingResource();
+	}
+	else
+	{
+		CreateMatrixPallete();
 	}
 
 	QueueRenderer(pEntity,false);
@@ -135,12 +143,9 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 void SkinnedMeshNode::Release()
 {
-	cMeshNode::Release();
-	if (m_pMatrixPallete!=NULL)
-	{
-		delete m_pMatrixPallete;
-	}	
+	cMeshNode::Release();	
 	m_vecBoneRef.clear();	
+	DeleteMatrixPallete();
 	ReleaseInstancingResource();
 }
 
@@ -328,6 +333,68 @@ void SkinnedMeshNode::ReleaseInstancingResource()
 {
 	SAFE_RELEASE(m_pIndexStreamVertexBuffer);
 	SAFE_RELEASE(m_pBoneStreamTexture);
+}
+
+void SkinnedMeshNode::UpdateMatrixPalleteTexture()
+{
+/*
+	if (!m_updateBlendMatrix)
+	{
+		D3DXMATRIX* pDst=NULL;
+		DWORD offset_bytes = 0;
+		DWORD offset_line = 0;
+		DWORD bytesMatrix = sizeof(D3DXMATRIX);
+		DWORD bytesPerLine= bytesMatrix * (m_pMatrixPalleteTexture->GetWidth()/4); // 1mat= 4pixel
+
+		D3DLOCKED_RECT lock;	
+		m_pMatrixPalleteTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
+
+
+		DWORD boneSize = m_vecBoneRef.size();
+		for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
+		{
+			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);				
+			BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
+			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());		
+
+			offset_bytes += bytesMatrix;		
+			if (offset_bytes >= bytesPerLine)
+			{
+				offset_line++;			
+				offset_bytes=0;
+			}	
+		}	
+		m_pMatrixPalleteTexture->GetD3DTexture()->UnlockRect(0);
+		m_updateBlendMatrix = true;
+	}*/
+}
+
+void SkinnedMeshNode::CreateMatrixPallete()
+{
+	assert(m_pMatrixPallete==NULL);
+	size_t nBoneRefSize = m_vecBoneRef.size();
+	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
+}
+
+void SkinnedMeshNode::DeleteMatrixPallete()
+{
+	SAFE_DELETEARRAY(m_pMatrixPallete);
+}
+
+void SkinnedMeshNode::ChangeInstancingEnable( bool val )
+{
+	m_bInstancingEnable = val;
+	if (m_bInstancingEnable)
+	{	
+		CreateInstancingResource();		
+		DeleteMatrixPallete();
+	}
+	else
+	{
+		ReleaseInstancingResource();
+		CreateMatrixPallete();
+	}
 }
 
 }

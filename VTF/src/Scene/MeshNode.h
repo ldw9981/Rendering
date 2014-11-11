@@ -70,7 +70,7 @@ public:
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	void ChangeInstancingEnable(bool val);
+	virtual void ChangeInstancingEnable(bool val);
 	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
 protected:
 	virtual void CreateInstancingResource();

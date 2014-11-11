@@ -7,6 +7,8 @@ texture Tex_Opacity;
 texture Tex_Depth : RenderColorTarget;
 texture Bone_Tex;
 
+texture Tex_MatrixPallete;
+
 
 // 변환행렬
 float4x4 gWorldMatrix      : WORLD;
@@ -74,6 +76,16 @@ sampler2D   gMatrixInstancingSampler = sampler_state
   AddressV = Clamp;
 };
 
+sampler2D   gMatrixPalleteSampler = sampler_state 
+{
+  texture = Tex_MatrixPallete;
+  MipFilter = NONE;
+  MagFilter = POINT;
+  MinFilter = POINT;
+  AddressU = Clamp;
+  AddressV = Clamp;
+};
+
 /////////////////////
 // BLENDING STATES //
 /////////////////////
@@ -91,7 +103,7 @@ float gSpecularPower = 32;
 
 
 #ifndef MATRIX_PALETTE_SIZE_DEFAULT
-#define MATRIX_PALETTE_SIZE_DEFAULT 64
+#define MATRIX_PALETTE_SIZE_DEFAULT 50
 #endif
 
 static const int MATRIX_PALETTE_SIZE = MATRIX_PALETTE_SIZE_DEFAULT;
@@ -366,7 +378,20 @@ VS_PHONG_DIFFUSE_BUMP_OUTPUT vs_PhongDiffuseBump( VS_PHONG_DIFFUSE_INPUT input)
    return output;
 }
 
+float4x4 loadMatrixPallete(float boneIndex)
+{	
+	float fMatrixPalleteTextureSize = 1024.0f;
 
+	float4x4 mat = 
+	{
+		tex2Dlod(gMatrixPalleteSampler, float4((4* boneIndex + 0.0f) / fMatrixPalleteTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, float4((4* boneIndex +1.0f) / fMatrixPalleteTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, float4((4* boneIndex +2.0f) / fMatrixPalleteTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, float4((4* boneIndex +3.0f) / fMatrixPalleteTextureSize	,0,0,0))
+	};
+ 
+	return mat; 	
+}
 
 VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT input)
 {
@@ -378,13 +403,12 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 	int aiIndices[4] = (int[4])input.mBlendIndices;
 	
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
-
-	float4x4 matWorldSkinned;
+   	float4x4 matWorldSkinned;
 	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
 	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
 	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
-   
+	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);	
+
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
@@ -533,13 +557,12 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
 	int aiIndices[4] = (int[4])input.mBlendIndices;
 	
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
-
-	float4x4 matWorldSkinned;
+   	float4x4 matWorldSkinned;
 	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
 	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
 	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
-   
+	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);	
+
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition, gLightViewMatrix);
     output.mPosition = mul(output.mPosition, gLightProjectionMatrix);

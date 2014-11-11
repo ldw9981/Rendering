@@ -48,7 +48,7 @@ protected:
 	IndexStreamVertexBuffer*	m_pIndexStreamVertexBuffer;
 	BoneStreamTexture*			m_pBoneStreamTexture;
 
-
+	BoneStreamTexture*			m_pMatrixPalleteTexture;
 public:
 	virtual void			Update( DWORD elapseTime );
 	virtual void			Render();
@@ -69,12 +69,16 @@ public:
 	virtual void SerializeOutMesh(std::ofstream& stream);
 	virtual void SerializeInMesh(std::ifstream& stream);
 
+	void UpdateMatrixPalleteTexture();	
 	void UpdateMatrixPallete();
 	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
 	BoneStreamTexture* GetBoneStreamTexture() const { return m_pBoneStreamTexture; }
 	IndexStreamVertexBuffer* GetIndexStreamVertexBuffer() const { return m_pIndexStreamVertexBuffer; }	
+	virtual void ChangeInstancingEnable(bool val);
 protected:
 	virtual void CreateInstancingResource();
 	virtual void ReleaseInstancingResource();
+	void CreateMatrixPallete();
+	void DeleteMatrixPallete();
 };
 }

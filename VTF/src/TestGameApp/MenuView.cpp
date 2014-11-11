@@ -19,7 +19,9 @@ cMenuView::cMenuView(void)
 {
 	
 	m_bControlCamera=FALSE;
-	m_instancing = true;
+
+	m_instancingNormal = true;
+	m_instancingSkinned = true;
 	m_pZTerrain=NULL;
 	
 	m_pTank=NULL;
@@ -32,6 +34,8 @@ cMenuView::cMenuView(void)
 		m_pSkinned[i]=NULL;
 	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
+	m_showNormal = true;
+	m_showSkinned = true;
 }
 
 cMenuView::~cMenuView(void)
@@ -98,7 +102,7 @@ void cMenuView::Enter()
 	
 
 		m_pHouse[i]->Build();
-		m_pHouse[i]->ChangeInstanceEnable(m_instancing);
+		m_pHouse[i]->ChangeInstanceEnable(m_instancingNormal);
 		m_pHouse[i]->PlayBaseAnimation(0,true);
 		
 		D3DXVECTOR3 pos;
@@ -118,7 +122,7 @@ void cMenuView::Enter()
 		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 	
 		m_pSkinned[i]->Build();
-		m_pSkinned[i]->ChangeInstanceEnable(m_instancing);
+		m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);
 		m_pSkinned[i]->PlayBaseAnimation(0,true);
 
 		D3DXVECTOR3 pos;
@@ -221,30 +225,61 @@ void cMenuView::Control()
 	}
 
 
-	if (g_pInput->IsTurnDn(DIK_F11))
+	if (g_pInput->IsTurnDn(DIK_F4))
 	{
-		m_instancing = !m_instancing;
-		for (int i=0;i<STRESS;i++)
-		{
-			
-			m_pHouse[i]->ChangeInstanceEnable(m_instancing);
-			m_pHouse[i]->ResetRenderQueue();
+		m_graphicWorld.m_bEnableShadow = !m_graphicWorld.m_bEnableShadow;
+	}
 
-		}
-	}	
 	if (g_pInput->IsTurnDn(DIK_F5))
 	{
-		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,200.0f,-1000.0f));	
-	}
-	
+		m_instancingNormal = !m_instancingNormal;
+		for (int i=0;i<STRESS;i++)
+		{
+			if (m_pHouse[i])
+			{
+				m_pHouse[i]->ChangeInstanceEnable(m_instancingNormal);				
+			}
+		}
+	}	
 
 	if (g_pInput->IsTurnDn(DIK_F6))
 	{
-		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,-2200.0f,-1000.0f));	
+		m_instancingSkinned = !m_instancingSkinned;
+		for (int i=0;i<STRESS;i++)
+		{
+			if (m_pHouse[i])
+			{
+				m_pHouse[i]->ChangeInstanceEnable(m_instancingSkinned);				
+			}
+			if (m_pSkinned[i])
+			{
+				m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);				
+			}
+		}
+	}	
+
+	if (g_pInput->IsTurnDn(DIK_F7))
+	{
+		m_showNormal = !m_showNormal;
+		for (int i=0;i<STRESS;i++)
+		{
+			if (m_pHouse[i])
+			{
+				m_pHouse[i]->SetShow(m_showNormal);
+			}
+		}
 	}
-	
+	if (g_pInput->IsTurnDn(DIK_F8))
+	{
+		m_showSkinned = !m_showSkinned;
+		for (int i=0;i<STRESS;i++)
+		{
+			if (m_pSkinned[i])
+			{
+				m_pSkinned[i]->SetShow(m_showSkinned);
+			}
+		}		
+	}
 	
 	
 }

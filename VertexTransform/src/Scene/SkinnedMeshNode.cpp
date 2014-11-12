@@ -415,14 +415,14 @@ void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 	m_pMatrixTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
 
 	for ( ; it!=it_end ; it++)
-	{
-		DWORD boneSize = m_vecBoneRef.size();
+	{		
+		pMeshNode =  static_cast<SkinnedMeshNode*>(*it);	
+		auto refArrBone = pMeshNode->GetArrayBoneRef();
+		DWORD boneSize = refArrBone.size();
 		for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
-		{
-			pMeshNode =  static_cast<SkinnedMeshNode*>(*it);	
-			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);				
-
-			BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
+		{			
+			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
+			BONEREFINFO& refItem=refArrBone[boneIndex];
 			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
 			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());		
 			

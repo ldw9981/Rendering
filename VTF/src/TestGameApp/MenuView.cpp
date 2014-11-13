@@ -247,10 +247,6 @@ void cMenuView::Control()
 		m_instancingSkinned = !m_instancingSkinned;
 		for (int i=0;i<STRESS;i++)
 		{
-			if (m_pHouse[i])
-			{
-				m_pHouse[i]->ChangeInstanceEnable(m_instancingSkinned);				
-			}
 			if (m_pSkinned[i])
 			{
 				m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);				

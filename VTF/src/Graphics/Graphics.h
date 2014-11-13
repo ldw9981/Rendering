@@ -5,7 +5,7 @@
 namespace Sophia
 {
 
-#define INSTANCING_MAX 256
+#define INSTANCING_MAX 1024
 
 class cGUIFont;
 class cView;

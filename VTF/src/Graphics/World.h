@@ -22,8 +22,6 @@ public:
 	virtual ~World(void);
 
 public:
-	// ±×¸²ÀÚ¸Ê ·»´õÅ¸±ê
-	cRscTexture*			m_pShadowTexture;
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
 	D3DVIEWPORT9			m_ViewPortInfo;
@@ -46,6 +44,9 @@ public:
 
 	std::map<cGUIButton*,cGUIButton*> m_mapButton;
 	std::map<cGUIFont*,cGUIFont*> m_mapFont;
+
+	LPDIRECT3DSURFACE9 m_pHWRenderTarget[4];
+	LPDIRECT3DSURFACE9 m_pHWDepthStencilBuffer;
 public:
 	// camera
 	cCameraNode				m_camera;
@@ -79,6 +80,9 @@ public:
 	void Render();
 	bool GetEnableShadow() const { return m_bEnableShadow; }
 	void SetEnableShadow(bool val) { m_bEnableShadow = val; }
+
+	void RenderShadow();
+	void RenderScene();
 };
 
 }

@@ -8,10 +8,11 @@
 #include "Graphics/RscIndexBuffer.h"
 #include "Graphics/Animation.h"
 #include "Graphics/MaterialEx.h"
-#include "Graphics/MatrixStreamVertexBuffer.h"
-#include "Graphics/IndexStreamVertexBuffer.h"
-#include "Graphics/BoneStreamTexture.h"
 
+#include "Graphics/IndexInstancingBuffer.h"
+#include "Graphics/VertexTexture.h"
+#include "Graphics/MatrixTexture.h"
+#include "Graphics/VertexInstancingBuffer.h"
 namespace Sophia
 {
 
@@ -76,9 +77,10 @@ void cResourceMng::GetKeyVertexBuffer( std::string& key, const char* rootName,co
 	key += meshName;
 }
 
-cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(std::string& strKey, DWORD bufferSize )
+cRscVertexBuffer* cResourceMng::CreateRscVertexBuffer(std::string& strKey, DWORD bufferSize)
 {
 	cRscVertexBuffer* pItem=NULL;
+
 	std::map<std::string,cResource*>::iterator it=m_contVertexBuffer.find(strKey);
 	if (it!=m_contVertexBuffer.end())
 	{
@@ -105,9 +107,10 @@ void cResourceMng::GetKeyIndexBuffer( std::string& key, const char* rootName,con
 	key += meshName;
 }
 
-cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(std::string& strKey, DWORD bufferSize)
+cRscIndexBuffer* cResourceMng::CreateRscIndexBuffer(std::string& strKey, DWORD bufferSize )
 {
 	cRscIndexBuffer* pItem=NULL;
+
 	std::map<std::string,cResource*>::iterator it=m_contIndexBuffer.find(strKey);
 	if (it!=m_contIndexBuffer.end())
 	{
@@ -227,86 +230,119 @@ void cResourceMng::EraseEntityMaterial( const std::string& strKey )
 	m_contEntityMaterial.erase(strKey);
 }
 
-MatrixStreamVertexBuffer* cResourceMng::CreateMatrixStreamVertexBuffer( SCENE_KEY& key )
+IndexInstancingBuffer* cResourceMng::CreateIndexInstancingBuffer( cRscIndexBuffer* key ,DWORD buffersize,DWORD count)
 {
-	MatrixStreamVertexBuffer* pItem=NULL;
-	
-	auto it=m_contMatrixStreamVertexBuffer.find(key);
-	if (it!=m_contMatrixStreamVertexBuffer.end())
+	IndexInstancingBuffer* pItem=NULL;
+
+	auto it=m_contIndexInstancingBuffer.find(key);
+	if (it!=m_contIndexInstancingBuffer.end())
 	{
-		pItem = static_cast<MatrixStreamVertexBuffer*>(it->second);
+		pItem = static_cast<IndexInstancingBuffer*>(it->second);
 		return pItem;
 	}	
 
-	pItem = new MatrixStreamVertexBuffer;
+	pItem = new IndexInstancingBuffer;
+	pItem->SetBufferSize(buffersize);
+	pItem->SetTriangleCount(count);
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	m_contMatrixStreamVertexBuffer.insert(std::make_pair(key,pItem));
+	m_contIndexInstancingBuffer.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
-void cResourceMng::EraseMatrixStreamVertexBuffer( SCENE_KEY& key )
+void cResourceMng::EraseIndexInstancingBuffer( cRscIndexBuffer* key)
 {
-	m_contMatrixStreamVertexBuffer.erase(key);
+	m_contIndexInstancingBuffer.erase(key);
 }
 
-IndexStreamVertexBuffer* cResourceMng::CreateIndexStreamVertexBuffer( SCENE_KEY& key )
+MatrixTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
 {
-	IndexStreamVertexBuffer* pItem=NULL;
+	MatrixTexture* pItem=NULL;
 
-	auto it=m_contIndexStreamVertexBuffer.find(key);
-	if (it!=m_contIndexStreamVertexBuffer.end())
+	auto it=m_contMatrixTexture.find(key);
+	if (it!=m_contMatrixTexture.end())
 	{
-		pItem = static_cast<IndexStreamVertexBuffer*>(it->second);
+		pItem = static_cast<MatrixTexture*>(it->second);
 		return pItem;
 	}	
 
-	pItem = new IndexStreamVertexBuffer;
+	pItem = new MatrixTexture;
+	pItem->SetSize(size);
 	pItem->m_key = key;
 	if(!pItem->Create())	
 	{
 		delete pItem;
 		return NULL;
 	}
-	m_contIndexStreamVertexBuffer.insert(std::make_pair(key,pItem));
-	return pItem;
-}
-
-void cResourceMng::EraseIndexStreamVertexBuffer( SCENE_KEY& key )
-{
-	m_contIndexStreamVertexBuffer.erase(key);
-}
-
-BoneStreamTexture* cResourceMng::CreateBoneStreamTexture( SCENE_KEY& key ,UINT textureSize)
-{
-	BoneStreamTexture* pItem=NULL;
-
-	auto it=m_contBoneStreamTexture.find(key);
-	if (it!=m_contBoneStreamTexture.end())
-	{
-		pItem = static_cast<BoneStreamTexture*>(it->second);
-		return pItem;
-	}	
-
-	pItem = new BoneStreamTexture;
-	pItem->SetSize(textureSize);
-	pItem->m_key = key;
-	if(!pItem->Create())	
-	{
-		delete pItem;
-		return NULL;
-	}
-	m_contBoneStreamTexture.insert(std::make_pair(key,pItem));
+	m_contMatrixTexture.insert(std::make_pair(key,pItem));
 	return pItem;
 }
 
 void cResourceMng::EraseBoneStreamTexture( SCENE_KEY& key )
 {
-	m_contBoneStreamTexture.erase(key);
+	m_contMatrixTexture.erase(key);
+}
+
+// VertexTexture* cResourceMng::CreateVertexTexture( SCENE_KEY& key ,DWORD size)
+// {
+// 	VertexTexture* pItem=NULL;
+// 
+// 	auto it=m_contVertexTexture.find(key);
+// 	if (it!=m_contVertexTexture.end())
+// 	{
+// 		pItem = static_cast<VertexTexture*>(it->second);
+// 		return pItem;
+// 	}	
+// 
+// 	pItem = new VertexTexture;
+// 	pItem->SetWidth(size);
+// 	pItem->SetHeight(size);
+// 	pItem->m_key = key;
+// 	if(!pItem->Create())	
+// 	{
+// 		delete pItem;
+// 		return NULL;
+// 	}
+// 	m_contVertexTexture.insert(std::make_pair(key,pItem));
+// 	return pItem;
+// }
+// 
+// void cResourceMng::EraseVertexTexture( SCENE_KEY& key )
+// {
+// 	m_contVertexTexture.erase(key);
+// }
+
+VertexInstancingBuffer* cResourceMng::CreateVertexInstancingBuffer( cRscVertexBuffer* key ,DWORD buffersize,DWORD count)
+{
+	VertexInstancingBuffer* pItem=NULL;
+
+	auto it=m_contVertexInstancingBuffer.find(key);
+	if (it!=m_contVertexInstancingBuffer.end())
+	{
+		pItem = static_cast<VertexInstancingBuffer*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new VertexInstancingBuffer;
+	pItem->SetBufferSize(buffersize);
+	pItem->SetVertexCount(count);
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contVertexInstancingBuffer.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseVertexInstancingBuffer( cRscVertexBuffer* key )
+{
+	m_contVertexInstancingBuffer.erase(key);
 }
 
 

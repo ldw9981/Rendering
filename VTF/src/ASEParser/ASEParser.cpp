@@ -268,7 +268,6 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 				}
 				catch (std::string*  str)
 				{
-					OutputDebugString(str->c_str());
 					ASSERT(bResult==TRUE);
 				}		
 				m_CNTOBJECT++;
@@ -372,10 +371,10 @@ BOOL cASEParser::Parsing_GeoObject()
 	std::vector<VNORMAL>					vecTempVertexNormal;
 
 	std::vector<TEXCOORD>					vecTempBaseTVertex;
-	std::vector<TRIANGLE>					vecTempBaseTFaceIndex;
+	std::vector<TRIANGLE_INDEX16>					vecTempBaseTFaceIndex;
 	
 	std::vector<TEXCOORD>					vecTempExtraTVertex;
-	std::vector<TRIANGLE>					vecTempExtraTFaceIndex;	
+	std::vector<TRIANGLE_INDEX16>					vecTempExtraTFaceIndex;	
 
 	// 정점으로 Sphere를 만들기위한 임시 정보
 	SceneAnimation* pSceneAnimation = NULL;
@@ -507,7 +506,7 @@ BOOL cASEParser::Parsing_GeoObject()
 								{
 								case TOKENR_MESH_FACE:						
 									int iFace,iMat;
-									TRIANGLE tFaceIndex;
+									TRIANGLE_INDEX16 tFaceIndex;
 									iFace=GetInt();			// FaceIndex
 
 									m_Token=GetToken(m_TokenString);		// A:
@@ -792,6 +791,13 @@ BOOL cASEParser::Parsing_GeoObject()
 		SetVertexBiNormal(vecNormalVertexForBuffer,vecIndexForBuffer);
 	else 
 		SetVertexBiNormal(vecBlendVertexForBuffer,vecIndexForBuffer);
+
+/*
+	if (!bSkinned) 
+		SetVertexIndex(vecNormalVertexForBuffer);
+	else 
+		SetVertexIndex(vecBlendVertexForBuffer);*/
+
 
 	// 서브매트리얼 ID별로 FACEINDEX정렬
 	sort(vecIndexForBuffer.begin(),vecIndexForBuffer.end(),TRIANGLE_SUBMATERIAL::LessFaceIndex);	
@@ -1343,7 +1349,6 @@ BOOL cASEParser::Parsing_Group()
 				}
 				catch (std::string*  str)
 				{
-					OutputDebugString(str->c_str());
 					ASSERT(bResult==TRUE);
 				}				
 				m_CNTOBJECT++;
@@ -1462,6 +1467,7 @@ BOOL cASEParser::Parsing_Scene()
 }
 
 
+
 // 노말리스트를 버텍스 리스트에 합친다. 
 // arrVertex [in,out] , arrVNormal [in] ,  arrFaceIndex[in,out]
 template <typename T>
@@ -1563,7 +1569,7 @@ void cASEParser::MergeNormalListIntoVertexList(std::vector<T>& arrVertex,
 
 void cASEParser::OptimizeTexCoordAndFace(std::vector<TEXCOORD>& arrTexCoordOut,
 								const std::vector<TEXCOORD>& arrTexCoordIn,
-								std::vector<TRIANGLE>& arrTFaceIndexInOut)
+								std::vector<TRIANGLE_INDEX16>& arrTFaceIndexInOut)
 {
 	std::map<float,std::map<float,WORD>>	mapUVINDEX;
 	std::vector<std::list<int>>			arrTVIndexedFaceIndexList;	// 해당버텍스를 사용하는 페이스인덱스의 리스트를 버텍스인덱스로 인덱스화
@@ -1636,7 +1642,7 @@ template <typename T>
 void cASEParser::MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vector<T>& arrVertexInOut,
 									 std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
 									 const std::vector<TEXCOORD>& arrBaseTexCoordIn,
-									 const std::vector<TRIANGLE>& arrBaseTFaceIndexIn)
+									 const std::vector<TRIANGLE_INDEX16>& arrBaseTFaceIndexIn)
 {	
 	if (arrVertexInOut.empty())
 		return;
@@ -1654,8 +1660,8 @@ void cASEParser::MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vecto
 	int nFace=(int)arrVFaceIndexInOut.size();
 	for (int iFace=0;iFace<nFace;iFace++)
 	{
-		TRIANGLE*		 pVFace=&arrVFaceIndexInOut[iFace].triangle;
-		const TRIANGLE* pTFace=&arrBaseTFaceIndexIn[iFace];
+		TRIANGLE_INDEX16*		 pVFace=&arrVFaceIndexInOut[iFace].triangle;
+		const TRIANGLE_INDEX16* pTFace=&arrBaseTFaceIndexIn[iFace];
 
 		for (int i=0;i<3;i++)
 		{
@@ -1868,13 +1874,14 @@ cASEParser::CreateMeshNode(SCENENODEINFO& stSceneNodeInfo,
 			SetNodeInfo(pChildNode,tempInfo);
 
 			pChildNode->SetMaterialRefIndex(nMaterialRef);
-			pChildNode->SetRscVertextBuffer(pVertexBuffer);		
-			pChildNode->SetRscIndexBuffer(pIndexBuffer);		
+			pChildNode->SetRscVertextBuffer(pVertexBuffer);
+
+			cRscIndexBuffer* pPiece = CreatePieceIndexBuffer(pIndexBuffer,startIndex,primitiveCount);
+			pChildNode->SetRscIndexBuffer(pPiece);		
 			pChildNode->SetPrimitiveCount(primitiveCount);
 			pChildNode->SetMaterialRefIndex(nMaterialRef);
 			pChildNode->SetMaterialSubIndex(materialSubIndex);
-			pChildNode->SetStartIndex(startIndex);
-			
+			pChildNode->SetStartIndex(0);			
 
 			startIndex += primitiveCount*3; //cnt
 		}			
@@ -1968,11 +1975,12 @@ cASEParser::CreateSkinnedMeshNode(SCENENODEINFO& stSceneNodeInfo,
 
 			pChildNode->SetMaterialRefIndex(nMaterialRef);
 			pChildNode->SetRscVertextBuffer(pVertexBuffer);		
-			pChildNode->SetRscIndexBuffer(pIndexBuffer);		
+			cRscIndexBuffer* pPiece = CreatePieceIndexBuffer(pIndexBuffer,startIndex,primitiveCount);
+			pChildNode->SetRscIndexBuffer(pPiece);		
 			pChildNode->SetPrimitiveCount(primitiveCount);
 			pChildNode->SetMaterialRefIndex(nMaterialRef);
 			pChildNode->SetMaterialSubIndex(materialSubIndex);
-			pChildNode->SetStartIndex(startIndex);
+			pChildNode->SetStartIndex(0);	
 			pChildNode->SetBoneRef(boneRef);
 
 			
@@ -2018,14 +2026,14 @@ cRscIndexBuffer* cASEParser::CreateRscIndexBuffer(const char* meshName,std::vect
 		DWORD nCount=(DWORD)arrIndex.size();
 		std::string strKey;
 		cResourceMng::m_pInstance->GetKeyIndexBuffer(strKey,m_SceneTime.FILENAME.c_str(),meshName);
-		pIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,sizeof(TRIANGLE)*nCount);
+		pIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,sizeof(TRIANGLE_INDEX16)*nCount);
 
 		if (pIndexBuffer->GetRefCounter()==0)
 		{
-			TRIANGLE* pIndices=(TRIANGLE*)pIndexBuffer->Lock(pIndexBuffer->GetBufferSize(),0);
+			TRIANGLE_INDEX16* pIndices=(TRIANGLE_INDEX16*)pIndexBuffer->Lock(pIndexBuffer->GetBufferSize(),0);
 			for (UINT i=0;i< nCount;i++)
 			{
-				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE));			
+				memcpy(&pIndices[i],&arrIndex[i].triangle,sizeof(TRIANGLE_INDEX16));			
 			}
 			pIndexBuffer->Unlock();		
 			pIndexBuffer->SetTriangleCount(nCount);
@@ -2165,7 +2173,7 @@ bool cASEParser::GetTextureVertexList(std::vector<TEXCOORD>& out)
 	return true;
 }
 
-bool cASEParser::GetTextureFaceList(std::vector<TRIANGLE>& out)
+bool cASEParser::GetTextureFaceList(std::vector<TRIANGLE_INDEX16>& out)
 {
 	if (GetToken(m_TokenString)!=TOKEND_BLOCK_START)
 		return FALSE;
@@ -2177,7 +2185,7 @@ bool cASEParser::GetTextureFaceList(std::vector<TRIANGLE>& out)
 		{
 		case TOKENR_MESH_TFACE:						
 			int iTFace;
-			TRIANGLE tFaceIndex;
+			TRIANGLE_INDEX16 tFaceIndex;
 			iTFace=GetInt();			// FaceIndex						
 			tFaceIndex.index[0]=GetInt();			// 0						
 			tFaceIndex.index[2]=GetInt();			// 1						
@@ -2491,5 +2499,46 @@ void cASEParser::SetVertexBiNormal( std::vector<T>& arrVertex,std::vector<TRIANG
 	}
 }
 
+cRscIndexBuffer* cASEParser::CreatePieceIndexBuffer( cRscIndexBuffer* pSrc,UINT startIndex,UINT triangleCount )
+{
+	// key
+	char temp[256]={0,};
+	sprintf_s(temp,256,"%s%d",pSrc->GetUniqueKey().c_str(),startIndex);
+	std::string strkey=temp;
+	// size
+	cRscIndexBuffer* pRet = cResourceMng::m_pInstance->CreateRscIndexBuffer(strkey,sizeof(TRIANGLE_INDEX16)*triangleCount);
+	if (pRet->GetRefCounter()==0)
+	{
+		WORD* pWord = (WORD*)pSrc->Lock(0,0);
+		pWord+= startIndex;
+		TRIANGLE_INDEX16* pSrcLockPos = (TRIANGLE_INDEX16*)pWord;
+		TRIANGLE_INDEX16* pDstLockPos = (TRIANGLE_INDEX16*)pRet->Lock(0,0);
+
+		for( UINT triangleIndex = 0 ; triangleIndex < triangleCount; triangleIndex++ )
+		{
+			pDstLockPos[triangleIndex].index[0] = pSrcLockPos[triangleIndex].index[0];
+			pDstLockPos[triangleIndex].index[1] = pSrcLockPos[triangleIndex].index[1];
+			pDstLockPos[triangleIndex].index[2] = pSrcLockPos[triangleIndex].index[2];			 
+		}	
+		pRet->Unlock();
+		pSrc->Unlock();
+	}
+
+
+	return pRet;
+}
+
+/*
+template <typename T>
+void cASEParser::SetVertexIndex( std::vector<T>& arrVertex)
+{
+	size_t vertex_size = arrVertex.size(); 
+	for (size_t index = 0; index < vertex_size; index++)
+	{
+		arrVertex[index].vertexIndex = (float)index;
+		arrVertex[index].vertexSize = (float)vertex_size;
+
+	}
+}*/
 
 }

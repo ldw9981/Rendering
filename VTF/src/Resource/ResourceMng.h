@@ -15,10 +15,10 @@ class cResourceMng;
 class EntityAnimation;
 class EntityMaterial;
 class Material;
-class MatrixStreamVertexBuffer;
-class IndexStreamVertexBuffer;
-class BoneStreamTexture;
-
+class IndexInstancingBuffer;
+class MatrixTexture;
+class VertexTexture;
+class VertexInstancingBuffer;
 class cResourceMng:
 	private cStaticRestoreList
 {
@@ -32,10 +32,12 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
-	std::map<SCENE_KEY,cResource*>						m_contMatrixStreamVertexBuffer;
-	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
-	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
+	std::map<SCENE_KEY,cResource*>						m_contMatrixTexture;
+	std::map<SCENE_KEY,cResource*>						m_contVertexTexture;
+	std::map<cRscIndexBuffer*,cResource*>						m_contIndexInstancingBuffer;
+	std::map<cRscVertexBuffer*,cResource*>						m_contVertexInstancingBuffer;
 public:		
+	int					GetCount();
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
 
@@ -63,16 +65,18 @@ public:
 	EntityMaterial*		CreateEntityMaterial(const char* filePath);
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
-	MatrixStreamVertexBuffer*	CreateMatrixStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseMatrixStreamVertexBuffer(SCENE_KEY& key);
 
-	IndexStreamVertexBuffer*	CreateIndexStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseIndexStreamVertexBuffer(SCENE_KEY& key);
+	IndexInstancingBuffer*	CreateIndexInstancingBuffer(cRscIndexBuffer* key,DWORD buffersize,DWORD count);
+	void				EraseIndexInstancingBuffer(cRscIndexBuffer* key);
 
-	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key,UINT textureSize);
+	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
-	int					GetCount();
+// 	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);
+// 	void				EraseVertexTexture(SCENE_KEY& key);
+
+	VertexInstancingBuffer*	CreateVertexInstancingBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
+	void				EraseVertexInstancingBuffer(cRscVertexBuffer* pKey);
 };
 
 }

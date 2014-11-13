@@ -13,7 +13,10 @@ namespace Sophia
 class MatrixStreamVertexBuffer;
 class cMeshNode;
 class cView;
-
+class VertexTexture;
+class VertexInstancingBuffer;
+class MatrixTexture;
+class IndexInstancingBuffer;
 
 class cMeshNode:
 	public cSceneNode
@@ -31,8 +34,9 @@ protected:
 	Material*				m_pMaterial;
 	bool					m_bInstancingEnable;
 
-	MatrixStreamVertexBuffer*	m_pMatrixStreamVertexBuffer;
-
+	MatrixTexture*			m_pMatrixTexture;		// world Matrix
+	VertexInstancingBuffer*		m_pVertexInstancingBuffer;		
+	IndexInstancingBuffer*		m_pIndexInstancingBuffer;	
 public:
 	virtual void			Render();
 	virtual	void			BuildComposite(Entity* pEntity);
@@ -41,8 +45,6 @@ public:
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
 	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
-
-
 	virtual void			Release();
 
 	// ISerialize
@@ -65,13 +67,17 @@ public:
 	unsigned char GetMaterialSubIndex() const { return m_materialSubIndex; }
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 
-	void RenderIsntancing();
+	virtual void RenderInstancing(int vertexCount,int triangleCount);
+
+	virtual void UpdateMatrixTexture(std::list<cMeshNode*>& list);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	virtual void ChangeInstancingEnable(bool val);
-	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
+	void ChangeInstancingEnable(bool val);
+	VertexInstancingBuffer* GetVertexInstancingBuffer() const { return m_pVertexInstancingBuffer; }
+	MatrixTexture*			GetMatrixTexture() const { return m_pMatrixTexture; }
+	IndexInstancingBuffer*	GetIndexInstancingBuffer() const { return m_pIndexInstancingBuffer; }	
 protected:
 	virtual void CreateInstancingResource();
 	virtual void ReleaseInstancingResource();

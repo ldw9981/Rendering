@@ -124,7 +124,7 @@ public:
 		BOOL			Parsing_HelperObject();
 		BOOL			Parsing_GeoObject();
 		bool			GetTextureVertexList(std::vector<TEXCOORD>& out);	
-		bool			GetTextureFaceList(std::vector<TRIANGLE>& out);
+		bool			GetTextureFaceList(std::vector<TRIANGLE_INDEX16>& out);
 
 		BOOL			Parsing_MaterialList();
 		bool			GetSubMaterial(Material& SubMatrial);// return class
@@ -144,13 +144,13 @@ public:
 
 		void			OptimizeTexCoordAndFace(std::vector<TEXCOORD>& arrTexCoordOut,
 			const std::vector<TEXCOORD>& arrTexCoordIn,
-			std::vector<TRIANGLE>& arrTFaceIndexInOut);
+			std::vector<TRIANGLE_INDEX16>& arrTFaceIndexInOut);
 
 		template <typename T>
 		void			MergeTexCoordListIntoVertexList(bool bBaseMapChannel,std::vector<T>& arrVertexInOut,
 			std::vector<TRIANGLE_SUBMATERIAL>& arrVFaceIndexInOut,
 			const std::vector<TEXCOORD>& arrTexCoordIn,
-			const std::vector<TRIANGLE>& arrTFaceIndexIn);
+			const std::vector<TRIANGLE_INDEX16>& arrTFaceIndexIn);
 
 		template <typename T>
 		void			SetVertexBiNormal(std::vector<T>& arrVertex,std::vector<TRIANGLE_SUBMATERIAL>& arrIndex);
@@ -178,6 +178,8 @@ public:
 			const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
 			D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
 			D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
+
+		cRscIndexBuffer* CreatePieceIndexBuffer(cRscIndexBuffer* pSrc,UINT startIndex,UINT triangleCount);
 };
 
 }

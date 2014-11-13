@@ -184,7 +184,7 @@ void	ZTerrain::Render()
 
 	char temp[256];
 	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
-	Graphics::m_pInstance->RenderDebugString(0,Graphics::m_pInstance->m_viewPortInfo.Height-20,temp);
+//	Graphics::m_pInstance->RenderDebugString(0,Graphics::m_pInstance->m_viewPortInfo.Height-20,temp);
 }
 
 HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )

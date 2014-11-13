@@ -7,6 +7,8 @@
 #include "Scene/ZTerrain.h"
 #include "Foundation/Define.h"
 #include "Graphics/RscTexture.h"
+#include "Foundation/Trace.h"
+
 namespace Sophia
 {
 	#define PI           3.14159265f
@@ -25,11 +27,13 @@ World::World(void)
 	m_ViewPortInfo.MaxZ = 1.0f;
 	m_ViewPortInfo.X = 0;
 	m_ViewPortInfo.Y = 0;
-	m_ViewPortInfo.Width = 0;
-	m_ViewPortInfo.Height = 0;
+	m_ViewPortInfo.Width = Graphics::m_pInstance->m_width;
+	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
 	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
+	m_pHWRenderTarget[0] = NULL;
+	m_pHWDepthStencilBuffer = NULL;
 }
 
 
@@ -145,47 +149,33 @@ void World::DeleteFont( cGUIFont* pFont )
 
 bool World::Initialize()
 {
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetViewport(&m_ViewPortInfo));
+
 	// 렌더타깃을 만든다.
 	const int shadowMapSize = SHADOWMAP_SIZE;
-	if(FAILED(Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
+	V( Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
-		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL ) ))
-	{
-		return false;
-	}
-	m_pShadowTexture = new cRscTexture;
-	m_pShadowTexture->SetWidth(shadowMapSize);
-	m_pShadowTexture->SetHeight(shadowMapSize);
-	m_pShadowTexture->SetPool(D3DPOOL_DEFAULT);
-	m_pShadowTexture->SetUsage(D3DUSAGE_RENDERTARGET);
-	m_pShadowTexture->SetFormat(D3DFMT_R32F);
-	m_pShadowTexture->Create();
-	
+		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL) );
+		
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	if(FAILED(Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
+	V( Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
 		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
-		&m_pShadowDepthStencil, NULL)))
-	{
-		return false;
-	}
+		&m_pShadowDepthStencil, NULL) );
+
 	return true;
 }
 
 void World::Finalize()
 {
-	m_pShadowTexture->Free();
-	m_pShadowTexture=NULL;
-
 	SAFE_RELEASE(m_pShadowDepthStencil);
 	SAFE_RELEASE(m_pShadowRenderTarget);
 }
 
 void World::Render()
 {
-	LPD3DXEFFECT m_pEffect = Graphics::m_pInstance->GetEffect();
-	
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
 	UINT passes = 0;
-	// 광원-뷰 행렬을 만든다.
 	D3DXMATRIX matLightView;
 	{
 		D3DXVECTOR3 vEyePt( m_WorldLightPosition.x, m_WorldLightPosition.y,  m_WorldLightPosition.z );		
@@ -195,8 +185,6 @@ void World::Render()
 		D3DXVECTOR3 vUpVec(    0.0f, 1.0f,  0.0f );
 		D3DXMatrixLookAtLH( &matLightView, &vEyePt, vLookatPt, &vUpVec );
 	}
-
-	// 광원-투영 행렬을 만든다.
 	D3DXMATRIX matLightProjection;
 	{
 		//D3DXMatrixPerspectiveFovLH( &matLightProjection, D3DX_PI / 4.0f, 1, 3000, FAR_PLANE );
@@ -205,158 +193,47 @@ void World::Render()
 	Graphics::m_pInstance->SetEffectVector_WorldLightPosition(&m_WorldLightPosition);
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
-
 	
-	//////////////////////////////
-	// 1. 그림자 만들기
-	//////////////////////////////
-	
-	// 백업후 렌더타켓,스텐실버퍼 변경
-	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
-	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
-	Graphics::m_pDevice->GetRenderTarget(0, &pHWBackBuffer);
-	Graphics::m_pDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);	
-	LPDIRECT3DSURFACE9 pShadowSurface = NULL;
-	if( SUCCEEDED( m_pShadowRenderTarget->GetSurfaceLevel( 0, &pShadowSurface ) ) )
-	{
-		Graphics::m_pDevice->SetRenderTarget( 0, pShadowSurface );
-		pShadowSurface->Release();
-		pShadowSurface = NULL;
-	}
-	Graphics::m_pDevice->SetDepthStencilSurface( m_pShadowDepthStencil );
-	Graphics::m_pDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
-
 	if (m_bEnableShadow)
 	{		
-		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
-		{	
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTest,
-				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
-		}			
-
-		
-		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
-		{	
-			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTest,
-				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
-		}			
-		
-		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
-		{
-			m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalNotAlphaTestInstancing,
-				Graphics::m_pInstance->m_hTShadowNormalAlphaTestInstancing );		
-		}	
-
-		if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
-		{
-			m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedNotAlphaTestInstancing,
-				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTestInstancing );		
-		}	
-		
-	}
-	
-	//////////////////////////////
-	// 2. 그림자 입히기
-	//////////////////////////////
-
-	// 하드웨어 백버퍼/깊이버퍼를 사용한다.
-	Graphics::m_pDevice->SetRenderTarget( 0, pHWBackBuffer );
-	Graphics::m_pDevice->SetDepthStencilSurface(pHWDepthStencilBuffer);
-
-	pHWBackBuffer->Release();
-	pHWBackBuffer = NULL;
-	pHWDepthStencilBuffer->Release();
-	pHWDepthStencilBuffer = NULL;
-	m_pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
-
-	if (!m_renderQueueTerrain.m_vecMesh.empty())
-	{				
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);	
-		//m_renderQueueTerrain.Render();
-		m_pEffect->EndPass();
-		m_pEffect->End();
+		RenderShadow();		
 	}	
-
-	if (!m_renderQueueNormal.m_materialOrder.empty())
-	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
-	}
-	
-	if (!m_renderQueueSkinned.m_materialOrder.empty())
-	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
-	}	
-	
-	if (!m_renderQueueNormal.m_sceneOrder.empty())
-	{
-		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);
-	}		
-	
-	
-	if (!m_renderQueueSkinned.m_sceneOrder.empty())
-	{
-		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
-	}		
-	
-
-	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
-	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
-	}
-	
-	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
-	{
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
-	}
-	
-	
+	RenderScene();
 
 	if (m_bDebugBound)
 	{
 		if (!m_listEntityRender.empty())
 		{
-			m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTLine);
-			m_pEffect->Begin(&passes, 0);	
-			m_pEffect->BeginPass(0);
+			pEffect->SetTechnique(Graphics::m_pInstance->m_hTLine);
+			pEffect->Begin(&passes, 0);	
+			pEffect->BeginPass(0);
 			auto itEntityRender = m_listEntityRender.begin();
 			for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
 			{
 				(*itEntityRender)->RenderBound();
 			}	
-			m_pEffect->EndPass();
-			m_pEffect->End();	
+			pEffect->EndPass();
+			pEffect->End();	
 		}
 	}
 
 	if (!m_mapButton.empty())
 	{
-		m_pEffect->SetTechnique(Graphics::m_pInstance->m_hTGUI);
-		m_pEffect->Begin(&passes, 0);	
-		m_pEffect->BeginPass(0);
+		pEffect->SetTechnique(Graphics::m_pInstance->m_hTGUI);
+		pEffect->Begin(&passes, 0);	
+		pEffect->BeginPass(0);
 		for ( auto it = m_mapButton.begin();it != m_mapButton.end() ; ++it )
 		{
 			(*it).second->Render();
 		}	
-		m_pEffect->EndPass();
-		m_pEffect->End();
-	}
-	
-	// SHADOW_MAP	
-	
-	
+		pEffect->EndPass();
+		pEffect->End();
+	}	
+	// SHADOW_MAP		
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
-	m_pEffect->CommitChanges();
+	pEffect->CommitChanges();
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
-
 	
 }
 
@@ -390,6 +267,117 @@ void World::GatherRender()
 
 		m_renderQueueSkinned.InsertNotAlphaBlend(pEntity->m_renderQueueSkinned);				
 		m_renderQueueSkinnedAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
+	}
+}
+
+void World::RenderShadow()
+{
+	// 백업후 렌더타켓,스텐실버퍼 변경
+	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
+	LPDIRECT3DSURFACE9 pHWDepthStencilBuffer = NULL;
+	Graphics::m_pDevice->GetRenderTarget(0, &pHWBackBuffer);
+	Graphics::m_pDevice->GetDepthStencilSurface(&pHWDepthStencilBuffer);	
+	LPDIRECT3DSURFACE9 pShadowSurface = NULL;
+	if( SUCCEEDED( m_pShadowRenderTarget->GetSurfaceLevel( 0, &pShadowSurface ) ) )
+	{
+		Graphics::m_pDevice->SetRenderTarget( 0, pShadowSurface );
+		pShadowSurface->Release();
+		pShadowSurface = NULL;
+	}
+	Graphics::m_pDevice->SetDepthStencilSurface( m_pShadowDepthStencil );
+	Graphics::m_pDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
+
+	if (!m_renderQueueNormalShadow.m_materialOrder.empty())
+	{	
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
+		m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormal,
+			Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
+	}			
+
+
+	if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
+	{	
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
+		m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinned,
+			Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
+	}			
+
+	if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
+	{
+		m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalInstancing,
+			Graphics::m_pInstance->m_hTShadowNormalInstancingAlphaTest );		
+	}	
+
+	if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
+	{
+		m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedInstancing,
+			Graphics::m_pInstance->m_hTShadowSkinnedInstancingAlphaTest );		
+	}	
+
+	//////////////////////////////
+	// 2. 그림자 입히기
+	//////////////////////////////
+
+
+	// 하드웨어 백버퍼/깊이버퍼를 사용한다.
+	Graphics::m_pDevice->SetRenderTarget( 0, pHWBackBuffer );
+	Graphics::m_pDevice->SetDepthStencilSurface(pHWDepthStencilBuffer);
+
+	pHWBackBuffer->Release();
+	pHWBackBuffer = NULL;
+	pHWDepthStencilBuffer->Release();
+	pHWDepthStencilBuffer = NULL;
+}
+
+void World::RenderScene()
+{
+	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
+	pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
+	if (!m_renderQueueTerrain.m_vecMesh.empty())
+	{				
+		pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
+		UINT passes;
+		pEffect->Begin(&passes, 0);	
+		pEffect->BeginPass(0);	
+		//m_renderQueueTerrain.Render();
+		pEffect->EndPass();
+		pEffect->End();
+	}	
+
+	if (!m_renderQueueNormal.m_materialOrder.empty())
+	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
+		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
+	}
+
+	if (!m_renderQueueSkinned.m_materialOrder.empty())
+	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
+		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
+	}	
+
+	if (!m_renderQueueNormal.m_sceneOrder.empty())
+	{
+		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);		
+	}		
+
+
+	if (!m_renderQueueSkinned.m_sceneOrder.empty())
+	{
+		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
+	}		
+
+
+	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
+	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
+		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
+	}
+
+	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
+	{
+		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
+		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
 }
 

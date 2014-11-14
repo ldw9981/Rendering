@@ -12,6 +12,7 @@ IndexInstancingBuffer::IndexInstancingBuffer(void)
 	m_usage = D3DUSAGE_WRITEONLY;
 	m_key = NULL;
 	m_valid = false;
+	m_format = D3DFMT_INDEX32;
 }
 
 

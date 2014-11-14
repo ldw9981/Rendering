@@ -77,8 +77,8 @@ void SkinnedMeshNode::Render()
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetVertexCount(),
-		m_startIndex,
-		m_primitiveCount ));
+		0,
+		m_pRscIndexBuffer->GetTriangleCount() ));
 	
 }
 
@@ -213,7 +213,7 @@ void SkinnedMeshNode::SerializeOutMesh( std::ofstream& stream )
 	bufferSize = m_pRscIndexBuffer->GetBufferSize();
 	stream.write((char*)&bufferSize,sizeof(bufferSize));
 
-	TRIANGLE* pIndices=(TRIANGLE*)m_pRscIndexBuffer->Lock(m_pRscIndexBuffer->GetBufferSize(),0);
+	TRIANGLE_INDEX16* pIndices=(TRIANGLE_INDEX16*)m_pRscIndexBuffer->Lock(m_pRscIndexBuffer->GetBufferSize(),0);
 	stream.write((char*)pIndices,bufferSize);
 	m_pRscIndexBuffer->Unlock();		
 
@@ -246,10 +246,10 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	cRscIndexBuffer* pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(strKey,bufferSize);
 	if(pRscIndexBuffer->GetRefCounter() == 0)
 	{
-		TRIANGLE* pIndices=(TRIANGLE*)pRscIndexBuffer->Lock(pRscIndexBuffer->GetBufferSize(),0);
+		TRIANGLE_INDEX16* pIndices=(TRIANGLE_INDEX16*)pRscIndexBuffer->Lock(pRscIndexBuffer->GetBufferSize(),0);
 		stream.read((char*)pIndices,bufferSize);
 		pRscIndexBuffer->Unlock();		
-		pRscIndexBuffer->SetTriangleCount(bufferSize/sizeof(TRIANGLE));
+		pRscIndexBuffer->SetTriangleCount(bufferSize/sizeof(TRIANGLE_INDEX16));
 	}
 	else
 	{
@@ -341,14 +341,14 @@ void SkinnedMeshNode::CreateInstancingResource()
 
 	if (m_pIndexInstancingBuffer==NULL)
 	{
-		DWORD bufferSize =  m_pRscIndexBuffer->GetBufferSize() *INSTANCING_MAX;
+		DWORD bufferSize = sizeof(TRIANGLE_INDEX32) * m_pRscIndexBuffer->GetTriangleCount() * INSTANCING_MAX;
 		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
 		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(m_pRscIndexBuffer,bufferSize,triangleCount);
 		m_pIndexInstancingBuffer->AddRef();
 		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
 		{
-			TRIANGLE* pSrcLockPos = (TRIANGLE*)m_pRscIndexBuffer->Lock(0,0);
-			TRIANGLE* pDstLockPos = (TRIANGLE*)m_pIndexInstancingBuffer->Lock(0,0);
+			TRIANGLE_INDEX16* pSrcLockPos = (TRIANGLE_INDEX16*)m_pRscIndexBuffer->Lock(0,0);
+			TRIANGLE_INDEX32* pDstLockPos = (TRIANGLE_INDEX32*)m_pIndexInstancingBuffer->Lock(0,0);
 
 			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
 			{
@@ -386,6 +386,8 @@ void SkinnedMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 	HRESULT hr;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	V(pEffect->SetTexture("Tex_VertexInstancing",m_pVertexTexture->GetD3DTexture()));
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)m_pVertexTexture->GetWidth());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)m_pVertexTexture->GetHeight());
 	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));		
 	V(Graphics::m_pDevice->SetIndices(m_pIndexInstancingBuffer->GetD3DIndexBuffer())); 
 	UINT passes;
@@ -417,7 +419,7 @@ void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 	for ( ; it!=it_end ; it++)
 	{		
 		pMeshNode =  static_cast<SkinnedMeshNode*>(*it);	
-		auto refArrBone = pMeshNode->GetArrayBoneRef();
+		auto& refArrBone = pMeshNode->GetArrayBoneRef();
 		DWORD boneSize = refArrBone.size();
 		for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
 		{			
@@ -468,28 +470,30 @@ void SkinnedMeshNode::RenderVertexTexture( int instanceCount )
 	HRESULT hr;
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
-
 	LPDIRECT3DSURFACE9 pOldRT;
 	V( Graphics::m_pDevice->GetRenderTarget(0,&pOldRT) );
 	LPDIRECT3DSURFACE9 pNewRT;
-	V( m_pVertexTexture->GetD3DTexture()->GetSurfaceLevel(0,&pNewRT));
-	V( Graphics::m_pDevice->SetRenderTarget(0,pNewRT) );
-	if( SUCCEEDED(hr))
+	if( SUCCEEDED(m_pVertexTexture->GetD3DTexture()->GetSurfaceLevel(0,&pNewRT)))
 	{
-		V( pNewRT->Release() );
+		V( Graphics::m_pDevice->SetRenderTarget(0,pNewRT) );
+		pNewRT->Release();
 	}
-	LPDIRECT3DSURFACE9 pOldDepthStencil;
-	Graphics::m_pDevice->GetDepthStencilSurface(&pOldDepthStencil);
-	Graphics::m_pDevice->SetDepthStencilSurface(NULL);
 
+	Graphics::m_pDevice->SetRenderState(D3DRS_ZWRITEENABLE,false);                
 
 	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)m_pVertexTexture->GetWidth());
 	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)m_pVertexTexture->GetHeight());
 	pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)m_pMatrixTexture->GetSize());		
 	pEffect->SetTexture("Tex_MatrixInstancing",m_pMatrixTexture->GetD3DTexture());
 
-	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));
 
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureWidth,(float)m_pVertexTexture->GetWidth());
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfVertexTextureHeight,(float)m_pVertexTexture->GetHeight());
+
+	pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)m_pMatrixTexture->GetSize());		
+	pEffect->SetTexture("Tex_MatrixInstancing",m_pMatrixTexture->GetD3DTexture());
+
+	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));
 	pEffect->SetTechnique(Graphics::m_pInstance->m_hTSkinnedVertexTransform);	
 
 	UINT passes = 0;		
@@ -500,17 +504,10 @@ void SkinnedMeshNode::RenderVertexTexture( int instanceCount )
 	pEffect->EndPass();
 	pEffect->End();		
 
-	// ·»´õÅ¸°Ù,½ºÅÙ½Ç º¹±¸
+	Graphics::m_pDevice->SetRenderState(D3DRS_ZWRITEENABLE,true);
+
 	V( Graphics::m_pDevice->SetRenderTarget(0,pOldRT));
-	if( SUCCEEDED(hr))
-	{
-		V( pOldRT->Release() );
-	}
-	V( Graphics::m_pDevice->SetDepthStencilSurface(pOldDepthStencil));
-	if( SUCCEEDED(hr))
-	{
-		V( pOldDepthStencil->Release() );
-	}
+	pOldRT->Release();
 }
 
 }

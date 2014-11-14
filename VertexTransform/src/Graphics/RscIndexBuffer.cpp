@@ -12,6 +12,7 @@ cRscIndexBuffer::cRscIndexBuffer(void)
 	m_pD3DIndexBuffer=NULL;
 	m_Type=D3DPOOL_MANAGED;
 	m_usage=D3DUSAGE_WRITEONLY;
+	m_format = D3DFMT_INDEX16;
 }
 
 cRscIndexBuffer::~cRscIndexBuffer(void)
@@ -33,7 +34,7 @@ BOOL cRscIndexBuffer::Create()
 	V(Graphics::m_pDevice->CreateIndexBuffer( 
 		m_BufferSize,
 		m_usage,
-		D3DFMT_INDEX16,
+		m_format,
 		m_Type,
 		&m_pD3DIndexBuffer,
 		NULL));

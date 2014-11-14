@@ -104,8 +104,6 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
 	V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
 	
-	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
-
 	memset(&m_D3DPP,0,sizeof(m_D3DPP));
 	if(bWindowed)
 	{
@@ -414,33 +412,6 @@ void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
 	m_pEffect->SetMatrix(m_hmLightProjection,pMat);	
 }
 
-void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
-{
-	HRESULT hr;
-	V( m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]) );
-}
 
-void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
-{
-	if (m_vecRenderTarget[renderTargetIndex] == NULL)
-		return;
-
-	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
-	m_vecRenderTarget[renderTargetIndex]->Release();
-	m_vecRenderTarget[renderTargetIndex] = NULL;
-}
-
-void Graphics::BackupDepthStencilSurface()
-{
-	HRESULT hr;
-	V( Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface) );	
-}
-
-void Graphics::RestoreDepthStencilSurface()
-{
-	Graphics::m_pDevice->SetDepthStencilSurface(m_depthStencilSurface);	
-	m_depthStencilSurface->Release();
-	m_depthStencilSurface = NULL;
-}
 
 }

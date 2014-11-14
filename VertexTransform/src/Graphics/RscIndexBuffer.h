@@ -7,15 +7,20 @@ namespace Sophia
 {
 
 
-struct TRIANGLE
+struct TRIANGLE_INDEX16
 {
 	WORD index[3];	
+};
+
+struct TRIANGLE_INDEX32
+{
+	DWORD index[3];	
 };
 
 
 struct TRIANGLE_SUBMATERIAL 
 {
-	TRIANGLE	triangle;
+	TRIANGLE_INDEX16	triangle;
 	WORD		subMaterialIndex;
 	
 	static BOOL LessFaceIndex(TRIANGLE_SUBMATERIAL a,TRIANGLE_SUBMATERIAL b)
@@ -43,6 +48,7 @@ protected:
 	D3DPOOL									m_Type;
 	DWORD									m_usage;
 	int										m_triangleCount;
+	D3DFORMAT								m_format;
 public:
 	// cResource
 

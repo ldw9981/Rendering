@@ -5,7 +5,7 @@
 namespace Sophia
 {
 
-#define INSTANCING_MAX 256
+#define INSTANCING_MAX 1024
 
 class cGUIFont;
 class cView;
@@ -97,8 +97,6 @@ public:
 	RECT				m_Rect;
 	GUIVERTEX			 g_vertices[4];	
 	D3DCAPS9			m_caps;
-	std::vector<LPDIRECT3DSURFACE9> m_vecRenderTarget;
-	LPDIRECT3DSURFACE9	m_depthStencilSurface;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 //	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
@@ -119,12 +117,6 @@ public:
 
 	void ArrangeTechnique(unsigned int index,D3DXHANDLE hTechnique);
 	void SetPos( UINT x,UINT y );
-
-	void BackupRenderTarget(unsigned int renderTargetIndex);
-	void RestoreRenderTarget(unsigned int renderTargetIndex);
-
-	void BackupDepthStencilSurface();
-	void RestoreDepthStencilSurface();
 };
 
 

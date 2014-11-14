@@ -80,6 +80,8 @@ public:
 	void Render();
 	bool GetEnableShadow() const { return m_bEnableShadow; }
 	void SetEnableShadow(bool val) { m_bEnableShadow = val; }
+	void RenderShadow();
+	void RenderScene();
 };
 
 }

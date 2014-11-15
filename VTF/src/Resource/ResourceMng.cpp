@@ -10,8 +10,7 @@
 #include "Graphics/MaterialEx.h"
 
 #include "Graphics/IndexInstancingBuffer.h"
-#include "Graphics/VertexTexture.h"
-#include "Graphics/MatrixTexture.h"
+#include "Graphics/MatrixInstancingTexture.h"
 #include "Graphics/VertexInstancingBuffer.h"
 namespace Sophia
 {
@@ -259,18 +258,18 @@ void cResourceMng::EraseIndexInstancingBuffer( cRscIndexBuffer* key)
 	m_contIndexInstancingBuffer.erase(key);
 }
 
-MatrixTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
+MatrixInstancingTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
 {
-	MatrixTexture* pItem=NULL;
+	MatrixInstancingTexture* pItem=NULL;
 
 	auto it=m_contMatrixTexture.find(key);
 	if (it!=m_contMatrixTexture.end())
 	{
-		pItem = static_cast<MatrixTexture*>(it->second);
+		pItem = static_cast<MatrixInstancingTexture*>(it->second);
 		return pItem;
 	}	
 
-	pItem = new MatrixTexture;
+	pItem = new MatrixInstancingTexture;
 	pItem->SetSize(size);
 	pItem->m_key = key;
 	if(!pItem->Create())	

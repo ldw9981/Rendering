@@ -44,16 +44,13 @@
     <ClInclude Include="World.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BoneStreamTexture.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="IndexInstancingBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="VertexInstancingBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MatrixTexture.h">
+    <ClInclude Include="MatrixInstancingTexture.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -91,16 +88,13 @@
     <ClCompile Include="World.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BoneStreamTexture.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="IndexInstancingBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="VertexInstancingBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MatrixTexture.cpp">
+    <ClCompile Include="MatrixInstancingTexture.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

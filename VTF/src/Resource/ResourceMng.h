@@ -16,7 +16,7 @@ class EntityAnimation;
 class EntityMaterial;
 class Material;
 class IndexInstancingBuffer;
-class MatrixTexture;
+class MatrixInstancingTexture;
 class VertexTexture;
 class VertexInstancingBuffer;
 class cResourceMng:
@@ -69,7 +69,7 @@ public:
 	IndexInstancingBuffer*	CreateIndexInstancingBuffer(cRscIndexBuffer* key,DWORD buffersize,DWORD count);
 	void				EraseIndexInstancingBuffer(cRscIndexBuffer* key);
 
-	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
+	MatrixInstancingTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
 	void				EraseBoneStreamTexture(SCENE_KEY& key);
 
 // 	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);

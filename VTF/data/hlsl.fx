@@ -6,7 +6,7 @@ texture Tex_Light;
 texture Tex_Opacity;
 texture Tex_Depth : RenderColorTarget;
 texture Tex_MatrixInstancing;
-
+texture Tex_MatrixPallete;
 
 // 변환행렬
 float4x4	gWorldMatrix      : WORLD;
@@ -70,6 +70,16 @@ sampler2D ShadowSampler = sampler_state
 sampler2D   gMatrixInstancingSampler = sampler_state 
 {
   Texture = (Tex_MatrixInstancing);
+  MipFilter = NONE;
+  MagFilter = POINT;
+  MinFilter = POINT;
+  AddressU = Clamp;
+  AddressV = Clamp;
+};
+
+sampler2D   gMatrixPalleteSampler = sampler_state 
+{
+  Texture = (Tex_MatrixPallete);
   MipFilter = NONE;
   MagFilter = POINT;
   MinFilter = POINT;
@@ -229,7 +239,24 @@ struct VS_SHADOW_OUTPUT
    float4 mClipPosition: TEXCOORD7;
 };
 
+float4x4 loadMatrixPallete(float boneIndex)
+{		
+	float4 texcoord;		
+	texcoord.x = 4*boneIndex / 1024.0f;
+	texcoord.y = 0.0f;	
+	texcoord.z = 0.0f;
+	texcoord.w = 0.0f;
 
+	float4x4 mat = 
+	{
+		tex2Dlod(gMatrixPalleteSampler, texcoord + float4(0.0f				,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, texcoord + float4(1.0f / 1024.0f	,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, texcoord + float4(2.0f / 1024.0f	,0,0,0)),
+		tex2Dlod(gMatrixPalleteSampler, texcoord + float4(3.0f / 1024.0f	,0,0,0))
+	};
+ 
+	return mat; 	
+}
 float4x4 loadMatrix(float indexInstance)
 {	
 	float result = 4*indexInstance / gMatrixTextureSize;
@@ -410,10 +437,10 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
-	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
-	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+	matWorldSkinned = mul(input.mBlendWeights.x,loadMatrixPallete(input.mBlendIndices.x));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadMatrixPallete(input.mBlendIndices.y));
+	matWorldSkinned += mul(input.mBlendWeights.z,loadMatrixPallete(input.mBlendIndices.z));
+ 	matWorldSkinned += mul(fLastWeight,loadMatrixPallete(input.mBlendIndices.w));			
    
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
@@ -540,10 +567,10 @@ VS_SHADOW_OUTPUT vs_Shadow_Skinning( VS_SKINNING_PHONG_DIFFUSE_INPUT input )
 	fLastWeight = 1.0 - (input.mBlendWeights.x + input.mBlendWeights.y + input.mBlendWeights.z);
 
 	float4x4 matWorldSkinned;
-	matWorldSkinned = mul(input.mBlendWeights.x, Palette[input.mBlendIndices.x]);
-	matWorldSkinned += mul(input.mBlendWeights.y, Palette[input.mBlendIndices.y]);
-	matWorldSkinned += mul(input.mBlendWeights.z, Palette[input.mBlendIndices.z]);
-	matWorldSkinned += mul(fLastWeight, Palette[input.mBlendIndices.w]);		
+	matWorldSkinned = mul(input.mBlendWeights.x,loadMatrixPallete(input.mBlendIndices.x));
+	matWorldSkinned += mul(input.mBlendWeights.y,loadMatrixPallete(input.mBlendIndices.y));
+	matWorldSkinned += mul(input.mBlendWeights.z,loadMatrixPallete(input.mBlendIndices.z));
+ 	matWorldSkinned += mul(fLastWeight,loadMatrixPallete(input.mBlendIndices.w));	
    
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition, gLightViewMatrix);
@@ -957,7 +984,7 @@ technique TGUI
         PixelShader  = compile ps_3_0 ps_GUI();
     }  
 }
-technique TPhong
+technique TSceneNormal
 {
     pass P0
     {
@@ -976,7 +1003,7 @@ technique TTerrain
 }
 
 
-technique TPhongDiffuse
+technique TSceneNormalDiffuse
 {
     pass P0
     {
@@ -985,7 +1012,7 @@ technique TPhongDiffuse
     }  
 }
 
-technique TPhongDiffuseLight
+technique TSceneNormalDiffuseLight
 {
     pass P0
     {
@@ -994,7 +1021,7 @@ technique TPhongDiffuseLight
     }  
 }
 
-technique TPhongDiffuseBump
+technique TSceneNormalDiffuseBump
 {
     pass P0
     {
@@ -1003,7 +1030,7 @@ technique TPhongDiffuseBump
     }  
 }
 
-technique TPhongDiffuseOpacity
+technique TSceneNormalDiffuseOpacity
 {
     pass P0
     {
@@ -1012,7 +1039,7 @@ technique TPhongDiffuseOpacity
     }  
 }
 
-technique TPhongDiffuseSpecular
+technique TSceneNormalDiffuseSpecular
 {
     pass P0
     {
@@ -1021,7 +1048,7 @@ technique TPhongDiffuseSpecular
     }  
 }
 
-technique TPhongDiffuseBumpSpecular
+technique TSceneNormalDiffuseBumpSpecular
 {
     pass P0
     {
@@ -1032,7 +1059,7 @@ technique TPhongDiffuseBumpSpecular
 
 
 
-technique TShadowNormalNotAlphaTest
+technique TShadowNormal
 {
    pass P0
    {
@@ -1041,7 +1068,7 @@ technique TShadowNormalNotAlphaTest
    }
 }
 
-technique TShadowNormalNotAlphaTestInstancing
+technique TShadowNormalInstancing
 {
    pass P0
    {
@@ -1060,7 +1087,7 @@ technique TShadowNormalAlphaTest
    }
 }
 
-technique TShadowNormalAlphaTestInstancing
+technique TShadowNormalInstancingAlphaTest
 {
    pass P0
    {
@@ -1080,7 +1107,7 @@ technique TPhongDiffuseInstancing
     }  
 }
 
-technique TPhongDiffuseOpacityInstancing
+technique TSceneNormalInstancingDiffuseOpacity
 {
     pass P0
     {
@@ -1089,7 +1116,7 @@ technique TPhongDiffuseOpacityInstancing
     }  
 }
 
-technique TPhongDiffuseLightInstancing
+technique TSceneNormalInstancingDiffuseLight
 {
     pass P0
     {
@@ -1100,7 +1127,7 @@ technique TPhongDiffuseLightInstancing
 
 
 
-technique TSkinningPhong
+technique TSceneSkinned
 {
     pass P0
     {
@@ -1110,7 +1137,7 @@ technique TSkinningPhong
 }
 
 
-technique TSkinningPhongDiffuse
+technique TSceneSkinnedDiffuse
 {
     pass P0
     {
@@ -1119,7 +1146,7 @@ technique TSkinningPhongDiffuse
     }  
 }
 
-technique TSkinningPhongDiffuseInstancing
+technique TSceneSkinnedInstancingDiffuse
 {
     pass P0
     {
@@ -1128,7 +1155,7 @@ technique TSkinningPhongDiffuseInstancing
     }  
 }
 
-technique TShadowSkinnedNotAlphaTestInstancing
+technique TShadowSkinnedInstancing
 {
    pass P0
    {
@@ -1138,7 +1165,7 @@ technique TShadowSkinnedNotAlphaTestInstancing
 }
 
 
-technique TShadowSkinnedNotAlphaTest
+technique TShadowSkinned
 {
    pass P0
    {
@@ -1147,7 +1174,7 @@ technique TShadowSkinnedNotAlphaTest
    }
 }
 
-technique TShadowSkinnedAlphaTestInstancing
+technique TShadowSkinnedInstancingAlphaTest
 {
    pass P0
    {

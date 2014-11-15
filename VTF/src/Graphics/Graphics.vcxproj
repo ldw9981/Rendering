@@ -106,12 +106,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="BoneStreamTexture.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexInstancingBuffer.h" />
     <ClInclude Include="MaterialEx.h" />
-    <ClInclude Include="MatrixTexture.h" />
+    <ClInclude Include="MatrixInstancingTexture.h" />
     <ClInclude Include="RendererQueue.h" />
     <ClInclude Include="RscIndexBuffer.h" />
     <ClInclude Include="RscTexture.h" />
@@ -123,12 +122,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="BoneStreamTexture.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexInstancingBuffer.cpp" />
     <ClCompile Include="MaterialEx.cpp" />
-    <ClCompile Include="MatrixTexture.cpp" />
+    <ClCompile Include="MatrixInstancingTexture.cpp" />
     <ClCompile Include="RendererQueue.cpp" />
     <ClCompile Include="RscIndexBuffer.cpp" />
     <ClCompile Include="RscTexture.cpp" />

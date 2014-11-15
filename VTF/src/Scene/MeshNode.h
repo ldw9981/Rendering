@@ -15,7 +15,7 @@ class cMeshNode;
 class cView;
 class VertexTexture;
 class VertexInstancingBuffer;
-class MatrixTexture;
+class MatrixInstancingTexture;
 class IndexInstancingBuffer;
 
 class cMeshNode:
@@ -34,7 +34,7 @@ protected:
 	Material*				m_pMaterial;
 	bool					m_bInstancingEnable;
 
-	MatrixTexture*			m_pMatrixTexture;		// world Matrix
+	MatrixInstancingTexture*			m_pMatrixInstancingTexture;		// world Matrix
 	VertexInstancingBuffer*		m_pVertexInstancingBuffer;		
 	IndexInstancingBuffer*		m_pIndexInstancingBuffer;	
 public:
@@ -69,14 +69,14 @@ public:
 
 	virtual void RenderInstancing(int vertexCount,int triangleCount);
 
-	virtual void UpdateMatrixTexture(std::list<cMeshNode*>& list);
+	virtual void UpdateMatrixInstancing(std::list<cMeshNode*>& list);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
 	void ChangeInstancingEnable(bool val);
 	VertexInstancingBuffer* GetVertexInstancingBuffer() const { return m_pVertexInstancingBuffer; }
-	MatrixTexture*			GetMatrixTexture() const { return m_pMatrixTexture; }
+	MatrixInstancingTexture*			GetMatrixInstancingTexture() const { return m_pMatrixInstancingTexture; }
 	IndexInstancingBuffer*	GetIndexInstancingBuffer() const { return m_pIndexInstancingBuffer; }	
 protected:
 	virtual void CreateInstancingResource();

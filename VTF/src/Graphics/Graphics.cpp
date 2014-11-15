@@ -28,26 +28,12 @@
 
 namespace Sophia
 {
-
-
-
-
-
 Graphics*	Graphics::m_pInstance = NULL;
 LPDIRECT3DDEVICE9 Graphics::m_pDevice;
 Graphics::Graphics(void)
 {
 	m_pInstance = this;
-/*
-	m_viewPortInfo.X = 0;
-	m_viewPortInfo.Y = 0;
-	m_viewPortInfo.Width = 1024;
-	m_viewPortInfo.Height = 768;	
-	m_viewPortInfo.MinZ = 0.0f;
-	m_viewPortInfo.MaxZ = 1.0f;*/
-
 	m_bDebugBound = false;
-
 	m_nTechniqueSize = (int)pow(2.0f,Material::MAX);
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
@@ -244,31 +230,31 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	m_hTLine								=m_pEffect->GetTechniqueByName( _T("TLine") );
 	m_hTerrain								=m_pEffect->GetTechniqueByName( _T("TTerrain") );
-	m_hTSceneNormal 						=m_pEffect->GetTechniqueByName( _T("TPhong") );
-	m_hTSceneNormalDiffuse 					=m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
-	m_hTSceneNormalDiffuseLight				=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
-	m_hTSceneNormalDiffuseBump				=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
-	m_hTSceneNormalDiffuseOpacity			=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
-	m_hTSceneNormalDiffuseSpecular			=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
-	m_hTSceneNormalDiffuseBumpSpecular		=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
+	m_hTSceneNormal 						=m_pEffect->GetTechniqueByName( _T("TSceneNormal") );
+	m_hTSceneNormalDiffuse 					=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuse") );
+	m_hTSceneNormalDiffuseLight				=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseLight") );	
+	m_hTSceneNormalDiffuseBump				=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseBump") );
+	m_hTSceneNormalDiffuseOpacity			=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseOpacity") );
+	m_hTSceneNormalDiffuseSpecular			=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseSpecular") );
+	m_hTSceneNormalDiffuseBumpSpecular		=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseBumpSpecular") );
 
-	m_hTSceneNormalInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseInstancing") );
-	m_hTSceneNormalInstancingDiffuseOpacity =m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacityInstancing") );
-	m_hTSceneNormalInstancingDiffuseLight	=m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLightInstancing") );
+	m_hTSceneNormalInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuse") );
+	m_hTSceneNormalInstancingDiffuseOpacity =m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuseOpacity") );
+	m_hTSceneNormalInstancingDiffuseLight	=m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuseLight") );
 
-	m_hTSceneSkinned						=m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
-	m_hTSceneSkinnedDiffuse					=m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
-	m_hTSceneSkinnedInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuseInstancing") );
+	m_hTSceneSkinned						=m_pEffect->GetTechniqueByName( _T("TSceneSkinned") );	
+	m_hTSceneSkinnedDiffuse					=m_pEffect->GetTechniqueByName( _T("TSceneSkinnedDiffuse") );	
+	m_hTSceneSkinnedInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TSceneSkinnedInstancingDiffuse") );
 
-	m_hTShadowNormal						=m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTest") );
+	m_hTShadowNormal						=m_pEffect->GetTechniqueByName( _T("TShadowNormal") );
 	m_hTShadowNormalAlphaTest				=m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTest") );
-	m_hTShadowNormalInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTestInstancing") );
-	m_hTShadowNormalInstancingAlphaTest		=m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTestInstancing") );
+	m_hTShadowNormalInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowNormalInstancing") );
+	m_hTShadowNormalInstancingAlphaTest		=m_pEffect->GetTechniqueByName( _T("TShadowNormalInstancingAlphaTest") );
 
-	m_hTShadowSkinned						=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTest") );	
+	m_hTShadowSkinned						=m_pEffect->GetTechniqueByName( _T("TShadowSkinned") );	
 	m_hTShadowSkinnedAlphaTest				=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTest") );
-	m_hTShadowSkinnedInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTestInstancing") );	
-	m_hTShadowSkinnedInstancingAlphaTest	=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTestInstancing") );
+	m_hTShadowSkinnedInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedInstancing") );	
+	m_hTShadowSkinnedInstancingAlphaTest	=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedInstancingAlphaTest") );
 
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 

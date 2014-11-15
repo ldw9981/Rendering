@@ -15,9 +15,9 @@
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
 
-#include "Graphics/VertexTexture.h"
+
 #include "Graphics/VertexInstancingBuffer.h"
-#include "Graphics/MatrixTexture.h"
+#include "Graphics/MatrixInstancingTexture.h"
 #include "Graphics/IndexInstancingBuffer.h"
 
 namespace Sophia
@@ -38,7 +38,7 @@ cMeshNode::cMeshNode(void)
 	m_materialSubIndex=0;
 	m_pMaterial = NULL;
 	m_bInstancingEnable = false;
-	m_pMatrixTexture=NULL;
+	m_pMatrixInstancingTexture=NULL;
 	m_pVertexInstancingBuffer = NULL;
 	m_pIndexInstancingBuffer=NULL;
 }
@@ -379,24 +379,24 @@ void cMeshNode::CreateInstancingResource()
 // 		m_pVertexTexture->AddRef();
 // 	}
 
-	if (m_pMatrixTexture==NULL)
+	if (m_pMatrixInstancingTexture==NULL)
 	{
 		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) INSTANCING_MAX*4 ))/log(2.0f)));
-		m_pMatrixTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
-		m_pMatrixTexture->AddRef();
+		m_pMatrixInstancingTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
+		m_pMatrixInstancingTexture->AddRef();
 	}
 }
 
 void cMeshNode::ReleaseInstancingResource()
 {
 	SAFE_RELEASE(m_pVertexInstancingBuffer);
-	SAFE_RELEASE(m_pMatrixTexture);
+	SAFE_RELEASE(m_pMatrixInstancingTexture);
 	SAFE_RELEASE(m_pIndexInstancingBuffer);
 }
 
 
 
-void cMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
+void cMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 {
 	auto it = list.begin();
 	auto it_end = list.end();
@@ -406,10 +406,10 @@ void cMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 	DWORD offset_bytes = 0;
 	DWORD offset_line = 0;
 	DWORD bytesMatrix = sizeof(D3DXMATRIX);
-	DWORD bytesPerLine= bytesMatrix * (m_pMatrixTexture->GetSize()/4); // 1mat= 4pixel
+	DWORD bytesPerLine= bytesMatrix * (m_pMatrixInstancingTexture->GetSize()/4); // 1mat= 4pixel
 
 	D3DLOCKED_RECT lock;	
-	m_pMatrixTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
+	m_pMatrixInstancingTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
 
 	for ( ; it!=it_end ; it++)
 	{
@@ -423,7 +423,7 @@ void cMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 			offset_bytes=0;
 		}		
 	}
-	m_pMatrixTexture->GetD3DTexture()->UnlockRect(0);
+	m_pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
 }
 
 }

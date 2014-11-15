@@ -13,9 +13,8 @@
 #include "Foundation/Define.h"
 #include "Graphics/Entity.h"
 
-#include "Graphics/VertexTexture.h"
 #include "Graphics/VertexInstancingBuffer.h"
-#include "Graphics/MatrixTexture.h"
+#include "Graphics/MatrixInstancingTexture.h"
 #include "Graphics/IndexInstancingBuffer.h"
 
 namespace Sophia
@@ -27,7 +26,7 @@ namespace Sophia
 SkinnedMeshNode::SkinnedMeshNode(void)
 {
 	m_bIsActiveAnimation = true;
-	m_pMatrixPallete = NULL;
+	m_pMatrixPalleteTexture = NULL;
 	m_type = TYPE_SKINNEDMESH;
 	
 
@@ -68,9 +67,12 @@ void SkinnedMeshNode::Render()
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLEND_VERTEX));
 	m_pRscIndexBuffer->SetIndices();				
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	UpdateMatrixPallete();
-	size_t nBoneRefSize = m_vecBoneRef.size();
-	V(pEffect->SetMatrixArray(Graphics::m_pInstance->m_hmPalette,m_pMatrixPallete,nBoneRefSize));	
+	if (!m_updateMatrixPallete)
+	{
+		UpdateMatrixPallete();
+	}	
+
+	pEffect->SetTexture("Tex_MatrixPallete",m_pMatrixPalleteTexture->GetD3DTexture());
 	V(pEffect->CommitChanges());	
 
 	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
@@ -288,20 +290,31 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 void SkinnedMeshNode::Update( DWORD elapseTime )
 {
 	cMeshNode::Update(elapseTime);
-	m_updateBlendMatrix = false;
+	m_updateMatrixPallete = false;
 }
 
 void SkinnedMeshNode::UpdateMatrixPallete()
 {
-	size_t nBoneRefSize = m_vecBoneRef.size();
+	D3DXMATRIX* pDst=NULL;
+	DWORD offset_bytes = 0;
+	DWORD offset_line = 0;
+	DWORD bytesMatrix = sizeof(D3DXMATRIX);
+	
+	D3DLOCKED_RECT lock;	
+	m_pMatrixPalleteTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
 
-	size_t iBoneRef=0;
-	for (iBoneRef=0;iBoneRef<nBoneRefSize;iBoneRef++)
-	{
-		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
-		//m_pMatrixPallete[iBoneRef] = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-		D3DXMatrixMultiply(&m_pMatrixPallete[iBoneRef],&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());
-	}
+	DWORD boneSize = m_vecBoneRef.size();
+	for (DWORD boneIndex=0;boneIndex<boneSize;boneIndex++)
+	{			
+		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
+		BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
+		// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
+		D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());	
+		offset_bytes += bytesMatrix;		
+	}	
+
+	m_pMatrixPalleteTexture->GetD3DTexture()->UnlockRect(0);
+	m_updateMatrixPallete = true;
 }
 
 void SkinnedMeshNode::CreateInstancingResource()
@@ -364,12 +377,12 @@ void SkinnedMeshNode::CreateInstancingResource()
 		}
 	}
 
-	if (m_pMatrixTexture==NULL)
+	if (m_pMatrixInstancingTexture==NULL)
 	{
 		size_t nBoneRefSize = m_vecBoneRef.size();
 		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) 4*nBoneRefSize *INSTANCING_MAX ))/log(2.0f)));
-		m_pMatrixTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
-		m_pMatrixTexture->AddRef();
+		m_pMatrixInstancingTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
+		m_pMatrixInstancingTexture->AddRef();
 	}
 }
 
@@ -390,7 +403,7 @@ void SkinnedMeshNode::RenderInstancing( int vertexCount,int triangleCount )
 
 
 
-void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
+void SkinnedMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 {
 	auto it = list.begin();
 	auto it_end = list.end();
@@ -400,10 +413,10 @@ void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 	DWORD offset_bytes = 0;
 	DWORD offset_line = 0;
 	DWORD bytesMatrix = sizeof(D3DXMATRIX);
-	DWORD bytesPerLine= bytesMatrix * (m_pMatrixTexture->GetSize()/4); // 1mat= 4pixel
+	DWORD bytesPerLine= bytesMatrix * (m_pMatrixInstancingTexture->GetSize()/4); // 1mat= 4pixel
 
 	D3DLOCKED_RECT lock;	
-	m_pMatrixTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
+	m_pMatrixInstancingTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
 
 	for ( ; it!=it_end ; it++)
 	{		
@@ -425,18 +438,28 @@ void SkinnedMeshNode::UpdateMatrixTexture( std::list<cMeshNode*>& list )
 			}	
 		}	
 	}
-	m_pMatrixTexture->GetD3DTexture()->UnlockRect(0);
+	m_pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
 }
 
 void SkinnedMeshNode::CreateMatrixPallete()
 {
+	assert(m_pMatrixPalleteTexture==NULL);
 	size_t nBoneRefSize = m_vecBoneRef.size();
-	m_pMatrixPallete = new D3DXMATRIX[nBoneRefSize];	
+	size_t nBoneMax = 256;
+	assert(nBoneRefSize<nBoneMax);
+	m_pMatrixPalleteTexture = new cRscTexture;
+	m_pMatrixPalleteTexture->SetWidth(nBoneMax*4);
+	m_pMatrixPalleteTexture->SetHeight(1);
+	m_pMatrixPalleteTexture->SetPool(D3DPOOL_DEFAULT);
+	m_pMatrixPalleteTexture->SetUsage(D3DUSAGE_DYNAMIC);
+	m_pMatrixPalleteTexture->SetFormat(D3DFMT_A32B32G32R32F);	
+	m_pMatrixPalleteTexture->Create();
 }
 
 void SkinnedMeshNode::DeleteMatrixPallete()
 {
-	SAFE_DELETEARRAY(m_pMatrixPallete);
+	m_pMatrixPalleteTexture->Free();
+	m_pMatrixPalleteTexture=NULL;
 }
 
 void SkinnedMeshNode::ChangeInstancingEnable( bool val )

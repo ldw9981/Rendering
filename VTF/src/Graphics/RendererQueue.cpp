@@ -9,8 +9,7 @@
 #include "Scene/SkinnedMeshNode.h"
 
 #include "Graphics/IndexInstancingBuffer.h"
-#include "Graphics/MatrixTexture.h"
-#include "Graphics/VertexTexture.h"
+#include "Graphics/MatrixInstancingTexture.h"
 #include "Graphics/VertexInstancingBuffer.h"
 #include "Graphics/Vertex.h"
 #include "Foundation/Trace.h"
@@ -302,11 +301,11 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixTexture();		
+		MatrixInstancingTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
 
 		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixTexture(list);					
+			pMeshNode->UpdateMatrixInstancing(list);					
 			pMatrixTexture->SetValid(true);
 		}
 
@@ -340,10 +339,10 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixTexture();		
+		MatrixInstancingTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
 		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixTexture(list);					
+			pMeshNode->UpdateMatrixInstancing(list);					
 			pMatrixTexture->SetValid(true);
 		}
 
@@ -381,11 +380,11 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixTexture();		
+		MatrixInstancingTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
 
 		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixTexture(list);					
+			pMeshNode->UpdateMatrixInstancing(list);					
 			pMatrixTexture->SetValid(true);
 		}
 
@@ -421,10 +420,10 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixTexture();		
+		MatrixInstancingTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
 		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixTexture(list);					
+			pMeshNode->UpdateMatrixInstancing(list);					
 			pMatrixTexture->SetValid(true);
 		}
 

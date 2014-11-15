@@ -5,7 +5,7 @@ namespace Sophia
 
 class MultiSub;
 class Material;
-
+class cRscTexture;
 
 
 struct BONEREFINFO
@@ -43,12 +43,9 @@ public:
 
 protected:
 	std::vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
-	D3DXMATRIX*					m_pMatrixPallete;
-	bool						m_updateBlendMatrix;
 
-	
-
-
+	bool						m_updateMatrixPallete;
+	cRscTexture*				m_pMatrixPalleteTexture;
 public:
 	virtual void			Update( DWORD elapseTime );
 	virtual void			Render();
@@ -70,10 +67,9 @@ public:
 	virtual void SerializeInMesh(std::ifstream& stream);
 
 	void UpdateMatrixPallete();
-	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
 	
 	virtual void RenderInstancing(int vertexCount,int triangleCount);
-	virtual void UpdateMatrixTexture( std::list<cMeshNode*>& list );
+	virtual void UpdateMatrixInstancing( std::list<cMeshNode*>& list );
 	void ChangeInstancingEnable(bool val);
 protected:
 	virtual void CreateInstancingResource();

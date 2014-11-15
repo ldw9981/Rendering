@@ -2521,10 +2521,9 @@ cRscIndexBuffer* cASEParser::CreatePieceIndexBuffer( cRscIndexBuffer* pSrc,UINT 
 			pDstLockPos[triangleIndex].index[2] = pSrcLockPos[triangleIndex].index[2];			 
 		}	
 		pRet->Unlock();
-		pSrc->Unlock();
+		pSrc->Unlock();	
+		pRet->SetTriangleCount(triangleCount);
 	}
-
-
 	return pRet;
 }
 

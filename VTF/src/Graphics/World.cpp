@@ -8,6 +8,7 @@
 #include "Foundation/Define.h"
 #include "Graphics/RscTexture.h"
 #include "Foundation/Trace.h"
+#include "Graphics/Entity.h"
 
 namespace Sophia
 {
@@ -252,23 +253,23 @@ void World::GatherRender()
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
-		auto pEntity = *itIn;
+		Entity* pEntity = *itIn;
 		if (m_bEnableShadow)
 		{
 			// 그림자용은 알파블렌드 상관없이 모은다.그릴때는 알파테스트만 구분한다.
-			m_renderQueueNormalShadow.InsertNotAlphaBlend(pEntity->m_renderQueueNormal);
-			m_renderQueueNormalShadow.InsertNotAlphaBlend(pEntity->m_renderQueueNormalAlphaBlend);		
+			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormal);
+			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormalAlphaBlend);		
 
-			m_renderQueueSkinnedShadow.InsertNotAlphaBlend(pEntity->m_renderQueueSkinned);				
-			m_renderQueueSkinnedShadow.InsertNotAlphaBlend(pEntity->m_renderQueueSkinnedAlphaBlend);
+			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinned);				
+			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinnedAlphaBlend);
 		}
 		
 		// 씬은 알파블렌드로 구분하여 모은다.
-		m_renderQueueNormal.InsertNotAlphaBlend(pEntity->m_renderQueueNormal);	// normal instancing 분리
-		m_renderQueueNormalAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueNormalAlphaBlend,m_camera.GetWorldPositionPtr());	
+		m_renderQueueNormal.GatherRender(pEntity->m_vecNormal);	// normal instancing 분리
+		m_renderQueueNormalAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecNormalAlphaBlend,m_camera.GetWorldPositionPtr());	
 
-		m_renderQueueSkinned.InsertNotAlphaBlend(pEntity->m_renderQueueSkinned);				
-		m_renderQueueSkinnedAlphaBlend.InsertIntoDistanceOrder(pEntity->m_renderQueueSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
+		m_renderQueueSkinned.GatherRender(pEntity->m_vecSkinned);				
+		m_renderQueueSkinnedAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
 	}
 }
 
@@ -335,16 +336,6 @@ void World::RenderScene()
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
-	if (!m_renderQueueTerrain.m_vecMesh.empty())
-	{				
-		pEffect->SetTechnique(Graphics::m_pInstance->m_hTerrain);
-		UINT passes;
-		pEffect->Begin(&passes, 0);	
-		pEffect->BeginPass(0);	
-		//m_renderQueueTerrain.Render();
-		pEffect->EndPass();
-		pEffect->End();
-	}	
 
 	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{

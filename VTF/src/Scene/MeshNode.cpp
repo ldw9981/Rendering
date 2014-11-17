@@ -79,7 +79,7 @@ void cMeshNode::BuildComposite(Entity* pEntity)
 		CreateInstancingResource();
 	}
 
-	QueueRenderer(pEntity,false);
+	GatherRender(pEntity,false);
 }
 
 void cMeshNode::SetRscIndexBuffer( cRscIndexBuffer* val )
@@ -100,7 +100,7 @@ void cMeshNode::SetRscVertextBuffer( cRscVertexBuffer* val )
 	}
 }
 
-void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
+void cMeshNode::GatherRender(Entity* pEntity,bool bTraversal)
 {
 	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
 	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
@@ -112,11 +112,11 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		int i = m_pMaterial->index_renderer_queue();
 		if (m_pMaterial->AlphaBlend == false)
 		{
-			pEntity->m_renderQueueNormal.InsertIntoMeshList(this);				
+			pEntity->m_vecNormal.push_back(this);				
 		}
 		else
 		{
-			pEntity->m_renderQueueNormalAlphaBlend.InsertIntoMeshList(this);
+			pEntity->m_vecNormalAlphaBlend.push_back(this);
 		}					
 	}
 
@@ -126,7 +126,7 @@ void cMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 	auto it_child=m_vecChildNode.begin();
 	for ( ;it_child!=m_vecChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRenderer(pEntity,bTraversal);
+		(*it_child)->GatherRender(pEntity,bTraversal);
 	}
 }
 

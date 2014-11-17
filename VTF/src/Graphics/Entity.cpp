@@ -147,7 +147,7 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 
 void Entity::Build()
 {
-	ClearRenderQueue();
+	ClearRenderContainer();
 	cSceneNode::BuildComposite(this);
 }
 
@@ -520,18 +520,15 @@ void Entity::SetShowSkeleton( bool bShow )
 		cSceneNode* pNode = (*it).second;		
 		pNode->SetShow(bShow);
 	}
-	ResetRenderQueue();
+	ResetRenderContainer();
 }
 
-void Entity::ClearRenderQueue()
+void Entity::ClearRenderContainer()
 {
-	m_renderQueueNormal.Clear();
-	m_renderQueueSkinned.Clear();
-	m_renderQueueNormalAlphaBlend.Clear();
-	m_renderQueueSkinnedAlphaBlend.Clear();
-
-	m_renderQueueTerrain.Clear();
-
+	m_vecNormal.clear();
+	m_vecSkinned.clear();
+	m_vecNormalAlphaBlend.clear();
+	m_vecSkinnedAlphaBlend.clear();
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )
@@ -550,10 +547,10 @@ cSceneNode* Entity::FindNode( std::string& nodename )
 	return NULL;
 }
 
-void Entity::ResetRenderQueue()
+void Entity::ResetRenderContainer()
 {
-	ClearRenderQueue();
-	QueueRenderer(this,true);
+	ClearRenderContainer();
+	GatherRender(this,true);
 }
 
 void Entity::WorkEnableInstancing(cSceneNode* pNode)

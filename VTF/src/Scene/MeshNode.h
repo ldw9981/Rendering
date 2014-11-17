@@ -44,7 +44,7 @@ public:
 
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
-	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void			GatherRender(Entity* pEntity,bool bTraversal);
 	virtual void			Release();
 
 	// ISerialize

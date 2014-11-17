@@ -97,7 +97,7 @@ void SkinnedMeshNode::BuildComposite(Entity* pEntity)
 		CreateMatrixPallete();
 	}
 
-	QueueRenderer(pEntity,false);
+	GatherRender(pEntity,false);
 }
 
 void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
@@ -105,7 +105,7 @@ void SkinnedMeshNode::SetBoneRef( std::vector<BONEREFINFO>& vecBoneRef )
 	m_vecBoneRef = vecBoneRef;
 }
 
-void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
+void SkinnedMeshNode::GatherRender(Entity* pEntity,bool bTraversal)
 {
 	assert(m_materialRefIndex < m_pRootNode->m_pEntityMaterial->m_ref.size());
 	std::vector<Material*>& sub = m_pRootNode->m_pEntityMaterial->m_ref[m_materialRefIndex];
@@ -117,11 +117,11 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 		int i = m_pMaterial->index_renderer_queue();
 		if (m_pMaterial->AlphaBlend == false)
 		{
-			pEntity->m_renderQueueSkinned.InsertIntoMeshList(this);
+			pEntity->m_vecSkinned.push_back(this);
 		}
 		else
 		{
-			pEntity->m_renderQueueSkinnedAlphaBlend.InsertIntoMeshList(this);
+			pEntity->m_vecSkinnedAlphaBlend.push_back(this);
 		}		
 	}
 	
@@ -130,7 +130,7 @@ void SkinnedMeshNode::QueueRenderer(Entity* pEntity,bool bTraversal)
 
 	for ( auto it_child=m_vecChildNode.begin() ;it_child!=m_vecChildNode.end();++it_child )
 	{
-		(*it_child)->QueueRenderer(pEntity,bTraversal);
+		(*it_child)->GatherRender(pEntity,bTraversal);
 	}
 }
 

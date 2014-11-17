@@ -1,7 +1,6 @@
 #pragma once
 #include "Scene/scenenode.h"
 #include "Math/Sphere.h"
-#include "Graphics/RendererQueue.h"
 #include "Graphics/Animation.h"
 #include "Graphics.h"
 
@@ -19,13 +18,10 @@ public:
 	virtual ~Entity(void);
 
 public:
-	cRendererQueue			m_renderQueueNormal;				
-	cRendererQueue			m_renderQueueSkinned;				
-	cRendererQueue			m_renderQueueNormalAlphaBlend;	
-	cRendererQueue			m_renderQueueSkinnedAlphaBlend;	
-
-	cRendererQueue			m_renderQueueTerrain;
-
+	std::vector<cMeshNode*>	m_vecNormal;				
+	std::vector<cMeshNode*>	m_vecSkinned;				
+	std::vector<cMeshNode*>	m_vecNormalAlphaBlend;	
+	std::vector<cMeshNode*>	m_vecSkinnedAlphaBlend;	
 
 	std::list<Entity*>::iterator m_itEntityList;
 	std::vector<EntityAnimation*>	m_vecAnimation;		
@@ -85,9 +81,9 @@ public:
 	bool UpdatePartialDescription(DWORD elapseTime,std::list<ENTITY_ANIMATION_DESCRIPTION>::iterator& it);
 	void SetShowSkeleton(bool bShow);
 
-	void ClearRenderQueue();
+	void ClearRenderContainer();
 	virtual cSceneNode*	FindNode(std::string& nodename);
-	void ResetRenderQueue();
+	void ResetRenderContainer();
 
 	void ChangeInstanceEnable(bool enable);
 	static void WorkEnableInstancing(cSceneNode* pNode);

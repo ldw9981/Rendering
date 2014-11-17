@@ -29,13 +29,6 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::InsertIntoMeshList( cMeshNode* pItem)
-{
-	m_vecMesh.push_back(pItem);
-}
-
-
-
 static bool GreateDistance(cRendererQueue::MESH_DISTANCE_PAIR& a,cRendererQueue::MESH_DISTANCE_PAIR& b)
 {
 	if ( a.second > b.second)
@@ -44,10 +37,10 @@ static bool GreateDistance(cRendererQueue::MESH_DISTANCE_PAIR& a,cRendererQueue:
 	return false;
 }
 
-void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DXVECTOR3* pCameraWorldPosition )
+void cRendererQueue::GatherRenderAlphaBlend(std::vector<cMeshNode*>& vecMesh , D3DXVECTOR3* pCameraWorldPosition )
 {
-	auto it = renderQueue.m_vecMesh.begin();
-	auto it_end = renderQueue.m_vecMesh.end();
+	auto it = vecMesh.begin();
+	auto it_end = vecMesh.end();
 	D3DXVECTOR3 temp;
 	for ( ; it!=it_end ; ++it )
 	{		
@@ -61,7 +54,6 @@ void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DX
 
 void cRendererQueue::Clear()
 {
-	m_vecMesh.clear();
 	m_materialOrder.clear();
 	m_sceneOrder.clear();
 	m_distanceOrder.clear();
@@ -114,7 +106,7 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		pEffect->SetTechnique(vecTechnique[i]);
 		pEffect->Begin(&passes, 0);	
 		// MaterialÀû¿ë
-		ChangeMaterial(pMaterial);
+		ChangeMaterial(pMaterial,false);
 
 		pEffect->BeginPass(0);	
 		(*it).first->Render();
@@ -137,7 +129,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		int i = pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);
 
-		ChangeMaterial(pMaterial);
+		ChangeMaterial(pMaterial,false);
 
 		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
@@ -152,7 +144,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::ChangeMaterial(Material* pMaterial )
+void cRendererQueue::ChangeMaterial(Material* pMaterial ,bool textureOpacityOnly)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
@@ -168,6 +160,9 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial )
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
 		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());
+
+	if (textureOpacityOnly)
+		return;
 
 	pRscTexture = pMaterial->GetMapDiffuse();
 	if( pRscTexture != NULL )	
@@ -187,22 +182,6 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial )
 }
 
 
-void cRendererQueue::ChangeMaterialForShadow( Material* pMaterial )
-{
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, pMaterial->AlphaTestEnable); 	
-	if (pMaterial->AlphaTestEnable)
-	{
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)pMaterial->AlphaTestRef);
-	}
-
-	cRscTexture* pRscTexture;
-	pRscTexture = pMaterial->GetMapOpacity();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());	
-}
-
 
 void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
@@ -220,7 +199,7 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 		
-		ChangeMaterialForShadow(pMaterial);		
+		ChangeMaterial(pMaterial,true);		
 
 		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
@@ -235,12 +214,12 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::InsertNotAlphaBlend( cRendererQueue& renderQueue )
+void cRendererQueue::GatherRender(std::vector<cMeshNode*>& vecMesh )
 {
-	size_t size = renderQueue.m_vecMesh.size();
+	size_t size = vecMesh.size();
 	for (size_t i=0;i<size;i++)
 	{
-		cMeshNode* pMesh = renderQueue.m_vecMesh[i];	
+		cMeshNode* pMesh = vecMesh[i];	
 
 		Material* pMaterial = pMesh->GetMaterial();
 		if (pMesh->GetInstancingEnable())
@@ -258,30 +237,7 @@ void cRendererQueue::InsertNotAlphaBlend( cRendererQueue& renderQueue )
 }
 
 
-void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
-{
-	size_t size = renderQueue.m_vecMesh.size();
-	for (size_t i=0;i<size;i++)
-	{
-		Material* pMaterial = renderQueue.m_vecMesh[i]->GetMaterial();
 
-		std::list<cMeshNode*>& listMesh = m_materialOrder[pMaterial];
-		listMesh.push_back(renderQueue.m_vecMesh[i]);
-	}
-
-}
-
-void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
-{	
-	for (auto it = renderQueue.m_vecMesh.begin() ; it!= renderQueue.m_vecMesh.end() ; it++)
-	{
-		auto& pMesh = (*it);	
-
-		SCENE_KEY key(pMesh->GetRscVetextBuffer(),pMesh->GetMaterial(),pMesh->GetRscIndexBuffer());
-		std::list<cMeshNode*>& list = m_sceneOrder[key];
-		list.push_back(*it);
-	}
-}
 
 void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
@@ -313,7 +269,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 		int i = refScene.pMaterial->index_renderer_queue();
 		V(pEffect->SetTechnique(vecTechnique[i]));
-		ChangeMaterial(refScene.pMaterial);
+		ChangeMaterial(refScene.pMaterial,false);
 		pMeshNode->RenderInstancing(refScene.pVertexBuffer->GetVertexCount()*nCount,refScene.pIndexBuffer->GetTriangleCount()*nCount);
 		
 		pMatrixTexture->SetValid(false);
@@ -355,7 +311,7 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
 
-		ChangeMaterialForShadow(refScene.pMaterial);	
+		ChangeMaterial(refScene.pMaterial,true);	
 		pMeshNode->RenderInstancing(refScene.pVertexBuffer->GetVertexCount()*nCount,refScene.pIndexBuffer->GetTriangleCount()*nCount);
 	}
 
@@ -393,7 +349,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 
 		int i = refScene.pMaterial->index_renderer_queue();
 		V(pEffect->SetTechnique(vecTechnique[i]));
-		ChangeMaterial(refScene.pMaterial);
+		ChangeMaterial(refScene.pMaterial,false);
 		pMeshNode->RenderInstancing(refScene.pVertexBuffer->GetVertexCount()*nCount,refScene.pIndexBuffer->GetTriangleCount()*nCount);
 
 
@@ -434,7 +390,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
-		ChangeMaterialForShadow(refScene.pMaterial);
+		ChangeMaterial(refScene.pMaterial,true);
 		pMeshNode->RenderInstancing(refScene.pVertexBuffer->GetVertexCount()*nCount,refScene.pIndexBuffer->GetTriangleCount()*nCount);
 	}
 

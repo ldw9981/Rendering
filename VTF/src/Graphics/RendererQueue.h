@@ -34,21 +34,16 @@ public:
 
 	typedef std::pair<cMeshNode*,Material*> MESH_MATERIAL_PAIR;
 	typedef std::pair<cMeshNode*,float>		MESH_DISTANCE_PAIR;
-	std::vector<cMeshNode*>	m_vecMesh;
+	
+
 
 	std::vector<MESH_DISTANCE_PAIR>					m_distanceOrder;
 	std::map<Material*,std::list<cMeshNode*>>		m_materialOrder;	// Material같고 index,vertex다를수있다.
 	std::map<SCENE_KEY,std::list<cMeshNode*>>		m_sceneOrder;		// Material,index,vertex모두같다.
 private:
 public:
-	void	InsertIntoMeshList(cMeshNode* pItem);
-
-	void	InsertIntoMaterialOrder(cRendererQueue& renderQueue);
-	void	InsertIntoSceneOrder(cRendererQueue& renderQueue);
-
-	void	InsertNotAlphaBlend(cRendererQueue& renderQueue); 
-	void	InsertIntoDistanceOrder(cRendererQueue& renderQueue,D3DXVECTOR3* pCameraWorldPosition );
-	
+	void	GatherRender(std::vector<cMeshNode*>& vecMesh); 
+	void	GatherRenderAlphaBlend(std::vector<cMeshNode*>& vecMesh,D3DXVECTOR3* pCameraWorldPosition );	
 
 	void	Clear();	
 
@@ -62,8 +57,7 @@ public:
 	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
 
 protected:
-	void	ChangeMaterial(Material* pMaterial);
-	void	ChangeMaterialForShadow(Material* pMaterial);
+	void	ChangeMaterial(Material* pMaterial,bool textureOpacityOnly);
 	void	SubRenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp );
 };
 }

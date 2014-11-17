@@ -56,7 +56,7 @@ public:
 	void					LinkToBone(Entity* pEntity);
 
 
-	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void			GatherRender(Entity* pEntity,bool bTraversal);
 	virtual	void			Release();
 
 	// ISerialize

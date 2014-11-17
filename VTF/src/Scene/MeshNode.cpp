@@ -371,14 +371,6 @@ void cMeshNode::CreateInstancingResource()
 		}
 	}
 
-
-// 	if (m_pVertexTexture == NULL)
-// 	{
-// 		DWORD size =(DWORD) pow(2.0f,ceil(log(sqrt((float) m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX))/log(2.0f)));
-// 		m_pVertexTexture = cResourceMng::m_pInstance->CreateVertexTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
-// 		m_pVertexTexture->AddRef();
-// 	}
-
 	if (m_pMatrixInstancingTexture==NULL)
 	{
 		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) INSTANCING_MAX*4 ))/log(2.0f)));

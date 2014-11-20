@@ -13,9 +13,8 @@
 #include "Foundation/Define.h"
 #include "Graphics/Entity.h"
 
-#include "Graphics/VertexInstancingBuffer.h"
-#include "Graphics/MatrixInstancingTexture.h"
-#include "Graphics/IndexInstancingBuffer.h"
+#include "Graphics/MatrixTexture.h"
+#include "Graphics/InstanceDataBuffer.h"
 
 namespace Sophia
 {
@@ -320,61 +319,22 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 void SkinnedMeshNode::CreateInstancingResource()
 {
 	HRESULT hr=0;
-	if (m_pVertexInstancingBuffer == NULL)
+	if (m_pInstanceDataBuffer == NULL)
 	{
-		DWORD size = sizeof(BLEND_VERTEX_INSTANCEDATA) * m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX;
-		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(m_pRscVetextBuffer,size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
-		m_pVertexInstancingBuffer->AddRef();
-		if (m_pVertexInstancingBuffer->GetRefCounter() == 1)
+		DWORD size = sizeof(INSTANCEDATA) * INSTANCING_MAX;
+		m_pInstanceDataBuffer = cResourceMng::m_pInstance->CreateInstanceDataBuffer(m_pRscVetextBuffer,size,INSTANCING_MAX);
+		m_pInstanceDataBuffer->AddRef();
+		if (m_pInstanceDataBuffer->GetRefCounter()==1)
 		{
-			BLEND_VERTEX_INSTANCEDATA* pDstLockPos = (BLEND_VERTEX_INSTANCEDATA*)m_pVertexInstancingBuffer->Lock(0,0);
-			BLEND_VERTEX* pSrcLockPos = (BLEND_VERTEX*)m_pRscVetextBuffer->Lock(0,0);
-
-			int vertexSize = m_pRscVetextBuffer->GetVertexCount();
-
+			INSTANCEDATA* pDstLockPos = (INSTANCEDATA*)m_pInstanceDataBuffer->Lock(0,0);
 			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
 			{
-				BLEND_VERTEX* pSrcPos = pSrcLockPos;			
-				for (int vertexIndex = 0 ;vertexIndex<vertexSize;vertexIndex++)
-				{
-					pDstLockPos->vertex = *pSrcPos;
-
-					pDstLockPos->vertexIndex = (float)vertexIndex;
-					pDstLockPos->vertexSize =  (float)vertexSize;
-					pDstLockPos->instanceIndex = (float)instanceIndex;
-					pDstLockPos->boneSize = (float)m_vecBoneRef.size();
-					pSrcPos++;
-					pDstLockPos++;
-				}	 
+				pDstLockPos->instanceIndex = (float)instanceIndex;	
+				pDstLockPos->boneSize = (float)m_vecBoneRef.size();
+				pDstLockPos++;				
 			}
-			m_pRscVetextBuffer->Unlock();
-			m_pVertexInstancingBuffer->Unlock();
-		}
-	}
-
-	if (m_pIndexInstancingBuffer==NULL)
-	{
-		DWORD bufferSize = sizeof(TRIANGLE_INDEX32) * m_pRscIndexBuffer->GetTriangleCount() * INSTANCING_MAX;
-		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
-		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(m_pRscIndexBuffer,bufferSize,triangleCount);
-		m_pIndexInstancingBuffer->AddRef();
-		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
-		{
-			TRIANGLE_INDEX16* pSrcLockPos = (TRIANGLE_INDEX16*)m_pRscIndexBuffer->Lock(0,0);
-			TRIANGLE_INDEX32* pDstLockPos = (TRIANGLE_INDEX32*)m_pIndexInstancingBuffer->Lock(0,0);
-
-			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
-			{
-				for (int i=0 ; i< m_pRscIndexBuffer->GetTriangleCount() ;i++ )
-				{
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[0] = pSrcLockPos[i].index[0] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[1] = pSrcLockPos[i].index[1] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[2] = pSrcLockPos[i].index[2] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	//
-				}	 
-			}	
-			m_pIndexInstancingBuffer->Unlock();
-			m_pRscIndexBuffer->Unlock();
-		}
+			m_pInstanceDataBuffer->Unlock();
+		}		
 	}
 
 	if (m_pMatrixInstancingTexture==NULL)
@@ -386,19 +346,14 @@ void SkinnedMeshNode::CreateInstancingResource()
 	}
 }
 
-void SkinnedMeshNode::RenderInstancing( int vertexCount,int triangleCount )
+void SkinnedMeshNode::RenderInstancing( int instanceSize )
 {
-	HRESULT hr;
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(BLEND_VERTEX_INSTANCEDATA)));		
-	V(Graphics::m_pDevice->SetIndices(m_pIndexInstancingBuffer->GetD3DIndexBuffer())); 
-	UINT passes;
-	V(pEffect->Begin(&passes, 0));			
-	V(pEffect->BeginPass(0));
-	pEffect->CommitChanges();
-	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, vertexCount,0, triangleCount) );
-	V(pEffect->EndPass());		
-	V(pEffect->End());		
+	m_pRscVetextBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declBlendInstance,0));
+	m_pRscVetextBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | instanceSize);		
+	m_pInstanceDataBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
+	m_pInstanceDataBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+	m_pRscIndexBuffer->SetIndices();
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0,m_pRscVetextBuffer->GetVertexCount(),m_startIndex,m_primitiveCount );
 }
 
 

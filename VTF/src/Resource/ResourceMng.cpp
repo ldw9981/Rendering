@@ -10,8 +10,10 @@
 #include "Graphics/MaterialEx.h"
 
 #include "Graphics/IndexInstancingBuffer.h"
-#include "Graphics/MatrixInstancingTexture.h"
+#include "Graphics/MatrixTexture.h"
 #include "Graphics/VertexInstancingBuffer.h"
+#include "Graphics/InstanceDataBuffer.h"
+
 namespace Sophia
 {
 
@@ -258,18 +260,18 @@ void cResourceMng::EraseIndexInstancingBuffer( cRscIndexBuffer* key)
 	m_contIndexInstancingBuffer.erase(key);
 }
 
-MatrixInstancingTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
+MatrixTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWORD size)
 {
-	MatrixInstancingTexture* pItem=NULL;
+	MatrixTexture* pItem=NULL;
 
 	auto it=m_contMatrixTexture.find(key);
 	if (it!=m_contMatrixTexture.end())
 	{
-		pItem = static_cast<MatrixInstancingTexture*>(it->second);
+		pItem = static_cast<MatrixTexture*>(it->second);
 		return pItem;
 	}	
 
-	pItem = new MatrixInstancingTexture;
+	pItem = new MatrixTexture;
 	pItem->SetSize(size);
 	pItem->m_key = key;
 	if(!pItem->Create())	
@@ -281,7 +283,7 @@ MatrixInstancingTexture* cResourceMng::CreateMatrixTexture( SCENE_KEY& key ,DWOR
 	return pItem;
 }
 
-void cResourceMng::EraseBoneStreamTexture( SCENE_KEY& key )
+void cResourceMng::EraseMatrixTexture( SCENE_KEY& key )
 {
 	m_contMatrixTexture.erase(key);
 }
@@ -342,6 +344,35 @@ VertexInstancingBuffer* cResourceMng::CreateVertexInstancingBuffer( cRscVertexBu
 void cResourceMng::EraseVertexInstancingBuffer( cRscVertexBuffer* key )
 {
 	m_contVertexInstancingBuffer.erase(key);
+}
+
+InstanceDataBuffer* cResourceMng::CreateInstanceDataBuffer( cRscVertexBuffer* key ,DWORD buffersize,DWORD count)
+{
+	InstanceDataBuffer* pItem=NULL;
+
+	auto it=m_contInstanceDataBuffer.find(key);
+	if (it!=m_contInstanceDataBuffer.end())
+	{
+		pItem = static_cast<InstanceDataBuffer*>(it->second);
+		return pItem;
+	}	
+
+	pItem = new InstanceDataBuffer;
+	pItem->SetBufferSize(buffersize);
+	pItem->SetVertexCount(count);
+	pItem->m_key = key;
+	if(!pItem->Create())	
+	{
+		delete pItem;
+		return NULL;
+	}
+	m_contInstanceDataBuffer.insert(std::make_pair(key,pItem));
+	return pItem;
+}
+
+void cResourceMng::EraseInstanceDataBuffer( cRscVertexBuffer* key )
+{
+	m_contInstanceDataBuffer.erase(key);
 }
 
 

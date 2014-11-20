@@ -28,9 +28,12 @@ cMenuView::cMenuView(void)
 	m_pAirPlaneBake=NULL;
 	m_pDragon=NULL;
 
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		m_pHouse[i] = NULL;
+	}
+	for (int i=0;i<STRESS_SKINNED;i++)
+	{
 		m_pSkinned[i]=NULL;
 	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
@@ -93,7 +96,7 @@ void cMenuView::Enter()
 	
 	
 	
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
 		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
@@ -114,7 +117,7 @@ void cMenuView::Enter()
 	}
 	
 	
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_SKINNED;i++)
 	{
 		m_pSkinned[i] = m_graphicWorld.CreateEntity();		
 		m_pSkinned[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
@@ -139,11 +142,14 @@ void cMenuView::Leave()
 {
 	//m_graphicWorld.DeleteTerrain(m_pZTerrain);
 	
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		if (m_pHouse[i])
 			m_graphicWorld.DeleteEntity(m_pHouse[i]);
+	}
 
+	for (int i=0;i<STRESS_SKINNED;i++)
+	{
 		if (m_pSkinned[i])
 			m_graphicWorld.DeleteEntity(m_pSkinned[i]);
 	}
@@ -233,7 +239,7 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F5))
 	{
 		m_instancingNormal = !m_instancingNormal;
-		for (int i=0;i<STRESS;i++)
+		for (int i=0;i<STRESS_NORMAL;i++)
 		{
 			if (m_pHouse[i])
 			{
@@ -245,7 +251,7 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F6))
 	{
 		m_instancingSkinned = !m_instancingSkinned;
-		for (int i=0;i<STRESS;i++)
+		for (int i=0;i<STRESS_SKINNED;i++)
 		{
 			if (m_pSkinned[i])
 			{
@@ -257,7 +263,7 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F7))
 	{
 		m_showNormal = !m_showNormal;
-		for (int i=0;i<STRESS;i++)
+		for (int i=0;i<STRESS_NORMAL;i++)
 		{
 			if (m_pHouse[i])
 			{
@@ -268,7 +274,7 @@ void cMenuView::Control()
 	if (g_pInput->IsTurnDn(DIK_F8))
 	{
 		m_showSkinned = !m_showSkinned;
-		for (int i=0;i<STRESS;i++)
+		for (int i=0;i<STRESS_SKINNED;i++)
 		{
 			if (m_pSkinned[i])
 			{

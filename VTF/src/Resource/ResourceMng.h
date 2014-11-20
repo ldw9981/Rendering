@@ -16,9 +16,11 @@ class EntityAnimation;
 class EntityMaterial;
 class Material;
 class IndexInstancingBuffer;
-class MatrixInstancingTexture;
+class MatrixTexture;
 class VertexTexture;
 class VertexInstancingBuffer;
+class InstanceDataBuffer;
+
 class cResourceMng:
 	private cStaticRestoreList
 {
@@ -34,6 +36,8 @@ private:
 	std::map<std::string,cResource*>					m_contEntityMaterial;
 	std::map<SCENE_KEY,cResource*>						m_contMatrixTexture;
 	std::map<SCENE_KEY,cResource*>						m_contVertexTexture;
+	std::map<cRscVertexBuffer*,cResource*>						m_contInstanceDataBuffer;
+
 	std::map<cRscIndexBuffer*,cResource*>						m_contIndexInstancingBuffer;
 	std::map<cRscVertexBuffer*,cResource*>						m_contVertexInstancingBuffer;
 public:		
@@ -69,14 +73,19 @@ public:
 	IndexInstancingBuffer*	CreateIndexInstancingBuffer(cRscIndexBuffer* key,DWORD buffersize,DWORD count);
 	void				EraseIndexInstancingBuffer(cRscIndexBuffer* key);
 
-	MatrixInstancingTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
-	void				EraseBoneStreamTexture(SCENE_KEY& key);
+	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
+	void				EraseMatrixTexture(SCENE_KEY& key);
 
 // 	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);
 // 	void				EraseVertexTexture(SCENE_KEY& key);
 
 	VertexInstancingBuffer*	CreateVertexInstancingBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
 	void				EraseVertexInstancingBuffer(cRscVertexBuffer* pKey);
+
+	InstanceDataBuffer*	CreateInstanceDataBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
+	void				EraseInstanceDataBuffer(cRscVertexBuffer* pKey);
+
+
 };
 
 }

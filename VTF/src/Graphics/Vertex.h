@@ -49,12 +49,7 @@ namespace Sophia
 
 	};
 
-	struct NORMAL_VERTEX_INSTANCEDATA
-	{	
-		NORMAL_VERTEX	vertex;
-		float		vertexIndex,vertexSize;
-		float		instanceIndex,boneSize;
-	};
+	
 
 	struct BLEND_VERTEX
 	{	
@@ -77,12 +72,7 @@ namespace Sophia
 		}
 	};
 
-	struct BLEND_VERTEX_INSTANCEDATA
-	{	
-		BLEND_VERTEX vertex;
-		float		vertexIndex,vertexSize;
-		float		instanceIndex,boneSize;
-	};
+
 
 
 	struct GUIVERTEX
@@ -92,6 +82,9 @@ namespace Sophia
 		TEXCOORD	tex;
 	};
 
-
+	struct INSTANCEDATA
+	{	
+		float		instanceIndex,boneSize;
+	};
 
 }

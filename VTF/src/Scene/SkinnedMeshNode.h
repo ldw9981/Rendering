@@ -68,7 +68,7 @@ public:
 
 	void UpdateMatrixPallete();
 	
-	virtual void RenderInstancing(int vertexCount,int triangleCount);
+	virtual void RenderInstancing( int instanceSize );
 	virtual void UpdateMatrixInstancing( std::list<cMeshNode*>& list );
 	void ChangeInstancingEnable(bool val);
 protected:

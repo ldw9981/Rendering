@@ -5,7 +5,7 @@ texture Tex_Specular;
 texture Tex_Light;
 texture Tex_Opacity;
 texture Tex_Depth : RenderColorTarget;
-texture Tex_MatrixInstancing;
+texture Tex_MatrixInstanceData;
 texture Tex_MatrixPallete;
 
 // 변환행렬
@@ -67,9 +67,9 @@ sampler2D ShadowSampler = sampler_state
     MagFilter = LINEAR;
 };
 
-sampler2D   gMatrixInstancingSampler = sampler_state 
+sampler2D   gMatrixInstanceDataSampler = sampler_state 
 {
-  Texture = (Tex_MatrixInstancing);
+  Texture = (Tex_MatrixInstanceData);
   MipFilter = NONE;
   MagFilter = POINT;
   MinFilter = POINT;
@@ -148,8 +148,7 @@ struct VS_PHONG_DIFFUSE_INSTANCE_INPUT
 	float3 mBiNormal		: BINORMAL;   
 	float2 mTexCoord		: TEXCOORD0;  
 	float2 mTexCoord1		: TEXCOORD1;
-	float2 mVertexIndex		: TEXCOORD2;
-	float2 mInstanceIndex	: TEXCOORD3; 
+	float2 mInstanceIndex	: TEXCOORD2; 
 };
 
 struct VS_SKINNING_PHONG_DIFFUSE_INPUT
@@ -174,8 +173,7 @@ struct VS_SKINNING_PHONG_DIFFUSE_INSTANCING_INPUT
 	float2 mTexCoord1		: TEXCOORD1;   
 	float3 mBlendWeights    : BLENDWEIGHT;
 	int4   mBlendIndices    : BLENDINDICES; 
-	float2 mVertexIndex		: TEXCOORD2; 	
-	float2 mInstanceIndex	: TEXCOORD3; 	
+	float2 mInstanceIndex	: TEXCOORD2; 	
 };
 
 struct VS_SHADOW_NORMAL_INPUT 
@@ -188,8 +186,7 @@ struct VS_SHADOW_NORMAL_INSTANCING_INPUT
 {
 	float4 mPosition		: POSITION;
 	float2 mTexCoord		: TEXCOORD0;
-	float2 mVertexIndex		: TEXCOORD2;
-	float2 mInstanceIndex	: TEXCOORD3	;
+	float2 mInstanceIndex	: TEXCOORD2	;
 };
 
 
@@ -269,10 +266,10 @@ float4x4 loadMatrix(float indexInstance)
 
 	float4x4 mat = 
 	{
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(0.0f 						,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(0.0f 									,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
 	};
  
 	return mat; 	
@@ -289,10 +286,10 @@ float4x4 loadBoneMatrix(float instanceIndex,float boneIndex,float boneSize )
 
 	float4x4 mat = 
 	{
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(0.0f 						,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
-		tex2Dlod(gMatrixInstancingSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(0.0f 									,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(1.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(2.0f / gMatrixTextureSize	,0,0,0)),
+		tex2Dlod(gMatrixInstanceDataSampler, texcoord + float4(3.0f / gMatrixTextureSize	,0,0,0))
 	};
  
 	return mat; 	

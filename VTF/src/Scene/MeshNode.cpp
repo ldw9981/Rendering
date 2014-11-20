@@ -14,11 +14,8 @@
 #include "Scene/CameraNode.h"
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
-
-
-#include "Graphics/VertexInstancingBuffer.h"
-#include "Graphics/MatrixInstancingTexture.h"
-#include "Graphics/IndexInstancingBuffer.h"
+#include "Graphics/MatrixTexture.h"
+#include "Graphics/InstanceDataBuffer.h"
 
 namespace Sophia
 {
@@ -39,8 +36,7 @@ cMeshNode::cMeshNode(void)
 	m_pMaterial = NULL;
 	m_bInstancingEnable = false;
 	m_pMatrixInstancingTexture=NULL;
-	m_pVertexInstancingBuffer = NULL;
-	m_pIndexInstancingBuffer=NULL;
+	m_pInstanceDataBuffer=NULL;
 }
 
 cMeshNode::~cMeshNode(void)
@@ -284,19 +280,14 @@ const std::vector<Material*>& cMeshNode::GetMaterials()
 }
 
 
-void cMeshNode::RenderInstancing( int vertexCount,int triangleCount )
+void cMeshNode::RenderInstancing( int instanceSize )
 {
-	HRESULT hr;
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	V(Graphics::m_pDevice->SetStreamSource(0,m_pVertexInstancingBuffer->GetD3DVertexBuffer(),0, sizeof(NORMAL_VERTEX_INSTANCEDATA)));		
-	V(Graphics::m_pDevice->SetIndices(m_pIndexInstancingBuffer->GetD3DIndexBuffer())); 
-	UINT passes;
-	V(pEffect->Begin(&passes, 0));			
-	V(pEffect->BeginPass(0));
-	pEffect->CommitChanges();
-	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0, vertexCount,0, triangleCount) );
-	V(pEffect->EndPass());		
-	V(pEffect->End());		
+	m_pRscVetextBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
+	m_pRscVetextBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | instanceSize);		
+	m_pInstanceDataBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
+	m_pInstanceDataBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+	m_pRscIndexBuffer->SetIndices();
+	Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST,0,0,m_pRscVetextBuffer->GetVertexCount(),m_startIndex,m_primitiveCount );
 }
 
 void cMeshNode::ChangeInstancingEnable( bool val )
@@ -315,60 +306,21 @@ void cMeshNode::ChangeInstancingEnable( bool val )
 void cMeshNode::CreateInstancingResource()
 {
 	HRESULT hr=0;
-	if (m_pVertexInstancingBuffer == NULL)
+	if (m_pInstanceDataBuffer == NULL)
 	{
-		DWORD size = sizeof(NORMAL_VERTEX_INSTANCEDATA) * m_pRscVetextBuffer->GetVertexCount() * INSTANCING_MAX;
-		m_pVertexInstancingBuffer = cResourceMng::m_pInstance->CreateVertexInstancingBuffer(m_pRscVetextBuffer,size,m_pRscVetextBuffer->GetVertexCount()*INSTANCING_MAX);
-		m_pVertexInstancingBuffer->AddRef();
-		if (m_pVertexInstancingBuffer->GetRefCounter()==1)
+		DWORD size = sizeof(INSTANCEDATA) * INSTANCING_MAX;
+		m_pInstanceDataBuffer = cResourceMng::m_pInstance->CreateInstanceDataBuffer(m_pRscVetextBuffer,size,INSTANCING_MAX);
+		m_pInstanceDataBuffer->AddRef();
+		if (m_pInstanceDataBuffer->GetRefCounter()==1)
 		{
-			NORMAL_VERTEX_INSTANCEDATA* pDstLockPos = (NORMAL_VERTEX_INSTANCEDATA*)m_pVertexInstancingBuffer->Lock(0,0);
-			NORMAL_VERTEX* pSrcLockPos = (NORMAL_VERTEX*)m_pRscVetextBuffer->Lock(0,0);
-
-			int vertexSize = m_pRscVetextBuffer->GetVertexCount();
-
+			INSTANCEDATA* pDstLockPos = (INSTANCEDATA*)m_pInstanceDataBuffer->Lock(0,0);
 			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
 			{
-				NORMAL_VERTEX* pSrcPos = pSrcLockPos;			
-				for (int vertexIndex = 0 ;vertexIndex<vertexSize;vertexIndex++)
-				{
-					pDstLockPos->vertex = *pSrcPos;
-
-					pDstLockPos->vertexIndex = (float)vertexIndex;
-					pDstLockPos->vertexSize =  (float)vertexSize;
-					pDstLockPos->instanceIndex = (float)instanceIndex;
-	
-					pSrcPos++;
-					pDstLockPos++;
-				}	 
+				pDstLockPos->instanceIndex = (float)instanceIndex;	
+				pDstLockPos++;				
 			}
-			m_pRscVetextBuffer->Unlock();
-			m_pVertexInstancingBuffer->Unlock();
+			m_pInstanceDataBuffer->Unlock();
 		}		
-	}
-	if (m_pIndexInstancingBuffer==NULL)
-	{
-		DWORD bufferSize = sizeof(TRIANGLE_INDEX32) * m_pRscIndexBuffer->GetTriangleCount() * INSTANCING_MAX;
-		DWORD triangleCount = m_pRscIndexBuffer->GetTriangleCount()*INSTANCING_MAX;
-		m_pIndexInstancingBuffer = cResourceMng::m_pInstance->CreateIndexInstancingBuffer(m_pRscIndexBuffer,bufferSize,triangleCount);
-		m_pIndexInstancingBuffer->AddRef();				
-		if (m_pIndexInstancingBuffer->GetRefCounter()==1)
-		{
-			TRIANGLE_INDEX16* pSrcLockPos = (TRIANGLE_INDEX16*)m_pRscIndexBuffer->Lock(0,0);
-			TRIANGLE_INDEX32* pDstLockPos = (TRIANGLE_INDEX32*)m_pIndexInstancingBuffer->Lock(0,0);
-
-			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
-			{
-				for (int i=0 ; i< m_pRscIndexBuffer->GetTriangleCount() ;i++ )
-				{
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[0] = pSrcLockPos[i].index[0] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[1] = pSrcLockPos[i].index[1] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	// 
-					pDstLockPos[instanceIndex*m_pRscIndexBuffer->GetTriangleCount()+i].index[2] = pSrcLockPos[i].index[2] + instanceIndex* m_pRscVetextBuffer->GetVertexCount();	//
-				}	 
-			}	
-			m_pIndexInstancingBuffer->Unlock();
-			m_pRscIndexBuffer->Unlock();
-		}
 	}
 
 	if (m_pMatrixInstancingTexture==NULL)
@@ -381,9 +333,8 @@ void cMeshNode::CreateInstancingResource()
 
 void cMeshNode::ReleaseInstancingResource()
 {
-	SAFE_RELEASE(m_pVertexInstancingBuffer);
 	SAFE_RELEASE(m_pMatrixInstancingTexture);
-	SAFE_RELEASE(m_pIndexInstancingBuffer);
+	SAFE_RELEASE(m_pInstanceDataBuffer);
 }
 
 

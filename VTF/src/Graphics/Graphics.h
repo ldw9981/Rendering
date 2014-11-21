@@ -4,9 +4,7 @@
 #include "Vertex.h"
 namespace Sophia
 {
-
-#define INSTANCING_MAX 1024
-
+	
 class cGUIFont;
 class cView;
 class World;
@@ -97,6 +95,9 @@ public:
 	D3DCAPS9			m_caps;
 	std::vector<LPDIRECT3DSURFACE9> m_vecRenderTarget;
 	LPDIRECT3DSURFACE9	m_depthStencilSurface;
+
+	std::map<std::string,int>	m_mapInstancingMax;
+	int							m_defaultInstancingMax;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
 //	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
@@ -123,6 +124,9 @@ public:
 
 	void BackupDepthStencilSurface();
 	void RestoreDepthStencilSurface();
+
+	void SetEntityInstancingMax(const char* entityName,int max);
+	int  GetEntityInstancingMax(const char* entityName);
 };
 
 

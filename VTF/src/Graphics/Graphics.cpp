@@ -42,6 +42,7 @@ Graphics::Graphics(void)
 		m_vecTechniqueNormalInstancing.push_back(NULL);
 		m_vecTechniqueSkinnedInstancing.push_back(NULL);
 	}
+	m_defaultInstancingMax = 128;
 }
 
 Graphics::~Graphics(void)
@@ -424,6 +425,22 @@ void Graphics::RestoreDepthStencilSurface()
 	Graphics::m_pDevice->SetDepthStencilSurface(m_depthStencilSurface);	
 	m_depthStencilSurface->Release();
 	m_depthStencilSurface = NULL;
+}
+
+void Graphics::SetEntityInstancingMax( const char* entityName,int max )
+{
+	auto ret = m_mapInstancingMax.find(std::string(entityName));
+	m_mapInstancingMax[std::string(entityName)] = max;
+}
+
+int Graphics::GetEntityInstancingMax( const char* entityName )
+{
+	auto ret = m_mapInstancingMax.find(std::string(entityName));
+	if (ret != m_mapInstancingMax.end())
+	{
+		return (*ret).second;
+	}
+	return m_defaultInstancingMax;
 }
 
 }

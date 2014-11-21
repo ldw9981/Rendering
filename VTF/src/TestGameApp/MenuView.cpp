@@ -86,15 +86,16 @@ void cMenuView::Enter()
 	*/
 
 	
-/*
+
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
-	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
+	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"Dragon.ase").c_str());
 	m_pAirPlaneBake->Build();
 	
 	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));*/
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	
-	
+	Graphics::m_pInstance->SetEntityInstancingMax("leaf",1024);
+	Graphics::m_pInstance->SetEntityInstancingMax("Dragon",1024);
 	
 	for (int i=0;i<STRESS_NORMAL;i++)
 	{
@@ -120,9 +121,9 @@ void cMenuView::Enter()
 	for (int i=0;i<STRESS_SKINNED;i++)
 	{
 		m_pSkinned[i] = m_graphicWorld.CreateEntity();		
-		m_pSkinned[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-		m_pSkinned[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
+		m_pSkinned[i]->LoadScene(std::string(strDataPath+"Dragon.scene").c_str());
+		m_pSkinned[i]->LoadAnimationSet(std::string(strDataPath+"Dragon.aniset").c_str());
+		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"Dragon.material").c_str());
 	
 		m_pSkinned[i]->Build();
 		m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);

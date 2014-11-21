@@ -28,6 +28,7 @@ public:
 
 	// entity
 	std::list<Entity*>		m_listEntity;
+	
 
 	std::list<Entity*>		m_listEntityRender;
 	
@@ -83,6 +84,8 @@ public:
 
 	void RenderShadow();
 	void RenderScene();
+
+
 };
 
 }

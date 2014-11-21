@@ -9,9 +9,7 @@ using namespace Sophia;
 InstanceDataBuffer::InstanceDataBuffer(void)
 {
 	m_pool=D3DPOOL_MANAGED;
-	m_BufferSize=sizeof(INSTANCEDATA)*INSTANCING_MAX;
 	m_usage = D3DUSAGE_WRITEONLY;
-
 	m_key = NULL;
 }
 

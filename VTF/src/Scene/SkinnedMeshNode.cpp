@@ -319,15 +319,16 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 void SkinnedMeshNode::CreateInstancingResource()
 {
 	HRESULT hr=0;
+	int instancingMax = Graphics::m_pInstance->GetEntityInstancingMax(m_pRootNode->GetNodeName().c_str());
 	if (m_pInstanceDataBuffer == NULL)
 	{
-		DWORD size = sizeof(INSTANCEDATA) * INSTANCING_MAX;
-		m_pInstanceDataBuffer = cResourceMng::m_pInstance->CreateInstanceDataBuffer(m_pRscVetextBuffer,size,INSTANCING_MAX);
+		DWORD size = sizeof(INSTANCEDATA) * instancingMax;
+		m_pInstanceDataBuffer = cResourceMng::m_pInstance->CreateInstanceDataBuffer(m_pRscVetextBuffer,size,instancingMax);
 		m_pInstanceDataBuffer->AddRef();
 		if (m_pInstanceDataBuffer->GetRefCounter()==1)
 		{
 			INSTANCEDATA* pDstLockPos = (INSTANCEDATA*)m_pInstanceDataBuffer->Lock(0,0);
-			for( int instanceIndex = 0 ; instanceIndex < INSTANCING_MAX; instanceIndex++ )
+			for( int instanceIndex = 0 ; instanceIndex < instancingMax; instanceIndex++ )
 			{
 				pDstLockPos->instanceIndex = (float)instanceIndex;	
 				pDstLockPos->boneSize = (float)m_vecBoneRef.size();
@@ -340,7 +341,7 @@ void SkinnedMeshNode::CreateInstancingResource()
 	if (m_pMatrixInstancingTexture==NULL)
 	{
 		size_t nBoneRefSize = m_vecBoneRef.size();
-		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) 4*nBoneRefSize *INSTANCING_MAX ))/log(2.0f)));
+		DWORD size = (DWORD) pow(2.0f,ceil(log(sqrt((float) 4*nBoneRefSize *instancingMax ))/log(2.0f)));
 		m_pMatrixInstancingTexture = cResourceMng::m_pInstance->CreateMatrixTexture(SCENE_KEY(m_pRscVetextBuffer,m_pMaterial,m_pRscIndexBuffer),size);
 		m_pMatrixInstancingTexture->AddRef();
 	}

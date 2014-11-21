@@ -28,6 +28,6 @@ System::Void AssetViewer::ScenePropertyForm::propertyGrid1_PropertyValueChanged(
 		return;
 
 	propertyData->Write(m_pNode);
-	m_pNode->GetRootNode()->ResetRenderQueue();
+	m_pNode->GetRootNode()->ResetRenderContainer();
 	
 }

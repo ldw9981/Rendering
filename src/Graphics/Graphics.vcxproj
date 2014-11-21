@@ -106,28 +106,29 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
-    <ClInclude Include="BoneStreamTexture.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Graphics.h" />
-    <ClInclude Include="IndexStreamVertexBuffer.h" />
+    <ClInclude Include="IndexInstancingBuffer.h" />
+    <ClInclude Include="InstanceDataBuffer.h" />
     <ClInclude Include="MaterialEx.h" />
-    <ClInclude Include="MatrixStreamVertexBuffer.h" />
+    <ClInclude Include="MatrixTexture.h" />
     <ClInclude Include="RendererQueue.h" />
     <ClInclude Include="RscIndexBuffer.h" />
     <ClInclude Include="RscTexture.h" />
     <ClInclude Include="RscVertexBuffer.h" />
     <ClInclude Include="Stdafx.h" />
     <ClInclude Include="Vertex.h" />
+    <ClInclude Include="VertexInstancingBuffer.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
-    <ClCompile Include="BoneStreamTexture.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Graphics.cpp" />
-    <ClCompile Include="IndexStreamVertexBuffer.cpp" />
+    <ClCompile Include="IndexInstancingBuffer.cpp" />
+    <ClCompile Include="InstanceDataBuffer.cpp" />
     <ClCompile Include="MaterialEx.cpp" />
-    <ClCompile Include="MatrixStreamVertexBuffer.cpp" />
+    <ClCompile Include="MatrixTexture.cpp" />
     <ClCompile Include="RendererQueue.cpp" />
     <ClCompile Include="RscIndexBuffer.cpp" />
     <ClCompile Include="RscTexture.cpp" />
@@ -137,9 +138,11 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Vertex.cpp" />
+    <ClCompile Include="VertexInstancingBuffer.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\data\hlsl.fx" />
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

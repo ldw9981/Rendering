@@ -44,13 +44,16 @@
     <ClInclude Include="World.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="MatrixStreamVertexBuffer.h">
+    <ClInclude Include="IndexInstancingBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BoneStreamTexture.h">
+    <ClInclude Include="VertexInstancingBuffer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="IndexStreamVertexBuffer.h">
+    <ClInclude Include="InstanceDataBuffer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MatrixTexture.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -88,17 +91,21 @@
     <ClCompile Include="World.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="MatrixStreamVertexBuffer.cpp">
+    <ClCompile Include="IndexInstancingBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BoneStreamTexture.cpp">
+    <ClCompile Include="VertexInstancingBuffer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="IndexStreamVertexBuffer.cpp">
+    <ClCompile Include="InstanceDataBuffer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MatrixTexture.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="..\..\data\hlsl.fx" />
   </ItemGroup>
 </Project>

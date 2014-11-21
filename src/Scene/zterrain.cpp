@@ -139,7 +139,7 @@ HRESULT	ZTerrain::_BuildHeightMap( const char* lpFilename )
 /// 정점, 인덱스 버퍼를 생성한다.
 HRESULT	ZTerrain::_CreateVIB()
 {
- 	m_pRscVertexBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
+ 	m_pRscVertexBuffer = cResourceMng::m_pInstance->CreateRscVertexBuffer(m_strNodeName,m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX));
 	m_pRscVertexBuffer->AddRef();
 
  	if (m_pRscVertexBuffer == NULL)
@@ -157,7 +157,7 @@ HRESULT	ZTerrain::_CreateVIB()
 	memcpy( pVertices, m_pvHeightMap, m_cxDIB*m_czDIB*sizeof(TERRAINVERTEX) );
 	m_pRscVertexBuffer->Unlock();
 
-	m_pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_strNodeName.c_str(),m_strNodeName.c_str(),(m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
+	m_pRscIndexBuffer = cResourceMng::m_pInstance->CreateRscIndexBuffer(m_strNodeName,(m_cxDIB-1)*(m_czDIB-1)*2 * sizeof(WORD)*3);
 	m_pRscIndexBuffer->AddRef();
 
 	if (m_pRscIndexBuffer == NULL)
@@ -175,7 +175,7 @@ void	ZTerrain::Render()
 	m_pRscVertexBuffer->SetStreamSource(0,sizeof(TERRAINVERTEX));		
 	m_pRscIndexBuffer->SetIndices();
 	//텍스쳐 적용
-	Graphics::m_pInstance->GetEffect()->SetTexture("Tex0",m_pTex);	
+	Graphics::m_pInstance->GetEffect()->SetTexture("Tex_Diffuse",m_pTex);	
 	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmWorld,&m_matWorld);
 	Graphics::m_pInstance->GetEffect()->CommitChanges();
 
@@ -184,13 +184,13 @@ void	ZTerrain::Render()
 
 	char temp[256];
 	_itoa_s(m_nTriangles,temp,sizeof(temp),10);
-	Graphics::m_pInstance->RenderDebugString(0,Graphics::m_pInstance->m_viewPortInfo.Height-20,temp);
+//	Graphics::m_pInstance->RenderDebugString(0,Graphics::m_pInstance->m_viewPortInfo.Height-20,temp);
 }
 
 HRESULT ZTerrain::FillIndexBuffer(Frustum& frustum )
 {
 	LPDWORD		pI=NULL;
-	pI=(LPDWORD)m_pRscIndexBuffer->Lock(0,m_pRscIndexBuffer->GetBufferSize(),0);	
+	pI=(LPDWORD)m_pRscIndexBuffer->Lock(m_pRscIndexBuffer->GetBufferSize(),0);	
 	m_nTriangles=0;
 	m_pQuadTree->GenTriIndex(frustum, m_nTriangles, pI,false );
 	m_pRscIndexBuffer->Unlock();

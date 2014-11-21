@@ -290,12 +290,12 @@ void cSceneNode::SerializeOut( std::ofstream& stream )
 
 
 
-void cSceneNode::QueueRenderer(Entity* pEntity,bool bTraversal)
+void cSceneNode::GatherRender(Entity* pEntity,bool bTraversal)
 {
 	size_t size = m_vecChildNode.size();
 	for (size_t i=0;i<size;i++)
 	{
-		m_vecChildNode[i]->QueueRenderer(pEntity,bTraversal);
+		m_vecChildNode[i]->GatherRender(pEntity,bTraversal);
 	}	
 }
 

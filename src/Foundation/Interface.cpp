@@ -17,7 +17,7 @@ void ISerializable::ReadString( std::ifstream& stream,std::string& str )
 	str = buffer;
 }
 
-void ISerializable::WriteString( std::ofstream& stream,std::string& str )
+void ISerializable::WriteString( std::ofstream& stream,const std::string& str )
 {
 	unsigned char textLength = str.length();	
 	stream.write((char*)&textLength,sizeof(textLength));
@@ -32,7 +32,7 @@ void ISerializable::ReadMatrix( std::ifstream& stream,D3DXMATRIX& mat )
 	stream.read((char*)&mat,sizeof(D3DXMATRIX));
 }
 
-void ISerializable::WriteMatrix( std::ofstream& stream,D3DXMATRIX& mat )
+void ISerializable::WriteMatrix( std::ofstream& stream,const D3DXMATRIX& mat )
 {
 	stream.write((char*)&mat,sizeof(D3DXMATRIX));
 }
@@ -42,7 +42,7 @@ void ISerializable::ReadFloat( std::ifstream& stream,float& var )
 	stream.read((char*)&var,sizeof(float));
 }
 
-void ISerializable::WriteFloat( std::ofstream& stream,float& var )
+void ISerializable::WriteFloat( std::ofstream& stream,const float& var )
 {
 	stream.write((char*)&var,sizeof(float));
 }
@@ -52,7 +52,7 @@ void ISerializable::ReadBool( std::ifstream& stream,bool& var )
 	stream.read((char*)&var,sizeof(bool));
 }
 
-void ISerializable::WriteBool( std::ofstream& stream,bool& var )
+void ISerializable::WriteBool( std::ofstream& stream,const bool& var )
 {
 	stream.write((char*)&var,sizeof(bool));
 }

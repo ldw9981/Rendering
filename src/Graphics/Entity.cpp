@@ -147,7 +147,7 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 
 void Entity::Build()
 {
-	ClearRenderQueue();
+	ClearRenderContainer();
 	cSceneNode::BuildComposite(this);
 }
 
@@ -520,18 +520,15 @@ void Entity::SetShowSkeleton( bool bShow )
 		cSceneNode* pNode = (*it).second;		
 		pNode->SetShow(bShow);
 	}
-	ResetRenderQueue();
+	ResetRenderContainer();
 }
 
-void Entity::ClearRenderQueue()
+void Entity::ClearRenderContainer()
 {
-	m_renderQueueNormal.Clear();
-	m_renderQueueSkinned.Clear();
-	m_renderQueueNormalAlphaBlend.Clear();
-	m_renderQueueSkinnedAlphaBlend.Clear();
-
-	m_renderQueueTerrain.Clear();
-
+	m_vecNormal.clear();
+	m_vecSkinned.clear();
+	m_vecNormalAlphaBlend.clear();
+	m_vecSkinnedAlphaBlend.clear();
 }
 
 cSceneNode* Entity::FindNode( std::string& nodename )
@@ -550,10 +547,10 @@ cSceneNode* Entity::FindNode( std::string& nodename )
 	return NULL;
 }
 
-void Entity::ResetRenderQueue()
+void Entity::ResetRenderContainer()
 {
-	ClearRenderQueue();
-	QueueRenderer(this,true);
+	ClearRenderContainer();
+	GatherRender(this,true);
 }
 
 void Entity::WorkEnableInstancing(cSceneNode* pNode)
@@ -561,19 +558,16 @@ void Entity::WorkEnableInstancing(cSceneNode* pNode)
 	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
 	if (pMesh)
 	{
-		pMesh->SetInstancingEnable(true);
+		pMesh->ChangeInstancingEnable(true);
 	}	
 }
 
-void Entity::SetInstanceEnable( bool enable )
+void Entity::ChangeInstanceEnable( bool enable )
 {
-	for (size_t i=0;i<m_vecChildNode.size();i++)
-	{
-		if (enable)
-			WorkRecursive( WorkEnableInstancing);	
-		else
-			WorkRecursive( WorkDisableInstancing);	
-	}	
+	if (enable)
+		WorkRecursive( WorkEnableInstancing);	
+	else
+		WorkRecursive( WorkDisableInstancing);		
 }
 
 void Entity::WorkDisableInstancing( cSceneNode* pNode )
@@ -581,7 +575,7 @@ void Entity::WorkDisableInstancing( cSceneNode* pNode )
 	cMeshNode* pMesh = dynamic_cast<cMeshNode*>(pNode);
 	if (pMesh)
 	{
-		pMesh->SetInstancingEnable(false);
+		pMesh->ChangeInstancingEnable(false);
 	}	
 }
 

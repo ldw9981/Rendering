@@ -7,9 +7,12 @@
 #include "Graphics/RscTexture.h"
 #include "Scene/MeshNode.h"
 #include "Scene/SkinnedMeshNode.h"
-#include "Graphics/MatrixStreamVertexBuffer.h"
-#include "Graphics/IndexStreamVertexBuffer.h"
-#include "Graphics/BoneStreamTexture.h"
+
+
+#include "Graphics/MatrixTexture.h"
+
+#include "Graphics/Vertex.h"
+#include "Foundation/Trace.h"
 
 namespace Sophia
 {
@@ -26,13 +29,6 @@ cRendererQueue::~cRendererQueue()
 }
 
 
-void cRendererQueue::InsertIntoMeshList( cMeshNode* pItem)
-{
-	m_vecMesh.push_back(pItem);
-}
-
-
-
 static bool GreateDistance(cRendererQueue::MESH_DISTANCE_PAIR& a,cRendererQueue::MESH_DISTANCE_PAIR& b)
 {
 	if ( a.second > b.second)
@@ -41,10 +37,10 @@ static bool GreateDistance(cRendererQueue::MESH_DISTANCE_PAIR& a,cRendererQueue:
 	return false;
 }
 
-void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DXVECTOR3* pCameraWorldPosition )
+void cRendererQueue::GatherRenderAlphaBlend(std::vector<cMeshNode*>& vecMesh , D3DXVECTOR3* pCameraWorldPosition )
 {
-	auto it = renderQueue.m_vecMesh.begin();
-	auto it_end = renderQueue.m_vecMesh.end();
+	auto it = vecMesh.begin();
+	auto it_end = vecMesh.end();
 	D3DXVECTOR3 temp;
 	for ( ; it!=it_end ; ++it )
 	{		
@@ -58,7 +54,6 @@ void cRendererQueue::InsertIntoDistanceOrder( cRendererQueue& renderQueue , D3DX
 
 void cRendererQueue::Clear()
 {
-	m_vecMesh.clear();
 	m_materialOrder.clear();
 	m_sceneOrder.clear();
 	m_distanceOrder.clear();
@@ -111,7 +106,7 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		pEffect->SetTechnique(vecTechnique[i]);
 		pEffect->Begin(&passes, 0);	
 		// MaterialÀû¿ë
-		ChangeMaterial(pMaterial);
+		ChangeMaterial(pMaterial,false);
 
 		pEffect->BeginPass(0);	
 		(*it).first->Render();
@@ -125,7 +120,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	
-	UINT passes = 0;		
+	
 	Material* pPrevMaterial=NULL;
 
 	for ( auto it = m_materialOrder.begin() ; it!=m_materialOrder.end();++it)
@@ -133,10 +128,11 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		Material* pMaterial = it->first;
 		int i = pMaterial->index_renderer_queue();
 		pEffect->SetTechnique(vecTechnique[i]);
-		pEffect->Begin(&passes, 0);	
 
-		ChangeMaterial(pMaterial);
-	
+		ChangeMaterial(pMaterial,false);
+
+		UINT passes = 0;		
+		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
 		std::list<cMeshNode*>& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
@@ -149,7 +145,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::ChangeMaterial(Material* pMaterial )
+void cRendererQueue::ChangeMaterial(Material* pMaterial ,bool textureOpacityOnly)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
@@ -164,41 +160,28 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial )
 	cRscTexture* pRscTexture;
 	pRscTexture = pMaterial->GetMapOpacity();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Opacity",pRscTexture->GetD3DTexture());
+
+	if (textureOpacityOnly)
+		return;
 
 	pRscTexture = pMaterial->GetMapDiffuse();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex0",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Diffuse",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapNormal();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex1",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Normal",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapLight();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex3",pRscTexture->GetD3DTexture());
+		pEffect->SetTexture("Tex_Light",pRscTexture->GetD3DTexture());
 
 	pRscTexture = pMaterial->GetMapSpecular();
 	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Tex2",pRscTexture->GetD3DTexture());	
+		pEffect->SetTexture("Tex_Specular",pRscTexture->GetD3DTexture());	
 }
 
-
-void cRendererQueue::ChangeMaterialForShadow( Material* pMaterial )
-{
-	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, pMaterial->AlphaTestEnable); 	
-	if (pMaterial->AlphaTestEnable)
-	{
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATEREQUAL);
-		Graphics::m_pDevice->SetRenderState(D3DRS_ALPHAREF, (DWORD)pMaterial->AlphaTestRef);
-	}
-
-	cRscTexture* pRscTexture;
-	pRscTexture = pMaterial->GetMapOpacity();
-	if( pRscTexture != NULL )	
-		pEffect->SetTexture("Opacity_Tex",pRscTexture->GetD3DTexture());	
-}
 
 
 void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
@@ -217,10 +200,9 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 		
-		pEffect->Begin(&passes, 0);	
-		
-		ChangeMaterialForShadow(pMaterial);		
+		ChangeMaterial(pMaterial,true);		
 
+		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
 		std::list<cMeshNode*>& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
@@ -233,12 +215,12 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::InsertNotAlphaBlend( cRendererQueue& renderQueue )
+void cRendererQueue::GatherRender(std::vector<cMeshNode*>& vecMesh )
 {
-	size_t size = renderQueue.m_vecMesh.size();
+	size_t size = vecMesh.size();
 	for (size_t i=0;i<size;i++)
 	{
-		cMeshNode* pMesh = renderQueue.m_vecMesh[i];	
+		cMeshNode* pMesh = vecMesh[i];	
 
 		Material* pMaterial = pMesh->GetMaterial();
 		if (pMesh->GetInstancingEnable())
@@ -256,37 +238,14 @@ void cRendererQueue::InsertNotAlphaBlend( cRendererQueue& renderQueue )
 }
 
 
-void cRendererQueue::InsertIntoMaterialOrder( cRendererQueue& renderQueue )
+
+
+void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
-	size_t size = renderQueue.m_vecMesh.size();
-	for (size_t i=0;i<size;i++)
-	{
-		Material* pMaterial = renderQueue.m_vecMesh[i]->GetMaterial();
-
-		std::list<cMeshNode*>& listMesh = m_materialOrder[pMaterial];
-		listMesh.push_back(renderQueue.m_vecMesh[i]);
-	}
-
-}
-
-void cRendererQueue::InsertIntoSceneOrder(cRendererQueue& renderQueue )
-{	
-	for (auto it = renderQueue.m_vecMesh.begin() ; it!= renderQueue.m_vecMesh.end() ; it++)
-	{
-		auto& pMesh = (*it);	
-
-		SCENE_KEY key(pMesh->GetRscVetextBuffer(),pMesh->GetMaterial(),pMesh->GetRscIndexBuffer());
-		std::list<cMeshNode*>& list = m_sceneOrder[key];
-		list.push_back(*it);
-	}
-}
-
-void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vecTechnique )
-{
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
-
-	UINT passes = 0;		
+	
 	
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
@@ -299,284 +258,179 @@ void cRendererQueue::RenderNotAlphaBlendInstancing( std::vector<D3DXHANDLE>& vec
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixStreamVertexBuffer* pMatrixStreamVertexBuffer = pMeshNode->GetMatrixStreamVertexBuffer();
+		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
 
-		if (!pMatrixStreamVertexBuffer->GetValid())
+		if (!pMatrixTexture->GetValid())
 		{
-			D3DXVECTOR3* pVector = (D3DXVECTOR3*) pMatrixStreamVertexBuffer->Lock(
-				nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
+			pMeshNode->UpdateMatrixInstancing(list);					
+			pMatrixTexture->SetValid(true);
+		}
 
-			for (  ; it_sub!=list.end();++it_sub)
-			{
-				pMeshNode = *it_sub;
-				memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
-				memcpy_s(pVector+1,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[1],sizeof(D3DXVECTOR3));
-				memcpy_s(pVector+2,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[2],sizeof(D3DXVECTOR3));		
-				memcpy_s(pVector+3,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[3],sizeof(D3DXVECTOR3));
-				pVector+=4;
-
-				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
-			}
-			pMatrixStreamVertexBuffer->Unlock();		
-		}		
-
-		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
-		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
-		pMatrixStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
-		pMatrixStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-
-		pMeshNode->GetRscIndexBuffer()->SetIndices();
-		
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 		int i = refScene.pMaterial->index_renderer_queue();
-		pEffect->SetTechnique(vecTechnique[i]);	
-		pEffect->Begin(&passes, 0);	
-		ChangeMaterial(refScene.pMaterial);
+		V(pEffect->SetTechnique(vecTechnique[i]));
+		ChangeMaterial(refScene.pMaterial,false);
 
-		pEffect->BeginPass(0);
-		pMeshNode->RenderIsntancing();
-		pEffect->EndPass();
+		pEffect->CommitChanges();		
 		
+		UINT passes;
+		pEffect->Begin(&passes, 0);	
+		pEffect->BeginPass(0);	
+		pMeshNode->RenderInstancing(nCount);
+		pEffect->EndPass();
 		pEffect->End();		
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 
-		pMatrixStreamVertexBuffer->SetValid(false);
+		pMatrixTexture->SetValid(false);
 	}
-
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
-	
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
 void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration);
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
-	UINT passes = 0;			
-
-
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
-	{
+	{	
 		const SCENE_KEY& refScene = it->first;
 		std::list<cMeshNode*>& list = it->second;
-	
+
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
 		auto it_sub = list.begin();
 
 		cMeshNode* pMeshNode = *it_sub;
-		
-		MatrixStreamVertexBuffer* pMatrixStreamVertexBuffer = pMeshNode->GetMatrixStreamVertexBuffer();
-			
-		D3DXVECTOR3* pVector = (D3DXVECTOR3*) pMatrixStreamVertexBuffer->Lock(
-			nCount*sizeof(D3DXVECTOR3)*4,D3DLOCK_DISCARD	);
 
-		for (  ; it_sub!=list.end();++it_sub)
+		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
+		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode = *it_sub;
-			memcpy_s(pVector+0,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[0],sizeof(D3DXVECTOR3));
-			memcpy_s(pVector+1,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[1],sizeof(D3DXVECTOR3));
-			memcpy_s(pVector+2,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[2],sizeof(D3DXVECTOR3));		
-			memcpy_s(pVector+3,sizeof(D3DXVECTOR3),&pMeshNode->m_matWorld.m[3],sizeof(D3DXVECTOR3));
-			pVector+=4;
-
-			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
+			pMeshNode->UpdateMatrixInstancing(list);					
+			pMatrixTexture->SetValid(true);
 		}
-		pMatrixStreamVertexBuffer->Unlock();	
-		pMatrixStreamVertexBuffer->SetValid(true);
 
-		refScene.pVertexBuffer->SetStreamSource(0,D3DXGetDeclVertexSize(declNormalInstance,0));
-		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);		
-		pMatrixStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declNormalInstance,1));
-		pMatrixStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 
-		refScene.pIndexBuffer->SetIndices();
-		
 		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
+
+		ChangeMaterial(refScene.pMaterial,true);	
+		pEffect->CommitChanges();		
+
+		UINT passes;
 		pEffect->Begin(&passes, 0);	
-		ChangeMaterialForShadow(refScene.pMaterial);		
-
 		pEffect->BeginPass(0);	
-		pMeshNode->RenderIsntancing();
+		pMeshNode->RenderInstancing(nCount);
 		pEffect->EndPass();
-		pEffect->End();	
-
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-
-		
+		pEffect->End();		
 	}
-
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
 void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration);
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
-	UINT passes = 0;		
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
-		const SCENE_KEY&	refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;		
+		const SCENE_KEY& refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
 		auto it_sub = list.begin();
-		SkinnedMeshNode* pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
 
-		IndexStreamVertexBuffer* pIndexStreamVertexBuffer = pMeshNode->GetIndexStreamVertexBuffer();
-		BoneStreamTexture* pBoneStreamTexture = pMeshNode->GetBoneStreamTexture();
-		if (!pIndexStreamVertexBuffer->GetValid() || !pBoneStreamTexture->GetValid())
+		cMeshNode* pMeshNode = *it_sub;
+
+		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
+
+		if (!pMatrixTexture->GetValid())
 		{
-			BLENDINSTANCEVERTEX* pVertex = (BLENDINSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(BLENDINSTANCEVERTEX),D3DLOCK_DISCARD	);
-
-			D3DLOCKED_RECT lock;	
-			pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
-			D3DXMATRIX* pMatrix=NULL;
-
-			unsigned int instanceIndex=0;
-			for (  ; it_sub!=list.end();++it_sub)
-			{
-				pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
-				pVertex->instanceIndex = (float)instanceIndex;
-				pVertex++;
-
-				assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-				assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
-
-				pMeshNode->UpdateMatrixPallete();
-				size_t bone_size = pMeshNode->GetArrayBoneRef().size();
-
-				assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
-
-				pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);
-				memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
-				
-
-				instanceIndex++;
-			}
-
-			pBoneStreamTexture->Unlock();
-			pIndexStreamVertexBuffer->Unlock();	
+			pMeshNode->UpdateMatrixInstancing(list);					
+			pMatrixTexture->SetValid(true);
 		}
-		pBoneStreamTexture->SetValid(false);
-		pIndexStreamVertexBuffer->SetValid(false);
 
-		pIndexStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
-		pIndexStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declBlendInstance,0));
-		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
-		refScene.pIndexBuffer->SetIndices();
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 
 		int i = refScene.pMaterial->index_renderer_queue();
-		pEffect->SetTechnique(vecTechnique[i]);	
+		V(pEffect->SetTechnique(vecTechnique[i]));
+		ChangeMaterial(refScene.pMaterial,false);
+		pEffect->CommitChanges();		
+
+		UINT passes;
 		pEffect->Begin(&passes, 0);	
-
-		pEffect->SetTexture("Bone_Tex",pBoneStreamTexture->GetD3DTexture());
-		ChangeMaterial(refScene.pMaterial);
-
-		pEffect->BeginPass(0);
-		pMeshNode->RenderIsntancing();
+		pEffect->BeginPass(0);	
+		pMeshNode->RenderInstancing(nCount);
 		pEffect->EndPass();
-
 		pEffect->End();		
 
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+		pMatrixTexture->SetValid(false);
 	}
-
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
 }
 
 void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
-	Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration);
+	HRESULT hr;
+	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
-	UINT passes = 0;		
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
-		const SCENE_KEY&	refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;		
+		const SCENE_KEY& refScene = it->first;
+		std::list<cMeshNode*>& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
 		auto it_sub = list.begin();
-		SkinnedMeshNode* pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
 
-		IndexStreamVertexBuffer* pIndexStreamVertexBuffer = pMeshNode->GetIndexStreamVertexBuffer();
-		BoneStreamTexture* pBoneStreamTexture = pMeshNode->GetBoneStreamTexture();
+		cMeshNode* pMeshNode = *it_sub;
 
-
-		BLENDINSTANCEVERTEX* pVertex = (BLENDINSTANCEVERTEX*)pIndexStreamVertexBuffer->Lock(nCount*sizeof(BLENDINSTANCEVERTEX),D3DLOCK_DISCARD	);
-		D3DLOCKED_RECT lock;	
-		pBoneStreamTexture->Lock(&lock,D3DLOCK_DISCARD);
-		D3DXMATRIX* pMatrix=NULL;
-
-		unsigned int instanceIndex=0;
-		for (  ; it_sub!=list.end();++it_sub)
+		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
+		if (!pMatrixTexture->GetValid())
 		{
-			pMeshNode = static_cast<SkinnedMeshNode*>(*it_sub);
-			pVertex->instanceIndex = (float)instanceIndex;
-			pVertex++;
-
-			assert(refScene.pVertexBuffer == pMeshNode->GetRscVetextBuffer());
-			assert(refScene.pIndexBuffer == pMeshNode->GetRscIndexBuffer());
-
-			pMeshNode->UpdateMatrixPallete();
-			size_t bone_size = pMeshNode->GetArrayBoneRef().size();
-
-			assert(lock.Pitch >= (INT)(sizeof(D3DXMATRIX)*bone_size));
-
-			pMatrix= (D3DXMATRIX*)((LPBYTE)lock.pBits+instanceIndex*lock.Pitch);			
-			memcpy_s(pMatrix,sizeof(D3DXMATRIX)*bone_size,pMeshNode->GetMatrixPallete(),sizeof(D3DXMATRIX)*bone_size);
-			
-			instanceIndex++;
+			pMeshNode->UpdateMatrixInstancing(list);					
+			pMatrixTexture->SetValid(true);
 		}
-		pBoneStreamTexture->Unlock();
-		pIndexStreamVertexBuffer->Unlock();	
-		pBoneStreamTexture->SetValid(true);
-		pIndexStreamVertexBuffer->SetValid(true);
 
-
-
-		pIndexStreamVertexBuffer->SetStreamSource(1,D3DXGetDeclVertexSize(declBlendInstance,1));
-		pIndexStreamVertexBuffer->SetStreamSourceFreq(1,D3DSTREAMSOURCE_INSTANCEDATA|1);
-		refScene.pVertexBuffer->SetStreamSource(0, D3DXGetDeclVertexSize(declBlendInstance,0));
-		refScene.pVertexBuffer->SetStreamSourceFreq(0,D3DSTREAMSOURCE_INDEXEDDATA | nCount);
-		refScene.pIndexBuffer->SetIndices();
-
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
 		else
 			pEffect->SetTechnique(hTShadowNotAlphaTest );
 
+		ChangeMaterial(refScene.pMaterial,true);
+		pEffect->CommitChanges();		
+
+		UINT passes;
 		pEffect->Begin(&passes, 0);	
-
-		pEffect->SetTexture("Bone_Tex",pBoneStreamTexture->GetD3DTexture());
-		ChangeMaterialForShadow(refScene.pMaterial);		
-
-		pEffect->BeginPass(0);
-		pMeshNode->RenderIsntancing();
+		pEffect->BeginPass(0);	
+		pMeshNode->RenderInstancing(nCount);
 		pEffect->EndPass();
-
 		pEffect->End();		
-
-		Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
-		Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
 	}
-
-	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
+	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
+	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
+	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
 }
+
+
 
 SCENE_KEY::SCENE_KEY()
 {
@@ -611,5 +465,7 @@ bool SCENE_KEY::operator<( const SCENE_KEY& other ) const
 
 	return false;
 }
+
+
 
 }

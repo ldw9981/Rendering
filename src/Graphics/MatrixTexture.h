@@ -4,19 +4,19 @@
 
 namespace Sophia
 {
-class BoneStreamTexture :
+class MatrixTexture :
 	public cRscTexture
 {
 public:
-	BoneStreamTexture(void);
-	virtual ~BoneStreamTexture(void);
+	MatrixTexture(void);
+	virtual ~MatrixTexture(void);
 
 public:
-	UINT		m_size;
-
 	SCENE_KEY	m_key;
 	bool		m_valid;
-
+	DWORD		m_size;
+	DWORD GetSize() const { return m_size; }
+	void SetSize(DWORD val);
 	const Sophia::SCENE_KEY GetKey() const { return m_key; }
 	void SetKey(Sophia::SCENE_KEY& val) { m_key = val; }
 public:
@@ -24,8 +24,7 @@ public:
 
 	bool GetValid() const { return m_valid; }
 	void SetValid(bool val) { m_valid = val; }
-	UINT GetSize() const { return m_size; }
-	void SetSize(UINT val) { m_size = val; m_width=m_size; m_height = m_size;}
+
 };
 
 }

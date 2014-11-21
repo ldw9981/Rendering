@@ -4,9 +4,7 @@
 #include "Vertex.h"
 namespace Sophia
 {
-
-#define INSTANCING_MAX 200
-
+	
 class cGUIFont;
 class cView;
 class World;
@@ -22,9 +20,10 @@ public:
 public:
 	static Graphics* m_pInstance;
 	static LPDIRECT3DDEVICE9	m_pDevice;
-	// D3D 변수추가	
-	D3DVIEWPORT9			m_viewPortInfo;
-	
+
+	int						m_width;
+	int						m_height;
+	// D3D 변수추가		
 	D3DPRESENT_PARAMETERS	m_D3DPP;         // Parameters for CreateDevice/Reset
 	LPDIRECT3D9				m_pD3D9;
 	LPD3DXFONT				m_pFont;
@@ -35,36 +34,36 @@ public:
 	LPDIRECT3DVERTEXDECLARATION9 m_pNormalInstancingVertexDeclaration;
 	LPDIRECT3DVERTEXDECLARATION9 m_pSkinnedInstancingVertexDeclaration;
 	D3DXHANDLE				m_hTLine;
-	D3DXHANDLE				m_hTSkinningPhong;
-	D3DXHANDLE				m_hTSkinningPhongDiffuse;
-	D3DXHANDLE				m_hTSkinningPhongDiffuseInstancing;
+	D3DXHANDLE				m_hTSceneSkinned;
+	D3DXHANDLE				m_hTSceneSkinnedDiffuse;
+	D3DXHANDLE				m_hTSceneSkinnedInstancingDiffuse;
 	D3DXHANDLE				m_hTerrain;
-	D3DXHANDLE				m_hTPhong;
-	D3DXHANDLE				m_hTPhongDiffuse;
-	D3DXHANDLE				m_hTPhongDiffuseLight;
-	D3DXHANDLE				m_hTPhongDiffuseBump;
-	D3DXHANDLE				m_hTPhongDiffuseSpecular;
-	D3DXHANDLE				m_hTPhongDiffuseOpacity;
-	D3DXHANDLE				m_hTPhongDiffuseBumpSpecular;
+	D3DXHANDLE				m_hTSceneNormal;
+	D3DXHANDLE				m_hTSceneNormalDiffuse;
+	D3DXHANDLE				m_hTSceneNormalDiffuseLight;
+	D3DXHANDLE				m_hTSceneNormalDiffuseBump;
+	D3DXHANDLE				m_hTSceneNormalDiffuseSpecular;
+	D3DXHANDLE				m_hTSceneNormalDiffuseOpacity;
+	D3DXHANDLE				m_hTSceneNormalDiffuseBumpSpecular;
 
-	D3DXHANDLE				m_hTPhongDiffuseInstancing;
-	D3DXHANDLE				m_hTPhongDiffuseOpacityInstancing;
-	D3DXHANDLE				m_hTPhongDiffuseLightInstancing;
+	D3DXHANDLE				m_hTSceneNormalInstancingDiffuse;
+	D3DXHANDLE				m_hTSceneNormalInstancingDiffuseOpacity;
+	D3DXHANDLE				m_hTSceneNormalInstancingDiffuseLight;
+	D3DXHANDLE				m_hTNormalVertexTransform;
+	D3DXHANDLE				m_hTSkinnedVertexTransform;
 
 
-	D3DXHANDLE				m_hTShadowNormalNotAlphaTest;	
+	D3DXHANDLE				m_hTShadowNormal;	
 	D3DXHANDLE				m_hTShadowNormalAlphaTest;	
-	D3DXHANDLE				m_hTShadowNormalNotAlphaTestInstancing;	
-	D3DXHANDLE				m_hTShadowNormalAlphaTestInstancing;	
+	D3DXHANDLE				m_hTShadowNormalInstancing;	
+	D3DXHANDLE				m_hTShadowNormalInstancingAlphaTest;	
 	
-	D3DXHANDLE				m_hTShadowSkinnedNotAlphaTest;	
+	D3DXHANDLE				m_hTShadowSkinned;	
 	D3DXHANDLE				m_hTShadowSkinnedAlphaTest;
-	D3DXHANDLE				m_hTShadowSkinnedNotAlphaTestInstancing;	
-	D3DXHANDLE				m_hTShadowSkinnedAlphaTestInstancing;	
+	D3DXHANDLE				m_hTShadowSkinnedInstancing;	
+	D3DXHANDLE				m_hTShadowSkinnedInstancingAlphaTest;	
 
 	D3DXHANDLE				m_hTGUI;
-	LPD3DXEFFECT			m_pApplyShadowShader;
-	LPD3DXEFFECT			m_pCreateShadowShader;
 
 	D3DXHANDLE				m_hmWVP;	// 월드~투영행렬
 	D3DXHANDLE				m_hmProjection;	// 월드~투영행렬
@@ -78,6 +77,7 @@ public:
 
 	D3DXHANDLE				m_hmLightView;
 	D3DXHANDLE				m_hmLightProjection;
+	D3DXHANDLE				m_hfMatrixTextureSize;
 	cGUIFont*					m_pNewFont;
 	std::string m_strHLSL;
 
@@ -94,9 +94,13 @@ public:
 	GUIVERTEX			 g_vertices[4];	
 	D3DCAPS9			m_caps;
 	std::vector<LPDIRECT3DSURFACE9> m_vecRenderTarget;
+	LPDIRECT3DSURFACE9	m_depthStencilSurface;
+
+	std::map<std::string,int>	m_mapInstancingMax;
+	int							m_defaultInstancingMax;
 public:	
 	void SetHLSL(std::string val) { m_strHLSL = val; }
-	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
+//	void SetViewPortInfo(const D3DVIEWPORT9& val) { m_viewPortInfo = val; }
 	bool Init(HWND hWndPresent,bool bWindowed,int width,int height);
 	void Finalize();
 
@@ -117,6 +121,12 @@ public:
 
 	void BackupRenderTarget(unsigned int renderTargetIndex);
 	void RestoreRenderTarget(unsigned int renderTargetIndex);
+
+	void BackupDepthStencilSurface();
+	void RestoreDepthStencilSurface();
+
+	void SetEntityInstancingMax(const char* entityName,int max);
+	int  GetEntityInstancingMax(const char* entityName);
 };
 
 

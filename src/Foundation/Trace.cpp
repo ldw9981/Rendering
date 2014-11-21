@@ -1,9 +1,12 @@
 #include "StdAfx.h"
 #include "Trace.h"
+#include <dxerr.h>
+
 namespace Sophia
 {
 
 HWND g_TraceHWND;
+bool g_TraceShowMsgBox;
 
 void Trace(const char *format, ...)
 {
@@ -63,5 +66,12 @@ void TraceError(const char lpszFunction)
 	}
 
 }
+HRESULT WINAPI DXUTTrace( const CHAR* strFile, DWORD dwLine, HRESULT hr, const CHAR* strMsg, bool bPopMsgBox )
+{
+	bool bShowMsgBoxOnError = g_TraceShowMsgBox;
+	if( bPopMsgBox && bShowMsgBoxOnError == false )
+		bPopMsgBox = false;
 
+	return DXTrace( strFile, dwLine, hr, strMsg, bPopMsgBox );
+}
 }

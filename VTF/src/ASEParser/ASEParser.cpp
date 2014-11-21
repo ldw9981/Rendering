@@ -268,7 +268,7 @@ BOOL cASEParser::Load( const char* strFileName ,Entity* pOutput)
 				}
 				catch (std::string*  str)
 				{
-					ASSERT(bResult==TRUE);
+					OutputDebugString(str->c_str());
 				}		
 				m_CNTOBJECT++;
 
@@ -1349,7 +1349,7 @@ BOOL cASEParser::Parsing_Group()
 				}
 				catch (std::string*  str)
 				{
-					ASSERT(bResult==TRUE);
+					OutputDebugString(str->c_str());
 				}				
 				m_CNTOBJECT++;
 

@@ -13,8 +13,11 @@ namespace Sophia
 class MatrixStreamVertexBuffer;
 class cMeshNode;
 class cView;
-
-
+class VertexTexture;
+class VertexInstancingBuffer;
+class MatrixTexture;
+class IndexInstancingBuffer;
+class InstanceDataBuffer;
 class cMeshNode:
 	public cSceneNode
 {
@@ -31,7 +34,9 @@ protected:
 	Material*				m_pMaterial;
 	bool					m_bInstancingEnable;
 
-	MatrixStreamVertexBuffer*	m_pMatrixStreamVertexBuffer;
+	MatrixTexture*			m_pMatrixInstancingTexture;		// world Matrix
+	InstanceDataBuffer*			m_pInstanceDataBuffer;
+
 
 public:
 	virtual void			Render();
@@ -40,14 +45,7 @@ public:
 
 	void					SetRscIndexBuffer(cRscIndexBuffer* val);
 	void					SetRscVertextBuffer(cRscVertexBuffer* val);
-	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
-
-	void					CalculateTangentBinormal();
-	void                    CalculateVector(const D3DXVECTOR3& vertex1,const D3DXVECTOR3& vertex2,const D3DXVECTOR3& vertex3,
-		const TEXCOORD& t1,const TEXCOORD& t2,const TEXCOORD& t3,
-		D3DXVECTOR3& tangent1,D3DXVECTOR3& tangent2,D3DXVECTOR3& tangent3,
-		D3DXVECTOR3& binormal1,D3DXVECTOR3& binormal2,D3DXVECTOR3& binormal3);
-
+	virtual void			GatherRender(Entity* pEntity,bool bTraversal);
 	virtual void			Release();
 
 	// ISerialize
@@ -70,13 +68,16 @@ public:
 	unsigned char GetMaterialSubIndex() const { return m_materialSubIndex; }
 	void SetMaterialSubIndex(unsigned char val) { m_materialSubIndex = val; }
 
-	void RenderIsntancing();
+	virtual void RenderInstancing(int instanceSize );
+
+	virtual void UpdateMatrixInstancing(std::list<cMeshNode*>& list);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }
 	bool GetInstancingEnable() const { return m_bInstancingEnable; }
-	void SetInstancingEnable(bool val);
-	MatrixStreamVertexBuffer* GetMatrixStreamVertexBuffer() const { return m_pMatrixStreamVertexBuffer; }
+	void ChangeInstancingEnable(bool val);
+	MatrixTexture*			GetMatrixInstancingTexture() const { return m_pMatrixInstancingTexture; }
+	InstanceDataBuffer* GetInstanceDataBuffer() const { return m_pInstanceDataBuffer; }
 protected:
 	virtual void CreateInstancingResource();
 	virtual void ReleaseInstancingResource();

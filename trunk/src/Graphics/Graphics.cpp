@@ -8,6 +8,7 @@
 #include "Vertex.h"
 #include "MaterialEx.h"
 #include "World.h"
+#include "Foundation/Trace.h"
 
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)							// 시야각
@@ -18,29 +19,21 @@
 #define T_SIZE 256
 
 #define SHADOWMAP_SIZE 4096
-#define SET_TEXTURE_NULL 
+//#define SET_TEXTURE_NULL 
+
+
+// #define DEBUG_VS
+// #define DEBUG_PS
+
 
 namespace Sophia
 {
-
-
-
-
-
 Graphics*	Graphics::m_pInstance = NULL;
 LPDIRECT3DDEVICE9 Graphics::m_pDevice;
 Graphics::Graphics(void)
 {
 	m_pInstance = this;
-	m_viewPortInfo.X = 0;
-	m_viewPortInfo.Y = 0;
-	m_viewPortInfo.Width = 1024;
-	m_viewPortInfo.Height = 768;	
-	m_viewPortInfo.MinZ = 0.0f;
-	m_viewPortInfo.MaxZ = 1.0f;
-
 	m_bDebugBound = false;
-
 	m_nTechniqueSize = (int)pow(2.0f,Material::MAX);
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
@@ -49,6 +42,7 @@ Graphics::Graphics(void)
 		m_vecTechniqueNormalInstancing.push_back(NULL);
 		m_vecTechniqueSkinnedInstancing.push_back(NULL);
 	}
+	m_defaultInstancingMax = 128;
 }
 
 Graphics::~Graphics(void)
@@ -87,58 +81,57 @@ void Graphics::SetPos( UINT x,UINT y )
 
 bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 {
-	m_viewPortInfo.Width = width;
-	m_viewPortInfo.Height = height;	
+	HRESULT hr;
+	m_width = width;
+	m_height = height;	
 	m_hWndPresent = hWndPresent;
 	char szTemp[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH,szTemp);
-
-	// 1) D3D를 생성한다.
+		
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
+	V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
+	
+	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
-
-	// 2) Device를 생성을 위한 Parameter를 설정한다.
 	memset(&m_D3DPP,0,sizeof(m_D3DPP));
 	if(bWindowed)
 	{
 		m_D3DPP.Windowed	 = true;
-		m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;
+		m_D3DPP.BackBufferFormat	 = D3DFMT_UNKNOWN;	// 현재의 디스플레이 모드 포맷을 사용
 	}
 	else
 	{
 		m_D3DPP.Windowed	 = false;
 		m_D3DPP.BackBufferFormat = D3DFMT_X8R8G8B8;    // set the back buffer format to 32-bit
-		m_D3DPP.BackBufferWidth = m_viewPortInfo.Width;    // set the width of the buffer
-		m_D3DPP.BackBufferHeight = m_viewPortInfo.Height;    // set the height of the buffer
 	}
-	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; 
-	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD;
-
+	m_D3DPP.hDeviceWindow = hWndPresent;
+	m_D3DPP.BackBufferWidth = m_width;    // set the width of the buffer
+	m_D3DPP.BackBufferHeight = m_height;    // set the height of the buffer
+	m_D3DPP.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE; // dx가 모니터 수직동기화를 하지않음, 동기타임이 될때까지 기다리지않는다.
+	m_D3DPP.SwapEffect	 = D3DSWAPEFFECT_DISCARD ;	//백버퍼의 내용이 변경되어도상관없다 
+	m_D3DPP.Flags = D3DPRESENTFLAG_DISCARD_DEPTHSTENCIL; 
+	// 플래그를 설정 하면,IDirect3DDevice9::Present 또는 다른 깊이 표면에서의 IDirect3DDevice9::SetDepthStencilSurface 의 호출 후, 스텐실 버퍼의 내용은 무효가 된다. 
+	//z 버퍼 데이터의 파기는, 퍼포먼스를 향상시킬 수가 있어 드라이버에 의존한다
 
 	// Zbuffer사용
 	m_D3DPP.EnableAutoDepthStencil	= TRUE;		
 	m_D3DPP.AutoDepthStencilFormat	= D3DFMT_D16;
 
-
-	// 3) Device를 생성한다.
-
-	HRESULT hr= m_pD3D9->CreateDevice( 
+	V( m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
 		hWndPresent,
-		D3DCREATE_SOFTWARE_VERTEXPROCESSING,		
+		D3DCREATE_HARDWARE_VERTEXPROCESSING,		
 		&m_D3DPP, 
-		&m_pDevice );
+		&m_pDevice ));
 
 
 	if( FAILED( hr ) )
 		MessageBox(NULL,"Call to CreateDevice failed!", "ERROR",MB_OK|MB_ICONEXCLAMATION);
 
-	m_pDevice->GetDeviceCaps(&m_caps);
-	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
-	m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE);
-	
+
+	V(m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));	
 
 	m_pNewFont = new cGUIFont();	
 
@@ -155,13 +148,17 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 void Graphics::Finalize()
 {
+	
+
 	SAFE_RELEASE(m_pNormalVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedVertexDeclaration)
 	SAFE_RELEASE(m_pNormalInstancingVertexDeclaration);
 	SAFE_RELEASE(m_pSkinnedInstancingVertexDeclaration);
-	SAFE_DELETE(m_pNewFont);	
+	SAFE_DELETE(m_pNewFont);
+	SAFE_RELEASE(m_pEffect);
 	SAFE_RELEASE(m_pDevice);
 	SAFE_RELEASE(m_pD3D9);
+
 }
 
 
@@ -171,21 +168,51 @@ void Graphics::RenderDebugString(int x,int y,const char* szText)
 }
 
 void Graphics::LoadHLSL(const char* szFileName)
-{
-	if (!szFileName)
-	{
-		return;
-	}
+{	
+	assert(szFileName!=NULL);
+	// Define DEBUG_VS and/or DEBUG_PS to debug vertex and/or pixel shaders with the 
+	// shader debugger. Debugging vertex shaders requires either REF or software vertex 
+	// processing, and debugging pixel shaders requires REF.  The 
+	// D3DXSHADER_FORCE_*_SOFTWARE_NOOPT flag improves the debug experience in the 
+	// shader debugger.  It enables source level debugging, prevents instruction 
+	// reordering, prevents dead code elimination, and forces the compiler to compile 
+	// against the next higher available software target, which ensures that the 
+	// unoptimized shaders do not exceed the shader model limitations.  Setting these 
+	// flags will cause slower rendering since the shaders will be unoptimized and 
+	// forced into software.  See the DirectX documentation for more information about 
+	// using the shader debugger.
+	DWORD dwShaderFlags = D3DXFX_NOT_CLONEABLE;
+
+#if defined( DEBUG ) || defined( _DEBUG )
+	// Set the D3DXSHADER_DEBUG flag to embed debug information in the shaders.
+	// Setting this flag improves the shader debugging experience, but still allows 
+	// the shaders to be optimized and to run exactly the way they will run in 
+	// the release configuration of this program.
+	dwShaderFlags |= D3DXSHADER_DEBUG;
+	dwShaderFlags |= D3DXSHADER_SKIPOPTIMIZATION;
+#endif
+
+#ifdef DEBUG_VS
+	dwShaderFlags |= D3DXSHADER_FORCE_VS_SOFTWARE_NOOPT;
+#endif
+#ifdef DEBUG_PS
+	dwShaderFlags |= D3DXSHADER_FORCE_PS_SOFTWARE_NOOPT;
+#endif
+#ifdef D3DXFX_LARGEADDRESS_HANDLE
+	dwShaderFlags |= D3DXFX_LARGEADDRESSAWARE;
+#endif
 
 	HRESULT hr;
 	LPD3DXBUFFER pErr=NULL;
-	if( FAILED( hr = D3DXCreateEffectFromFile(m_pDevice, szFileName, NULL, NULL,D3DXSHADER_DEBUG | D3DXSHADER_SKIPOPTIMIZATION , NULL, &m_pEffect, &pErr )))
+	if( FAILED( hr = D3DXCreateEffectFromFile(m_pDevice, szFileName, NULL,NULL, dwShaderFlags  , NULL, &m_pEffect, &pErr )))
 	{
 		MessageBox( NULL, (LPCTSTR)pErr->GetBufferPointer(), "ERROR", MB_OK);
 		DXTrace(__FILE__, __LINE__, hr, _T("Error"), TRUE);
+		__debugbreak();
 		return;
 	}
 
+	
 	D3DXEFFECT_DESC desc;
 	hr = m_pEffect->GetDesc(&desc);
 
@@ -198,35 +225,37 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
+	m_hfMatrixTextureSize = m_pEffect->GetParameterByName( NULL, "gMatrixTextureSize" );
 
+	
 
-	m_hTLine =								m_pEffect->GetTechniqueByName( _T("TLine") );
-	m_hTerrain =							m_pEffect->GetTechniqueByName( _T("TTerrain") );
-	m_hTPhong =								m_pEffect->GetTechniqueByName( _T("TPhong") );
-	m_hTPhongDiffuse =						m_pEffect->GetTechniqueByName( _T("TPhongDiffuse") );
-	m_hTPhongDiffuseLight =					m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLight") );	
-	m_hTPhongDiffuseBump =					m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBump") );
-	m_hTPhongDiffuseOpacity =				m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacity") );
-	m_hTPhongDiffuseSpecular =				m_pEffect->GetTechniqueByName( _T("TPhongDiffuseSpecular") );
-	m_hTPhongDiffuseBumpSpecular =			m_pEffect->GetTechniqueByName( _T("TPhongDiffuseBumpSpecular") );
+	m_hTLine								=m_pEffect->GetTechniqueByName( _T("TLine") );
+	m_hTerrain								=m_pEffect->GetTechniqueByName( _T("TTerrain") );
+	m_hTSceneNormal 						=m_pEffect->GetTechniqueByName( _T("TSceneNormal") );
+	m_hTSceneNormalDiffuse 					=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuse") );
+	m_hTSceneNormalDiffuseLight				=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseLight") );	
+	m_hTSceneNormalDiffuseBump				=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseBump") );
+	m_hTSceneNormalDiffuseOpacity			=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseOpacity") );
+	m_hTSceneNormalDiffuseSpecular			=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseSpecular") );
+	m_hTSceneNormalDiffuseBumpSpecular		=m_pEffect->GetTechniqueByName( _T("TSceneNormalDiffuseBumpSpecular") );
 
-	m_hTPhongDiffuseInstancing =			m_pEffect->GetTechniqueByName( _T("TPhongDiffuseInstancing") );
-	m_hTPhongDiffuseOpacityInstancing =		m_pEffect->GetTechniqueByName( _T("TPhongDiffuseOpacityInstancing") );
-	m_hTPhongDiffuseLightInstancing =		m_pEffect->GetTechniqueByName( _T("TPhongDiffuseLightInstancing") );
+	m_hTSceneNormalInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuse") );
+	m_hTSceneNormalInstancingDiffuseOpacity =m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuseOpacity") );
+	m_hTSceneNormalInstancingDiffuseLight	=m_pEffect->GetTechniqueByName( _T("TSceneNormalInstancingDiffuseLight") );
 
-	m_hTSkinningPhong =						m_pEffect->GetTechniqueByName( _T("TSkinningPhong") );	
-	m_hTSkinningPhongDiffuse =				m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuse") );	
-	m_hTSkinningPhongDiffuseInstancing =	m_pEffect->GetTechniqueByName( _T("TSkinningPhongDiffuseInstancing") );
+	m_hTSceneSkinned						=m_pEffect->GetTechniqueByName( _T("TSceneSkinned") );	
+	m_hTSceneSkinnedDiffuse					=m_pEffect->GetTechniqueByName( _T("TSceneSkinnedDiffuse") );	
+	m_hTSceneSkinnedInstancingDiffuse		=m_pEffect->GetTechniqueByName( _T("TSceneSkinnedInstancingDiffuse") );
 
-	m_hTShadowNormalNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTest") );
-	m_hTShadowNormalAlphaTest =				m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTest") );
-	m_hTShadowNormalNotAlphaTestInstancing=	m_pEffect->GetTechniqueByName( _T("TShadowNormalNotAlphaTestInstancing") );
-	m_hTShadowNormalAlphaTestInstancing =	m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTestInstancing") );
+	m_hTShadowNormal						=m_pEffect->GetTechniqueByName( _T("TShadowNormal") );
+	m_hTShadowNormalAlphaTest				=m_pEffect->GetTechniqueByName( _T("TShadowNormalAlphaTest") );
+	m_hTShadowNormalInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowNormalInstancing") );
+	m_hTShadowNormalInstancingAlphaTest		=m_pEffect->GetTechniqueByName( _T("TShadowNormalInstancingAlphaTest") );
 
-	m_hTShadowSkinnedNotAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTest") );	
-	m_hTShadowSkinnedAlphaTest =			m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTest") );
-	m_hTShadowSkinnedNotAlphaTestInstancing=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedNotAlphaTestInstancing") );	
-	m_hTShadowSkinnedAlphaTestInstancing=	m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTestInstancing") );
+	m_hTShadowSkinned						=m_pEffect->GetTechniqueByName( _T("TShadowSkinned") );	
+	m_hTShadowSkinnedAlphaTest				=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedAlphaTest") );
+	m_hTShadowSkinnedInstancing				=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedInstancing") );	
+	m_hTShadowSkinnedInstancingAlphaTest	=m_pEffect->GetTechniqueByName( _T("TShadowSkinnedInstancingAlphaTest") );
 
 	m_hTGUI = m_pEffect->GetTechniqueByName( _T("TGUI") );
 
@@ -238,107 +267,108 @@ void Graphics::LoadHLSL(const char* szFileName)
 
 	std::bitset<Material::MAX> indexRenderQueue;
 
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhong;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormal;
 
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuse;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuse;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::NORMAL);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBump;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuseBump;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::LIGHT);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLight;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuseLight;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::OPACITY);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacity;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuseOpacity;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::SPECULAR);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseSpecular;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuseSpecular;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::NORMAL);
 	indexRenderQueue.set(Material::SPECULAR);
-	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseBumpSpecular;
+	m_vecTechniqueNormal[indexRenderQueue.to_ulong()] = m_hTSceneNormalDiffuseBumpSpecular;
 
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
 		if (m_vecTechniqueNormal[i] == NULL )	
-			m_vecTechniqueNormal[i] = m_hTPhongDiffuse;
+			m_vecTechniqueNormal[i] = m_hTSceneNormalDiffuse;
 	}
 
 	indexRenderQueue = 0;
-	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhong;
+	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSceneSkinned;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuse;
+	m_vecTechniqueSkinned[indexRenderQueue.to_ulong()] = m_hTSceneSkinnedDiffuse;
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
 		if (m_vecTechniqueSkinned[i] == NULL )	
-			m_vecTechniqueSkinned[i] = m_hTSkinningPhongDiffuse;
+			m_vecTechniqueSkinned[i] = m_hTSceneSkinnedDiffuse;
 	}
 
 
 	// m_vecTechniqueNormalInstancing
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseInstancing;
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTSceneNormalInstancingDiffuse;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::OPACITY);
-	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacityInstancing;
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTSceneNormalInstancingDiffuseOpacity;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::LIGHT);
-	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLightInstancing;
+	m_vecTechniqueNormalInstancing[indexRenderQueue.to_ulong()] = m_hTSceneNormalInstancingDiffuseLight;
 	
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
 		if (m_vecTechniqueNormalInstancing[i] == NULL )	
-			m_vecTechniqueNormalInstancing[i] = m_hTPhongDiffuseInstancing;
+			m_vecTechniqueNormalInstancing[i] = m_hTSceneNormalInstancingDiffuse;
 	}
 
 	// m_vecTechniqueSkinnedInstancing
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
-	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTSkinningPhongDiffuseInstancing;
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTSceneSkinnedInstancingDiffuse;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::OPACITY);
-	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseOpacityInstancing;
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTSceneNormalInstancingDiffuseOpacity;
 
 	indexRenderQueue = 0;
 	indexRenderQueue.set(Material::DIFFUSE);
 	indexRenderQueue.set(Material::LIGHT);
-	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTPhongDiffuseLightInstancing;
+	m_vecTechniqueSkinnedInstancing[indexRenderQueue.to_ulong()] = m_hTSceneNormalInstancingDiffuseLight;
 
 
 	for (int i=0;i<m_nTechniqueSize;i++)
 	{	
 		if (m_vecTechniqueSkinnedInstancing[i] == NULL )	
-			m_vecTechniqueSkinnedInstancing[i] = m_hTPhongDiffuseInstancing;
+			m_vecTechniqueSkinnedInstancing[i] = m_hTSceneNormalInstancingDiffuse;
 	}
+	
+
 }
 
 
 void Graphics::Begin()
 {
-	m_pDevice->SetViewport(&m_viewPortInfo);
 	m_pDevice->Clear( 0, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, D3DCOLOR_XRGB(0,0,255), 1.0f, 0 );
 	m_pDevice->BeginScene();	
 #ifdef SET_TEXTURE_NULL
@@ -370,15 +400,47 @@ void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
 
 void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
 {
-	m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]);
+	HRESULT hr;
+	V( m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]) );
 }
 
 void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
 {
-	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
+	if (m_vecRenderTarget[renderTargetIndex] == NULL)
+		return;
 
+	m_pDevice->SetRenderTarget(renderTargetIndex,m_vecRenderTarget[renderTargetIndex]);
 	m_vecRenderTarget[renderTargetIndex]->Release();
 	m_vecRenderTarget[renderTargetIndex] = NULL;
+}
+
+void Graphics::BackupDepthStencilSurface()
+{
+	HRESULT hr;
+	V( Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface) );	
+}
+
+void Graphics::RestoreDepthStencilSurface()
+{
+	Graphics::m_pDevice->SetDepthStencilSurface(m_depthStencilSurface);	
+	m_depthStencilSurface->Release();
+	m_depthStencilSurface = NULL;
+}
+
+void Graphics::SetEntityInstancingMax( const char* entityName,int max )
+{
+	auto ret = m_mapInstancingMax.find(std::string(entityName));
+	m_mapInstancingMax[std::string(entityName)] = max;
+}
+
+int Graphics::GetEntityInstancingMax( const char* entityName )
+{
+	auto ret = m_mapInstancingMax.find(std::string(entityName));
+	if (ret != m_mapInstancingMax.end())
+	{
+		return (*ret).second;
+	}
+	return m_defaultInstancingMax;
 }
 
 }

@@ -113,7 +113,7 @@ public:
 	virtual void		SerializeIn(std::ifstream& stream);
 	virtual void		SerializeOut(std::ofstream& stream);
 
-	virtual void		QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void		GatherRender(Entity* pEntity,bool bTraversal);
 	virtual void		Release();	
 
 	cSceneNode*		CreateNode(SCENETYPE type);

@@ -55,6 +55,6 @@ System::Void AssetViewer::MaterialPropertyForm::propertyGrid1_PropertyValueChang
 	{
 		propertyData->Write(pMaterial);
 
-		pMesh->GetRootNode()->ResetRenderQueue();
+		pMesh->GetRootNode()->ResetRenderContainer();
 	}
 }

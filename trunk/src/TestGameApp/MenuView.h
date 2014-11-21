@@ -3,8 +3,8 @@
 #include "Scene/CameraNode.h"
 #include "Scene/ZTerrain.h"
 
-#define STRESS 128
-
+#define STRESS_NORMAL 256
+#define STRESS_SKINNED 256
 
 class cGUIButton;
 class cObjTank;
@@ -23,8 +23,12 @@ private:
 	BOOL		m_bControlCamera;
 	Sophia::Entity*			m_pDragon;
 	Sophia::Entity*			m_pAirPlaneBake;
-	Sophia::Entity*			m_pHouse[STRESS];
-	bool		m_instancing;
+	Sophia::Entity*			m_pHouse[STRESS_NORMAL];
+	Sophia::Entity*			m_pSkinned[STRESS_SKINNED];
+	bool		m_instancingNormal;
+	bool		m_instancingSkinned;
+	bool		m_showNormal;
+	bool		m_showSkinned;
 public:	
 	virtual void Enter();
 	virtual void Leave();

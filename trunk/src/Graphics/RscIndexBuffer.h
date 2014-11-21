@@ -7,15 +7,20 @@ namespace Sophia
 {
 
 
-struct TRIANGLE
+struct TRIANGLE_INDEX16
 {
 	WORD index[3];	
+};
+
+struct TRIANGLE_INDEX32
+{
+	DWORD index[3];	
 };
 
 
 struct TRIANGLE_SUBMATERIAL 
 {
-	TRIANGLE	triangle;
+	TRIANGLE_INDEX16	triangle;
 	WORD		subMaterialIndex;
 	
 	static BOOL LessFaceIndex(TRIANGLE_SUBMATERIAL a,TRIANGLE_SUBMATERIAL b)
@@ -37,12 +42,13 @@ public:
 	cRscIndexBuffer(void);
 	virtual ~cRscIndexBuffer(void);
 
-private:
+protected:
 	LPDIRECT3DINDEXBUFFER9					m_pD3DIndexBuffer;				// D3D  Memory POOL
 	DWORD									m_BufferSize;	
 	D3DPOOL									m_Type;
 	DWORD									m_usage;
-	int										m_nCount;
+	int										m_triangleCount;
+	D3DFORMAT								m_format;
 public:
 	// cResource
 
@@ -56,13 +62,13 @@ public:
 
 	DWORD					GetBufferSize() const { return m_BufferSize; }
 	void					SetBufferSize(DWORD val) { m_BufferSize = val; }
-	void*					Lock(UINT OffsetToLock,UINT SizeToLock,DWORD Flags);
+	void*					Lock(UINT SizeToLock,DWORD Flags);
 	void					Unlock();
 	void					SetIndices();
 	D3DPOOL					GetType() const { return m_Type; }
 	void					SetType(D3DPOOL val) { m_Type = val; }
-	int GetCount() const { return m_nCount; }
-	void SetCount(int val) { m_nCount = val; }
+	int GetTriangleCount() const { return m_triangleCount; }
+	void SetTriangleCount(int val) { m_triangleCount = val; }
 };
 
 }

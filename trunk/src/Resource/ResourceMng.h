@@ -15,9 +15,11 @@ class cResourceMng;
 class EntityAnimation;
 class EntityMaterial;
 class Material;
-class MatrixStreamVertexBuffer;
-class IndexStreamVertexBuffer;
-class BoneStreamTexture;
+class IndexInstancingBuffer;
+class MatrixTexture;
+class VertexTexture;
+class VertexInstancingBuffer;
+class InstanceDataBuffer;
 
 class cResourceMng:
 	private cStaticRestoreList
@@ -32,10 +34,14 @@ private:
 	std::map<std::string,cResource*>					m_contVertexBuffer;
 	std::map<std::string,cResource*>					m_contEntityAnimation;
 	std::map<std::string,cResource*>					m_contEntityMaterial;
-	std::map<SCENE_KEY,cResource*>						m_contMatrixStreamVertexBuffer;
-	std::map<SCENE_KEY,cResource*>						m_contIndexStreamVertexBuffer;
-	std::map<SCENE_KEY,cResource*>						m_contBoneStreamTexture;
+	std::map<SCENE_KEY,cResource*>						m_contMatrixTexture;
+	std::map<SCENE_KEY,cResource*>						m_contVertexTexture;
+	std::map<cRscVertexBuffer*,cResource*>						m_contInstanceDataBuffer;
+
+	std::map<cRscIndexBuffer*,cResource*>						m_contIndexInstancingBuffer;
+	std::map<cRscVertexBuffer*,cResource*>						m_contVertexInstancingBuffer;
 public:		
+	int					GetCount();
 	BOOL				InsertResource(cResource* in);
 	void				EraseResource(const std::string& strKey);	
 
@@ -44,11 +50,11 @@ public:
 	void				EraseRscTexture(const std::string& strKey);	
 
 	void				GetKeyVertexBuffer(std::string& key, const char* rootName,const char* meshName );
-	cRscVertexBuffer*	CreateRscVertexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscVertexBuffer*	CreateRscVertexBuffer(std::string& strKey,DWORD bufferSize);
 	void				EraseRscVertexBuffer( const std::string& strKey );
 
 	void				GetKeyIndexBuffer(std::string& key, const char* rootName, const char* meshName );
-	cRscIndexBuffer*	CreateRscIndexBuffer(const char* rootName,const char* meshName,DWORD bufferSize,D3DPOOL type=D3DPOOL_MANAGED);
+	cRscIndexBuffer*	CreateRscIndexBuffer(std::string& strKey,DWORD bufferSize);
 	void				EraseRscIndexBuffer( const std::string& strKey );
 
 	void				GetKeyEntityAnimation(std::string& key,const  char* filePath );
@@ -63,16 +69,23 @@ public:
 	EntityMaterial*		CreateEntityMaterial(const char* filePath);
 	void				EraseEntityMaterial(const std::string& strKey);	
 	
-	MatrixStreamVertexBuffer*	CreateMatrixStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseMatrixStreamVertexBuffer(SCENE_KEY& key);
 
-	IndexStreamVertexBuffer*	CreateIndexStreamVertexBuffer(SCENE_KEY& key);
-	void				EraseIndexStreamVertexBuffer(SCENE_KEY& key);
+	IndexInstancingBuffer*	CreateIndexInstancingBuffer(cRscIndexBuffer* key,DWORD buffersize,DWORD count);
+	void				EraseIndexInstancingBuffer(cRscIndexBuffer* key);
 
-	BoneStreamTexture*	CreateBoneStreamTexture(SCENE_KEY& key);
-	void				EraseBoneStreamTexture(SCENE_KEY& key);
+	MatrixTexture*		CreateMatrixTexture(SCENE_KEY& key,DWORD size);
+	void				EraseMatrixTexture(SCENE_KEY& key);
 
-	int					GetCount();
+// 	VertexTexture*		CreateVertexTexture(SCENE_KEY& key,DWORD size);
+// 	void				EraseVertexTexture(SCENE_KEY& key);
+
+	VertexInstancingBuffer*	CreateVertexInstancingBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
+	void				EraseVertexInstancingBuffer(cRscVertexBuffer* pKey);
+
+	InstanceDataBuffer*	CreateInstanceDataBuffer(cRscVertexBuffer* pKey,DWORD buffersize ,DWORD count);
+	void				EraseInstanceDataBuffer(cRscVertexBuffer* pKey);
+
+
 };
 
 }

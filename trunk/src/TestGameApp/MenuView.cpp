@@ -19,18 +19,26 @@ cMenuView::cMenuView(void)
 {
 	
 	m_bControlCamera=FALSE;
-	m_instancing = true;
+
+	m_instancingNormal = true;
+	m_instancingSkinned = true;
 	m_pZTerrain=NULL;
 	
 	m_pTank=NULL;
 	m_pAirPlaneBake=NULL;
 	m_pDragon=NULL;
 
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		m_pHouse[i] = NULL;
 	}
+	for (int i=0;i<STRESS_SKINNED;i++)
+	{
+		m_pSkinned[i]=NULL;
+	}
 	m_graphicWorld.SetViewPortInfo(0,0,1024,768);
+	m_showNormal = true;
+	m_showSkinned = true;
 }
 
 cMenuView::~cMenuView(void)
@@ -78,34 +86,27 @@ void cMenuView::Enter()
 	*/
 
 	
-/*
+
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
-	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
+	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"Dragon.ase").c_str());
 	m_pAirPlaneBake->Build();
 	
 	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
-	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));*/
+	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	
+	Graphics::m_pInstance->SetEntityInstancingMax("leaf",1024);
+	Graphics::m_pInstance->SetEntityInstancingMax("Dragon",1024);
 	
-	
-	for (int i=0;i<STRESS;i++)
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		m_pHouse[i] = m_graphicWorld.CreateEntity();
-		if (i%2 == 0)
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
-		}
-		else
-		{
-			m_pHouse[i]->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
-			m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
-			m_pHouse[i]->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
-		}		
+		m_pHouse[i]->LoadScene(std::string(strDataPath+"leaf.scene").c_str());
+		m_pHouse[i]->LoadAnimationSet(std::string(strDataPath+"leaf.aniset").c_str());
+		m_pHouse[i]->LoadMaterial(std::string(strDataPath+"leaf.material").c_str());
+	
 
 		m_pHouse[i]->Build();
-		m_pHouse[i]->SetInstanceEnable(m_instancing);
+		m_pHouse[i]->ChangeInstanceEnable(m_instancingNormal);
 		m_pHouse[i]->PlayBaseAnimation(0,true);
 		
 		D3DXVECTOR3 pos;
@@ -113,25 +114,45 @@ void cMenuView::Enter()
 		pos.z = i/10 *200.0f - 400.0f;
 
 		pos.y =  100;
-		m_pHouse[i]->SetLocalPos(pos);
-		
+		m_pHouse[i]->SetLocalPos(pos);		
 	}
 	
 	
+	for (int i=0;i<STRESS_SKINNED;i++)
+	{
+		m_pSkinned[i] = m_graphicWorld.CreateEntity();		
+		m_pSkinned[i]->LoadScene(std::string(strDataPath+"Dragon.scene").c_str());
+		m_pSkinned[i]->LoadAnimationSet(std::string(strDataPath+"Dragon.aniset").c_str());
+		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"Dragon.material").c_str());
 	
+		m_pSkinned[i]->Build();
+		m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);
+		m_pSkinned[i]->PlayBaseAnimation(0,true);
+
+		D3DXVECTOR3 pos;
+		pos.x = i% 10 *200.0f - 1000.0f;		
+		pos.z = i/10 *200.0f - 400.0f;
+
+		pos.y =  100;
+		m_pSkinned[i]->SetLocalPos(pos);		
+	}
 
 }
 
 void cMenuView::Leave()
 {
 	//m_graphicWorld.DeleteTerrain(m_pZTerrain);
-
-
-
-	for (int i=0;i<STRESS;i++)
+	
+	for (int i=0;i<STRESS_NORMAL;i++)
 	{
 		if (m_pHouse[i])
 			m_graphicWorld.DeleteEntity(m_pHouse[i]);
+	}
+
+	for (int i=0;i<STRESS_SKINNED;i++)
+	{
+		if (m_pSkinned[i])
+			m_graphicWorld.DeleteEntity(m_pSkinned[i]);
 	}
 	
 	if (m_pTank)
@@ -211,30 +232,57 @@ void cMenuView::Control()
 	}
 
 
-	if (g_pInput->IsTurnDn(DIK_F11))
+	if (g_pInput->IsTurnDn(DIK_F4))
 	{
-		m_instancing = !m_instancing;
-		for (int i=0;i<STRESS;i++)
-		{
-			
-			m_pHouse[i]->SetInstanceEnable(m_instancing);
-			m_pHouse[i]->ResetRenderQueue();
+		m_graphicWorld.m_bEnableShadow = !m_graphicWorld.m_bEnableShadow;
+	}
 
-		}
-	}	
 	if (g_pInput->IsTurnDn(DIK_F5))
 	{
-		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,200.0f,-1000.0f));	
-	}
-	
+		m_instancingNormal = !m_instancingNormal;
+		for (int i=0;i<STRESS_NORMAL;i++)
+		{
+			if (m_pHouse[i])
+			{
+				m_pHouse[i]->ChangeInstanceEnable(m_instancingNormal);				
+			}
+		}
+	}	
 
 	if (g_pInput->IsTurnDn(DIK_F6))
 	{
-		//Graphics::m_pInstance->m_bDebugBound = !Graphics::m_pInstance->m_bDebugBound;
-		m_graphicWorld.m_camera.SetLocalPos(D3DXVECTOR3(0.0f,-2200.0f,-1000.0f));	
+		m_instancingSkinned = !m_instancingSkinned;
+		for (int i=0;i<STRESS_SKINNED;i++)
+		{
+			if (m_pSkinned[i])
+			{
+				m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);				
+			}
+		}
+	}	
+
+	if (g_pInput->IsTurnDn(DIK_F7))
+	{
+		m_showNormal = !m_showNormal;
+		for (int i=0;i<STRESS_NORMAL;i++)
+		{
+			if (m_pHouse[i])
+			{
+				m_pHouse[i]->SetShow(m_showNormal);
+			}
+		}
 	}
-	
+	if (g_pInput->IsTurnDn(DIK_F8))
+	{
+		m_showSkinned = !m_showSkinned;
+		for (int i=0;i<STRESS_SKINNED;i++)
+		{
+			if (m_pSkinned[i])
+			{
+				m_pSkinned[i]->SetShow(m_showSkinned);
+			}
+		}		
+	}
 	
 	
 }

@@ -38,5 +38,26 @@ void StringUtil::SplitPath(std::string& input,std::string* _Drive,std::string* _
 		*_Ext += ext;
 	}
 }
+void StringUtil::LowerCase( std::string& s )
+{
+	
+
+	int dif='a'-'A';
+	for(size_t i=0;i<s.length();i++)
+	{
+		if((s[i]>='A')&&(s[i]<='Z'))
+			s[i]+=dif;
+	}
+}
+
+void StringUtil::UpperCase( std::string& s )
+{
+	int dif='a'-'A';
+	for(size_t i=0;i<s.length();i++)
+	{
+		if((s[i]>='a')&&(s[i]<='z'))
+			s[i]-=dif;
+	}
+}
 
 }

@@ -5,8 +5,8 @@ namespace Sophia
 
 class MultiSub;
 class Material;
-class IndexStreamVertexBuffer;
-class BoneStreamTexture;
+class cRscTexture;
+
 
 struct BONEREFINFO
 {
@@ -43,12 +43,9 @@ public:
 
 protected:
 	std::vector<BONEREFINFO>		m_vecBoneRef;				//메쉬가 참조하는 본 정보
-	D3DXMATRIX*					m_pMatrixPallete;
-	bool						m_updateBlendMatrix;
-	IndexStreamVertexBuffer*	m_pIndexStreamVertexBuffer;
-	BoneStreamTexture*			m_pBoneStreamTexture;
 
-
+	bool						m_updateMatrixPallete;
+	cRscTexture*				m_pMatrixPalleteTexture;
 public:
 	virtual void			Update( DWORD elapseTime );
 	virtual void			Render();
@@ -59,7 +56,7 @@ public:
 	void					LinkToBone(Entity* pEntity);
 
 
-	virtual void			QueueRenderer(Entity* pEntity,bool bTraversal);
+	virtual void			GatherRender(Entity* pEntity,bool bTraversal);
 	virtual	void			Release();
 
 	// ISerialize
@@ -70,11 +67,13 @@ public:
 	virtual void SerializeInMesh(std::ifstream& stream);
 
 	void UpdateMatrixPallete();
-	D3DXMATRIX* GetMatrixPallete() const { return m_pMatrixPallete; }
-	BoneStreamTexture* GetBoneStreamTexture() const { return m_pBoneStreamTexture; }
-	IndexStreamVertexBuffer* GetIndexStreamVertexBuffer() const { return m_pIndexStreamVertexBuffer; }	
+	
+	virtual void RenderInstancing( int instanceSize );
+	virtual void UpdateMatrixInstancing( std::list<cMeshNode*>& list );
+	void ChangeInstancingEnable(bool val);
 protected:
 	virtual void CreateInstancingResource();
-	virtual void ReleaseInstancingResource();
+	void CreateMatrixPallete();
+	void DeleteMatrixPallete();
 };
 }

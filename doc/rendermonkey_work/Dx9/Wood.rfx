@@ -1,0 +1,2455 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE RENDER_MONKEY [
+   <!ELEMENT RENDER_MONKEY
+   (
+      RmEffectWorkspace |
+      RmRegistryBranch |
+      RmClipboardNode
+   )?>
+
+   <!ELEMENT RmEffectWorkspace 
+   (
+      RmRegistryBranch?,
+      RmPlugInData?,
+      RmStringVariable*,
+      (
+         ( RmDirectXEffect, RmOpenGLEffect? ) |
+         ( RmOpenGLEffect, RmDirectXEffect? )
+      )?,
+      (
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmRenderableTexture |
+         RmStreamMap |
+         RmModelData |
+         RmEffectGroup
+      )*
+   )>
+
+   <!ELEMENT RmEffectGroup
+   ( 
+      RmPlugInData?,
+      (
+         RmStringVariable |
+         RmDirectXEffect |
+         RmOpenGLEffect |
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmRenderableTexture |
+         RmStreamMap |
+         RmModelData
+      )*
+   )>
+
+   <!ELEMENT RmDirectXEffect
+   ( 
+      RmPlugInData?,
+      (
+         RmStringVariable |
+         RmCamera |
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmRenderableTexture |
+         RmStreamMap |
+         RmModelData |
+         RmPass
+      )*
+   )>
+
+   <!ELEMENT RmOpenGLEffect
+   (
+      RmPlugInData?,
+      (
+         RmStringVariable |
+         RmCamera |
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmRenderableTexture |
+         RmStreamMap |
+         RmModelData |
+         RmGLPass
+      )*
+   )>
+
+   <!ELEMENT RmPass
+   ( 
+      RmPlugInData?,
+      RmStringVariable*,
+      RmCameraReference?,
+      RmModelReference?,
+      RmRenderStateBlock?,
+      (
+         (
+         ( RmHLSLShader | RmShader ),
+         ( RmShader | RmHLSLShader )?
+         )
+      )?,
+      RmRenderTarget*,
+      RmStreamMapReference?,
+      (
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmTextureObject |
+         RmLightObject |
+         RmMaterialObject
+         )*
+      )>
+                                                                     
+   <!ELEMENT RmGLPass
+   ( 
+      RmPlugInData?,
+      RmStringVariable*,
+      RmCameraReference?,
+      RmModelReference?,
+      RmRenderStateBlock?,
+      (
+         ( RmGLShader, RmGLShader? ) 
+      )?,
+      RmRenderTarget?,
+      RmStreamMapReference?,
+      (
+         RmBooleanVariable |
+         RmIntegerVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmTextureObject |
+         RmLightObject |
+         RmMaterialObject |
+         RmShaderConstant |
+         RmSampler
+         )*
+      )>
+      
+   <!ELEMENT RmShader
+   ( 
+      RmShaderCode,
+      RmPlugInData?,
+      (
+      RmStringVariable |
+      RmShaderConstant
+      )*
+   )>
+
+   <!ELEMENT RmHLSLShader
+   ( 
+      RmShaderCode,
+      RmPlugInData?,
+      (
+      RmStringVariable |
+      RmShaderConstant |
+      RmSampler
+      )*
+   )>
+
+   <!ELEMENT RmGLShader
+   ( 
+      RmShaderCode,
+      RmPlugInData?,
+      (
+      RmStringVariable
+      )*
+   )>
+
+   <!ELEMENT RmTextureObject
+   (
+      RmPlugInData?,
+      RmStringVariable*,
+      RmTextureReference?,
+      RmState*
+   )>
+
+   <!ELEMENT RmLightObject
+   (
+      RmPlugInData?,
+      RmStringVariable*,
+      RmLightReference?
+   )>
+   
+   <!ELEMENT RmMaterialObject
+   (
+      RmPlugInData?,
+      RmStringVariable*,
+      RmMaterialReference?
+   )>
+   
+   <!ELEMENT RmRenderStateBlock
+   (
+      RmPlugInData?,
+      (
+         RmStringVariable |
+         RmState 
+      )*
+   )>
+
+   <!ELEMENT RmStreamMap
+   (
+      RmPlugInData?,
+      (
+         RmStringVariable |
+         RmStream 
+      )*
+   )>
+
+   <!ELEMENT RmStream               ( RmPlugInData?, RmStreamChannel* )>
+
+   <!ELEMENT RmModelData            ( RmPlugInData?, RmStringVariable* )>  
+   <!ELEMENT RmTextureReference     ( RmPlugInData?, RmStringVariable* )>
+   <!ELEMENT RmLightReference       ( RmPlugInData?, RmStringVariable* )>
+   <!ELEMENT RmMaterialReference    ( RmPlugInData?, RmStringVariable* )>
+   <!ELEMENT RmCameraReference      ( RmPlugInData?, RmStringVariable* )>
+   <!ELEMENT RmModelReference       ( RmPlugInData?, RmStringVariable* )>
+   <!ELEMENT RmStreamMapReference   ( RmPlugInData?, RmStringVariable* )>   
+   <!ELEMENT RmRenderableTexture    ( RmPlugInData?, RmStringVariable* )>   
+   <!ELEMENT RmRenderTarget         ( RmPlugInData?, RmStringVariable* )>   
+   <!ELEMENT RmBooleanVariable      ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmFloatVariable        ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmVectorVariable       ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmMatrixVariable       ( RmPlugInData?, RmStringVariable? )>   
+   <!ELEMENT RmColorVariable        ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmIntegerVariable      ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT Rm2DTextureVariable    ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmCubemapVariable      ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT Rm3DTextureVariable    ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmLightVariable        ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmMaterialVariable     ( RmPlugInData?, RmStringVariable? )>
+   <!ELEMENT RmCamera               ( RmPlugInData?, RmStringVariable* )>
+
+   <!ELEMENT RmStringVariable       ( RmTextDataBlock, RmPlugInData? )>
+   
+   <!ELEMENT RmDynamicVariable
+   (
+      RmPlugInData?,
+      RmStringVariable?,
+      RmDynamicVariableValueContainer
+   )>
+   
+   <!ELEMENT RmDynamicVariableValueContainer
+   (
+      RmPlugInData?,
+      RmDynamicVariableValue*
+   )>
+   
+   <!ELEMENT RmTextDataBlock        ( #PCDATA ) >
+   
+   <!ELEMENT RmRegistryBranch
+   ( 
+      RmTextDataBlock?,
+      (
+         RmRegistryBranch |
+         RmStringVariable |
+         RmIntegerVariable |
+         RmBooleanVariable |
+         RmFloatVariable
+      )*      
+   )>
+
+   <!ELEMENT RmPlugInData
+   ( 
+      RmTextDataBlock?,
+      (
+         RmStringVariable |
+         RmIntegerVariable |
+         RmBooleanVariable |
+         RmFloatVariable |
+         RmVectorVariable
+      )*      
+   )>
+   
+   <!ELEMENT RmClipboardNode
+   ( 
+      RmTextDataBlock?,
+      (
+         RmEffectWorkspace | 
+         RmEffectGroup |   
+         RmDirectXEffect |                
+         RmOpenGLEffect |                
+         RmPass |                  
+         RmGLPass |                  
+         RmShader |        
+         RmHLSLShader |        
+         RmGLShader |        
+         RmShaderConstant |
+         RmSampler |               
+         RmTextureObject |
+         RmLightObject |
+         RmMaterialObject |
+         RmRenderStateBlock |
+         RmState |                 
+         RmStreamMap |           
+         RmStream |              
+         RmStreamChannel |
+         RmModelData |
+         RmTextureReference |
+         RmLightReference |
+         RmMaterialReference |
+         RmModelReference |
+         RmStreamMapReference |
+         RmRenderableTexture |
+         RmRenderTarget |
+         RmBooleanVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmDynamicVariableValue |
+         RmColorVariable |
+         RmIntegerVariable |
+         RmStringVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmRegistryBranch |
+         RmPlugInData |
+         RmCamera |                
+         RmCameraReference
+      )*      
+   )>
+   
+   <!ELEMENT RmStreamChannel        ( RmPlugInData? ) >
+   <!ELEMENT RmShaderConstant       ( RmPlugInData? ) >
+   <!ELEMENT RmSampler              ( RmPlugInData? ) >
+   <!ELEMENT RmState                ( RmPlugInData? ) >
+   <!ELEMENT RmDynamicVariableValue ( RmPlugInData? ) >
+   
+   <!ELEMENT RmShaderCode           ( #PCDATA ) >
+
+   <!ATTLIST RmEffectWorkspace 
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ACTIVE_EFFECT                 CDATA #REQUIRED
+      VALIDATION_STRING             CDATA #REQUIRED
+      XML_VERSION                   CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmEffectGroup           
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmDirectXEffect                
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ACTIVE_CAMERA                 CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmOpenGLEffect                
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ACTIVE_CAMERA                 CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmPass                  
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PASS_INDEX                    CDATA #REQUIRED
+      ENABLED                       ( TRUE | FALSE ) #REQUIRED
+   >                                 
+
+   <!ATTLIST RmGLPass                  
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PASS_INDEX                    CDATA #REQUIRED
+      ENABLED                       ( TRUE | FALSE ) #REQUIRED
+   >                                 
+   
+   <!ATTLIST RmShader        
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PIXEL_SHADER                  CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmHLSLShader        
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PIXEL_SHADER                  ( TRUE | FALSE ) #REQUIRED
+      TARGET                        CDATA #REQUIRED
+      ENTRY_POINT                   CDATA #REQUIRED
+      COMPILER_FLAGS                CDATA #REQUIRED
+   >  
+
+   <!ATTLIST RmGLShader        
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PIXEL_SHADER                  ( TRUE | FALSE ) #REQUIRED
+   >  
+
+   <!ATTLIST RmShaderConstant
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmSampler               
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmTextureObject
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      STATE_INDEX                   CDATA #REQUIRED
+      VERTEX_TEXTURE                ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmLightObject
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialObject
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmRenderStateBlock
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmState                 
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      STATE                         CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      USAGE                         CDATA #REQUIRED
+   >                               
+
+   <!ATTLIST RmStreamMap           
+     NAME                           CDATA #REQUIRED
+     API                            CDATA #REQUIRED
+   >                               
+
+   <!ATTLIST RmStream              
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      STRIDE                        CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmStreamChannel
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      DATA_SIZE                     CDATA #REQUIRED
+      DATA_TYPE                     CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+      USAGE                         CDATA #REQUIRED
+      USAGE_INDEX                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmModelData
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+      ORIENTATION                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmTextureReference
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmLightReference
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialReference
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmModelReference
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmStreamMapReference
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmRenderableTexture
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+      ORIGIN                        CDATA #REQUIRED
+      WIDTH                         CDATA #REQUIRED
+      HEIGHT                        CDATA #REQUIRED
+      FORMAT                        CDATA #REQUIRED
+      USE_VIEWPORT_DIMENSIONS       ( TRUE | FALSE ) #REQUIRED
+      GENERATE_MIPMAPS              ( TRUE | FALSE ) #REQUIRED
+      WIDTH_RATIO                   CDATA #REQUIRED
+      HEIGHT_RATIO                  CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmRenderTarget
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+      RENDER_TO_SCREEN              ( TRUE | FALSE ) #REQUIRED
+      COLOR_CLEAR                   ( TRUE | FALSE ) #REQUIRED
+      DEPTH_CLEAR                   ( TRUE | FALSE ) #REQUIRED
+      CLEAR_COLOR_VALUE             CDATA #REQUIRED
+      DEPTH_CLEAR_VALUE             CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmBooleanVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmFloatVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmVectorVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+      NORMALIZE                     ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmMatrixVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+      VALUE_4                       CDATA #REQUIRED
+      VALUE_5                       CDATA #REQUIRED
+      VALUE_6                       CDATA #REQUIRED
+      VALUE_7                       CDATA #REQUIRED
+      VALUE_8                       CDATA #REQUIRED
+      VALUE_9                       CDATA #REQUIRED
+      VALUE_10                      CDATA #REQUIRED
+      VALUE_11                      CDATA #REQUIRED
+      VALUE_12                      CDATA #REQUIRED
+      VALUE_13                      CDATA #REQUIRED
+      VALUE_14                      CDATA #REQUIRED
+      VALUE_15                      CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmDynamicVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VARIABLE_TYPE                 ( FLOAT | INTEGER | BOOLEAN ) #REQUIRED
+      ROWS                          CDATA #REQUIRED
+      COLUMNS                       CDATA #REQUIRED
+      FIXED_SIZE                    ( TRUE | FALSE ) #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+      NORMALIZE                     ( TRUE | FALSE ) #REQUIRED
+   >
+   
+   <!ATTLIST RmDynamicVariableValue
+      ROW_INDEX                     CDATA #REQUIRED
+      COLUMN_INDEX                  CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmColorVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmIntegerVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+   >
+   
+   <!ATTLIST RmStringVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+   >
+
+   <!ATTLIST Rm2DTextureVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+      ORIGIN                        CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmCubemapVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+      ORIGIN                        CDATA #REQUIRED
+   >
+
+   <!ATTLIST Rm3DTextureVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+      ORIGIN                        CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmLightVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      LIGHT_ENABLED                 ( TRUE | FALSE ) #REQUIRED
+      LIGHT_TYPE                    ( POSITIONAL | DIRECTIONAL | SPOTLIGHT ) #REQUIRED
+      AMBIENT_0                     CDATA #REQUIRED
+      AMBIENT_1                     CDATA #REQUIRED
+      AMBIENT_2                     CDATA #REQUIRED
+      AMBIENT_3                     CDATA #REQUIRED
+      DIFFUSE_0                     CDATA #REQUIRED
+      DIFFUSE_1                     CDATA #REQUIRED
+      DIFFUSE_2                     CDATA #REQUIRED
+      DIFFUSE_3                     CDATA #REQUIRED
+      SPECULAR_0                    CDATA #REQUIRED
+      SPECULAR_1                    CDATA #REQUIRED
+      SPECULAR_2                    CDATA #REQUIRED
+      SPECULAR_3                    CDATA #REQUIRED
+      POSITION_0                    CDATA #REQUIRED
+      POSITION_1                    CDATA #REQUIRED
+      POSITION_2                    CDATA #REQUIRED
+      DIRECTION_0                   CDATA #REQUIRED
+      DIRECTION_1                   CDATA #REQUIRED
+      DIRECTION_2                   CDATA #REQUIRED
+      ATTENUATION_0                 CDATA #REQUIRED
+      ATTENUATION_1                 CDATA #REQUIRED
+      ATTENUATION_2                 CDATA #REQUIRED
+      SPOTLIGHT_THETA               CDATA #REQUIRED
+      SPOTLIGHT_PHI                 CDATA #REQUIRED
+      RANGE                         CDATA #REQUIRED
+      FALLOFF                       CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialVariable
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_SEMANTIC             CDATA #REQUIRED
+      AMBIENT_0                     CDATA #REQUIRED
+      AMBIENT_1                     CDATA #REQUIRED
+      AMBIENT_2                     CDATA #REQUIRED
+      AMBIENT_3                     CDATA #REQUIRED
+      DIFFUSE_0                     CDATA #REQUIRED
+      DIFFUSE_1                     CDATA #REQUIRED
+      DIFFUSE_2                     CDATA #REQUIRED
+      DIFFUSE_3                     CDATA #REQUIRED
+      SPECULAR_0                    CDATA #REQUIRED
+      SPECULAR_1                    CDATA #REQUIRED
+      SPECULAR_2                    CDATA #REQUIRED
+      SPECULAR_3                    CDATA #REQUIRED
+      EMISSIVE_0                    CDATA #REQUIRED
+      EMISSIVE_1                    CDATA #REQUIRED
+      EMISSIVE_2                    CDATA #REQUIRED
+      EMISSIVE_3                    CDATA #REQUIRED
+      SPECULAR_POWER                CDATA #REQUIRED
+   >
+      
+   <!ATTLIST RmRegistryBranch
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      XML_VERSION                   CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmPlugInData
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      PLUGIN_GUID                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmClipboardNode
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      XML_VERSION                   CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmCamera                
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      CAMERA_POSITION_X             CDATA #REQUIRED
+      CAMERA_POSITION_Y             CDATA #REQUIRED
+      CAMERA_POSITION_Z             CDATA #REQUIRED
+      LOOK_AT_VECTOR_X              CDATA #REQUIRED
+      LOOK_AT_VECTOR_Y              CDATA #REQUIRED
+      LOOK_AT_VECTOR_Z              CDATA #REQUIRED
+      UP_VECTOR_X                   CDATA #REQUIRED
+      UP_VECTOR_Y                   CDATA #REQUIRED
+      UP_VECTOR_Z                   CDATA #REQUIRED
+      FOV                           CDATA #REQUIRED
+      NEAR_CLIP_PLANE               CDATA #REQUIRED
+      FAR_CLIP_PLANE                CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmCameraReference                
+      NAME                          CDATA #REQUIRED
+      API                           CDATA #REQUIRED
+      USE_ACTIVE_CAMERA             ( TRUE | FALSE ) #REQUIRED
+   >                               
+   
+   <!ATTLIST RmShaderCode                
+      TYPE                          ( TEXT ) #REQUIRED
+   >                               
+   
+   <!ATTLIST RmTextDataBlock                
+      TYPE                          ( TEXT ) #REQUIRED
+   >                               
+   
+]>
+<RENDER_MONKEY>
+ <RmEffectWorkspace NAME="Effect Workspace" API="" ACTIVE_EFFECT="Effect Workspace.ASM Wood Construction Tutorial.LitNoisyRingsWithWobble" VALIDATION_STRING="" XML_VERSION="RenderMonkey 1.7">
+  <RmRegistryBranch NAME="RM_REGISTRY" API="" XML_VERSION="RenderMonkey 1.7">
+   <RmRegistryBranch NAME="RM_LOCAL" API="" XML_VERSION="RenderMonkey 1.7">
+    <RmRegistryBranch NAME="WORKSPACE" API="" XML_VERSION="RenderMonkey 1.7">
+     <RmStringVariable NAME="LAST_SAVE" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
+18/4/2006 19:7:25]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="VERSION" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
+RenderMonkey Version 1.62 (build 19)]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="XML_VERSION" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
+RenderMonkey 1.71]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="BASE_WORKSPACE_PATH" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
+D:\3darg\Tools\RenderMonkey\Examples\DX9\]]></RmTextDataBlock></RmStringVariable>
+    </RmRegistryBranch>
+   </RmRegistryBranch>
+  </RmRegistryBranch>
+  <RmStringVariable NAME="Header" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC=""><RmTextDataBlock TYPE="TEXT"><![CDATA[
+$File: //depot/3darg/Tools/RenderMonkey/Examples/DX9/Wood.rfx $
+$Revision: #4 $
+
+© AMD, 2007]]></RmTextDataBlock></RmStringVariable>
+  <RmEffectGroup NAME="Various Wood Shaders" API="">
+   <RmDirectXEffect NAME="Wood0" API="D3D" ACTIVE_CAMERA="">
+    <RmFloatVariable NAME="ringScale" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="2.200000" MIN="0.000000" MAX="4.000000" CLAMP="FALSE"/>
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4x4 view_matrix: register(c4);
+float scale: register(c8);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 pos:     TEXCOORD0;
+   float3 normal:  TEXCOORD1;
+   float3 viewVec: TEXCOORD2;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   // Pass position to fragment shader
+   Out.pos = scale * Pos;
+   // Eye-space lighting
+   Out.normal = mul(view_matrix, normal);
+   Out.viewVec = -mul(view_matrix, Pos);
+
+   return Out;
+}
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="scale" API="" REGISTER="8"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float Kd: register(c1);
+float Ks: register(c2);
+float4 darkWood: register(c3);
+float4 liteWood: register(c4);
+float frequency: register(c5);
+float noiseScale: register(c6);
+float ringScale: register(c7);
+float4 lightDir: register(c0);
+sampler Noise: register(s0);
+float4 main(float3 pos: TEXCOORD0, float3 normal: TEXCOORD1, float3 viewVec: TEXCOORD2) : COLOR {
+   // Signed noise
+   float snoise = 2 * tex3D(Noise, pos).r - 1;
+
+   // Rings will go along z axis, perturbed with some noise
+   float ring = frac(frequency * pos.z + noiseScale * snoise);
+   // Map [0,1] to 0->1->0 with 4(x-x^2)
+   ring *= 4 * (1 - ring);
+
+   // Adjust ring smoothness and shape, and add some noise
+   float lrp = pow(ring, ringScale) + snoise;
+   float4 base = lerp(darkWood, liteWood, lrp);
+
+   normal = normalize(normal);
+   // Soft diffuse
+   float diffuse = 0.5 + 0.5 * dot(lightDir, normal);
+   // Standard specular
+   float specular = pow(saturate(dot(reflect(-normalize(viewVec), normal), lightDir)), 12);
+
+   return Kd * diffuse * base + Ks * specular;
+}
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Noise" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="Ks" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="Kd" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="darkWood" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="lightDir" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="liteWood" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noiseScale" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="ringScale" API="" REGISTER="7"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="Noise" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="Wood1" API="D3D" ACTIVE_CAMERA="">
+    <RmFloatVariable NAME="ringScale" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="2.080000" MIN="0.000000" MAX="4.000000" CLAMP="FALSE"/>
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4x4 view_matrix: register(c4);
+float scale: register(c8);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 pos:     TEXCOORD0;
+   float3 normal:  TEXCOORD1;
+   float3 viewVec: TEXCOORD2;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   // Pass position to fragment shader
+   Out.pos = scale * Pos;
+   // Eye-space lighting
+   Out.normal = mul(view_matrix, normal);
+   Out.viewVec = -mul(view_matrix, Pos);
+
+   return Out;
+}
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="scale" API="" REGISTER="8"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float Kd: register(c1);
+float Ks: register(c2);
+float4 darkWood: register(c3);
+float4 liteWood: register(c4);
+float frequency: register(c5);
+float ringScale: register(c6);
+float noiseScale: register(c7);
+float4 lightDir: register(c0);
+sampler Noise: register(s0);
+float4 main(float3 pos: TEXCOORD0, float3 normal: TEXCOORD1, float3 viewVec: TEXCOORD2) : COLOR {
+   // Signed noise
+   float snoise = 2 * tex3D(Noise, pos).r - 1;
+
+   // Rings are define by distance to z axis, perturbed with some noise
+   float ring = frac(frequency * length(pos.xy) + noiseScale * snoise);
+   // Map [0,1] to 0->1->0 with 4(x-x^2)
+   ring *= 4 * (1 - ring);
+
+   // Adjust ring smoothness and shape, and add some noise
+   float lrp = pow(ring, ringScale) + snoise;
+   float4 base = lerp(darkWood, liteWood, lrp);
+
+   normal = normalize(normal);
+   // Soft diffuse
+   float diffuse = 0.5 + 0.5 * dot(lightDir, normal);
+   // Standard specular
+   float specular = pow(saturate(dot(reflect(-normalize(viewVec), normal), lightDir)), 12);
+
+   return Kd * diffuse * base + Ks * specular;
+}
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Noise" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="Ks" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="Kd" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="darkWood" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="lightDir" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="liteWood" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noiseScale" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="ringScale" API="" REGISTER="6"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="Noise" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="Wood2" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4x4 view_matrix: register(c4);
+float scale: register(c8);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 pos:     TEXCOORD0;
+   float3 normal:  TEXCOORD1;
+   float3 viewVec: TEXCOORD2;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   // Pass position to fragment shader
+   Out.pos = scale * Pos;
+   // Eye-space lighting
+   Out.normal = mul(view_matrix, normal);
+   Out.viewVec = -mul(view_matrix, Pos);
+
+   return Out;
+}
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="scale" API="" REGISTER="8"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float Kd: register(c1);
+float Ks: register(c2);
+float4 darkWood: register(c3);
+float4 liteWood: register(c4);
+float frequency: register(c5);
+float noiseScale: register(c6);
+float4 lightDir: register(c0);
+sampler Noise: register(s0);
+float4 main(float3 pos: TEXCOORD0, float3 normal: TEXCOORD1, float3 viewVec: TEXCOORD2) : COLOR {
+   // Signed noise
+   float snoise = 2 * tex3D(Noise, pos).r - 1;
+
+   // Stretch along y axis
+   pos.y *= 0.25;
+   // Rings are defined by distance to z axis and wobbled along it
+   // and perturbed with some noise
+   float ring = 0.5 * (1 + sin(5 * sin(frequency * pos.z) + frequency * (noiseScale * snoise + 6.28 * length(pos.xy))));
+
+   // Add some noise and get base color
+   float lrp = ring + snoise;
+   float4 base = lerp(darkWood, liteWood, lrp);
+
+   normal = normalize(normal);
+   // Soft diffuse
+   float diffuse = 0.5 + 0.5 * dot(lightDir, normal);
+   // Standard specular
+   float specular = pow(saturate(dot(reflect(-normalize(viewVec), normal), lightDir)), 12);
+
+   return Kd * diffuse * base + Ks * specular;
+}
+
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Noise" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="Ks" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="Kd" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="darkWood" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="lightDir" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="liteWood" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noiseScale" API="" REGISTER="6"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="Noise" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="Wood3" API="D3D" ACTIVE_CAMERA="">
+    <RmFloatVariable NAME="ringSharpness" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="21.000000" MIN="0.000000" MAX="60.000000" CLAMP="FALSE"/>
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4x4 view_matrix: register(c4);
+float scale: register(c8);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 pos:     TEXCOORD0;
+   float3 normal:  TEXCOORD1;
+   float3 viewVec: TEXCOORD2;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   // Pass position to fragment shader
+   Out.pos = scale * Pos;
+   // Eye-space lighting
+   Out.normal = mul(view_matrix, normal);
+   Out.viewVec = -mul(view_matrix, Pos);
+
+   return Out;
+}
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="scale" API="" REGISTER="8"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float Kd: register(c1);
+float Ks: register(c2);
+float4 darkWood: register(c3);
+float4 liteWood: register(c4);
+float frequency: register(c5);
+float ringSharpness: register(c6);
+float noiseScale: register(c7);
+float4 lightDir: register(c0);
+sampler Noise: register(s0);
+float4 main(float3 pos: TEXCOORD0, float3 normal: TEXCOORD1, float3 viewVec: TEXCOORD2) : COLOR {
+   // Signed noise
+   float snoise = 2 * tex3D(Noise, pos).r - 1;
+
+   // Rings goes along z axis, perturbed with some noise
+   float r = frac(frequency * pos.z + noiseScale * snoise);
+
+   // Map [0.1] to 0->1->0 in a smooth curve, f(r) = r - r^ringSharpness
+   // We want this curve to reach a value of 1 at its maximum in
+   // the 0 < r < 1 interval. So we'll need to find the maximum
+   // value in this interval, invert and multiply with the curve.
+   // Those interested in math might want to derive the invMax
+   // calculation below themselves by solving for f'(r) = 0
+   // and inserting into the function.
+   float invMax = pow(ringSharpness, ringSharpness / (ringSharpness - 1)) / (ringSharpness - 1);
+   float ring = invMax * (r - pow(r, ringSharpness));
+
+   // Add some noise and get our base color
+   float lrp = ring + snoise;
+   float4 base = lerp(darkWood, liteWood, lrp);
+
+   normal = normalize(normal);
+   // Soft diffuse
+   float diffuse = 0.5 + 0.5 * dot(lightDir, normal);
+   // Standard specular
+   float specular = pow(saturate(dot(reflect(-normalize(viewVec), normal), lightDir)), 12);
+
+   return Kd * diffuse * base + Ks * specular;
+}
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Noise" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="Ks" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="Kd" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="darkWood" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="lightDir" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="liteWood" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noiseScale" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="ringSharpness" API="" REGISTER="6"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="Noise" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmFloatVariable NAME="noiseScale" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="0.960000" MIN="0.000000" MAX="2.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="frequency" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="6.720000" MIN="0.000000" MAX="16.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="scale" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="0.025000" MIN="0.000000" MAX="0.100000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="Ks" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="0.660000" MIN="0.000000" MAX="1.000000" CLAMP="TRUE"/>
+   <RmFloatVariable NAME="Kd" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE="0.890000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmVectorVariable NAME="lightDir" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.408248" VALUE_1="0.408248" VALUE_2="-0.816497" VALUE_3="0.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmColorVariable NAME="darkWood" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="0.440000" VALUE_1="0.210526" VALUE_2="0.000000" VALUE_3="1.000000"/>
+   <RmColorVariable NAME="liteWood" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="0.917293" VALUE_1="0.503759" VALUE_2="0.127820" VALUE_3="1.000000"/>
+   <Rm3DTextureVariable NAME="Noise" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\NoiseVolume.dds" ORIGIN="0"/>
+   <RmStreamMap NAME="PN Stream Mapping" API="">
+    <RmStream NAME="Normal3" API="" STRIDE="24">
+     <RmStreamChannel NAME="Position_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="0" USAGE="0" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="Normal_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="1" USAGE="3" USAGE_INDEX="0"/>
+    </RmStream>
+   </RmStreamMap>
+   <RmModelData NAME="Elephant" API="" FILE_NAME="..\Media\Models\ElephantBody.3ds" ORIENTATION="0"/>
+  </RmEffectGroup>
+  <RmEffectGroup NAME="Wood Construction Tutorial" API="">
+   <RmDirectXEffect NAME="ConcentricRings" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 texture_matrix0;
+float4x4 view_proj_matrix;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0; 
+
+   // Transform position to clip space
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   // Transform Pshade (using texture matrices)
+   Out.TCoord0 = mul (texture_matrix0, vPosition);
+
+   return Out;
+}
+
+
+
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_rings" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float ring_freq;
+float4 dark_wood_color;
+float4 light_wood_color;
+sampler pulse_train;
+float4 hlsl_rings (float4 Pshade : TEXCOORD0) : COLOR
+{
+    float scaledDistFromZAxis = sqrt(dot(Pshade.xy, Pshade.xy)) * ring_freq;
+
+    float blendFactor = tex1D (pulse_train, scaledDistFromZAxis).r;
+ 
+    return lerp (dark_wood_color, light_wood_color, blendFactor);
+}
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="pulse_train" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="NoisyRings" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 texture_matrix0;
+float4x4 view_proj_matrix;
+float4x4 texture_matrix2;
+float4x4 view_matrix;
+float4x4 texture_matrix1;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+   float3 TCoord1 : TEXCOORD1;
+   float3 TCoord2 : TEXCOORD2;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0; 
+
+   // Transform position to clip space
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   // Transform Pshade (using texture matrices)
+   Out.TCoord0 = mul (texture_matrix0, vPosition);
+   Out.TCoord1 = mul (texture_matrix1, vPosition);
+   Out.TCoord2 = mul (texture_matrix2, vPosition);
+
+   return Out;
+}
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="10"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_noisy_rings" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float ring_freq;
+float noise_amplitude;
+float4 light_wood_color;
+float4 dark_wood_color;
+sampler noise_volume;
+sampler pulse_train;
+float4 hlsl_noisy_rings (float3 Pshade0 : TEXCOORD0, float3 Pshade1 : TEXCOORD1, float3 Pshade2 : TEXCOORD2) : COLOR
+{
+    float3 coloredNoise;
+
+    // Construct colored noise from three samples
+    coloredNoise.x = tex3D (noise_volume, Pshade0).r;
+    coloredNoise.y = tex3D (noise_volume, Pshade1).r;
+    coloredNoise.z = tex3D (noise_volume, Pshade2).r;
+
+    // Make signed
+    coloredNoise = coloredNoise * 2.0f - 1.0f;
+
+    // Scale noise and add to Pshade
+    float3 noisyPshade = Pshade0 + coloredNoise * noise_amplitude;
+
+    float scaledDistFromZAxis = sqrt(dot(noisyPshade.xy, noisyPshade.xy)) * ring_freq;
+
+    float4 blendFactor = tex1D (pulse_train, scaledDistFromZAxis);
+     
+    return lerp (dark_wood_color, light_wood_color, blendFactor.x);
+}
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="noise_volume" API="" REGISTER="0"/>
+      <RmSampler NAME="pulse_train" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="NoisyRingsWithWobble" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float trunk_wobble_frequency;
+float4x4 view_matrix;
+float4x4 texture_matrix1;
+float4x4 texture_matrix0;
+float4x4 texture_matrix2;
+float4x4 view_proj_matrix;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+   float3 TCoord1 : TEXCOORD1;
+   float3 TCoord2 : TEXCOORD2;
+   float3 TCoord3 : TEXCOORD3;
+   float3 TCoord4 : TEXCOORD4;
+   float3 TCoord6 : TEXCOORD6;
+   float3 TCoord7 : TEXCOORD7;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION, float3 vNormal: NORMAL)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0;
+   float4 TransformedPshade;
+
+   // Transform position to clip space
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   // Transform Pshade (using texture matrices) and output to pixel shader
+   TransformedPshade = mul (texture_matrix0, vPosition);
+   Out.TCoord0 = TransformedPshade;
+   Out.TCoord1 = mul (texture_matrix1, vPosition);
+   Out.TCoord2 = mul (texture_matrix2, vPosition);
+
+   // Create two coordinates for sampling noise volume to get wobble
+   Out.TCoord3 = float3(trunk_wobble_frequency * TransformedPshade.z, 0.0f, 0.0f);
+   Out.TCoord4 = float3(trunk_wobble_frequency * TransformedPshade.z + 0.5f, 0.0f, 0.0f);
+
+   // Transform position and normal to eye space
+   Out.TCoord6 = mul (view_matrix, vPosition);
+   Out.TCoord7 = mul (view_matrix, vNormal);
+
+
+   return Out;
+}
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="10"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="13"/>
+      <RmShaderConstant NAME="trunk_wobble_frequency" API="" REGISTER="16"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_noisy_wobble_rings" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float trunk_wobble_amplitude;
+float4 light_wood_color;
+float4 dark_wood_color;
+float ring_freq;
+float noise_amplitude;
+sampler noise_volume;
+sampler pulse_train;
+float4 hlsl_noisy_wobble_rings (float3 Pshade0  : TEXCOORD0,
+                                float3 Pshade1  : TEXCOORD1,
+                                float3 Pshade2  : TEXCOORD2,
+                                float3 zWobble0 : TEXCOORD3,
+                                float3 zWobble1 : TEXCOORD4) : COLOR
+{
+    float3 coloredNoise;
+    float3 wobble;
+
+    // Construct colored noise from three samples
+    coloredNoise.x = tex3D (noise_volume, Pshade0).r;
+    coloredNoise.y = tex3D (noise_volume, Pshade1).r;
+    coloredNoise.z = tex3D (noise_volume, Pshade2).r;
+
+    wobble.x = tex3D (noise_volume, zWobble0).r;
+    wobble.y = tex3D (noise_volume, zWobble1).r;
+    wobble.z = 0.5f;
+
+    // Make signed
+    coloredNoise = coloredNoise * 2.0f - 1.0f;
+    wobble       = wobble       * 2.0f - 1.0f;
+
+    // Scale noise and add to Pshade
+    float3 noisyWobblyPshade = Pshade0 + coloredNoise * noise_amplitude + wobble * trunk_wobble_amplitude;
+
+    float scaledDistFromZAxis = sqrt(dot(noisyWobblyPshade.xy, noisyWobblyPshade.xy)) * ring_freq;
+
+    // Lookup blend factor from pulse train
+    float blendFactor = tex1D (pulse_train, scaledDistFromZAxis).r;
+
+    // Blend wood colors together
+    return lerp (dark_wood_color, light_wood_color, blendFactor);
+}
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="noise_volume" API="" REGISTER="0"/>
+      <RmSampler NAME="pulse_train" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="1"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="trunk_wobble_amplitude" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="LitNoisyRingsWithWobble" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float trunk_wobble_frequency;
+float4x4 view_matrix;
+float4x4 texture_matrix0;
+float4x4 texture_matrix1;
+float4x4 view_proj_matrix;
+float4x4 texture_matrix2;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+   float3 TCoord1 : TEXCOORD1;
+   float3 TCoord2 : TEXCOORD2;
+   float3 TCoord3 : TEXCOORD3;
+   float3 TCoord4 : TEXCOORD4;
+   float3 TCoord6 : TEXCOORD6;
+   float3 TCoord7 : TEXCOORD7;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION, float3 vNormal: NORMAL)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0;
+   float4 TransformedPshade;
+
+   // Transform position to clip space
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   // Transform Pshade (using texture matrices) and output to pixel shader
+   TransformedPshade = mul (texture_matrix0, vPosition);
+   Out.TCoord0 = TransformedPshade;
+   Out.TCoord1 = mul (texture_matrix1, vPosition);
+   Out.TCoord2 = mul (texture_matrix2, vPosition);
+
+   // Create two coordinates for sampling noise volume to get wobble
+   Out.TCoord3 = float3(trunk_wobble_frequency * TransformedPshade.z, 0.0f, 0.0f);
+   Out.TCoord4 = float3(trunk_wobble_frequency * TransformedPshade.z + 0.5f, 0.0f, 0.0f);
+
+   // Transform position and normal to eye space
+   Out.TCoord6 = mul (view_matrix, vPosition);
+   Out.TCoord7 = mul (view_matrix, vNormal);
+
+   return Out;
+}
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="10"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="13"/>
+      <RmShaderConstant NAME="trunk_wobble_frequency" API="" REGISTER="16"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_wood" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4 light_pos;
+float4 eye_pos;
+float4 light_wood_color;
+float4 dark_wood_color;
+float noise_amplitude;
+float trunk_wobble_amplitude;
+float ring_freq;
+sampler noise_volume;
+sampler pulse_train;
+sampler variable_specular;
+float4 hlsl_wood (float3 Pshade0  : TEXCOORD0,
+                  float3 Pshade1  : TEXCOORD1,
+                  float3 Pshade2  : TEXCOORD2,
+                  float3 zWobble0 : TEXCOORD3,
+                  float3 zWobble1 : TEXCOORD4,
+                  float3 Peye     : TEXCOORD6,
+                  float3 Neye     : TEXCOORD7) : COLOR
+{
+    float3 coloredNoise;
+    float3 wobble;
+
+    // Construct colored noise from three samples
+    coloredNoise.x = tex3D (noise_volume, Pshade0).r;
+    coloredNoise.y = tex3D (noise_volume, Pshade1).r;
+    coloredNoise.z = tex3D (noise_volume, Pshade2).r;
+
+    wobble.x = tex3D (noise_volume, zWobble0).r;
+    wobble.y = tex3D (noise_volume, zWobble1).r;
+    wobble.z = 0.5f;
+
+    // Make signed
+    coloredNoise = coloredNoise * 2.0f - 1.0f;
+    wobble       = wobble       * 2.0f - 1.0f;
+
+    // Scale noise and add to Pshade
+    float3 noisyWobblyPshade = Pshade0 + coloredNoise * noise_amplitude + wobble * trunk_wobble_amplitude;
+
+    float scaledDistFromZAxis = sqrt(dot(noisyWobblyPshade.xy, noisyWobblyPshade.xy)) * ring_freq;
+
+    // Lookup blend factor from pulse train
+    float4 blendFactor = tex1D (pulse_train, scaledDistFromZAxis).r;
+
+    // Blend wood colors together
+    float4 albedo = lerp (dark_wood_color, light_wood_color, blendFactor.x);
+
+    // Compute normalized vector from vertex to light in eye space  (Leye)
+    float3 Leye = (light_pos - Peye) / length(light_pos - Peye);
+
+    // Normalize interpolated normal
+    Neye = Neye / length(Neye);
+
+    // Compute Veye
+    float3 Veye = -(Peye / length(Peye));
+
+    // Compute half-angle
+    float3 Heye = (Leye + Veye) / length(Leye + Veye);
+
+    // Compute N.H
+    float NdotH = clamp(dot(Neye, Heye), 0.0f, 1.0f);
+
+    // Scale and bias specular exponent from pulse train into decent range
+    float k = blendFactor.z;
+
+    // Evaluate (N.H)^k via dependent read
+    float specular = tex2D (variable_specular, float2 (NdotH, k)).r;
+
+    // N.L
+    float NdotL = dot(Neye, Leye);
+
+    // "Half-Lambert" technique for more pleasing diffuse term
+    float diffuse = NdotL * 0.5f + 0.5f;
+
+    // gloss the specular term
+    float gloss = blendFactor.y;
+
+    return diffuse * albedo + specular * gloss;
+}
+
+
+
+
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="noise_volume" API="" REGISTER="0"/>
+      <RmSampler NAME="pulse_train" API="" REGISTER="1"/>
+      <RmSampler NAME="variable_specular" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="light_pos" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="trunk_wobble_amplitude" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="1"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="variable_specular" API="D3D" STATE_INDEX="2" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="variable_specular" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="0" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="Noise" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 texture_matrix1;
+float4x4 texture_matrix0;
+float4x4 texture_matrix2;
+float4x4 view_proj_matrix;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+   float3 TCoord1 : TEXCOORD1;
+   float3 TCoord2 : TEXCOORD2;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION, float3 vNormal: NORMAL)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0;
+
+   // Transform position to clip space
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   // Transform Pshade (using texture matrices) and output to pixel shader
+   Out.TCoord0 = mul (texture_matrix0, vPosition);
+   Out.TCoord1 = mul (texture_matrix1, vPosition);
+   Out.TCoord2 = mul (texture_matrix2, vPosition);
+
+   return Out;
+}
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="10"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_noise" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+sampler noise_volume;
+float4 hlsl_noise (float3 Pshade0 : TEXCOORD0, float3 Pshade1 : TEXCOORD1, float3 Pshade2 : TEXCOORD2) : COLOR
+{
+    float4 color;
+
+    color   = tex3D (noise_volume, Pshade0);
+    color.g = tex3D (noise_volume, Pshade1).r;
+    color.b = tex3D (noise_volume, Pshade2).r;
+     
+    return color;
+}
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="noise_volume" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="Noise" API=""/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="Ivory" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Single Pass" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmHLSLShader NAME="Vertex Shader" API="D3D" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix;
+float4x4 view_matrix;
+struct VS_OUTPUT
+{
+   float4 Pos     : POSITION;
+   float3 TCoord0 : TEXCOORD0;
+   float3 TCoord1 : TEXCOORD1;
+};
+
+
+VS_OUTPUT main (float4 vPosition: POSITION, float3 vNormal: NORMAL)
+{
+   VS_OUTPUT Out = (VS_OUTPUT) 0; 
+
+   Out.Pos = mul (view_proj_matrix, vPosition);
+
+   Out.TCoord0 = mul (view_matrix, vPosition);
+   Out.TCoord1 = mul (view_matrix, vNormal);
+
+   return Out;
+}
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" API="D3D" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="hlsl_ivory" COMPILER_FLAGS="32"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4 light_pos;
+float4 eye_pos;
+float4 hlsl_ivory (float3 Peye : TEXCOORD0, float3 Neye : TEXCOORD1) : COLOR
+{
+    // Compute normalized vector from vertex to light in eye space  (Leye)
+    float3 Leye = (light_pos - Peye) / length(light_pos - Peye);
+
+    // Normalize interpolated normal
+    Neye = Neye / length(Neye);
+
+    // Compute Veye
+    float3 Veye = -(Peye / length(Peye));
+
+    // Compute half-angle
+    float3 Heye = (Leye + Veye) / length(Leye + Veye);
+
+    // N.L
+    float NdotL = dot(Neye, Leye);
+
+    // "Half-Lambert" technique for more pleasing diffuse term
+    float diffuse = NdotL * 0.5f + 0.5f;
+
+    // Compute N.H
+    float NdotH = clamp(dot(Neye, Heye), 0.0f, 1.0f);
+
+    float NdotH_2  = NdotH    * NdotH;
+    float NdotH_4  = NdotH_2  * NdotH_2;
+    float NdotH_8  = NdotH_4  * NdotH_4;
+    float NdotH_16 = NdotH_8  * NdotH_8;
+    float NdotH_32 = NdotH_16 * NdotH_16;
+
+    return NdotH_32 * NdotH_32 + diffuse;
+}
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="light_pos" API="" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="PN Stream Mapping" API=""/>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmFloatVariable NAME="trunk_wobble_frequency" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="-0.180000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="trunk_wobble_amplitude" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0.060000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="ring_freq" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="13.570000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="noise_amplitude" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0.080000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmVectorVariable NAME="specular_exponent_range" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="64.000000" VALUE_1="128.000000" VALUE_2="0.000000" VALUE_3="0.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="light_pos" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="100.000000" VALUE_2="0.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="eye_pos" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="commonConstants" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="0.500000" VALUE_2="1.000000" VALUE_3="2.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmMatrixVariable NAME="texture_matrix0" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.044000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="0.000000" VALUE_6="0.040000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.043200" VALUE_10="0.000000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmMatrixVariable NAME="texture_matrix1" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="-0.040000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="0.040000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="0.040000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmMatrixVariable NAME="texture_matrix2" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.040000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="-0.040000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="-0.036000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmColorVariable NAME="dark_wood_color" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="0.546667" VALUE_1="0.297040" VALUE_2="0.070582" VALUE_3="1.000000"/>
+   <RmColorVariable NAME="light_wood_color" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="1.000000" VALUE_1="0.697712" VALUE_2="0.150087" VALUE_3="1.000000"/>
+   <Rm2DTextureVariable NAME="variable_specular" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\VariableSpecular.bmp" ORIGIN="0"/>
+   <Rm2DTextureVariable NAME="pulse_train" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\PulseTrain.tga" ORIGIN="0"/>
+   <Rm3DTextureVariable NAME="Noise" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\NoiseVolume.dds" ORIGIN="0"/>
+   <RmStreamMap NAME="PN Stream Mapping" API="">
+    <RmStream NAME="Binormal7" API="" STRIDE="24">
+     <RmStreamChannel NAME="Position_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="0" USAGE="0" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="Normal_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="1" USAGE="3" USAGE_INDEX="0"/>
+    </RmStream>
+   </RmStreamMap>
+   <RmModelData NAME="Elephant" API="" FILE_NAME="..\Media\Models\ElephantBody.3ds" ORIENTATION="0"/>
+  </RmEffectGroup>
+  <RmEffectGroup NAME="ASM Wood Construction Tutorial" API="">
+   <RmDirectXEffect NAME="ConcentricRings" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Pass 1" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmShader NAME="vs" API="D3D" PIXEL_SHADER="FALSE"><RmShaderCode TYPE="TEXT"><![CDATA[
+vs.2.0
+
+dcl_position v0
+dcl_normal   v1
+
+   m4x4 oPos, v0, c0    // transform position to clip space
+
+   mov r0.w, c4.z
+   
+   m4x4 r0, v0, c17     // transform Pshade (using texture matrix 0)
+   mov  oT0, r0
+   
+   m4x4 oT1, v0, c21    // transform Pshade (using texture matrix 1)
+   m4x4 oT2, v0, c25    // transform Pshade (using texture matrix 2)
+   
+   mov r1, c4.xxxx
+   mul r1.x, r0.z, c5.x // {freq * Pshade.z, 0, 0, 0}
+   mov oT3, r1          // {freq * Pshade.z, 0, 0, 0} for 1D trunkWobble noise in x
+   mov r1, c4.xxxx
+   mad r1.x, r0.z, c5.x, c5.y // {freq * Pshade.z + 0.5, 0, 0, 0}
+   mov oT4, r1                // {freq * Pshade.z + 0.5, 0, 0, 0} for 1D trunkWobble noise in y
+   
+   m4x4 oT6, v0, c6    // transform position to eye space
+   m4x4 oT7, v1, c6    // transform normal to eye space
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="commonConstants" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="trunk_wobble" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="17"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="21"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="25"/>
+     </RmShader>
+     <RmShader NAME="ps" API="D3D" PIXEL_SHADER="TRUE"><RmShaderCode TYPE="TEXT"><![CDATA[
+ps.2.0
+
+def c0, 2.0f, -1.0f, 0.5f, 0.5f  // scale, bias, half, X
+def c1, 1.0f, 1.0f, 0.1f, 0.0f   // X, X, 0.1, zero
+// c2: xyz == Light Wood Color
+// c3: xyz == Dark Wood Color 
+// c4: x == ring freq
+// c5: x == noise amplitude
+
+dcl t0.xyzw   // xyz == Pshade (shader-space position), w == X
+
+dcl_2d s0
+
+   dp2add r0, t0, t0, c1.w   // x*x + y*y + 0
+   rsq    r1.x, r0.x         // 1/sqrt(x*x + y*y)
+   mul    r0, r1.x, r0.x     // sqrt(x*x + y*y)
+   mul    r0, r0, c4.x       // sqrt(x*x + y*y) * freq
+
+texld r0, r0, s0  // sample from 1D pulse train texture
+
+   mov r1, c2
+   lrp r2, r0.x, c3, r1      // blend between light and dark wood color
+
+   mov oC0, r2
+   
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="5"/>
+     </RmShader>
+     <RmStreamMapReference NAME="PNTTB Stream Mapping" API=""/>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="NoisyRings" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Pass 1" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmShader NAME="vs" API="D3D" PIXEL_SHADER="FALSE"><RmShaderCode TYPE="TEXT"><![CDATA[
+vs.2.0
+
+dcl_position v0
+dcl_normal   v1
+
+   m4x4 oPos, v0, c0    // transform position to clip space
+
+   mov r0.w, c4.z
+   
+   m4x4 r0, v0, c17     // transform Pshade (using texture matrix 0)
+   mov  oT0, r0
+   
+   m4x4 oT1, v0, c21    // transform Pshade (using texture matrix 1)
+   m4x4 oT2, v0, c25    // transform Pshade (using texture matrix 2)
+   
+   mov r1, c4.xxxx
+   mul r1.x, r0.z, c5.x // {freq * Pshade.z, 0, 0, 0}
+   mov oT3, r1          // {freq * Pshade.z, 0, 0, 0} for 1D trunkWobble noise in x
+   mov r1, c4.xxxx
+   mad r1.x, r0.z, c5.x, c5.y // {freq * Pshade.z + 0.5, 0, 0, 0}
+   mov oT4, r1                // {freq * Pshade.z + 0.5, 0, 0, 0} for 1D trunkWobble noise in y
+   
+   m4x4 oT6, v0, c6    // transform position to eye space
+   m4x4 oT7, v1, c6    // transform normal to eye space
+   
+
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="commonConstants" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="trunk_wobble" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="17"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="21"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="25"/>
+     </RmShader>
+     <RmShader NAME="ps" API="D3D" PIXEL_SHADER="TRUE"><RmShaderCode TYPE="TEXT"><![CDATA[
+ps.2.0
+
+def c0, 2.0f, -1.0f, 0.5f, 0.5f  // scale, bias, half, X
+def c1, 1.0f, 1.0f, 0.1f, 0.0f   // X, X, 0.1, zero
+// c2: xyz == Light Wood Color
+// c3: xyz == Dark Wood Color 
+// c4: x == ring freq
+// c5: x == noise amplitude
+
+dcl t0.xyzw   // xyz == Pshade (shader-space position), w == X
+dcl t1.xyzw   // xyz == Perturbed Pshade, w == X
+dcl t2.xyzw   // xyz == Perturbed Pshade, w == X
+
+dcl_2d     s0
+dcl_volume s1
+
+texld r3, t0, s1  // sample dX from scalar noise at Pshade
+texld r4, t1, s1  // sample dY from scalar noise at perturbed Pshade
+texld r5, t2, s1  // sample dZ from scalar noise at perturbed Pshade
+
+   mov r3.y, r4.x  // put dY in y
+   mov r3.z, r5.x  // put dZ in z
+
+   mad r3, r3, c0.x, c0.y  // put noise in range [-1.0, 1.0] 
+   mad r7, c5.x, r3, t0    // scale by amplitude an add Pshade to warp domain
+
+   dp2add r0, r7, r7, c1.w   // x*x + y*y + 0
+   rsq    r0, r0.x           // 1/sqrt(x*x + y*y)
+   rcp    r0, r0.x           // sqrt(x*x + y*y)
+   mul    r0, r0, c4.x       // sqrt(x*x + y*y) * freq
+
+texld r0, r0, s0  // sample from 1D pulse train texture
+
+   mov r1, c2
+   lrp r2, r0.x, c3, r1      // blend between light and dark wood color
+
+   mov oC0, r2
+   
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="5"/>
+     </RmShader>
+     <RmStreamMapReference NAME="PNTTB Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="noise_volume" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="NoisyRingsWithWobble" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Pass 1" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmShader NAME="vs" API="D3D" PIXEL_SHADER="FALSE"><RmShaderCode TYPE="TEXT"><![CDATA[
+vs.2.0
+
+dcl_position v0
+dcl_normal   v1
+
+   m4x4 oPos, v0, c0    // transform position to clip space
+
+   mov r0.w, c4.z
+   
+   m4x4 r0, v0, c17     // transform Pshade (using texture matrix 0)
+   mov  oT0, r0
+   
+   m4x4 oT1, v0, c21    // transform Pshade (using texture matrix 1)
+   m4x4 oT2, v0, c25    // transform Pshade (using texture matrix 2)
+   
+   mov r1, c4.xxxx
+   mul r1.x, r0.z, c5.x // {freq * Pshade.z, 0, 0, 0}
+   mov oT3, r1          // {freq * Pshade.z, 0, 0, 0} for 1D trunkWobble noise in x
+   mov r1, c4.xxxx
+   mad r1.x, r0.z, c5.x, c5.y // {freq * Pshade.z + 0.5, 0, 0, 0}
+   mov oT4, r1                // {freq * Pshade.z + 0.5, 0, 0, 0} for 1D trunkWobble noise in y
+   
+   m4x4 oT6, v0, c6    // transform position to eye space
+   m4x4 oT7, v1, c6    // transform normal to eye space
+   
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="commonConstants" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="wobble_frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="17"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="21"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="25"/>
+     </RmShader>
+     <RmShader NAME="ps" API="D3D" PIXEL_SHADER="TRUE"><RmShaderCode TYPE="TEXT"><![CDATA[
+ps.2.0
+
+def c0, 2.0f, -1.0f, 0.5f, 0.5f  // scale, bias, half, X
+def c1, 1.0f, 1.0f, 0.1f, 0.0f   // X, X, 0.1, zero
+// c2: xyz == Light Wood Color
+// c3: xyz == Dark Wood Color 
+// c4: x == ring freq
+// c5: x == noise amplitude
+// c6: x == trunk wobble
+
+dcl t0.xyzw   // xyz == Pshade (shader-space position), w == X
+dcl t1.xyzw   // xyz == Perturbed Pshade, w == X
+dcl t2.xyzw   // xyz == Perturbed Pshade, w == X
+dcl t3.xyzw   // xyz == {Pshade.z, 0, 0}, w == X
+dcl t4.xyzw   // xyz == {Pshade.z + 0.5, 0, 0}, w == X
+
+dcl_2d     s0
+dcl_volume s1
+
+texld r3, t0, s1  // sample dX from scalar noise at Pshade
+texld r4, t1, s1  // sample dY from scalar noise at perturbed Pshade
+texld r5, t2, s1  // sample dZ from scalar noise at perturbed Pshade
+
+texld r6, t3, s1  // sample trunk wobble.x from scalar noise at {Pshade, 0, 0}
+texld r7, t4, s0  // sample trunk wobble.y from scalar noise at {Pshade + 0.5, 0}
+
+   mov r3.y, r4.x  // put dY in y
+   mov r3.z, r5.x  // put dZ in z
+
+   mov r6.y, r7.y         // move to get {trunkWobble.x, trunkWobble.y, 0}
+   mad r6, r6, c0.x, c0.y // put {trunkWobble.x, trunkWobble.y, 0} in range [-1.0, 1.0]
+
+   mad r3, r3, c0.x, c0.y  // put noise in range [-1.0, 1.0] 
+   mad r7, c5.x, r3, t0    // scale by amplitude an add Pshade to warp domain
+
+   mad r7, c6.x, r6, r7    // scale {trunkWobble.x, trunkWobble.y, 0} by amplitude and add in 
+
+   dp2add r0, r7, r7, c1.w   // x*x + y*y + 0
+   rsq    r0, r0.x           // 1/sqrt(x*x + y*y)
+   rcp    r0, r0.x           // sqrt(x*x + y*y)
+   mul    r0, r0, c4.x       // sqrt(x*x + y*y) * freq
+
+texld r0, r0, s0  // sample from 1D pulse train texture
+
+   mov r1, c2
+   lrp r2, r0.x, c3, r1      // blend between light and dark wood color
+
+   mov oC0, r2
+   
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="trunk_wobble" API="" REGISTER="6"/>
+     </RmShader>
+     <RmStreamMapReference NAME="PNTTB Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="noise_volume" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="LitNoisyRingsWithWobble" API="D3D" ACTIVE_CAMERA="">
+    <RmPass NAME="Pass 1" API="D3D" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Elephant" API=""/>
+     <RmRenderStateBlock NAME="Render State" API="D3D">
+      <RmState NAME="D3DRS_FILLMODE" API="D3D" STATE="8" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" API="D3D" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" API="D3D" STATE="27" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CLIPPING" API="D3D" STATE="136" VALUE="0" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmShader NAME="vs" API="D3D" PIXEL_SHADER="FALSE"><RmShaderCode TYPE="TEXT"><![CDATA[
+vs.2.0
+
+dcl_position v0
+dcl_normal   v1
+
+   m4x4 oPos, v0, c0    // transform position to clip space
+
+   mov r0.w, c4.z
+   
+   m4x4 r0, v0, c17     // transform Pshade (using texture matrix 0)
+   mov  oT0, r0
+   
+   m4x4 oT1, v0, c21    // transform Pshade (using texture matrix 1)
+   m4x4 oT2, v0, c25    // transform Pshade (using texture matrix 2)
+   
+   mov r1, c4.xxxx
+   mul r1.x, r0.z, c5.x // {freq * Pshade.z, 0, 0, 0}
+   mov oT3, r1          // {freq * Pshade.z, 0, 0, 0} for 1D trunkWobble noise in x
+   mov r1, c4.xxxx
+   mad r1.x, r0.z, c5.x, c5.y // {freq * Pshade.z + 0.5, 0, 0, 0}
+   mov oT4, r1                // {freq * Pshade.z + 0.5, 0, 0, 0} for 1D trunkWobble noise in y
+   
+   m4x4 oT6, v0, c6    // transform position to eye space
+   m3x3 oT7.xyz, v1, c6    // transform normal to eye space
+   
+
+
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" API="" REGISTER="0"/>
+      <RmShaderConstant NAME="commonConstants" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="wobble_frequency" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="view_matrix" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="texture_matrix0" API="" REGISTER="17"/>
+      <RmShaderConstant NAME="texture_matrix1" API="" REGISTER="21"/>
+      <RmShaderConstant NAME="texture_matrix2" API="" REGISTER="25"/>
+     </RmShader>
+     <RmShader NAME="ps" API="D3D" PIXEL_SHADER="TRUE"><RmShaderCode TYPE="TEXT"><![CDATA[
+ps.2.0
+
+def c0, 2.0f, -1.0f, 0.5f, 0.5f  // scale, bias, half, X
+def c1, 1.0f, 1.0f, 0.1f, 0.0f   // X, X, 0.1, zero
+// c2: xyz == Light Wood Color
+// c3: xyz == Dark Wood Color 
+// c4: x == ring freq
+// c5: x == noise amplitude
+// c6: x == trunk wobble
+// c7: xyz == eye position in eye space {0, 0, 0, 1}
+// c8: xyz == light position in eye space
+// c9: xy == specular exponent range [x, y]
+
+dcl t0.xyzw   // xyz == Pshade (shader-space position), w == X
+dcl t1.xyzw   // xyz == Perturbed Pshade, w == X
+dcl t2.xyzw   // xyz == Perturbed Pshade, w == X
+dcl t3.xyzw   // xyz == {Pshade.z, 0, 0}, w == X
+dcl t4.xyzw   // xyz == {Pshade.z + 0.5, 0, 0}, w == X
+dcl t6.xyzw   // xyz == P_eye, w == X
+dcl t7.xyz    // xyz == N_eye
+
+dcl_2d     s0
+dcl_volume s1
+
+texld r3, t0, s1  // sample dX from scalar noise at Pshade
+texld r4, t1, s1  // sample dY from scalar noise at perturbed Pshade
+texld r5, t2, s1  // sample dZ from scalar noise at perturbed Pshade
+
+texld r6, t3, s1  // sample trunk wobble.x from scalar noise at {Pshade, 0, 0}
+texld r7, t4, s0  // sample trunk wobble.y from scalar noise at {Pshade + 0.5, 0}
+
+   mov r3.y, r4.x  // put dY in y
+   mov r3.z, r5.x  // put dZ in z
+
+   mov r6.y, r7.y         // move to get {trunkWobble.x, trunkWobble.y, 0}
+   mad r6, r6, c0.x, c0.y // put {trunkWobble.x, trunkWobble.y, 0} in range [-1.0, 1.0]
+
+   mad r3, r3, c0.x, c0.y  // put noise in range [-1.0, 1.0] 
+   mad r7, c5.x, r3, t0    // scale by amplitude an add Pshade to warp domain
+
+   mad r7, c6.x, r6, r7    // scale {trunkWobble.x, trunkWobble.y, 0} by amplitude and add in 
+
+   dp2add r0, r7, r7, c1.w   // x*x + y*y + 0
+   rsq    r0, r0.x           // 1/sqrt(x*x + y*y)
+   rcp    r0, r0.x           // sqrt(x*x + y*y)
+   mul    r0, r0, c4.x       // sqrt(x*x + y*y) * freq
+
+texld r0, r0, s0  // sample from 1D pulse train texture
+
+   mov r1, c2
+   lrp r2, r0.x, c3, r1      // blend between light and dark wood color
+
+   sub r4, c8, t6    // L = vector from vertex to light in eye space
+   dp3 r5.w, r4, r4  // normalize L
+   rsq r5.w, r5.w
+   mul r4, r4, r5.w  // r4 = normalized L
+
+   dp3 r6.w, t7, t7  // normalized the interpolated normal
+   rsq r6.w, r6.w
+   mul r5.xyz, t7.xyzw, r6.w  // r5 = normalized N
+
+   dp3 r3.w, t6, t6  // V = normalized vector from eye to vertex
+   rsq r3.w, r3.w    
+   mul r3, -t6, r3.w // r3 = normalized V
+
+   add r6, r3, r5    // compute eye space half angle 
+   dp3 r6.w, r6, r6  // normalize H
+   rsq r6.w, r6.w
+   mul r6, r6, r6.w  // r6 = normalized H
+
+   dp3_sat r6, r5, r6         // N.H
+   mad r0.z, r0.z, c9.x, c9.y // scale and bias wood ring pulse to specular exponent range
+
+   pow r6, r6.x, r0.z // (N.H)^k
+   
+   dp3 r5, r4, r5             // non-clamped N.L
+   mad_sat r5, r5, c0.z, c0.z // "Half-Lambert" trick for more pleasing diffuse term
+
+   mul r6, r6, r0.y   // gloss the highlight with the ramp texture
+   mad r2, r5, r2, r6 // N.L * procedural albedo + specular
+
+   mov oC0, r2
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="light_wood_color" API="" REGISTER="2"/>
+      <RmShaderConstant NAME="dark_wood_color" API="" REGISTER="3"/>
+      <RmShaderConstant NAME="ring_freq" API="" REGISTER="4"/>
+      <RmShaderConstant NAME="noise_amplitude" API="" REGISTER="5"/>
+      <RmShaderConstant NAME="trunk_wobble" API="" REGISTER="6"/>
+      <RmShaderConstant NAME="eye_pos_Eye_Space" API="" REGISTER="7"/>
+      <RmShaderConstant NAME="light_pos_Eye_Space" API="" REGISTER="8"/>
+      <RmShaderConstant NAME="specular_exponent_range" API="" REGISTER="9"/>
+     </RmShader>
+     <RmStreamMapReference NAME="PNTTB Stream Mapping" API=""/>
+     <RmTextureObject NAME="noise_volume" API="D3D" STATE_INDEX="1" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="noise_volume" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" API="D3D" STATE="2" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSW" API="D3D" STATE="3" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="pulse_train" API="D3D" STATE_INDEX="0" VERTEX_TEXTURE="FALSE">
+      <RmTextureReference NAME="pulse_train" API=""/>
+      <RmState NAME="D3DSAMP_ADDRESSU" API="D3D" STATE="1" VALUE="1" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" API="D3D" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" API="D3D" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" API="D3D" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmFloatVariable NAME="ring_freq" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="13.570000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="noise_amplitude" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0.080000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="trunk_wobble" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="0.060000" MIN="-1.000000" MAX="1.000000" CLAMP="FALSE"/>
+   <RmFloatVariable NAME="wobble_frequency" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE="-0.180000" MIN="-1.000000" MAX="1.000000" CLAMP="TRUE"/>
+   <RmVectorVariable NAME="specular_exponent_range" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="64.000000" VALUE_1="128.000000" VALUE_2="0.000000" VALUE_3="0.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="light_pos_Eye_Space" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="100.000000" VALUE_2="0.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="eye_pos_Eye_Space" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmVectorVariable NAME="commonConstants" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.000000" VALUE_1="0.500000" VALUE_2="1.000000" VALUE_3="2.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+   <RmMatrixVariable NAME="texture_matrix1" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="-0.040000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="0.040000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="0.040000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmMatrixVariable NAME="texture_matrix2" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.040000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="-0.040000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="-0.036000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmMatrixVariable NAME="texture_matrix0" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" VALUE_0="0.044000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="0.000000" VALUE_6="0.040000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.043200" VALUE_10="0.000000" VALUE_11="0.000000" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+   <RmColorVariable NAME="light_wood_color" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="1.000000" VALUE_1="0.697712" VALUE_2="0.150087" VALUE_3="1.000000"/>
+   <RmColorVariable NAME="dark_wood_color" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" VALUE_0="0.546667" VALUE_1="0.297040" VALUE_2="0.070582" VALUE_3="1.000000"/>
+   <Rm2DTextureVariable NAME="pulse_train" API="" ARTIST_EDITABLE="TRUE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\PulseTrain.tga" ORIGIN="0"/>
+   <Rm3DTextureVariable NAME="noise_volume" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="" FILE_NAME="..\Media\Textures\NoiseVolume.dds" ORIGIN="0"/>
+   <RmStreamMap NAME="PNTTB Stream Mapping" API="">
+    <RmStream NAME="Binormal7" API="" STRIDE="56">
+     <RmStreamChannel NAME="Position_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="0" USAGE="0" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="Normal_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="1" USAGE="3" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="TexCoord_0" API="" DATA_SIZE="8" DATA_TYPE="1" REGISTER="2" USAGE="5" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="Tangent_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="3" USAGE="6" USAGE_INDEX="0"/>
+     <RmStreamChannel NAME="Binormal_0" API="" DATA_SIZE="12" DATA_TYPE="2" REGISTER="4" USAGE="7" USAGE_INDEX="0"/>
+    </RmStream>
+   </RmStreamMap>
+   <RmModelData NAME="Elephant" API="" FILE_NAME="..\Media\Models\ElephantBody.3ds" ORIENTATION="0"/>
+  </RmEffectGroup>
+  <RmMatrixVariable NAME="view_proj_matrix" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="ViewProjection" VALUE_0="2.214219" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="2.414213" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="1.001001" VALUE_11="211.502975" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="1.000000" VALUE_15="212.291473"/>
+  <RmMatrixVariable NAME="view_matrix" API="" ARTIST_EDITABLE="FALSE" VARIABLE_SEMANTIC="View" VALUE_0="1.000000" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="1.000000" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="1.000000" VALUE_11="212.291473" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="0.000000" VALUE_15="1.000000"/>
+ </RmEffectWorkspace>
+</RENDER_MONKEY>

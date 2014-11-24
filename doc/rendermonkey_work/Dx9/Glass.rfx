@@ -1,0 +1,997 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE RENDER_MONKEY [
+   <!ELEMENT RENDER_MONKEY
+   (
+      RmEffectWorkspace
+   )?>
+
+   <!ELEMENT RmEffectWorkspace 
+   (
+      RmRegistryBranch?,
+      RmStringVariable*,
+      (
+         ( RmDirectXEffect, RmOpenGLEffect? ) |
+         ( RmOpenGLEffect, RmDirectXEffect? )
+      )?,
+      (
+      RmBooleanVariable |
+      RmFloatVariable |
+      RmVectorVariable |
+      RmMatrixVariable |
+      RmDynamicVariable |
+      RmColorVariable |
+      Rm2DTextureVariable |
+      RmCubemapVariable |
+      Rm3DTextureVariable |
+      RmLightVariable |
+      RmMaterialVariable |
+      RmRenderableTexture |
+      RmStreamMap |
+      RmModelData |
+      RmEffectGroup
+      )*
+   )>
+
+   <!ELEMENT RmEffectGroup
+   ( 
+      (
+      RmStringVariable |
+      RmDirectXEffect |
+      RmOpenGLEffect |
+      RmBooleanVariable |
+      RmFloatVariable |
+      RmVectorVariable |
+      RmMatrixVariable |
+      RmDynamicVariable |
+      RmColorVariable |
+      Rm2DTextureVariable |
+      RmCubemapVariable |
+      Rm3DTextureVariable |
+      RmLightVariable |
+      RmMaterialVariable |
+      RmRenderableTexture |
+      RmStreamMap |
+      RmModelData
+      )*
+   )>
+
+   <!ELEMENT RmDirectXEffect
+   ( 
+      (
+      RmStringVariable |
+      RmCamera |
+      RmBooleanVariable |
+      RmFloatVariable |
+      RmVectorVariable |
+      RmMatrixVariable |
+      RmDynamicVariable |
+      RmColorVariable |
+      Rm2DTextureVariable |
+      RmCubemapVariable |
+      Rm3DTextureVariable |
+      RmLightVariable |
+      RmMaterialVariable |
+      RmRenderableTexture |
+      RmStreamMap |
+      RmModelData |
+      RmPass
+      )*
+   )>
+
+   <!ELEMENT RmOpenGLEffect
+   (
+      (
+      RmStringVariable |
+      RmCamera |
+      RmBooleanVariable |
+      RmFloatVariable |
+      RmVectorVariable |
+      RmMatrixVariable |
+      RmDynamicVariable |
+      RmColorVariable |
+      Rm2DTextureVariable |
+      RmCubemapVariable |
+      Rm3DTextureVariable |
+      RmLightVariable |
+      RmMaterialVariable |
+      RmRenderableTexture |
+      RmStreamMap |
+      RmModelData |
+      RmGLPass
+      )*
+   )>
+
+   <!ELEMENT RmPass
+   ( 
+      RmStringVariable*,
+      RmCameraReference?,
+      RmModelReference?,
+      RmRenderStateBlock?,
+      (
+         (
+         ( RmHLSLShader | RmShader ),
+         ( RmShader | RmHLSLShader )?
+         )
+      )?,
+      RmRenderTarget*,
+      RmStreamMapReference?,
+      (
+         RmBooleanVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmTextureObject |
+         RmLightObject |
+         RmMaterialObject
+         )*
+      )>
+                                                                     
+   <!ELEMENT RmGLPass
+   ( 
+      RmStringVariable*,
+      RmCameraReference?,
+      RmModelReference?,
+      RmRenderStateBlock?,
+      (
+         ( RmGLShader, RmGLShader? ) 
+      )?,
+      RmRenderTarget?,
+      RmStreamMapReference?,
+      (
+         RmBooleanVariable |
+         RmFloatVariable |
+         RmVectorVariable |
+         RmMatrixVariable |
+         RmDynamicVariable |
+         RmColorVariable |
+         Rm2DTextureVariable |
+         RmCubemapVariable |
+         Rm3DTextureVariable |
+         RmLightVariable |
+         RmMaterialVariable |
+         RmTextureObject |
+         RmLightObject |
+         RmMaterialObject |
+         RmShaderConstant |
+         RmSampler
+         )*
+      )>
+      
+   <!ELEMENT RmShader
+   ( 
+      RmShaderCode,
+      (
+      RmStringVariable |
+      RmShaderConstant
+      )*
+   )>
+
+   <!ELEMENT RmHLSLShader
+   ( 
+      RmShaderCode,
+      (
+      RmStringVariable |
+      RmShaderConstant |
+      RmSampler
+      )*
+   )>
+
+   <!ELEMENT RmGLShader
+   ( 
+      RmShaderCode,
+      (
+      RmStringVariable
+      )*
+   )>
+
+   <!ELEMENT RmTextureObject
+   (
+      RmStringVariable*,
+      RmTextureReference?,
+      RmState*
+   )>
+
+   <!ELEMENT RmLightObject
+   (
+      RmStringVariable*,
+      RmLightReference?
+   )>
+   
+   <!ELEMENT RmMaterialObject
+   (
+      RmStringVariable*,
+      RmMaterialReference?
+   )>
+   
+   <!ELEMENT RmRenderStateBlock
+   (
+      (
+      RmStringVariable |
+      RmState 
+      )*
+   )>
+
+   <!ELEMENT RmStreamMap
+   (
+      (
+      RmStringVariable |
+      RmStream 
+      )*
+   )>
+
+   <!ELEMENT RmStream               ( RmStreamChannel* )>
+
+   <!ELEMENT RmModelData            ( RmStringVariable* )>  
+   <!ELEMENT RmTextureReference     ( RmStringVariable* )>
+   <!ELEMENT RmLightReference       ( RmStringVariable* )>
+   <!ELEMENT RmMaterialReference    ( RmStringVariable* )>
+   <!ELEMENT RmCameraReference      ( RmStringVariable* )>
+   <!ELEMENT RmModelReference       ( RmStringVariable* )>
+   <!ELEMENT RmStreamMapReference   ( RmStringVariable* )>   
+   <!ELEMENT RmRenderableTexture    ( RmStringVariable* )>   
+   <!ELEMENT RmRenderTarget         ( RmStringVariable* )>   
+   <!ELEMENT RmBooleanVariable      ( RmStringVariable* )>
+   <!ELEMENT RmFloatVariable        ( RmStringVariable* )>
+   <!ELEMENT RmVectorVariable       ( RmStringVariable* )>
+   <!ELEMENT RmMatrixVariable       ( RmStringVariable* )>   
+   <!ELEMENT RmColorVariable        ( RmStringVariable* )>
+   <!ELEMENT RmIntegerVariable      ( RmStringVariable* )>
+   <!ELEMENT Rm2DTextureVariable    ( RmStringVariable* )>
+   <!ELEMENT RmCubemapVariable      ( RmStringVariable* )>
+   <!ELEMENT Rm3DTextureVariable    ( RmStringVariable* )>
+   <!ELEMENT RmLightVariable        ( RmStringVariable* )>
+   <!ELEMENT RmMaterialVariable     ( RmStringVariable* )>
+   <!ELEMENT RmCamera               ( RmStringVariable* )>
+
+   <!ELEMENT RmStringVariable       ( RmTextDataBlock ) >
+   
+   <!ELEMENT RmDynamicVariable
+   (
+      RmStringVariable*,
+      RmDynamicVariableValueContainer
+   )>
+   
+   <!ELEMENT RmDynamicVariableValueContainer
+   (
+      RmDynamicVariableValue*
+   )>
+   
+   <!ELEMENT RmTextDataBlock        ( #PCDATA ) >
+   
+   <!ELEMENT RmRegistryBranch
+   ( 
+      RmTextDataBlock?,
+      (
+      RmRegistryBranch |
+      RmStringVariable |
+      RmIntegerVariable |
+      RmBooleanVariable |
+      RmFloatVariable
+      )*      
+   )>
+
+   <!ELEMENT RmStreamChannel        EMPTY >
+   <!ELEMENT RmShaderConstant       EMPTY >
+   <!ELEMENT RmSampler              EMPTY >
+   <!ELEMENT RmState                EMPTY >
+   <!ELEMENT RmDynamicVariableValue EMPTY >
+   
+   <!ELEMENT RmShaderCode           ( #PCDATA ) >
+
+   <!ATTLIST RmEffectWorkspace 
+      NAME                          CDATA #REQUIRED
+      ACTIVE_EFFECT                 CDATA #REQUIRED
+      VALIDATION_STRING             CDATA #REQUIRED
+      XML_VERSION                   CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmEffectGroup           
+      NAME                          CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmDirectXEffect                
+      NAME                          CDATA #REQUIRED
+      ACTIVE_CAMERA                 CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmOpenGLEffect                
+      NAME                          CDATA #REQUIRED
+      ACTIVE_CAMERA                 CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmPass                  
+      NAME                          CDATA #REQUIRED
+      PASS_INDEX                    CDATA #REQUIRED
+      ENABLED                       ( TRUE | FALSE ) #REQUIRED
+   >                                 
+
+   <!ATTLIST RmGLPass                  
+      NAME                          CDATA #REQUIRED
+      PASS_INDEX                    CDATA #REQUIRED
+      ENABLED                       ( TRUE | FALSE ) #REQUIRED
+   >                                 
+   
+   <!ATTLIST RmShader        
+      NAME                          CDATA #REQUIRED
+      PIXEL_SHADER                  CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmHLSLShader        
+      NAME                          CDATA #REQUIRED
+      PIXEL_SHADER                  ( TRUE | FALSE ) #REQUIRED
+      TARGET                        CDATA #REQUIRED
+      ENTRY_POINT                   CDATA #REQUIRED
+   >  
+
+   <!ATTLIST RmGLShader        
+      NAME                          CDATA #REQUIRED
+      PIXEL_SHADER                  ( TRUE | FALSE ) #REQUIRED
+   >  
+
+   <!ATTLIST RmShaderConstant
+      NAME                          CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmSampler               
+      NAME                          CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmTextureObject
+      NAME                          CDATA #REQUIRED
+      STATE_INDEX                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmLightObject
+      NAME                          CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialObject
+      NAME                          CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmRenderStateBlock
+      NAME                          CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmState                 
+      NAME                          CDATA #REQUIRED
+      STATE                         CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      USAGE                         CDATA #REQUIRED
+   >                               
+
+   <!ATTLIST RmStreamMap           
+     NAME                           CDATA #REQUIRED
+   >                               
+
+   <!ATTLIST RmStream              
+      NAME                          CDATA #REQUIRED
+      STRIDE                        CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmStreamChannel
+      NAME                          CDATA #REQUIRED
+      DATA_SIZE                     CDATA #REQUIRED
+      DATA_TYPE                     CDATA #REQUIRED
+      REGISTER                      CDATA #REQUIRED
+      USAGE                         CDATA #REQUIRED
+      USAGE_INDEX                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmModelData
+      NAME                          CDATA #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmTextureReference
+      NAME                          CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmLightReference
+      NAME                          CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialReference
+      NAME                          CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmModelReference
+      NAME                          CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmStreamMapReference
+      NAME                          CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmRenderableTexture
+      NAME                          CDATA #REQUIRED
+      WIDTH                         CDATA #REQUIRED
+      HEIGHT                        CDATA #REQUIRED
+      FORMAT                        CDATA #REQUIRED
+      USE_VIEWPORT_DIMENSIONS       ( TRUE | FALSE ) #REQUIRED
+      GENERATE_MIPMAPS              ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmRenderTarget
+      NAME                          CDATA #REQUIRED
+      INDEX                         CDATA #REQUIRED
+      RENDER_TO_SCREEN              ( TRUE | FALSE ) #REQUIRED
+      COLOR_CLEAR                   ( TRUE | FALSE ) #REQUIRED
+      DEPTH_CLEAR                   ( TRUE | FALSE ) #REQUIRED
+      CLEAR_COLOR_VALUE             CDATA #REQUIRED
+      DEPTH_CLEAR_VALUE             CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmBooleanVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE                         CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmFloatVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmVectorVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+      NORMALIZE                     ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST RmMatrixVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+      VALUE_4                       CDATA #REQUIRED
+      VALUE_5                       CDATA #REQUIRED
+      VALUE_6                       CDATA #REQUIRED
+      VALUE_7                       CDATA #REQUIRED
+      VALUE_8                       CDATA #REQUIRED
+      VALUE_9                       CDATA #REQUIRED
+      VALUE_10                      CDATA #REQUIRED
+      VALUE_11                      CDATA #REQUIRED
+      VALUE_12                      CDATA #REQUIRED
+      VALUE_13                      CDATA #REQUIRED
+      VALUE_14                      CDATA #REQUIRED
+      VALUE_15                      CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmDynamicVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VARIABLE_TYPE                 ( FLOAT | INTEGER | BOOLEAN ) #REQUIRED
+      ROWS                          CDATA #REQUIRED
+      COLUMNS                       CDATA #REQUIRED
+      FIXED_SIZE                    ( TRUE | FALSE ) #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+      NORMALIZE                     ( TRUE | FALSE ) #REQUIRED
+   >
+   
+   <!ATTLIST RmDynamicVariableValue
+      ROW_INDEX                     CDATA #REQUIRED
+      COLUMN_INDEX                  CDATA #REQUIRED
+      VALUE                         CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmColorVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE_0                       CDATA #REQUIRED
+      VALUE_1                       CDATA #REQUIRED
+      VALUE_2                       CDATA #REQUIRED
+      VALUE_3                       CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmIntegerVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      VALUE                         CDATA #REQUIRED
+      MIN                           CDATA #REQUIRED
+      MAX                           CDATA #REQUIRED
+      CLAMP                         ( TRUE | FALSE ) #REQUIRED
+   >
+   
+   <!ATTLIST RmStringVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+   >
+
+   <!ATTLIST Rm2DTextureVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmCubemapVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+   >
+
+   <!ATTLIST Rm3DTextureVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      FILE_NAME                     CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmLightVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      LIGHT_ENABLED                 ( TRUE | FALSE ) #REQUIRED
+      LIGHT_TYPE                    ( POSITIONAL | DIRECTIONAL | SPOTLIGHT ) #REQUIRED
+      AMBIENT_0                     CDATA #REQUIRED
+      AMBIENT_1                     CDATA #REQUIRED
+      AMBIENT_2                     CDATA #REQUIRED
+      AMBIENT_3                     CDATA #REQUIRED
+      DIFFUSE_0                     CDATA #REQUIRED
+      DIFFUSE_1                     CDATA #REQUIRED
+      DIFFUSE_2                     CDATA #REQUIRED
+      DIFFUSE_3                     CDATA #REQUIRED
+      SPECULAR_0                    CDATA #REQUIRED
+      SPECULAR_1                    CDATA #REQUIRED
+      SPECULAR_2                    CDATA #REQUIRED
+      SPECULAR_3                    CDATA #REQUIRED
+      POSITION_0                    CDATA #REQUIRED
+      POSITION_1                    CDATA #REQUIRED
+      POSITION_2                    CDATA #REQUIRED
+      DIRECTION_0                   CDATA #REQUIRED
+      DIRECTION_1                   CDATA #REQUIRED
+      DIRECTION_2                   CDATA #REQUIRED
+      ATTENUATION_0                 CDATA #REQUIRED
+      ATTENUATION_1                 CDATA #REQUIRED
+      ATTENUATION_2                 CDATA #REQUIRED
+      SPOTLIGHT_THETA               CDATA #REQUIRED
+      SPOTLIGHT_PHI                 CDATA #REQUIRED
+      RANGE                         CDATA #REQUIRED
+      FALLOFF                       CDATA #REQUIRED
+   >
+   
+   <!ATTLIST RmMaterialVariable
+      NAME                          CDATA #REQUIRED
+      ARTIST_EDITABLE               ( TRUE | FALSE ) #REQUIRED
+      AMBIENT_0                     CDATA #REQUIRED
+      AMBIENT_1                     CDATA #REQUIRED
+      AMBIENT_2                     CDATA #REQUIRED
+      AMBIENT_3                     CDATA #REQUIRED
+      DIFFUSE_0                     CDATA #REQUIRED
+      DIFFUSE_1                     CDATA #REQUIRED
+      DIFFUSE_2                     CDATA #REQUIRED
+      DIFFUSE_3                     CDATA #REQUIRED
+      SPECULAR_0                    CDATA #REQUIRED
+      SPECULAR_1                    CDATA #REQUIRED
+      SPECULAR_2                    CDATA #REQUIRED
+      SPECULAR_3                    CDATA #REQUIRED
+      EMISSIVE_0                    CDATA #REQUIRED
+      EMISSIVE_1                    CDATA #REQUIRED
+      EMISSIVE_2                    CDATA #REQUIRED
+      EMISSIVE_3                    CDATA #REQUIRED
+      SPECULAR_POWER                CDATA #REQUIRED
+   >
+      
+   <!ATTLIST RmRegistryBranch
+      NAME                          CDATA #REQUIRED
+      XML_VERSION                   CDATA #REQUIRED
+   >
+
+   <!ATTLIST RmCamera                
+      NAME                          CDATA #REQUIRED
+      CAMERA_POSITION_X             CDATA #REQUIRED
+      CAMERA_POSITION_Y             CDATA #REQUIRED
+      CAMERA_POSITION_Z             CDATA #REQUIRED
+      LOOK_AT_VECTOR_X              CDATA #REQUIRED
+      LOOK_AT_VECTOR_Y              CDATA #REQUIRED
+      LOOK_AT_VECTOR_Z              CDATA #REQUIRED
+      UP_VECTOR_X                   CDATA #REQUIRED
+      UP_VECTOR_Y                   CDATA #REQUIRED
+      UP_VECTOR_Z                   CDATA #REQUIRED
+      FOV                           CDATA #REQUIRED
+      NEAR_CLIP_PLANE               CDATA #REQUIRED
+      FAR_CLIP_PLANE                CDATA #REQUIRED
+   >                                 
+
+   <!ATTLIST RmCameraReference                
+      NAME                          CDATA #REQUIRED
+      USE_ACTIVE_CAMERA             ( TRUE | FALSE ) #REQUIRED
+   >                               
+   
+   <!ATTLIST RmShaderCode                
+      TYPE                          ( TEXT ) #REQUIRED
+   >                               
+   
+   <!ATTLIST RmTextDataBlock                
+      TYPE                          ( TEXT ) #REQUIRED
+   >                               
+   
+]>
+<RENDER_MONKEY>
+ <RmEffectWorkspace NAME="Effect Workspace" ACTIVE_EFFECT="Effect Workspace.Glass Effect Group.SimpleGlass" VALIDATION_STRING="" XML_VERSION="RenderMonkey 1.1">
+  <RmRegistryBranch NAME="RM_REGISTRY" XML_VERSION="RenderMonkey 1.1">
+   <RmRegistryBranch NAME="RM_LOCAL" XML_VERSION="RenderMonkey 1.1">
+    <RmRegistryBranch NAME="WORKSPACE" XML_VERSION="RenderMonkey 1.1">
+     <RmStringVariable NAME="LAST_SAVE" ARTIST_EDITABLE="FALSE"><RmTextDataBlock TYPE="TEXT"><![CDATA[
+24/2/2004 14:12:53]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="VERSION" ARTIST_EDITABLE="FALSE"><RmTextDataBlock TYPE="TEXT"><![CDATA[
+RenderMonkey Version 1.1 (build 286)]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="XML_VERSION" ARTIST_EDITABLE="FALSE"><RmTextDataBlock TYPE="TEXT"><![CDATA[
+RenderMonkey 1.1]]></RmTextDataBlock></RmStringVariable>
+     <RmStringVariable NAME="BASE_WORKSPACE_PATH" ARTIST_EDITABLE="FALSE"><RmTextDataBlock TYPE="TEXT"><![CDATA[
+F:\3darg\Tools\RenderMonkey\effects\DX9\]]></RmTextDataBlock></RmStringVariable>
+    </RmRegistryBranch>
+   </RmRegistryBranch>
+  </RmRegistryBranch>
+  <RmStringVariable NAME="Header" ARTIST_EDITABLE="FALSE"><RmTextDataBlock TYPE="TEXT"><![CDATA[
+$File: //depot/3darg/Tools/RenderMonkey/Examples/DX9/Glass.rfx $
+$Revision: #5 $
+
+© AMD, 2007]]></RmTextDataBlock></RmStringVariable>
+  <RmEffectGroup NAME="Glass Effect Group">
+   <RmDirectXEffect NAME="SimpleGlass" ACTIVE_CAMERA="">
+    <RmFloatVariable NAME="rainbowiness" ARTIST_EDITABLE="TRUE" VALUE="0.500000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+    <RmPass NAME="Crystal" PASS_INDEX="1" ENABLED="TRUE">
+     <RmModelReference NAME="Vase"/>
+     <RmRenderStateBlock NAME="Render State">
+      <RmState NAME="D3DRS_ZWRITEENABLE" STATE="14" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_SRCBLEND" STATE="19" VALUE="5" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_DESTBLEND" STATE="20" VALUE="6" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" STATE="22" VALUE="3" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_ALPHABLENDENABLE" STATE="27" VALUE="1" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4 view_position: register(c4);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 normal:  TEXCOORD0;
+   float3 viewVec: TEXCOORD1;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   // Tiny little model .. give it some size
+   Pos.xyz *= 10;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   Out.normal = normal;
+   Out.viewVec = view_position - Pos;
+
+   return Out;
+}
+
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_position" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float rainbowiness: register(c0);
+sampler Environment: register(s1);
+sampler Rainbow: register(s0);
+float4 main(float3 normal: TEXCOORD0, float3 viewVec: TEXCOORD1) : COLOR {
+   normal = normalize(normal);
+
+   float v = dot(normalize(viewVec), normal);
+   // Map a rainbowish color
+   float3 rainbow = tex1D(Rainbow, v);
+
+   // Find the reflection
+   float3 reflVec = reflect(-viewVec, normal);
+   float3 refl = texCUBE(Environment, reflVec);
+
+   float3 color = lerp(refl, rainbow, rainbowiness * v);
+   return float4(color, 1 - v);
+}
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Environment" REGISTER="1"/>
+      <RmSampler NAME="Rainbow" REGISTER="0"/>
+      <RmShaderConstant NAME="rainbowiness" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="Stream Mapping"/>
+     <RmTextureObject NAME="Environment" STATE_INDEX="1">
+      <RmTextureReference NAME="Mars Environment"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="Rainbow" STATE_INDEX="0">
+      <RmTextureReference NAME="Rainbow"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+    <RmPass NAME="Background" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Sphere"/>
+     <RmRenderStateBlock NAME="Render State">
+      <RmState NAME="D3DRS_ZWRITEENABLE" STATE="14" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4 view_position: register(c4);
+float4x4 view_proj_matrix: register(c0);
+sampler Environment: register(s0);
+struct VS_OUTPUT {
+   float4 Pos: POSITION;
+   float3 texCoord: TEXCOORD0;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION){
+   VS_OUTPUT Out;
+
+   // Lock the environment around the camera
+   Out.Pos = mul(view_proj_matrix, float4(Pos.xyz + view_position.xyz, 1));
+   Out.texCoord = Pos;
+
+   return Out;
+}
+
+
+
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_position" REGISTER="4"/>
+      <RmShaderConstant NAME="view_proj_matrix" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" PIXEL_SHADER="TRUE" TARGET="ps_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+sampler Environment: register(s0);
+float4 main(float3 texCoord: TEXCOORD) : COLOR {
+   return texCUBE(Environment, texCoord);
+}
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Environment" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="Stream Mapping"/>
+     <RmTextureObject NAME="Environment" STATE_INDEX="0">
+      <RmTextureReference NAME="Mars Environment"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+   <RmDirectXEffect NAME="ComplexGlass" ACTIVE_CAMERA="">
+    <RmFloatVariable NAME="refractionScale" ARTIST_EDITABLE="TRUE" VALUE="1.000000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+    <RmFloatVariable NAME="reflectionScale" ARTIST_EDITABLE="TRUE" VALUE="1.000000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+    <RmFloatVariable NAME="indexOfRefractionRatio" ARTIST_EDITABLE="TRUE" VALUE="1.140000" MIN="0.000000" MAX="2.000000" CLAMP="FALSE"/>
+    <RmFloatVariable NAME="ambient" ARTIST_EDITABLE="TRUE" VALUE="0.200000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+    <RmFloatVariable NAME="rainbowSpread" ARTIST_EDITABLE="TRUE" VALUE="0.180000" MIN="0.000000" MAX="3.000000" CLAMP="FALSE"/>
+    <RmFloatVariable NAME="rainbowScale" ARTIST_EDITABLE="TRUE" VALUE="0.200000" MIN="0.000000" MAX="1.000000" CLAMP="FALSE"/>
+    <RmColorVariable NAME="baseColor" ARTIST_EDITABLE="TRUE" VALUE_0="0.722019" VALUE_1="0.704711" VALUE_2="0.760274" VALUE_3="1.000000"/>
+    <RmPass NAME="Environment" PASS_INDEX="0" ENABLED="TRUE">
+     <RmModelReference NAME="Sphere"/>
+     <RmRenderStateBlock NAME="Render State">
+      <RmState NAME="D3DRS_ZENABLE" STATE="7" VALUE="0" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" STATE="22" VALUE="1" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4 view_position: register(c4);
+struct VS_OUTPUT {
+   float4 Pos: POSITION;
+   float3 dir: TEXCOORD0;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION){
+   VS_OUTPUT Out;
+
+   // Center environment around camera
+   Out.Pos = mul(view_proj_matrix, float4(Pos.xyz + view_position, 1));
+   Out.dir = Pos.xyz;
+
+   return Out;
+}
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" REGISTER="0"/>
+      <RmShaderConstant NAME="view_position" REGISTER="4"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" PIXEL_SHADER="TRUE" TARGET="ps_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+sampler Environment: register(s0);
+float4 main(float3 dir: TEXCOORD0) : COLOR {
+   return texCUBE(Environment, dir);
+}
+
+
+
+]]></RmShaderCode>
+      <RmSampler NAME="Environment" REGISTER="0"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="Stream Mapping"/>
+     <RmTextureObject NAME="Environment" STATE_INDEX="0">
+      <RmTextureReference NAME="Snow Environment"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+    <RmPass NAME="Object" PASS_INDEX="1" ENABLED="TRUE">
+     <RmModelReference NAME="Teapot"/>
+     <RmRenderStateBlock NAME="Render State">
+      <RmState NAME="D3DRS_ZENABLE" STATE="7" VALUE="1" USAGE="RENDER_STATE"/>
+      <RmState NAME="D3DRS_CULLMODE" STATE="22" VALUE="3" USAGE="RENDER_STATE"/>
+     </RmRenderStateBlock>
+     <RmHLSLShader NAME="Vertex Shader" PIXEL_SHADER="FALSE" TARGET="vs_1_1" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float4x4 view_proj_matrix: register(c0);
+float4 view_position: register(c4);
+struct VS_OUTPUT {
+   float4 Pos:     POSITION;
+   float3 normal:  TEXCOORD0;
+   float3 viewVec: TEXCOORD1;
+};
+
+VS_OUTPUT main(float4 Pos: POSITION, float3 normal: NORMAL){
+   VS_OUTPUT Out;
+
+   Out.Pos = mul(view_proj_matrix, Pos);
+   Out.normal = normal;
+   Out.viewVec = view_position - Pos;
+
+   return Out;
+}
+
+
+
+]]></RmShaderCode>
+      <RmShaderConstant NAME="view_proj_matrix" REGISTER="0"/>
+      <RmShaderConstant NAME="view_position" REGISTER="4"/>
+     </RmHLSLShader>
+     <RmHLSLShader NAME="Pixel Shader" PIXEL_SHADER="TRUE" TARGET="ps_2_0" ENTRY_POINT="main"><RmShaderCode TYPE="TEXT"><![CDATA[
+float refractionScale: register(c2);
+float rainbowScale: register(c3);
+float rainbowSpread: register(c4);
+float4 baseColor: register(c5);
+float ambient: register(c6);
+float indexOfRefractionRatio: register(c0);
+float reflectionScale: register(c1);
+sampler Environment: register(s0);
+sampler Rainbow: register(s1);
+float4 main(float3 normal: TEXCOORD0, float3 viewVec: TEXCOORD1) : COLOR {
+   normal = normalize(normal);
+   viewVec = normalize(viewVec);
+
+   // Look up the reflection
+   float3 reflVec = reflect(-viewVec, normal);
+   float4 reflection = texCUBE(Environment, reflVec.xyz);
+
+   // We'll use Snell's refraction law:
+   // n  * sin(theta ) = n  * sin(theta )
+   //  i            i     r            r
+
+   // sin(theta )
+   //          i
+   float cosine = dot(viewVec, normal);
+   float sine = sqrt(1 - cosine * cosine);
+
+   // sin(theta )
+   //          r
+   float sine2 = saturate(indexOfRefractionRatio * sine);
+   float cosine2 = sqrt(1 - sine2 * sine2);
+
+   // Out of the sine and cosine of the angle between the
+   // refraction vector and the normal we can construct the
+   // refraction vector itself given two base vectors.
+   // These two base vectors are the negative normal and
+   // a tangent vector along the path of the incoming vector
+   // relative to the surface.
+   float3 x = -normal;
+   float3 y = normalize(cross(cross(viewVec, normal), normal));
+
+   // Refraction
+   float3 refrVec = x * cosine2 + y * sine2;
+   float4 refraction = texCUBE(Environment, refrVec.xyz);
+
+   // Colors refract differently and the difference is more
+   // visible the stronger the refraction. We'll fake this
+   // effect by adding some rainbowish colors accordingly.
+   float4 rainbow = tex1D(Rainbow, pow(cosine, rainbowSpread));
+
+   float4 rain = rainbowScale * rainbow * baseColor;
+   float4 refl = reflectionScale * reflection;
+   float4 refr = refractionScale * refraction * baseColor;
+
+   // There is more light reflected at sharp angles and less
+   // light refracted. There is more color separation of refracted
+   // light at sharper angles
+   return sine * refl + (1 - sine2) * refr + sine2 * rain + ambient;
+}
+
+]]></RmShaderCode>
+      <RmSampler NAME="Environment" REGISTER="0"/>
+      <RmSampler NAME="Rainbow" REGISTER="1"/>
+      <RmShaderConstant NAME="refractionScale" REGISTER="2"/>
+      <RmShaderConstant NAME="rainbowScale" REGISTER="3"/>
+      <RmShaderConstant NAME="rainbowSpread" REGISTER="4"/>
+      <RmShaderConstant NAME="baseColor" REGISTER="5"/>
+      <RmShaderConstant NAME="ambient" REGISTER="6"/>
+      <RmShaderConstant NAME="indexOfRefractionRatio" REGISTER="0"/>
+      <RmShaderConstant NAME="reflectionScale" REGISTER="1"/>
+     </RmHLSLShader>
+     <RmStreamMapReference NAME="Stream Mapping"/>
+     <RmTextureObject NAME="Rainbow" STATE_INDEX="1">
+      <RmTextureReference NAME="Rainbow"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+     <RmTextureObject NAME="Environment" STATE_INDEX="0">
+      <RmTextureReference NAME="Snow Environment"/>
+      <RmState NAME="D3DSAMP_ADDRESSU" STATE="1" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_ADDRESSV" STATE="2" VALUE="3" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MAGFILTER" STATE="5" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MINFILTER" STATE="6" VALUE="2" USAGE="SAMPLER_STATE"/>
+      <RmState NAME="D3DSAMP_MIPFILTER" STATE="7" VALUE="2" USAGE="SAMPLER_STATE"/>
+     </RmTextureObject>
+    </RmPass>
+   </RmDirectXEffect>
+  </RmEffectGroup>
+  <RmVectorVariable NAME="view_position" ARTIST_EDITABLE="FALSE" VALUE_0="0.000000" VALUE_1="0.000000" VALUE_2="-200.000000" VALUE_3="1.000000" MIN="-10.000000" MAX="10.000000" CLAMP="FALSE" NORMALIZE="FALSE"/>
+  <RmMatrixVariable NAME="view_proj_matrix" ARTIST_EDITABLE="FALSE" VALUE_0="2.278503" VALUE_1="0.000000" VALUE_2="0.000000" VALUE_3="0.000000" VALUE_4="0.000000" VALUE_5="2.414214" VALUE_6="0.000000" VALUE_7="0.000000" VALUE_8="0.000000" VALUE_9="0.000000" VALUE_10="1.001001" VALUE_11="199.199188" VALUE_12="0.000000" VALUE_13="0.000000" VALUE_14="1.000000" VALUE_15="200.000000"/>
+  <Rm2DTextureVariable NAME="Rainbow" ARTIST_EDITABLE="TRUE" FILE_NAME="..\Media\Textures\Rainbow.tga"/>
+  <RmCubemapVariable NAME="Mars Environment" ARTIST_EDITABLE="TRUE" FILE_NAME="..\Media\Textures\Mars.dds"/>
+  <RmCubemapVariable NAME="Snow Environment" ARTIST_EDITABLE="TRUE" FILE_NAME="..\Media\Textures\Snow.dds"/>
+  <RmStreamMap NAME="Stream Mapping">
+   <RmStream NAME="TexCoord5" STRIDE="24">
+    <RmStreamChannel NAME="Position_0" DATA_SIZE="12" DATA_TYPE="2" REGISTER="0" USAGE="0" USAGE_INDEX="0"/>
+    <RmStreamChannel NAME="Normal_0" DATA_SIZE="12" DATA_TYPE="2" REGISTER="1" USAGE="3" USAGE_INDEX="0"/>
+   </RmStream>
+  </RmStreamMap>
+  <RmModelData NAME="Sphere" FILE_NAME="..\Media\Models\Sphere.3ds"/>
+  <RmModelData NAME="Vase" FILE_NAME="..\Media\Models\Vase.3ds"/>
+  <RmModelData NAME="Teapot" FILE_NAME="..\Media\Models\Teapot.3ds"/>
+ </RmEffectWorkspace>
+</RENDER_MONKEY>

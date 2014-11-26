@@ -29,6 +29,14 @@
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup> 
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_AssetViewer|Win32'">
+ 	 <Lib>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Link>
+      <AdditionalDependencies>d3d9.lib;d3dx9.lib;dxerr.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="DirectXSDKDir">
       <Value>$(DirectXSDKDir)</Value>

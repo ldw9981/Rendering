@@ -12,15 +12,16 @@
 
 namespace Sophia
 {
-	#define PI           3.14159265f
-	#define FOV          (PI/4.0f)							// 시야각
-	#define ASPECT_RATIO (1024/(float)768)		// 화면의 종횡비
-	#define NEAR_PLANE   1									// 근접 평면
-	#define FAR_PLANE    10000								// 원거리 평면
 
-	#define T_SIZE 256
+#define PI           3.14159265f
+#define FOV          (PI/4.0f)							// 시야각
+#define ASPECT_RATIO (1024/(float)768)		// 화면의 종횡비
+#define NEAR_PLANE   1									// 근접 평면
+#define FAR_PLANE    10000								// 원거리 평면
 
-	#define SHADOWMAP_SIZE 4096
+#define T_SIZE 256
+#define SHADOWMAP_DIST 1000.0f
+#define SHADOWMAP_SIZE 4096
 
 World::World(void)
 {
@@ -30,7 +31,7 @@ World::World(void)
 	m_ViewPortInfo.Y = 0;
 	m_ViewPortInfo.Width = Graphics::m_pInstance->m_width;
 	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
-	m_WorldLightPosition = D3DXVECTOR4(1500.0f, 500.0f, -1500.0f, 1.0f);
+	m_worldLightDirection = D3DXVECTOR4(0.0f, -1.0f, 1.0f,0.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
 	m_pHWRenderTarget[0] = NULL;
@@ -65,6 +66,9 @@ void World::ProcessRender()
 void World::Update( DWORD elapseTime )
 {
 	m_camera.Update(elapseTime);
+	m_camera.GetWorldPosition(m_worldLightPosition);
+	m_worldLightPosition = m_worldLightDirection * -SHADOWMAP_DIST;
+
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
 		(*itIn)->Update(elapseTime);
@@ -179,7 +183,7 @@ void World::Render()
 	UINT passes = 0;
 	D3DXMATRIX matLightView;
 	{
-		D3DXVECTOR3 vEyePt( m_WorldLightPosition.x, m_WorldLightPosition.y,  m_WorldLightPosition.z );		
+		D3DXVECTOR3 vEyePt( m_worldLightPosition.x, m_worldLightPosition.y,  m_worldLightPosition.z );		
 		const D3DXVECTOR3* vLookatPt = m_camera.GetWorldPositionPtr();
 
 		vEyePt += *vLookatPt;
@@ -191,7 +195,8 @@ void World::Render()
 		//D3DXMatrixPerspectiveFovLH( &matLightProjection, D3DX_PI / 4.0f, 1, 3000, FAR_PLANE );
 		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, NEAR_PLANE, FAR_PLANE );
 	}
-	Graphics::m_pInstance->SetEffectVector_WorldLightPosition(&m_WorldLightPosition);
+
+	Graphics::m_pInstance->SetEffectVector_WorldLightDirection(&m_worldLightDirection);
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 	
@@ -231,12 +236,12 @@ void World::Render()
 		pEffect->End();
 	}	
 	// SHADOW_MAP		
-	/*
+	
 	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
 	pEffect->CommitChanges();
 	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
-	*/
+	
 	
 }
 

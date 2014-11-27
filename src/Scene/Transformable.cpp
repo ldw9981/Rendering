@@ -56,6 +56,14 @@ void cTransformable::GetWorldPosition(D3DXVECTOR3& pos)
 	pos.z = m_matWorld._43;  
 }
 
+void cTransformable::GetWorldPosition( D3DXVECTOR4& pos )
+{
+	pos.x = m_matWorld._41;   
+	pos.y = m_matWorld._42;  
+	pos.z = m_matWorld._43;  
+	pos.w = m_matWorld._44;  
+}
+
 D3DXVECTOR3* cTransformable::GetWorldPositionPtr()
 {
 	return (D3DXVECTOR3*)&m_matWorld._41;

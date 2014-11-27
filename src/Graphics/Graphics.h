@@ -72,8 +72,8 @@ public:
 	D3DXHANDLE				m_hmViewProjection;
 	D3DXHANDLE				m_hvLightDir;
 	D3DXHANDLE				m_hmPalette;
-	D3DXHANDLE				m_hvWorldLightPosition;
-	D3DXHANDLE				m_hvWorldCameraPosition;;
+	D3DXHANDLE				m_hvWorldLightDirection;
+	D3DXHANDLE				m_hvWorldCameraPosition;
 
 	D3DXHANDLE				m_hmLightView;
 	D3DXHANDLE				m_hmLightProjection;
@@ -112,7 +112,7 @@ public:
 	void Begin();
 	void End();
 
-	void SetEffectVector_WorldLightPosition(D3DXVECTOR4* pVec);
+	void SetEffectVector_WorldLightDirection(D3DXVECTOR4* pVec);
 	void SetEffectMatirx_LightView(D3DXMATRIX* pMat);
 	void SetEffectMatirx_LightProjection(D3DXMATRIX* pMat);
 

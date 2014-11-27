@@ -13,7 +13,7 @@ float4x4	gWorldMatrix      : WORLD;
 float4x4	gViewMatrix       : VIEW;
 float4x4	gProjectionMatrix : PROJECTION;
 float4x4	gViewProjectionMatrix : ViewProjection;
-float4		gWorldLightPosition;
+float4		gWorldLightDirection;
 float4		gWorldCameraPosition;
 
 float4x4	gLightViewMatrix;
@@ -324,7 +324,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_Terrain( VS_TERRAIN_INPUT input)
    float4 worldPosition = mul(input.mPosition , gWorldMatrix);
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    
-   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   float3 lightDir = normalize( gWorldLightDirection.xyz);
    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
    float3 worldNormal = mul(input.mNormal,(float3x3)gWorldMatrix);
    worldNormal = normalize(worldNormal);
@@ -351,7 +351,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse( VS_PHONG_DIFFUSE_INPUT input)
 	//mul(input.mPosition , gWorldMatrix);
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
    
-   float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   float3 lightDir = normalize( gWorldLightDirection.xyz);
    float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
    float3 worldNormal = mul(input.mNormal,(float3x3)gWorldMatrix);
    worldNormal = normalize(worldNormal);
@@ -377,7 +377,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_PhongDiffuse_Instancing( VS_PHONG_DIFFUSE_INSTANCE_IN
 	float4 worldPosition = mul(input.mPosition , mInstanceMatrix);
 	output.mPosition = mul(worldPosition , gViewProjectionMatrix);
 
-	float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+	float3 lightDir = normalize( gWorldLightDirection.xyz);
 	float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
 	float3 worldNormal =  normalize(mul(input.mNormal,(float3x3)mInstanceMatrix)); 
     
@@ -402,7 +402,7 @@ VS_PHONG_DIFFUSE_BUMP_OUTPUT vs_PhongDiffuseBump( VS_PHONG_DIFFUSE_INPUT input)
    float4 worldPosition = mul(input.mPosition , gWorldMatrix);
    output.mPosition = mul(worldPosition , gViewProjectionMatrix);
 
-   output.mLightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+   output.mLightDir = normalize( gWorldLightDirection.xyz);
    output.mNormal = normalize(mul(input.mNormal,(float3x3)gWorldMatrix));
    output.mCameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
    output.mTexCoord = input.mTexCoord;
@@ -442,7 +442,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuse( VS_SKINNING_PHONG_DIFFUSE_INPUT
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
-    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+    float3 lightDir = normalize( gWorldLightDirection.xyz);
     float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);
     float3 worldNormal = mul(input.mNormal,(float3x3)matWorldSkinned);
     worldNormal = normalize(worldNormal);
@@ -483,7 +483,7 @@ VS_PHONG_DIFFUSE_OUTPUT vs_SkinningPhongDiffuseInstancing( VS_SKINNING_PHONG_DIF
 	float4 worldPosition = mul(input.mPosition , matWorldSkinned);	
     output.mPosition = mul(worldPosition , gViewProjectionMatrix);
     
-    float3 lightDir = normalize( output.mPosition.xyz - gWorldLightPosition.xyz);
+    float3 lightDir = normalize( gWorldLightDirection.xyz);
     float3 cameraDir = normalize( output.mPosition.xyz - gWorldCameraPosition.xyz);	
 	float3 worldNormal =  normalize(mul(input.mNormal,(float3x3)matWorldSkinned)); 
 

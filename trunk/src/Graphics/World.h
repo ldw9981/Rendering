@@ -52,7 +52,8 @@ public:
 	// camera
 	cCameraNode				m_camera;
 	// directional light
-	D3DXVECTOR4				m_WorldLightPosition;
+	D3DXVECTOR4				m_worldLightPosition;
+	D3DXVECTOR4				m_worldLightDirection;
 	bool					m_bDebugBound;
 	bool					m_bEnableShadow;
 protected:

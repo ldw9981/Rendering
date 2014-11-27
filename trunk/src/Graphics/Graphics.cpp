@@ -221,7 +221,7 @@ void Graphics::LoadHLSL(const char* szFileName)
 	m_hmProjection = m_pEffect->GetParameterByName( NULL, "gProjectionMatrix" );
 	m_hmViewProjection = m_pEffect->GetParameterByName( NULL, "gViewProjectionMatrix" );
 	m_hmPalette = m_pEffect->GetParameterByName( NULL, "Palette" );
-	m_hvWorldLightPosition = m_pEffect->GetParameterByName( NULL, "gWorldLightPosition" );
+	m_hvWorldLightDirection = m_pEffect->GetParameterByName( NULL, "gWorldLightDirection" );
 	m_hvWorldCameraPosition = m_pEffect->GetParameterByName( NULL, "gWorldCameraPosition" );
 	m_hmLightView = m_pEffect->GetParameterByName( NULL, "gLightViewMatrix" );
 	m_hmLightProjection = m_pEffect->GetParameterByName( NULL, "gLightProjectionMatrix" );
@@ -383,11 +383,10 @@ void Graphics::End()
 	m_pDevice->Present( NULL, NULL, m_hWndPresent, NULL );	
 }
 
-void Graphics::SetEffectVector_WorldLightPosition(D3DXVECTOR4* pVec )
+void Graphics::SetEffectVector_WorldLightDirection( D3DXVECTOR4* pVec )
 {
-	m_pEffect->SetVector(m_hvWorldLightPosition,pVec);
+	m_pEffect->SetVector(m_hvWorldLightDirection,pVec);
 }
-
 void Graphics::SetEffectMatirx_LightView(D3DXMATRIX* pMat )
 {
 	m_pEffect->SetMatrix(m_hmLightView, pMat);
@@ -442,5 +441,7 @@ int Graphics::GetEntityInstancingMax( const char* entityName )
 	}
 	return m_defaultInstancingMax;
 }
+
+
 
 }

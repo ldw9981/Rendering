@@ -47,9 +47,9 @@ public:
 	const D3DXVECTOR3*		GetLocalPos();
 
 	void					GetWorldPosition( D3DXVECTOR3& pos );
+	void					GetWorldPosition( D3DXVECTOR4& pos );
 	void					SetWorldPos( D3DXVECTOR3& pos );
 	virtual	 D3DXVECTOR3*	GetWorldPositionPtr();
-
 	
 	void					MoveOnLocal( float deltaX,float deltaY,float deltaZ );
 	// 회전 행렬 리턴

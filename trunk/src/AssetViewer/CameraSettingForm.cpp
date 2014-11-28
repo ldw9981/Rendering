@@ -8,7 +8,7 @@ void AssetViewer::CameraSettingForm::Update( State* pState )
 {
 	m_pState = pState;
 
-	const D3DXVECTOR3* pos = m_pState->m_graphicWorld.m_camera.GetLocalPos();
+	const D3DXVECTOR3* pos = m_pState->m_graphicWorld.m_camera.GetLocalPosPtr();
 	textBoxCamPosX->Text = Convert::ToString(pos->x);
 	textBoxCamPosY->Text = Convert::ToString(pos->y);
 	textBoxCamPosZ->Text = Convert::ToString(pos->z);

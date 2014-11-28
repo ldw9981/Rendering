@@ -44,7 +44,10 @@ public:
 
 	void					SetLocalPos( D3DXVECTOR3& pos );
 	void					GetLocalPos( D3DXVECTOR3& pos );	
-	const D3DXVECTOR3*		GetLocalPos();
+	const D3DXVECTOR3*		GetLocalPosPtr();
+
+	void					GetForward( D3DXVECTOR3& out );
+	const D3DXVECTOR3*		GetForwardPtr();
 
 	void					GetWorldPosition( D3DXVECTOR3& pos );
 	void					GetWorldPosition( D3DXVECTOR4& pos );

@@ -20,6 +20,7 @@ float4x4	gLightViewMatrix;
 float4x4	gLightProjectionMatrix : Projection;
 float		gMatrixTextureSize = 512;
 
+#define EPSILON 0.00125f
 
 // 텍스처 샘플러
 sampler gDiffuseSampler = sampler_state
@@ -641,7 +642,7 @@ float4 ps_Phong(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    }
@@ -688,7 +689,7 @@ float4 ps_Terrain(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    } 
@@ -727,7 +728,7 @@ float4 ps_PhongDiffuse(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    } 
@@ -769,7 +770,7 @@ float4 ps_PhongDiffuseBump(PS_PHONG_DIFFUSE_BUMP_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    }
@@ -809,7 +810,7 @@ float4 ps_PhongDiffuseLight(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    }
@@ -850,7 +851,7 @@ float4 ps_PhongDiffuseOpacity(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
    
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    } 
@@ -892,7 +893,7 @@ float4 ps_PhongDiffuseSpecular(PS_PHONG_DIFFUSE_INPUT input) : COLOR
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
    
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    } 
@@ -936,7 +937,7 @@ float4 ps_PhongDiffuseBumpSpecular(PS_PHONG_DIFFUSE_BUMP_INPUT input) : COLOR
    uv = uv * 0.5 + 0.5;   
    
    float shadowDepth = tex2D(ShadowSampler, uv).r;   
-   if (currentDepth > shadowDepth + 0.00125f)
+   if (currentDepth > shadowDepth + EPSILON)
    {
       color *= 0.5f;
    }

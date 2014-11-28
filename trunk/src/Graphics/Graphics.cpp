@@ -10,15 +10,9 @@
 #include "World.h"
 #include "Foundation/Trace.h"
 
-#define PI           3.14159265f
-#define FOV          (PI/4.0f)							// 시야각
-#define ASPECT_RATIO (1024/(float)768)		// 화면의 종횡비
-#define NEAR_PLANE   1									// 근접 평면
-#define FAR_PLANE    10000								// 원거리 평면
 
 #define T_SIZE 256
 
-#define SHADOWMAP_SIZE 4096
 //#define SET_TEXTURE_NULL 
 
 

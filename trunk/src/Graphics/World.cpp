@@ -16,11 +16,10 @@ namespace Sophia
 #define PI           3.14159265f
 #define FOV          (PI/4.0f)							// 시야각
 #define ASPECT_RATIO (1024/(float)768)		// 화면의 종횡비
-#define NEAR_PLANE   1									// 근접 평면
-#define FAR_PLANE    10000								// 원거리 평면
+
 
 #define T_SIZE 256
-#define SHADOWMAP_DIST 1000.0f
+
 #define SHADOWMAP_SIZE 4096
 
 World::World(void)
@@ -31,7 +30,7 @@ World::World(void)
 	m_ViewPortInfo.Y = 0;
 	m_ViewPortInfo.Width = Graphics::m_pInstance->m_width;
 	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
-	m_worldLightDirection = D3DXVECTOR4(0.0f, -1.0f, 1.0f,0.0f);
+	m_worldLightDirection = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
 	m_pHWRenderTarget[0] = NULL;
@@ -66,8 +65,15 @@ void World::ProcessRender()
 void World::Update( DWORD elapseTime )
 {
 	m_camera.Update(elapseTime);
-	m_camera.GetWorldPosition(m_worldLightPosition);
-	m_worldLightPosition = m_worldLightDirection * -SHADOWMAP_DIST;
+
+	D3DXVECTOR3 pos;
+	float dist = m_camera.GetNear();
+	m_camera.GetWorldPosition(pos);
+	pos += *m_camera.GetForwardPtr() * dist;
+	m_worldLightLookAt = pos;	
+	
+	pos += m_worldLightDirection * dist * -1.0f;
+	m_worldLightPosition = pos;
 
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
@@ -182,21 +188,16 @@ void World::Render()
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
 	UINT passes = 0;
 	D3DXMATRIX matLightView;
-	{
-		D3DXVECTOR3 vEyePt( m_worldLightPosition.x, m_worldLightPosition.y,  m_worldLightPosition.z );		
-		const D3DXVECTOR3* vLookatPt = m_camera.GetWorldPositionPtr();
-
-		vEyePt += *vLookatPt;
+	{	
 		D3DXVECTOR3 vUpVec(    0.0f, 1.0f,  0.0f );
-		D3DXMatrixLookAtLH( &matLightView, &vEyePt, vLookatPt, &vUpVec );
+		D3DXMatrixLookAtLH( &matLightView, &m_worldLightPosition, &m_worldLightLookAt, &vUpVec );
 	}
 	D3DXMATRIX matLightProjection;
-	{
-		//D3DXMatrixPerspectiveFovLH( &matLightProjection, D3DX_PI / 4.0f, 1, 3000, FAR_PLANE );
-		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, NEAR_PLANE, FAR_PLANE );
+	{		
+		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, 1, m_camera.GetFar() );
 	}
 
-	Graphics::m_pInstance->SetEffectVector_WorldLightDirection(&m_worldLightDirection);
+	Graphics::m_pInstance->SetEffectVector_WorldLightDirection(&D3DXVECTOR4(m_worldLightDirection.x,m_worldLightDirection.y,m_worldLightDirection.z,0.0f));
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 	

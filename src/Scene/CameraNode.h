@@ -53,9 +53,10 @@ public:
 	void				SetScreenWidthHeight(float ScreenWidth,float ScreenHeight );	
 	void				SetNear(float val) { m_Near = val; m_bProjectionModified=true;}
 	void				SetFar(float val) { m_Far = val; m_bProjectionModified=true; }
-
 	void				MakeWorldPickingRay(float ScreenX,float ScreenY,cLine& Output);
 
+	float				GetNear() const { return m_Near; }
+	float				GetFar() const { return m_Far; }
 	const D3DXMATRIX&	GetMatViewProjection() { return m_matViewProjection; }
 	const D3DXMATRIX&	GetMatView() { return m_matView; }
 	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }

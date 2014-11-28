@@ -52,11 +52,12 @@ public:
 	// camera
 	cCameraNode				m_camera;
 	// directional light
-	D3DXVECTOR4				m_worldLightPosition;
-	D3DXVECTOR4				m_worldLightDirection;
+	D3DXVECTOR3				m_worldLightLookAt;	
+	D3DXVECTOR3				m_worldLightDirection;
 	bool					m_bDebugBound;
 	bool					m_bEnableShadow;
 protected:
+	D3DXVECTOR3				m_worldLightPosition;
 public:
 	// create,delete
 	Entity* CreateEntity();

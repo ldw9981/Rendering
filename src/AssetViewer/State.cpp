@@ -42,7 +42,7 @@ State::~State( void )
 void State::Enter()
 {
 	cView::Enter();
-	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
+	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,15000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
 	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 0.0f, -1500.0f),
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),

@@ -100,16 +100,6 @@ void cTestView::Control()
 			
 		m_pGlobalButtonScene->SetHide(m_pGlobalButtonScene->GetHide());
 	}
-	if (g_pInput->IsTurnDn(DIK_EQUALS))
-	{
-		m_graphicWorld.m_worldLightPosition.y += 50;
-
-	}
-
-	if (g_pInput->IsTurnDn(DIK_MINUS))
-	{
-		m_graphicWorld.m_worldLightPosition.y -= 50;
-	}
 
 
 	if (g_pInput->IsTurnDn(DIK_F12))

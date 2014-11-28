@@ -49,12 +49,14 @@ cMenuView::~cMenuView(void)
 void cMenuView::Enter()
 {
 	cView::Enter();
-	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,10000.0f,
+	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,30000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2000.0f),
-		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2500.0f),
+		&D3DXVECTOR3(0.0f, 0.0f,2000.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
+	m_graphicWorld.m_worldLightDirection = D3DXVECTOR3(0.0f,-0.5f,1.0f);
 
+	
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	
 	/*
@@ -111,7 +113,7 @@ void cMenuView::Enter()
 		
 		D3DXVECTOR3 pos;
 		pos.x = i% 10 *200.0f - 1000.0f;		
-		pos.z = i/10 *200.0f - 400.0f;
+		pos.z = i/10 *200.0f; 
 
 		pos.y =  100;
 		m_pHouse[i]->SetLocalPos(pos);		
@@ -131,7 +133,7 @@ void cMenuView::Enter()
 
 		D3DXVECTOR3 pos;
 		pos.x = i% 10 *200.0f - 1000.0f;		
-		pos.z = i/10 *200.0f - 400.0f;
+		pos.z = i/10 *200.0f;
 
 		pos.y =  100;
 		m_pSkinned[i]->SetLocalPos(pos);		
@@ -219,18 +221,6 @@ void cMenuView::Control()
 		//		m_pTank->m_bControl=FALSE;			
 		}
 	}
-	
-	if (g_pInput->IsTurnDn(DIK_EQUALS))
-	{
-		m_graphicWorld.m_worldLightPosition.y += 50;
-
-	}
-
-	if (g_pInput->IsTurnDn(DIK_MINUS))
-	{
-		m_graphicWorld.m_worldLightPosition.y -= 50;
-	}
-
 
 	if (g_pInput->IsTurnDn(DIK_F4))
 	{
@@ -284,5 +274,14 @@ void cMenuView::Control()
 		}		
 	}
 	
-	
+	if (g_pInput->GetMouseState().lZ != 0)
+	{
+
+		int iz = *(int*)&g_pInput->GetMouseState().lZ;
+		iz /= abs(iz);
+		D3DXVECTOR3 temp;
+		m_graphicWorld.m_camera.GetLocalPos(temp);
+		temp.z += (float)(iz) * 100;		
+		m_graphicWorld.m_camera.SetLocalPos(temp);
+	}
 }

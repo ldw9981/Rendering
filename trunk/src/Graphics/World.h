@@ -20,7 +20,7 @@ class World	:
 public:
 	World(void);
 	virtual ~World(void);
-
+	typedef std::pair<Entity*,float> VISIBILITY_ENTITY;
 public:
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
@@ -30,7 +30,7 @@ public:
 	std::list<Entity*>		m_listEntity;
 	
 
-	std::list<Entity*>		m_listEntityRender;
+	std::list<VISIBILITY_ENTITY>		m_listEntityRender;
 	
 	cRendererQueue			m_renderQueueNormalShadow;	
 	cRendererQueue			m_renderQueueSkinnedShadow;
@@ -87,7 +87,7 @@ public:
 	void RenderShadow();
 	void RenderScene();
 
-
+	static bool LessDistance(VISIBILITY_ENTITY& a,VISIBILITY_ENTITY& b);
 };
 
 }

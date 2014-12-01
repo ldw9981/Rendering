@@ -138,9 +138,7 @@ bool Entity::Cull( Frustum* pFrustum ,float loose)
 	if (!m_bShow)
 		return false;
 
-	cCollision::STATE retCS=cCollision::CheckWorldFrustum(*pFrustum,m_BoundingSphere,loose);
-	if( retCS == cCollision::OUTSIDE)
-		return false;
+
 
 	return true;	
 }

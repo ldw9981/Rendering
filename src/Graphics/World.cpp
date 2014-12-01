@@ -9,6 +9,7 @@
 #include "Graphics/RscTexture.h"
 #include "Foundation/Trace.h"
 #include "Graphics/Entity.h"
+#include "Math/CollisionDetector.h"
 
 namespace Sophia
 {
@@ -21,6 +22,13 @@ namespace Sophia
 #define T_SIZE 256
 
 #define SHADOWMAP_SIZE 4096
+
+bool World::LessDistance(VISIBILITY_ENTITY& a,VISIBILITY_ENTITY& b)
+{
+	if ( a.second < b.second)
+		return true;
+	return false;
+}
 
 World::World(void)
 {
@@ -91,13 +99,21 @@ void World::CullFrustum()
 	m_listEntityRender.clear();
 
 	Frustum& frustum = m_camera.GetFrustum();
+	float distFromNear;
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
-		if( (*itIn)->Cull(&frustum,0.0f) == false )
-			continue;	
+		Entity* pEntity = *itIn;
+		if(!pEntity->GetShow())
+			continue;
 
-		m_listEntityRender.push_back(*itIn);
+		cCollision::STATE retCS=cCollision::CheckWorldFrustum(frustum,pEntity->GetBoundingSphere(),&distFromNear,0.0f);
+		if( retCS == cCollision::OUTSIDE)
+			continue;
+
+		m_listEntityRender.push_back(std::make_pair(pEntity,distFromNear));
 	}
+
+	m_listEntityRender.sort(&World::LessDistance);
 }
 void World::SetViewPortInfo(UINT x,UINT y,UINT width,UINT height )
 {
@@ -217,7 +233,8 @@ void World::Render()
 			auto itEntityRender = m_listEntityRender.begin();
 			for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
 			{
-				(*itEntityRender)->RenderBound();
+				VISIBILITY_ENTITY& item = *itEntityRender;
+				item.first->RenderBound();
 			}	
 			pEffect->EndPass();
 			pEffect->End();	
@@ -259,7 +276,7 @@ void World::GatherRender()
 
 	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
 	{
-		Entity* pEntity = *itIn;
+		Entity* pEntity = (*itIn).first;
 		if (m_bEnableShadow)
 		{
 			// 그림자용은 알파블렌드 상관없이 모은다.그릴때는 알파테스트만 구분한다.

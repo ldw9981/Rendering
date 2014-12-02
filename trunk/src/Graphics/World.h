@@ -88,6 +88,8 @@ public:
 	void RenderScene();
 
 	static bool LessDistance(VISIBILITY_ENTITY& a,VISIBILITY_ENTITY& b);
+	D3DXVECTOR3 GetWorldLightDirection() const { return m_worldLightDirection; }
+	void SetWorldLightDirection(const D3DXVECTOR3& val);
 };
 
 }

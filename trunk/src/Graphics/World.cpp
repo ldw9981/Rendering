@@ -38,7 +38,7 @@ World::World(void)
 	m_ViewPortInfo.Y = 0;
 	m_ViewPortInfo.Width = Graphics::m_pInstance->m_width;
 	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
-	m_worldLightDirection = D3DXVECTOR3(0.0f, -1.0f, 0.0f);
+	SetWorldLightDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
 	m_bDebugBound = false;
 	m_bEnableShadow = true;
 	m_pHWRenderTarget[0] = NULL;
@@ -74,12 +74,13 @@ void World::Update( DWORD elapseTime )
 {
 	m_camera.Update(elapseTime);
 
+	// 한장의 텍스쳐로 커버
 	D3DXVECTOR3 pos;
 	float dist = m_camera.GetNear();
 	m_camera.GetWorldPosition(pos);
 	pos += *m_camera.GetForwardPtr() * dist;
 	m_worldLightLookAt = pos;	
-	
+
 	pos += m_worldLightDirection * dist * -1.0f;
 	m_worldLightPosition = pos;
 
@@ -210,7 +211,8 @@ void World::Render()
 	}
 	D3DXMATRIX matLightProjection;
 	{		
-		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, 1, m_camera.GetFar() );
+		//D3DXMatrixPerspectiveFovLH( &matLightProjection, m_camera.GetFOV(), 1, 3000, m_camera.GetFar() );
+		D3DXMatrixOrthoLH( &matLightProjection, SHADOWMAP_SIZE,SHADOWMAP_SIZE, 1,  m_camera.GetFar());
 	}
 
 	Graphics::m_pInstance->SetEffectVector_WorldLightDirection(&D3DXVECTOR4(m_worldLightDirection.x,m_worldLightDirection.y,m_worldLightDirection.z,0.0f));
@@ -395,6 +397,11 @@ void World::RenderScene()
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
 		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
+}
+
+void World::SetWorldLightDirection( const D3DXVECTOR3& val )
+{
+	D3DXVec3Normalize(&m_worldLightDirection,&val);
 }
 
 

@@ -21,7 +21,7 @@ cMenuView::cMenuView(void)
 	m_bControlCamera=FALSE;
 
 	m_instancingNormal = true;
-	m_instancingSkinned = true;
+	m_instancingSkinned = false;
 	m_pZTerrain=NULL;
 	
 	m_pTank=NULL;
@@ -54,7 +54,7 @@ void cMenuView::Enter()
 	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2500.0f),
 		&D3DXVECTOR3(0.0f, 0.0f,2000.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
-	m_graphicWorld.m_worldLightDirection = D3DXVECTOR3(0.0f,-0.5f,1.0f);
+	m_graphicWorld.SetWorldLightDirection(D3DXVECTOR3(0.0f,-0.5f,1.0f));
 
 	
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");

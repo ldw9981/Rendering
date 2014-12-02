@@ -61,6 +61,7 @@ public:
 	const D3DXMATRIX&	GetMatView() { return m_matView; }
 	const D3DXMATRIX&	GetMatProjection() { return m_matProjection; }
 	Frustum&			GetFrustum()  { return m_frustum; }
+	float GetFOV() const { return m_FOV; }
 
 	bool GetProcessInput() const { return m_bProcessInput; }
 	void SetProcessInput(bool val) { m_bProcessInput = val; }

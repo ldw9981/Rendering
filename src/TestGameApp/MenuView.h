@@ -4,7 +4,7 @@
 #include "Scene/ZTerrain.h"
 
 #define STRESS_NORMAL 256
-#define STRESS_SKINNED 256
+#define STRESS_SKINNED 1
 
 class cGUIButton;
 class cObjTank;

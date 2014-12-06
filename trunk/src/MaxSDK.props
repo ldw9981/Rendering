@@ -2,14 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros">
-    <MaxSDKDir>C:\Program Files (x86)\Autodesk\3ds Max 9 SDK\maxsdk</MaxSDKDir>
+    <MaxSDKDir>C:\Program Files (x86)\Autodesk\3ds Max 2012\maxsdk</MaxSDKDir>
   </PropertyGroup>
   <PropertyGroup>
     <IncludePath>$(MaxSDKDir)\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
-  <PropertyGroup>
-    <LibraryPath>$(MaxSDKDir)\lib;$(LibraryPath)</LibraryPath>
+  <PropertyGroup Condition="'$(Platform)'=='x64'" Label="Configuration">
+    <LibraryPath>$(MaxSDKDir)\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="Configuration">
+    <LibraryPath>$(MaxSDKDir)\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>  
   <ItemDefinitionGroup>
     <Lib>
       <AdditionalDependencies>core.lib;geom.lib;mesh.lib;maxutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -17,6 +20,9 @@
     <Link>
       <AdditionalDependencies>core.lib;geom.lib;mesh.lib;maxutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <ClCompile>
+      <PreprocessorDefinitions>_VC80_UPGRADE=0x0710;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="MaxSDKDir">

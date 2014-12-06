@@ -28,13 +28,14 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL,ULONG fdwReason,LPVOID lpvReserved)
 {
 	hInstance = hinstDLL;
 
+#ifdef _SDK_VER_9
 	// Initialize the custom controls. This should be done only once.
 	if (!controlsInit) {
 		controlsInit = TRUE;
 		InitCustomControls(hInstance);
 		InitCommonControls();
 	}
-	
+#endif	
 	return (TRUE);
 }
 

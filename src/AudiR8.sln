@@ -49,8 +49,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AssetViewer", "AssetViewer\
 		{B571ADD8-E7C6-4B91-AF22-1559B8F53C5E} = {B571ADD8-E7C6-4B91-AF22-1559B8F53C5E}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "asciiexp", "MaxExporter\asciiexp.vcxproj", "{6872903F-03A5-43C4-B5FA-2B6232BD44CC}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug_AssetViewer|Win32 = Debug_AssetViewer|Win32
@@ -147,14 +145,6 @@ Global
 		{A7CFBAD4-57FD-4D94-83C4-111B25D2CB05}.Hybrid|Win32.Build.0 = Release|Win32
 		{A7CFBAD4-57FD-4D94-83C4-111B25D2CB05}.Release|Win32.ActiveCfg = Release|Win32
 		{A7CFBAD4-57FD-4D94-83C4-111B25D2CB05}.Release|Win32.Build.0 = Release|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug_AssetViewer|Win32.ActiveCfg = Debug_AssetViewer|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug_AssetViewer|Win32.Build.0 = Debug_AssetViewer|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug|Win32.ActiveCfg = Debug|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Debug|Win32.Build.0 = Debug|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Hybrid|Win32.ActiveCfg = Hybrid|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Hybrid|Win32.Build.0 = Hybrid|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Release|Win32.ActiveCfg = Release|Win32
-		{6872903F-03A5-43C4-B5FA-2B6232BD44CC}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

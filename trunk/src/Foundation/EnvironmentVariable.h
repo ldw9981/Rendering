@@ -11,6 +11,8 @@ public:
 	static EnvironmentVariable& GetInstance();
 	void SetString(std::string name,std::string strIn);
 	std::string& GetString(std::string name);
+
+	void SetPath();
 private:
 	EnvironmentVariable(void);
 	~EnvironmentVariable(void);

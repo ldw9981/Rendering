@@ -29,21 +29,7 @@ bool TestGameApp::Initialize()
 	if(!cD3DFramework::Initialize())
 		return false;
 	
-	std::string Path;
-	Path = EnvironmentVariable::GetInstance().GetString("CurrPath");
-
-	std::string::size_type index=Path.length();
-	for (int i=0;i<3;i++)
-	{
-		index=Path.rfind("\\",index-1,1);
-	}	
-	Path  = Path.substr ( 0 ,index+1);		
-	Path  += "Data\\";
-
-	EnvironmentVariable::GetInstance().SetString("DataPath",Path.c_str());
-	
-
-	std::string strHLSL=Path;
+	std::string strHLSL=EnvironmentVariable::GetInstance().GetString("DataPath");
 	strHLSL+= "hlsl.fx";
 	m_pGraphics->LoadHLSL(strHLSL.c_str());
 	

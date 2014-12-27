@@ -57,10 +57,7 @@ cD3DFramework::~cD3DFramework(void)
 bool cD3DFramework::Initialize()
 {
 	m_hInstance = GetModuleHandle(NULL);
-
-	char CurrPath[MAX_PATH];
-	::GetCurrentDirectoryA(MAX_PATH,CurrPath);
-	EnvironmentVariable::GetInstance().SetString("CurrPath",std::string(CurrPath)+std::string("\\"));
+	EnvironmentVariable::GetInstance().SetPath();
 
 	m_pInput = new Input;
 	AttachObject(m_pInput);

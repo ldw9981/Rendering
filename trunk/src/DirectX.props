@@ -1,14 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros">
-    <DirectXSDKDir>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29</DirectXSDKDir>
+  <PropertyGroup>
+    <IncludePath>$(DXSDK_DIR)\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(DirectXSDKDir)\Include;$(IncludePath)</IncludePath>
-  </PropertyGroup>
-  <PropertyGroup>
-    <LibraryPath>$(DirectXSDKDir)\Lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(DXSDK_DIR)\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Lib>
@@ -39,7 +36,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <BuildMacro Include="DirectXSDKDir">
-      <Value>$(DirectXSDKDir)</Value>
+      <Value>$(DXSDK_DIR)</Value>
     </BuildMacro>
   </ItemGroup>
 </Project>

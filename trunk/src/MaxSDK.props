@@ -1,17 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ImportGroup Label="PropertySheets" />
-  <PropertyGroup Label="UserMacros">
-    <MaxSDKDir>C:\Program Files (x86)\Autodesk\3ds Max 2012\maxsdk</MaxSDKDir>
-  </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>$(MaxSDKDir)\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(ADSK_3DSMAX_SDK_2012)\maxsdk\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='x64'" Label="Configuration">
-    <LibraryPath>$(MaxSDKDir)\x64\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ADSK_3DSMAX_SDK_2012)\maxsdk\x64\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Platform)'=='Win32'" Label="Configuration">
-    <LibraryPath>$(MaxSDKDir)\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ADSK_3DSMAX_SDK_2012)\maxsdk\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>  
   <ItemDefinitionGroup>
     <Lib>
@@ -24,9 +21,4 @@
       <PreprocessorDefinitions>_VC80_UPGRADE=0x0710;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <BuildMacro Include="MaxSDKDir">
-      <Value>$(MaxSDKDir)</Value>
-    </BuildMacro>
-  </ItemGroup>
 </Project>

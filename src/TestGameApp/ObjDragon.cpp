@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "ObjDragon.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 #include "Input/Input.h"
 
 using namespace Sophia;

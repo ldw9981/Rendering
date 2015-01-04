@@ -8,9 +8,9 @@
 #include "Resource/ResourceMng.h"
 #include "ASEParser/ASEParser.h"
 #include "Foundation/StringUtil.h"
-#include "Scene/Skeleton.h"
+#include "Graphics/Skeleton.h"
 #include "Foundation/Define.h"
-#include "Scene/MeshNode.h"
+#include "Graphics/MeshNode.h"
 namespace Sophia
 {
 

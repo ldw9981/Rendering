@@ -13,7 +13,7 @@
 #include "GlobalView.h"
 #include "Framework/D3DFramework.h"
 
-#include "Scene/ZTerrain.h"
+#include "Graphics/ZTerrain.h"
 #include "TestView.h"
 #include "TestStateA.h"
 #include "TestStateB.h"

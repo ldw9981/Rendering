@@ -3,7 +3,7 @@
 
 #include "Math/Sphere.h"
 #include "Math/Plane.h"
-#include "Graphics/Entity.h"
+#include "Entity.h"
 namespace Sophia
 {
 

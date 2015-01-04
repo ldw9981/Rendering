@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "View.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 #include "Graphics/Graphics.h"
 #include "Math/CollisionDetector.h"
 #include "Graphics/World.h"

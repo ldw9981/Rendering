@@ -1,6 +1,6 @@
 #pragma once
 #include "Framework/View.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 
 class cObjDragon;
 class cObjTank;

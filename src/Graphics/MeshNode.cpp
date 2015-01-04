@@ -11,7 +11,7 @@
 #include "Math/Sphere.h"
 #include "Foundation/Define.h"
 
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 #include "Graphics/RendererQueue.h"
 #include "Graphics/Entity.h"
 #include "Graphics/MatrixTexture.h"

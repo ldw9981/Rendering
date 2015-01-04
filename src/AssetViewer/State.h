@@ -1,6 +1,6 @@
 #pragma once
 #include "Framework/View.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 
 class Sophia::Entity;
 class State : public Sophia::cView

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "ScenePropertyForm.h"
 #include "State.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 
 void AssetViewer::ScenePropertyForm::Update( State* pState,Sophia::cSceneNode* pNode )
 {	

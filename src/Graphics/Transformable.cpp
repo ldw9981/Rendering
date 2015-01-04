@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Transformable.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 
 namespace Sophia
 {

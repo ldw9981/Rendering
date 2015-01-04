@@ -2,7 +2,7 @@
 #include "Framework/View.h"
 #include "Foundation/Interface.h"
 #include "Input/Input.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 
 class cObjDragon;
 class cObjTank;

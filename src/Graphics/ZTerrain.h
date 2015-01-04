@@ -1,9 +1,9 @@
 #ifndef _ZTERRAIN_H_
 #define _ZTERRAIN_H_
 
-#include "Graphics/Entity.h"
+#include "Entity.h"
 #include "Math/Sphere.h"
-#include "Graphics/RscVertexBuffer.h"
+#include "RscVertexBuffer.h"
 #include "Foundation/Interface.h"
 #include "ZQuadTree.h"
 namespace Sophia

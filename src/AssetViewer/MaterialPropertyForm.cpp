@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "MaterialPropertyForm.h"
-#include "Scene/MeshNode.h"
+#include "Graphics/MeshNode.h"
 #include "Graphics/MaterialEx.h"
 #include "Graphics/Entity.h"
 #include "MaterialProperty.h"

@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 
 class State;
 

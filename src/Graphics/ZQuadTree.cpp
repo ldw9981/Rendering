@@ -2,12 +2,12 @@
 #include "ZQuadTree.h"
 #include "ZTerrain.h"
 #include "Math/Triangle.h"
-#include "Scene/CameraNode.h"
+#include "CameraNode.h"
 #include "Math/Sphere.h"
 #include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
-#include "Graphics/Entity.h"
-#include "Graphics/RendererQueue.h"
+#include "Entity.h"
+#include "RendererQueue.h"
 #include "Foundation/Define.h"
 namespace Sophia
 {

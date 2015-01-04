@@ -5,9 +5,9 @@
 #include "CameraNode.h"
 #include "Graphics/RendererQueue.h"
 #include "Math/Sphere.h"
-#include "Scene/MeshNode.h"
-#include "Scene/SkinnedMeshNode.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/MeshNode.h"
+#include "Graphics/SkinnedMeshNode.h"
+#include "Graphics/CameraNode.h"
 #include "Math/Frustum.h"
 #include "Math/CollisionDetector.h"
 #include "ZQuadTree.h"
@@ -15,7 +15,7 @@
 #include "ASEParser/ASEParser.h"
 #include "Graphics/Animation.h"
 #include "Graphics/Graphics.h"
-#include "Scene/Skeleton.h"
+#include "Graphics/Skeleton.h"
 namespace Sophia
 {
 

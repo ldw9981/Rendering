@@ -153,41 +153,59 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animation.h" />
+    <ClInclude Include="CameraNode.h" />
+    <ClInclude Include="Dib.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Graphics.h" />
     <ClInclude Include="IndexInstancingBuffer.h" />
     <ClInclude Include="InstanceDataBuffer.h" />
     <ClInclude Include="MaterialEx.h" />
     <ClInclude Include="MatrixTexture.h" />
+    <ClInclude Include="MeshNode.h" />
     <ClInclude Include="RendererQueue.h" />
     <ClInclude Include="RscIndexBuffer.h" />
     <ClInclude Include="RscTexture.h" />
     <ClInclude Include="RscVertexBuffer.h" />
+    <ClInclude Include="SceneNode.h" />
+    <ClInclude Include="Skeleton.h" />
+    <ClInclude Include="SkinnedMeshNode.h" />
     <ClInclude Include="Stdafx.h" />
+    <ClInclude Include="Transformable.h" />
     <ClInclude Include="Vertex.h" />
     <ClInclude Include="VertexInstancingBuffer.h" />
     <ClInclude Include="World.h" />
+    <ClInclude Include="ZQuadTree.h" />
+    <ClInclude Include="ZTerrain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
+    <ClCompile Include="CameraNode.cpp" />
+    <ClCompile Include="Dib.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Graphics.cpp" />
     <ClCompile Include="IndexInstancingBuffer.cpp" />
     <ClCompile Include="InstanceDataBuffer.cpp" />
     <ClCompile Include="MaterialEx.cpp" />
     <ClCompile Include="MatrixTexture.cpp" />
+    <ClCompile Include="MeshNode.cpp" />
     <ClCompile Include="RendererQueue.cpp" />
     <ClCompile Include="RscIndexBuffer.cpp" />
     <ClCompile Include="RscTexture.cpp" />
     <ClCompile Include="RscVertexBuffer.cpp" />
+    <ClCompile Include="SceneNode.cpp" />
+    <ClCompile Include="Skeleton.cpp" />
+    <ClCompile Include="SkinnedMeshNode.cpp" />
     <ClCompile Include="Stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug_AssetViewer|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Transformable.cpp" />
     <ClCompile Include="Vertex.cpp" />
     <ClCompile Include="VertexInstancingBuffer.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="ZQuadTree.cpp" />
+    <ClCompile Include="zterrain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\data\hlsl.fx" />

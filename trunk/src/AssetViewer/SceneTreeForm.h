@@ -1,7 +1,7 @@
 #pragma once
 #include "Framework.h"
 #include "State.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 #include "Resource.h"
 
 namespace AssetViewer {

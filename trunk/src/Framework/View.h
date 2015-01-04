@@ -1,6 +1,6 @@
 #pragma once
 #include "Foundation/Interface.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 #include "Framework/ViewMng.h"
 #include "Graphics/Entity.h"
 #include "Graphics/World.h"

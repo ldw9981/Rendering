@@ -200,9 +200,6 @@
     <ProjectReference Include="..\Resource\Resource.vcxproj">
       <Project>{543ecdd1-7e9f-4055-98e4-034f3fa03052}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\Scene\Scene.vcxproj">
-      <Project>{b571add8-e7c6-4b91-af22-1559b8f53c5e}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

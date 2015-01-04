@@ -3,10 +3,10 @@
 #include "Foundation/Interface.h"
 #include "Graphics/Graphics.h"
 #include "Graphics/MaterialEx.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 #include "Graphics/RscTexture.h"
-#include "Scene/MeshNode.h"
-#include "Scene/SkinnedMeshNode.h"
+#include "Graphics/MeshNode.h"
+#include "Graphics/SkinnedMeshNode.h"
 
 
 #include "Graphics/MatrixTexture.h"

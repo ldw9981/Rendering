@@ -1,5 +1,5 @@
 #pragma once
-#include "Scene/scenenode.h"
+#include "Graphics/scenenode.h"
 #include "Math/Sphere.h"
 #include "Graphics/Animation.h"
 #include "Graphics.h"

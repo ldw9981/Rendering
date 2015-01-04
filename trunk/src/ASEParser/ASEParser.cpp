@@ -3,15 +3,15 @@
 #include "ASEParser.h"
 #include "ASELexer.h"
 #include "Lexer.h"
-#include "Scene/MeshNode.h"
-#include "Scene/CameraNode.h"
-#include "Scene/SkinnedMeshNode.h"
+#include "Graphics/MeshNode.h"
+#include "Graphics/CameraNode.h"
+#include "Graphics/SkinnedMeshNode.h"
 #include "Resource/ResourceMng.h"
 #include "Foundation/Define.h"
 #include "Foundation/StringUtil.h"
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Entity.h"
-#include "Scene/Skeleton.h"
+#include "Graphics/Skeleton.h"
 namespace Sophia
 {
 

@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include "SceneProperty.h"
-#include "Scene/SceneNode.h"
-#include "Scene/MeshNode.h"
+#include "Graphics/SceneNode.h"
+#include "Graphics/MeshNode.h"
 
 SceneProperty::SceneProperty(void)
 {

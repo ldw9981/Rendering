@@ -2,7 +2,7 @@
 #include "MatrixTexture.h"
 #include "Resource/ResourceMng.h"
 #include "Foundation/Define.h"
-#include "Scene/MeshNode.h"
+#include "Graphics/MeshNode.h"
 using namespace Sophia;
 MatrixTexture::MatrixTexture(void)
 {

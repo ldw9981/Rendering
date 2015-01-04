@@ -2,7 +2,7 @@
 #include "Entity.h"
 #include "Foundation/Interface.h"
 #include "RendererQueue.h"
-#include "Scene/CameraNode.h"
+#include "Graphics/CameraNode.h"
 #include "Graphics.h"
 
 namespace Sophia

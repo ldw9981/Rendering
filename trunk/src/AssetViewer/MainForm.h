@@ -5,7 +5,7 @@
 #include "AnimationForm.h"
 #include "MaterialPropertyForm.h"
 #include "Graphics/Entity.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 
 namespace AssetViewer {
 

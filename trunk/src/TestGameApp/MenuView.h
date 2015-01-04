@@ -1,7 +1,7 @@
 #pragma once
 #include "Framework/View.h"
-#include "Scene/CameraNode.h"
-#include "Scene/ZTerrain.h"
+#include "Graphics/CameraNode.h"
+#include "Graphics/ZTerrain.h"
 
 #define STRESS_NORMAL 256
 #define STRESS_SKINNED 1

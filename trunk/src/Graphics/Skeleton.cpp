@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Skeleton.h"
-#include "Scene/SceneNode.h"
+#include "Graphics/SceneNode.h"
 #include "Graphics/Entity.h"
 
 namespace Sophia

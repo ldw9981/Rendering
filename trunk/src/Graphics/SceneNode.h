@@ -1,6 +1,6 @@
 #pragma once
 #include "Foundation/interface.h"
-#include "Scene/Transformable.h"
+#include "Graphics/Transformable.h"
 #include "Graphics/Animation.h"
 
 namespace Sophia

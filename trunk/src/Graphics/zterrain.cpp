@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "ZTerrain.h"
 #include "dib.h"
-#include "Graphics/Entity.h"
+#include "Entity.h"
 #include "Resource/ResourceMng.h"
-#include "Graphics/RscIndexBuffer.h"
+#include "RscIndexBuffer.h"
 #include "Math/CollisionDetector.h"
 #include "Math/Frustum.h"
 #include "Foundation/Define.h"
-#include "Graphics/Graphics.h"
+#include "Graphics.h"
 
 namespace Sophia
 {

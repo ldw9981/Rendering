@@ -98,15 +98,14 @@ class SceneAnimation:
 	public ISerializable
 {
 public:
-	SceneAnimation(void);
-	~SceneAnimation(void);
-public:
 	//std::vector<ANMKEY> m_arrayANMKEY;
-
 	std::vector<ANMKEY_MATRIX>	m_arrKey;
 	float	m_partialWeight;
+public:
+	SceneAnimation(void);
+	~SceneAnimation(void);
 
-	float	GetInterpolateValue( int start_time,int end_time,int inter_time );
+	float	GetInterpolateValue( DWORD start_time,DWORD end_time,DWORD inter_time );
 	void	GetMatrix(D3DXMATRIX& out,DWORD animationTime,size_t& index);
 	void	SerializeIn(std::ifstream& stream);
 	void	SerializeOut(std::ofstream& stream);

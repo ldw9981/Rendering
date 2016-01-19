@@ -360,7 +360,7 @@ void cMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 	{
 		pMeshNode = *it;	
 		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
-		memcpy_s((void*)pDst,bytesMatrix,(void*)pMeshNode->GetWorldMatrixPtr(),bytesMatrix);	// 64Byte					
+		memcpy_s((void*)pDst,bytesMatrix,(void*)&pMeshNode->m_matWorld,bytesMatrix);	// 64Byte					
 		offset_bytes += bytesMatrix;		
 		if (offset_bytes >= bytesPerLine)
 		{

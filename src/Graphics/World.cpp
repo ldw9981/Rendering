@@ -43,6 +43,7 @@ World::World(void)
 	m_bEnableShadow = true;
 	m_pHWRenderTarget[0] = NULL;
 	m_pHWDepthStencilBuffer = NULL;
+
 }
 
 
@@ -98,7 +99,7 @@ void World::Update( DWORD elapseTime )
 void World::CullFrustum()
 {
 	m_listEntityRender.clear();
-
+	
 	Frustum& frustum = m_camera.GetFrustum();
 	float distFromNear;
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
@@ -178,16 +179,16 @@ void World::DeleteFont( cGUIFont* pFont )
 bool World::Initialize()
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->SetViewport(&m_ViewPortInfo));
+	HR_V( Graphics::m_pDevice->SetViewport(&m_ViewPortInfo));
 
 	// 렌더타깃을 만든다.
 	const int shadowMapSize = SHADOWMAP_SIZE;
-	V( Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
+	HR_V( Graphics::m_pDevice->CreateTexture( shadowMapSize, shadowMapSize,
 		1, D3DUSAGE_RENDERTARGET, D3DFMT_R32F,
 		D3DPOOL_DEFAULT, &m_pShadowRenderTarget, NULL) );
 		
 	// 그림자 맵과 동일한 크기의 깊이버퍼도 만들어줘야 한다.
-	V( Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
+	HR_V( Graphics::m_pDevice->CreateDepthStencilSurface(shadowMapSize, shadowMapSize,
 		D3DFMT_D24X8, D3DMULTISAMPLE_NONE, 0, TRUE,
 		&m_pShadowDepthStencil, NULL) );
 

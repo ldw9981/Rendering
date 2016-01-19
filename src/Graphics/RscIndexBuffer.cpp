@@ -31,7 +31,7 @@ BOOL cRscIndexBuffer::Create()
 
 	// ! IndexBuffer
 	// 1) 필요한 Index갯수 만큼의 크기로 IndexBuffer를 만든다.
-	V(Graphics::m_pDevice->CreateIndexBuffer( 
+	HR_V(Graphics::m_pDevice->CreateIndexBuffer( 
 		m_BufferSize,
 		m_usage,
 		m_format,

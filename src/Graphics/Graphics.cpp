@@ -83,7 +83,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	GetCurrentDirectory(MAX_PATH,szTemp);
 		
 	m_pD3D9 = Direct3DCreate9( D3D_SDK_VERSION );
-	V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
+	HR_V( m_pD3D9->GetDeviceCaps( D3DADAPTER_DEFAULT,D3DDEVTYPE_HAL,&m_caps) );      
 	
 	m_vecRenderTarget.resize(m_caps.NumSimultaneousRTs,(LPDIRECT3DSURFACE9)NULL);
 
@@ -111,7 +111,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 	m_D3DPP.EnableAutoDepthStencil	= TRUE;		
 	m_D3DPP.AutoDepthStencilFormat	= D3DFMT_D16;
 
-	V( m_pD3D9->CreateDevice( 
+	HR_V( m_pD3D9->CreateDevice( 
 		D3DADAPTER_DEFAULT, 
 		D3DDEVTYPE_HAL, 
 		hWndPresent,
@@ -125,7 +125,7 @@ bool Graphics::Init(HWND hWndPresent,bool bWindowed,int width,int height)
 
 
 
-	V(m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));	
+	HR_V(m_pDevice->SetRenderState(D3DRS_ZENABLE,TRUE));	
 
 	m_pNewFont = new cGUIFont();	
 
@@ -394,7 +394,7 @@ void Graphics::SetEffectMatirx_LightProjection(D3DXMATRIX* pMat )
 void Graphics::BackupRenderTarget( unsigned int renderTargetIndex )
 {
 	HRESULT hr;
-	V( m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]) );
+	HR_V( m_pDevice->GetRenderTarget(renderTargetIndex, &m_vecRenderTarget[renderTargetIndex]) );
 }
 
 void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
@@ -410,7 +410,7 @@ void Graphics::RestoreRenderTarget( unsigned int renderTargetIndex )
 void Graphics::BackupDepthStencilSurface()
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface) );	
+	HR_V( Graphics::m_pDevice->GetDepthStencilSurface(&m_depthStencilSurface) );	
 }
 
 void Graphics::RestoreDepthStencilSurface()

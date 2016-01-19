@@ -44,18 +44,18 @@ HRESULT WINAPI DXUTTrace( const CHAR* strFile, DWORD dwLine, HRESULT hr,
 #endif // _DEBUG
 
 #if defined(DEBUG) || defined(_DEBUG)
-#ifndef V
-#define V(x)           { hr = (x); if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, #x, true ); } }
+#ifndef HR_V
+#define HR_V(x)           { hr = (x); if( FAILED(hr) ) { DXUTTrace( __FILE__, (DWORD)__LINE__, hr, #x, true ); } }
 #endif
-#ifndef V_RETURN
-#define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, #x, true ); } }
+#ifndef HR_V_RETURN
+#define HR_V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return DXUTTrace( __FILE__, (DWORD)__LINE__, hr, #x, true ); } }
 #endif
 #else
-#ifndef V
-#define V(x)           { hr = (x); }
+#ifndef HR_V
+#define HR_V(x)           { hr = (x); }
 #endif
-#ifndef V_RETURN
-#define V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return hr; } }
+#ifndef HR_V_RETURN
+#define HR_V_RETURN(x)    { hr = (x); if( FAILED(hr) ) { return hr; } }
 #endif
 #endif
 

@@ -72,9 +72,9 @@ void SkinnedMeshNode::Render()
 	}	
 
 	pEffect->SetTexture("Tex_MatrixPallete",m_pMatrixPalleteTexture->GetD3DTexture());
-	V(pEffect->CommitChanges());	
+	HR_V(pEffect->CommitChanges());	
 
-	V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
+	HR_V(Graphics::m_pDevice->DrawIndexedPrimitive( D3DPT_TRIANGLELIST, 
 		0,  
 		0, 
 		m_pRscVetextBuffer->GetVertexCount(),
@@ -278,6 +278,9 @@ void SkinnedMeshNode::SerializeInMesh( std::ifstream& stream )
 	// bone info
 	unsigned char count = 0;
 	stream.read((char*)&count,sizeof(count));
+	if(count<512)
+		m_vecBoneRef.reserve(count);
+
 	for ( int i=0 ; i<count ; i++ )
 	{
 		BONEREFINFO info;
@@ -308,7 +311,7 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
 		BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
 		// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-		D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());	
+		D3DXMatrixMultiply(pDst,&refItem.SkinOffset,&refItem.pNode->m_matWorld);	
 		offset_bytes += bytesMatrix;		
 	}	
 
@@ -384,7 +387,7 @@ void SkinnedMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
 			BONEREFINFO& refItem=refArrBone[boneIndex];
 			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,refItem.pNode->GetWorldMatrixPtr());		
+			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,&refItem.pNode->m_matWorld);		
 			
 			offset_bytes += bytesMatrix;		
 			if (offset_bytes >= bytesPerLine)

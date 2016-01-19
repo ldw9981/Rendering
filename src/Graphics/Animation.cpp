@@ -15,20 +15,9 @@ SceneAnimation::~SceneAnimation( void )
 
 }
 
-float SceneAnimation::GetInterpolateValue( int start_time,int end_time,int inter_time )
+float SceneAnimation::GetInterpolateValue( DWORD start_time,DWORD end_time,DWORD inter_time )
 {
-	float ret;
-	int delta_time,offset_time;
-	delta_time = end_time - start_time;
-	offset_time = inter_time - start_time;
-
-	if (delta_time==0)
-	{
-		return 0.0f;
-	}
-
-	ret=(float)offset_time / (float)delta_time;	
-	return ret;
+	return (float)(inter_time - start_time) / (float)(end_time - start_time);	
 }
 
 void SceneAnimation::SerializeIn( std::ifstream& stream )
@@ -40,6 +29,7 @@ void SceneAnimation::SerializeIn( std::ifstream& stream )
 	if (count==0)
 		return;
 
+	m_arrKey.reserve(count);
 	for (unsigned short i=0;i<count;i++)
 	{
 		ANMKEY_MATRIX item;
@@ -106,7 +96,7 @@ void SceneAnimation::GetMatrix( D3DXMATRIX& out,DWORD animationTime,size_t& inde
 	ANMKEY_MATRIX* pKey1=NULL;
 	ANMKEY_MATRIX* pKey2=NULL;
 
-	if ( index >=indexMax ||  animationTime < m_arrKey[index].AnmTick)
+	if ( animationTime < m_arrKey[index].AnmTick || index >= indexMax )
 	{
 		index = 0;
 	}
@@ -122,8 +112,7 @@ void SceneAnimation::GetMatrix( D3DXMATRIX& out,DWORD animationTime,size_t& inde
 		}
 	}
 
-	float fValue=GetInterpolateValue(pKey1->AnmTick,pKey2->AnmTick,animationTime);
-	
+	float fValue = GetInterpolateValue(pKey1->AnmTick,pKey2->AnmTick,animationTime);
 	out = pKey1->mat * (1.0f-fValue);
 	out += pKey2->mat * fValue;
 }

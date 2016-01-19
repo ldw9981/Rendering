@@ -10,9 +10,9 @@ class cRscTexture;
 
 struct BONEREFINFO
 {
-	std::string strNodeName;
+	D3DXMATRIX	SkinOffset;	
 	cSceneNode* pNode;		//본은 무조건 메쉬이다	
-	D3DXMATRIX	SkinOffset;
+	std::string strNodeName;
 
 	BONEREFINFO()
 	{

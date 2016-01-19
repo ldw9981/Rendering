@@ -20,7 +20,6 @@ namespace Sophia
 
 cRendererQueue::cRendererQueue()
 {
-
 }
 
 cRendererQueue::~cRendererQueue()
@@ -243,7 +242,7 @@ void cRendererQueue::GatherRender(std::vector<cMeshNode*>& vecMesh )
 void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
+	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	
 	
@@ -269,7 +268,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
 		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 		int i = refScene.pMaterial->index_renderer_queue();
-		V(pEffect->SetTechnique(vecTechnique[i]));
+		HR_V(pEffect->SetTechnique(vecTechnique[i]));
 		ChangeMaterial(refScene.pMaterial,false);
 
 		pEffect->CommitChanges();		
@@ -285,13 +284,13 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
+	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
 void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
+	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
@@ -333,13 +332,13 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
+	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
 void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDLE>& vecTechnique )
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
+	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 
@@ -366,7 +365,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
 
 		int i = refScene.pMaterial->index_renderer_queue();
-		V(pEffect->SetTechnique(vecTechnique[i]));
+		HR_V(pEffect->SetTechnique(vecTechnique[i]));
 		ChangeMaterial(refScene.pMaterial,false);
 		pEffect->CommitChanges();		
 
@@ -381,13 +380,13 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
+	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
 }
 
 void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	HRESULT hr;
-	V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
+	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
@@ -427,7 +426,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
-	V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
+	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
 }
 
 

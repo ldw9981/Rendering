@@ -168,14 +168,6 @@ void cSceneNode::UpdateLocalMatrix()
 	}	
 }
 
-
-
-D3DXMATRIX& cSceneNode::GetAnimationTM()
-{
-	return m_AnimationTM;
-}
-
-
 void cSceneNode::FreeChildren()
 {
 	cSceneNode* pItem=NULL;

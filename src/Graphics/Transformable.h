@@ -11,9 +11,6 @@ class cSceneNode;
 class cTransformable
 {
 public:
-	cTransformable(void);
-	~cTransformable(void);
-public:
 	D3DXMATRIX				m_matWorld;		//							Transform에 의해서만 갱신된다. 
 	D3DXMATRIX				m_matLocal;
 	D3DXMATRIX				m_matVelocityPos;
@@ -28,7 +25,9 @@ public:
 
 	D3DXVECTOR3				m_velRotPerSec;
 	D3DXVECTOR3				m_velSclPerSec;
-
+public:
+	cTransformable(void);
+	~cTransformable(void);
 public:
 //	BOOL					GetWorldTMModified() const { return m_bModifiedMatWorld; }
 //	void					SetWorldTMModified(BOOL val) { m_bModifiedMatWorld = val; }

@@ -21,6 +21,7 @@ public:
 	World(void);
 	virtual ~World(void);
 	typedef std::pair<Entity*,float> VISIBILITY_ENTITY;
+	typedef boost::fast_pool_allocator<VISIBILITY_ENTITY,boost::default_user_allocator_new_delete, boost::details::pool::null_mutex> VISIBILITY_ENTITY_ALLOCATOR ;
 public:
 	LPDIRECT3DTEXTURE9		m_pShadowRenderTarget;
 	LPDIRECT3DSURFACE9		m_pShadowDepthStencil;
@@ -30,7 +31,7 @@ public:
 	std::list<Entity*>		m_listEntity;
 	
 
-	std::list<VISIBILITY_ENTITY>		m_listEntityRender;
+	std::list<VISIBILITY_ENTITY,VISIBILITY_ENTITY_ALLOCATOR>		m_listEntityRender;
 	
 	cRendererQueue			m_renderQueueNormalShadow;	
 	cRendererQueue			m_renderQueueSkinnedShadow;

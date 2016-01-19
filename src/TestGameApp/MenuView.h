@@ -3,8 +3,8 @@
 #include "Graphics/CameraNode.h"
 #include "Graphics/ZTerrain.h"
 
-#define STRESS_NORMAL 256
-#define STRESS_SKINNED 1
+#define STRESS_NORMAL 512
+#define STRESS_SKINNED 512
 
 class cGUIButton;
 class cObjTank;

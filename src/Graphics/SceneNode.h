@@ -16,10 +16,9 @@ class Entity;
 class SceneAnimation;
 class EntityAnimation;
 class EntityMaterial;
-
-
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
+
 class cSceneNode:
 	public IUnknownObject,
 	public IUpdatable,	
@@ -28,43 +27,33 @@ class cSceneNode:
 	public ISerializable
 {
 public:
-	cSceneNode(void);
-	virtual ~cSceneNode(void);
-	
 	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH,TYPE_SKELETON};
 public:
+	cSceneNode*				m_pParentNode;
+	std::vector<SceneAnimation*>	m_vecSceneAnimation;	// Transform 애니메이션 정보
 	std::vector<cSceneNode*>		m_vecChildNode;		
+	std::vector<size_t>		m_partialIndex;
+	D3DXMATRIX				m_referenceTM;
+	D3DXMATRIX				m_nodeTM;	
 protected:
 	SCENETYPE 					m_type;
 	std::string					m_strNodeName;			
-	std::string					m_strParentName;		
-	
-	cSceneNode*				m_pParentNode;
-	Entity*					m_pRootNode;
-		
-	// Transform 애니메이션 정보
-	std::vector<SceneAnimation*>	m_vecSceneAnimation;
-	
-	D3DXMATRIX				m_referenceTM;
+	std::string					m_strParentName;			
+	Entity*					m_pRootNode;	
 	size_t					m_baseAnimationKeyIndex;
 	size_t					m_basePrevAnimationKeyIndex;
 	size_t					m_partialAnimationKeyIndex;
 	size_t					m_partialPrevAnimationKeyIndex;
-	bool					m_bIsActiveAnimation;
-	D3DXMATRIX				m_AnimationTM;			
-	bool					m_bShow;
-	//DWORD					m_animationTime;
-	std::vector<size_t>		m_partialIndex;
+	bool					m_bIsActiveAnimation;		
+	bool					m_bShow;	
 public:	
+	cSceneNode(void);
+	virtual ~cSceneNode(void);
 
-	D3DXMATRIX				m_nodeTM;
 	Sophia::SCENETYPE	GetType() const { return m_type; }
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
-	D3DXMATRIX&			GetNodeTM();
-		
-	virtual void		UpdateLocalMatrix();
-	D3DXMATRIX&			GetAnimationTM();
-			
+	D3DXMATRIX&			GetNodeTM();		
+	virtual void		UpdateLocalMatrix();		
 
 	//  Object list
 	// 자식 오브젝트를 추가한다.

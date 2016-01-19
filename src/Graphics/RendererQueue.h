@@ -1,9 +1,11 @@
-#pragma once
+ï»¿#pragma once
 /*
-	½¦ÀÌ´õ ÇÏ³ª¿Í ´ëÀÀµÇ´Â ·»´õ·¯¸¦ ±×¸®´Â ¸®½ºÆ®
+	ì‰ì´ë” í•˜ë‚˜ì™€ ëŒ€ì‘ë˜ëŠ” ë Œë”ëŸ¬ë¥¼ ê·¸ë¦¬ëŠ” ë¦¬ìŠ¤íŠ¸
 
 */
 #include "Foundation/Interface.h"
+#include <boost/pool/pool_alloc.hpp>
+
 namespace Sophia
 {
 
@@ -38,8 +40,8 @@ public:
 
 
 	std::vector<MESH_DISTANCE_PAIR>					m_distanceOrder;
-	std::map<Material*,std::list<cMeshNode*>>		m_materialOrder;	// Material°°°í index,vertex´Ù¸¦¼öÀÖ´Ù.
-	std::map<SCENE_KEY,std::list<cMeshNode*>>		m_sceneOrder;		// Material,index,vertex¸ğµÎ°°´Ù.
+	std::map<Material*,std::list<cMeshNode*>>		m_materialOrder;	// Materialê°™ê³  index,vertexë‹¤ë¥¼ìˆ˜ìˆë‹¤.
+	std::map<SCENE_KEY,std::list<cMeshNode*>>		m_sceneOrder;		// Material,index,vertexëª¨ë‘ê°™ë‹¤.
 private:
 public:
 	void	GatherRender(std::vector<cMeshNode*>& vecMesh); 

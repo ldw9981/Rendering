@@ -36,12 +36,12 @@ public:
 
 	typedef std::pair<cMeshNode*,Material*> MESH_MATERIAL_PAIR;
 	typedef std::pair<cMeshNode*,float>		MESH_DISTANCE_PAIR;
-	
+	typedef std::vector<cMeshNode*>			MESHPTR_CONTAINER;
 
 
 	std::vector<MESH_DISTANCE_PAIR>					m_distanceOrder;
-	std::map<Material*,std::list<cMeshNode*>>		m_materialOrder;	// Material같고 index,vertex다를수있다.
-	std::map<SCENE_KEY,std::list<cMeshNode*>>		m_sceneOrder;		// Material,index,vertex모두같다.
+	std::map<Material*,MESHPTR_CONTAINER>		m_materialOrder;	// Material같고 index,vertex다를수있다.
+	std::map<SCENE_KEY,MESHPTR_CONTAINER>		m_sceneOrder;		// Material,index,vertex모두같다.
 private:
 public:
 	void	GatherRender(std::vector<cMeshNode*>& vecMesh); 

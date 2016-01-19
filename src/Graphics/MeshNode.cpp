@@ -341,7 +341,7 @@ void cMeshNode::ReleaseInstancingResource()
 
 
 
-void cMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
+void cMeshNode::UpdateMatrixInstancing( std::vector<cMeshNode*>& list )
 {
 	auto it = list.begin();
 	auto it_end = list.end();

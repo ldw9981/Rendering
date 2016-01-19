@@ -133,7 +133,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		UINT passes = 0;		
 		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
-		std::list<cMeshNode*>& vecMesh = it->second;
+		MESHPTR_CONTAINER& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
 			(*it_sub)->Render();
@@ -203,7 +203,7 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 
 		pEffect->Begin(&passes, 0);	
 		pEffect->BeginPass(0);	
-		std::list<cMeshNode*>& vecMesh = it->second;
+		MESHPTR_CONTAINER& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
 			(*it_sub)->Render();
@@ -225,12 +225,12 @@ void cRendererQueue::GatherRender(std::vector<cMeshNode*>& vecMesh )
 		if (pMesh->GetInstancingEnable())
 		{
 			SCENE_KEY key(pMesh->GetRscVetextBuffer(),pMesh->GetMaterial(),pMesh->GetRscIndexBuffer());
-			std::list<cMeshNode*>& list = m_sceneOrder[key];
+			MESHPTR_CONTAINER& list = m_sceneOrder[key];
 			list.push_back(pMesh);
 		}
 		else
 		{
-			std::list<cMeshNode*>& list = m_materialOrder[pMaterial];
+			MESHPTR_CONTAINER& list = m_materialOrder[pMaterial];
 			list.push_back(pMesh);
 		}
 	}
@@ -249,7 +249,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
 		const SCENE_KEY& refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;
+		MESHPTR_CONTAINER& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
@@ -296,7 +296,7 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
 		const SCENE_KEY& refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;
+		MESHPTR_CONTAINER& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
@@ -345,7 +345,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
 		const SCENE_KEY& refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;
+		MESHPTR_CONTAINER& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();
@@ -392,7 +392,7 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 	for ( auto it = m_sceneOrder.begin() ; it!=m_sceneOrder.end();++it)
 	{	
 		const SCENE_KEY& refScene = it->first;
-		std::list<cMeshNode*>& list = it->second;
+		MESHPTR_CONTAINER& list = it->second;
 
 		// Set Matrix Instance
 		unsigned long nCount=list.size();

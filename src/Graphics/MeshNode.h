@@ -70,7 +70,7 @@ public:
 
 	virtual void RenderInstancing(int instanceSize );
 
-	virtual void UpdateMatrixInstancing(std::list<cMeshNode*>& list);
+	virtual void UpdateMatrixInstancing(std::vector<cMeshNode*>& list);
 
 	cRscIndexBuffer* GetRscIndexBuffer() const { return m_pRscIndexBuffer; }
 	cRscVertexBuffer* GetRscVetextBuffer() const { return m_pRscVetextBuffer; }

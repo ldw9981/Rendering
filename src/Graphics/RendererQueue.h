@@ -4,7 +4,6 @@
 
 */
 #include "Foundation/Interface.h"
-#include <boost/pool/pool_alloc.hpp>
 
 namespace Sophia
 {

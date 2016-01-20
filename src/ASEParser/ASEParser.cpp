@@ -2365,7 +2365,7 @@ SceneAnimation* cASEParser::GetSceneAnimation(const char* meshName,const D3DXMAT
 	}
 
 	// 중간키까지만 있을경우 마지막은 동일한 값으로 추가
-	if (dwTimeKey < m_SceneTime.EX_LASTFRAMEMS)
+	if (dwTimeKey < (DWORD)m_SceneTime.EX_LASTFRAMEMS)
 	{
 		prevItem.AnmTick = (DWORD)m_SceneTime.EX_LASTFRAMEMS;
 	

@@ -57,7 +57,7 @@ struct SCENETIME
 	D3DXVECTOR3		AMBIENT_STATIC;
 	float			EX_MSPERFRAME;		// 계산된 부가정보. 프레임당 ms
 	float			EX_TICKSPERMS;		// 계산된 부가정보. ms당 틱수	
-	float			EX_LASTFRAMEMS;		// 계산된 부가정보. 마지막 프레임 ms
+	DWORD			EX_LASTFRAMEMS;		// 계산된 부가정보. 마지막 프레임 ms
 };
 
 

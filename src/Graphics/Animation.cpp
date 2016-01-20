@@ -62,25 +62,28 @@ void SceneAnimation::Cut(DWORD timeStart,DWORD timeEnd,SceneAnimation* pOut )
 {	
 	size_t index = 0;
 	ANMKEY_MATRIX itemFirst,itemLast;
-	itemFirst.AnmTick = timeStart;
+	itemFirst.AnmTick = 0;
 	GetMatrix(itemFirst.mat,timeStart,index);
 
 	pOut->m_arrKey.push_back(itemFirst);
 	
-	for (unsigned short i=0;i<m_arrKey.size();i++)
+	size_t total = m_arrKey.size();
+	for (unsigned short i=0;i<total;i++)
 	{
-		ANMKEY_MATRIX& item = m_arrKey[i];
+		ANMKEY_MATRIX item = m_arrKey[i];
 		if( item.AnmTick > timeStart && item.AnmTick < timeEnd)
-		{
+		{		
+			item.AnmTick -= timeStart;
 			pOut->m_arrKey.push_back(item);
 		}
 	}
-	itemLast.AnmTick = timeEnd;
-	GetMatrix(itemLast.mat,timeEnd,index);
-	if (itemLast.AnmTick == 0)
+	
+	if (m_arrKey[total-1].AnmTick < timeEnd)
 	{
-		__debugbreak();
-	}
+		timeEnd = m_arrKey[total-1].AnmTick;
+	}	
+	GetMatrix(itemLast.mat,timeEnd,index);
+	itemLast.AnmTick = timeEnd - timeStart;	
 	pOut->m_arrKey.push_back(itemLast);
 }
 
@@ -96,7 +99,7 @@ void SceneAnimation::GetMatrix( D3DXMATRIX& out,DWORD animationTime,size_t& inde
 	ANMKEY_MATRIX* pKey1=NULL;
 	ANMKEY_MATRIX* pKey2=NULL;
 
-	if ( animationTime < m_arrKey[index].AnmTick || index >= indexMax )
+	if ( index >= indexMax || animationTime < m_arrKey[index].AnmTick )
 	{
 		index = 0;
 	}
@@ -106,7 +109,7 @@ void SceneAnimation::GetMatrix( D3DXMATRIX& out,DWORD animationTime,size_t& inde
 		pKey1 = &m_arrKey[index];
 		pKey2 = &m_arrKey[index+1];
 		
-		if( animationTime <  pKey2->AnmTick)
+		if( animationTime <=  pKey2->AnmTick)
 		{
 			break;
 		}

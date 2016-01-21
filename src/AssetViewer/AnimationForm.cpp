@@ -105,14 +105,7 @@ System::Void AssetViewer::AnimationForm::textEndTime_KeyPress( System::Object^ s
 	{
 		if (e->KeyChar == (char)System::Windows::Forms::Keys::Return)
 		{
-			int length = Convert::ToInt32(textLength->Text);
-			int startTime = Convert::ToInt32(textStartTime->Text);
-			int endTime = Convert::ToInt32(textEndTime->Text);
-
-			if( (endTime>length) || (endTime < startTime))
-			{
-				textEndTime->Text = Convert::ToString(length);
-			}					
+			MakeValidCutTime();
 		}
 		else
 		{
@@ -138,8 +131,11 @@ System::Void AssetViewer::AnimationForm::buttonCut_Click( System::Object^ sender
 		textCutName->Text = "";
 		return;
 	}
+	
+	int length = Convert::ToInt32(textLength->Text);
 	int startTime = Convert::ToInt32(textStartTime->Text);
 	int endTime = Convert::ToInt32(textEndTime->Text);
+
 	m_pState->GetEntity()->CutAndPushEntityAnimation(listAnimation->SelectedIndex,startTime,endTime,suffix.c_str());
 	m_pState->SetModifiedAnimation(true);
 	Update(m_pState,m_pNode);
@@ -261,4 +257,32 @@ void AssetViewer::AnimationForm::Clear()
 	listAnimation->Items->Clear();
 	textBox_PartialWeight->Text = L"";
 	textBox_PartialWeight->Enabled = false;
+}
+
+System::Void AssetViewer::AnimationForm::textEndTime_Leave( System::Object^ sender, System::EventArgs^ e )
+{
+	MakeValidCutTime();
+}
+
+void AssetViewer::AnimationForm::MakeValidCutTime()
+{
+	int length = Convert::ToInt32(textLength->Text);
+	int startTime = Convert::ToInt32(textStartTime->Text);
+	int endTime = Convert::ToInt32(textEndTime->Text);
+
+	if(startTime>length) 
+	{
+		textStartTime->Text = Convert::ToString(0);
+	}	
+
+	if( (endTime>length) || (endTime < startTime))
+	{
+		textEndTime->Text = Convert::ToString(length);
+	}	
+
+}
+
+System::Void AssetViewer::AnimationForm::textStartTime_Leave( System::Object^ sender, System::EventArgs^ e )
+{
+	MakeValidCutTime();
 }

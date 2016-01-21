@@ -107,16 +107,16 @@ namespace AssetViewer {
 			this->splitContainer1 = (gcnew System::Windows::Forms::SplitContainer());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->checkBox_showPartialWeight = (gcnew System::Windows::Forms::CheckBox());
 			this->checkBox_partialLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->button_PartialStop = (gcnew System::Windows::Forms::Button());
 			this->button_Partial = (gcnew System::Windows::Forms::Button());
+			this->textBox_PartialWeight = (gcnew System::Windows::Forms::TextBox());
+			this->labelPartialWeight = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->checkBox_baseLoop = (gcnew System::Windows::Forms::CheckBox());
 			this->button_BaseStop = (gcnew System::Windows::Forms::Button());
 			this->button_Base = (gcnew System::Windows::Forms::Button());
-			this->textBox_PartialWeight = (gcnew System::Windows::Forms::TextBox());
-			this->labelPartialWeight = (gcnew System::Windows::Forms::Label());
-			this->checkBox_showPartialWeight = (gcnew System::Windows::Forms::CheckBox());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->splitContainer1))->BeginInit();
 			this->splitContainer1->Panel1->SuspendLayout();
 			this->splitContainer1->Panel2->SuspendLayout();
@@ -144,6 +144,7 @@ namespace AssetViewer {
 			this->textStartTime->TabIndex = 1;
 			this->textStartTime->Text = L"0";
 			this->textStartTime->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &AnimationForm::textStartTime_KeyPress);
+			this->textStartTime->Leave += gcnew System::EventHandler(this, &AnimationForm::textStartTime_Leave);
 			// 
 			// textEndTime
 			// 
@@ -153,11 +154,13 @@ namespace AssetViewer {
 			this->textEndTime->TabIndex = 2;
 			this->textEndTime->Text = L"0";
 			this->textEndTime->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &AnimationForm::textEndTime_KeyPress);
+			this->textEndTime->Leave += gcnew System::EventHandler(this, &AnimationForm::textEndTime_Leave);
 			// 
 			// textLength
 			// 
 			this->textLength->Location = System::Drawing::Point(53, 11);
 			this->textLength->Name = L"textLength";
+			this->textLength->Text = L"0";
 			this->textLength->Size = System::Drawing::Size(49, 21);
 			this->textLength->TabIndex = 4;
 			// 
@@ -239,6 +242,16 @@ namespace AssetViewer {
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Partial";
 			// 
+			// checkBox_showPartialWeight
+			// 
+			this->checkBox_showPartialWeight->AutoSize = true;
+			this->checkBox_showPartialWeight->Location = System::Drawing::Point(9, 20);
+			this->checkBox_showPartialWeight->Name = L"checkBox_showPartialWeight";
+			this->checkBox_showPartialWeight->Size = System::Drawing::Size(173, 16);
+			this->checkBox_showPartialWeight->TabIndex = 16;
+			this->checkBox_showPartialWeight->Text = L"Show BlendWeight in Tree";
+			this->checkBox_showPartialWeight->UseVisualStyleBackColor = true;
+			// 
 			// checkBox_partialLoop
 			// 
 			this->checkBox_partialLoop->AutoSize = true;
@@ -268,6 +281,24 @@ namespace AssetViewer {
 			this->button_Partial->Text = L"Play";
 			this->button_Partial->UseVisualStyleBackColor = true;
 			this->button_Partial->Click += gcnew System::EventHandler(this, &AnimationForm::button_Partial_Click);
+			// 
+			// textBox_PartialWeight
+			// 
+			this->textBox_PartialWeight->Location = System::Drawing::Point(91, 51);
+			this->textBox_PartialWeight->Name = L"textBox_PartialWeight";
+			this->textBox_PartialWeight->Size = System::Drawing::Size(100, 21);
+			this->textBox_PartialWeight->TabIndex = 10;
+			this->textBox_PartialWeight->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &AnimationForm::textBox_PartialWeight_KeyDown);
+			this->textBox_PartialWeight->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &AnimationForm::textBox_PartialWeight_KeyPress);
+			// 
+			// labelPartialWeight
+			// 
+			this->labelPartialWeight->AutoSize = true;
+			this->labelPartialWeight->Location = System::Drawing::Point(7, 54);
+			this->labelPartialWeight->Name = L"labelPartialWeight";
+			this->labelPartialWeight->Size = System::Drawing::Size(74, 12);
+			this->labelPartialWeight->TabIndex = 9;
+			this->labelPartialWeight->Text = L"BlendWeight";
 			// 
 			// groupBox1
 			// 
@@ -311,35 +342,6 @@ namespace AssetViewer {
 			this->button_Base->UseVisualStyleBackColor = true;
 			this->button_Base->Click += gcnew System::EventHandler(this, &AnimationForm::button_Base_Click);
 			// 
-			// textBox_PartialWeight
-			// 
-			this->textBox_PartialWeight->Location = System::Drawing::Point(91, 51);
-			this->textBox_PartialWeight->Name = L"textBox_PartialWeight";
-			this->textBox_PartialWeight->Size = System::Drawing::Size(100, 21);
-			this->textBox_PartialWeight->TabIndex = 10;
-			this->textBox_PartialWeight->KeyDown += gcnew System::Windows::Forms::KeyEventHandler(this, &AnimationForm::textBox_PartialWeight_KeyDown);
-			this->textBox_PartialWeight->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &AnimationForm::textBox_PartialWeight_KeyPress);
-			// 
-			// labelPartialWeight
-			// 
-			this->labelPartialWeight->AutoSize = true;
-			this->labelPartialWeight->Location = System::Drawing::Point(7, 54);
-			this->labelPartialWeight->Name = L"labelPartialWeight";
-			this->labelPartialWeight->Size = System::Drawing::Size(74, 12);
-			this->labelPartialWeight->TabIndex = 9;
-			this->labelPartialWeight->Text = L"BlendWeight";
-			// 
-			// checkBox_showPartialWeight
-			// 
-			this->checkBox_showPartialWeight->AutoSize = true;
-			this->checkBox_showPartialWeight->Location = System::Drawing::Point(9, 20);
-			this->checkBox_showPartialWeight->Name = L"checkBox_showPartialWeight";
-			this->checkBox_showPartialWeight->Size = System::Drawing::Size(173, 16);
-			this->checkBox_showPartialWeight->TabIndex = 16;
-			this->checkBox_showPartialWeight->Text = L"Show BlendWeight in Tree";
-			this->checkBox_showPartialWeight->UseVisualStyleBackColor = true;
-			
-			// 
 			// AnimationForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
@@ -368,6 +370,7 @@ namespace AssetViewer {
 	public:
 		void Update(State* pState,Sophia::cSceneNode* pNode);
 		void Clear();
+		void MakeValidCutTime();
 	private: void PlayAnimation();
 	private: void UpdateText(bool modified);
 	private: System::Void listAnimation_OnSelectedIndexChanged(System::Object^  sender, System::EventArgs^  e);
@@ -384,5 +387,7 @@ private: System::Void button_BaseStop_Click(System::Object^  sender, System::Eve
 private: System::Void button_PartialStop_Click(System::Object^  sender, System::EventArgs^  e);
 
 
+private: System::Void textEndTime_Leave(System::Object^  sender, System::EventArgs^  e);
+private: System::Void textStartTime_Leave(System::Object^  sender, System::EventArgs^  e);
 };
 }

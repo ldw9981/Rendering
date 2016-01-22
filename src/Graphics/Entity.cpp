@@ -416,10 +416,8 @@ void Entity::EraseAnimation( int index )
 
 void Entity::StopBaseAnimation()
 {
-	m_basePrevAnimationDesc = m_baseAnimationDesc;
-	
-	m_baseAnimationDesc.loop = false;
-	m_baseAnimationDesc.playTime = m_baseAnimationDesc.length - m_baseAnimationDesc.earlyEndTime;
+	m_baseAnimationDesc = ENTITY_ANIMATION_DESCRIPTION();
+	m_basePrevAnimationDesc = ENTITY_ANIMATION_DESCRIPTION();
 }
 
 void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCRIPTION& desc )

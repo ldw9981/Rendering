@@ -102,7 +102,7 @@ TreeNode^ AssetViewer::SceneTreeForm::CreateTreeNode( TreeNode^ parentTreeNode,S
 		treeNode = parentTreeNode->Nodes->Add( name , name,img,img);
 	}
 
-	if (m_showWeight && m_animationIndex != -1 && pNode->CountSceneAnimation()>0) 
+	if ( m_animationIndex != -1 && pNode->CountSceneAnimation()>0) 
 	{
 		Sophia::SceneAnimation* pSceneAnimation = pNode->GetSceneAnimation(m_animationIndex);
 		if (pSceneAnimation)
@@ -156,9 +156,7 @@ System::Void AssetViewer::SceneTreeForm::listAnimation_SelectedIndexChanged( Sys
 		return;
 
 	m_animationIndex = listBox->SelectedIndex;	
-
-	if (!m_showWeight)
-		return;
+	
 
 	TreeNode^ selectedNode = treeView1->SelectedNode;
 	System::String^ key;
@@ -183,31 +181,4 @@ System::Void AssetViewer::SceneTreeForm::listAnimation_SelectedIndexChanged( Sys
 	}
 }
 
-System::Void AssetViewer::SceneTreeForm::checkBox_showPartialWeight_CheckedChanged( System::Object^ sender, System::EventArgs^ e )
-{
-	CheckBox^ checkBox = safe_cast<CheckBox^>(sender); 
-	m_showWeight = checkBox->Checked;
 
-	TreeNode^ selectedNode = treeView1->SelectedNode;
-	System::String^ key;
-
-	if (selectedNode!=nullptr)
-	{
-		key = gcnew System::String(selectedNode->Text);
-	}		
-		
-	if (m_animationIndex == -1)
-		return;
-
-	treeView1->Nodes->Clear();
-	Update(m_pState);		
-
-	if (selectedNode!=nullptr)
-	{
-		array<TreeNode^>^ findNode = treeView1->Nodes->Find(key,true);
-		if (findNode->Length != 0)
-		{
-			treeView1->SelectedNode = findNode[0];
-		}
-	}
-}

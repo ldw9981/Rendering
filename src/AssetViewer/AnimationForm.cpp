@@ -258,12 +258,12 @@ System::Void AssetViewer::AnimationForm::button_BaseStop_Click( System::Object^ 
 
 System::Void AssetViewer::AnimationForm::button_PartialStop_Click( System::Object^ sender, System::EventArgs^ e )
 {
-	if (listAnimation->SelectedIndex == -1)
+	if (comboBoxPartial->SelectedIndex == -1)
 		return;
 
 	if (m_pState && m_pEntity)
 	{
-		m_pEntity->StopPartialAnimation(listAnimation->SelectedIndex);
+		m_pEntity->StopPartialAnimation(comboBoxPartial->SelectedIndex);
 	}
 }
 
@@ -313,37 +313,5 @@ System::Void AssetViewer::AnimationForm::textStartTime_Leave( System::Object^ se
 	MakeValidCutTime();
 }
 
-System::Void AssetViewer::AnimationForm::comboBoxBase_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
-{
-	if (comboBoxBase->SelectedIndex == -1)
-	{	
-		textLength->Text = L"";
-		textStartTime->Text = L"";
-		textEndTime->Text = L"";
-	}
-	else
-	{
-		auto container = m_pState->GetEntity()->GetVecAnimation();
-		textLength->Text = Convert::ToString((int)container[comboBoxBase->SelectedIndex]->m_dwTimeLength);
-		textStartTime->Text = Convert::ToString((int)0);
-		textEndTime->Text = Convert::ToString((int)container[comboBoxBase->SelectedIndex]->m_dwTimeLength);	
-	}
-}
 
-System::Void AssetViewer::AnimationForm::comboBoxPartial_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e )
-{
-	if (comboBoxPartial->SelectedIndex == -1)
-	{
-		textLength->Text = L"";
-		textStartTime->Text = L"";
-		textEndTime->Text = L"";
-	}
-	else
-	{
-		auto container = m_pState->GetEntity()->GetVecAnimation();
-		textLength->Text = Convert::ToString((int)container[comboBoxPartial->SelectedIndex]->m_dwTimeLength);
-		textStartTime->Text = Convert::ToString((int)0);
-		textEndTime->Text = Convert::ToString((int)container[comboBoxPartial->SelectedIndex]->m_dwTimeLength);
-	}
-	
-}
+

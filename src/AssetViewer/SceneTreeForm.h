@@ -65,7 +65,6 @@ namespace AssetViewer {
 		Sophia::Entity*	m_pEntity;
 		ImageList imageList;
 		int				m_animationIndex;
-		bool			m_showWeight;
 	private:
 		/// <summary>
 		/// 필수 디자이너 변수입니다.
@@ -144,7 +143,5 @@ namespace AssetViewer {
 		void DrawTreeNodeHighlightSelectedEvenWithoutFocus(System::Object^ sender, DrawTreeNodeEventArgs^ e);
 	public: 
 		System::Void listAnimation_SelectedIndexChanged( System::Object^ sender, System::EventArgs^ e );
-	public:	
-		System::Void checkBox_showPartialWeight_CheckedChanged(System::Object^  sender, System::EventArgs^  e);
 	};
 }

@@ -157,7 +157,7 @@ void cSceneNode::UpdateLocalMatrix()
 	{
 		ENTITY_ANIMATION_DESCRIPTION& partial = *it;
 		pSceneAnimationCurr = m_vecSceneAnimation[partial.playIndex];
-		if (pSceneAnimationCurr)
+		if (pSceneAnimationCurr && pSceneAnimationCurr->m_partialWeight != 0.0f )
 		{
 			D3DXMATRIX matPartial;
 			pSceneAnimationCurr->GetMatrix(matPartial,partial.playTime,m_partialIndex[index]);	

@@ -17,8 +17,7 @@ System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::Eve
 	animationForm->Show();
 	animationForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width+viewForm->Size.Width, 0);
 	animationForm->listAnimation->SelectedIndexChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::listAnimation_SelectedIndexChanged);
-	animationForm->checkBox_showPartialWeight->CheckedChanged += gcnew System::EventHandler(sceneTreeForm, &SceneTreeForm::checkBox_showPartialWeight_CheckedChanged);
-
+	
 	viewForm->MdiParent = this;
 	viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
 	viewForm->Show();

@@ -435,6 +435,7 @@ void Entity::UpdateAnimationDescription( DWORD elapseTime,ENTITY_ANIMATION_DESCR
 		else
 		{
 			desc.playTime = endTime;
+			desc.playIndex = -1;
 		}
 	}
 
@@ -490,6 +491,8 @@ bool Entity::UpdatePartialDescription( DWORD elapseTime,std::list<ENTITY_ANIMATI
 		}
 		else
 		{		
+			desc.playTime = endTime;
+			desc.playIndex = -1;
 			return false;
 		}
 	}

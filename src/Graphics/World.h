@@ -55,6 +55,7 @@ public:
 	D3DXVECTOR3				m_worldLightDirection;
 	bool					m_bDebugBound;
 	bool					m_bEnableShadow;
+	bool					m_bDebugShadow;
 protected:
 	D3DXVECTOR3				m_worldLightPosition;
 public:
@@ -82,6 +83,8 @@ public:
 	void Render();
 	bool GetEnableShadow() const { return m_bEnableShadow; }
 	void SetEnableShadow(bool val) { m_bEnableShadow = val; }
+	bool GetDebugShadow() const { return m_bDebugShadow; }
+	void SetDebugShadow(bool val) { m_bDebugShadow = val; }
 
 	void RenderShadow();
 	void RenderScene();

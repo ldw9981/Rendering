@@ -40,6 +40,7 @@ World::World(void)
 	m_ViewPortInfo.Height = Graphics::m_pInstance->m_height;
 	SetWorldLightDirection(D3DXVECTOR3(0.0f, -1.0f, 0.0f));
 	m_bDebugBound = false;
+	m_bDebugShadow = false;
 	m_bEnableShadow = true;
 	m_pHWRenderTarget[0] = NULL;
 	m_pHWDepthStencilBuffer = NULL;
@@ -254,13 +255,13 @@ void World::Render()
 		pEffect->End();
 	}	
 	// SHADOW_MAP		
-	
-	Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
-	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
-	pEffect->CommitChanges();
-	Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
-	
-	
+	if (m_bDebugShadow)
+	{
+		Graphics::m_pDevice->SetTexture (0, m_pShadowRenderTarget );
+		Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);
+		pEffect->CommitChanges();
+		Graphics::m_pDevice->DrawPrimitiveUP( D3DPT_TRIANGLEFAN, 2, & Graphics::m_pInstance->g_vertices[0], sizeof(GUIVERTEX));	
+	}	
 }
 
 void World::GatherRender()

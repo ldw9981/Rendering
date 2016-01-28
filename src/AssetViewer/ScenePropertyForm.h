@@ -66,7 +66,7 @@ namespace AssetViewer {
 			this->propertyGrid1->Dock = System::Windows::Forms::DockStyle::Fill;
 			this->propertyGrid1->Location = System::Drawing::Point(0, 0);
 			this->propertyGrid1->Name = L"propertyGrid1";
-			this->propertyGrid1->Size = System::Drawing::Size(318, 655);
+			this->propertyGrid1->Size = System::Drawing::Size(318, 312);
 			this->propertyGrid1->TabIndex = 0;
 			this->propertyGrid1->PropertyValueChanged += gcnew System::Windows::Forms::PropertyValueChangedEventHandler(this, &ScenePropertyForm::propertyGrid1_PropertyValueChanged);
 			this->propertyGrid1->BindingContextChanged += gcnew System::EventHandler(this, &ScenePropertyForm::propertyGrid1_BindingContextChanged);
@@ -75,10 +75,9 @@ namespace AssetViewer {
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(318, 655);
+			this->ClientSize = System::Drawing::Size(318, 312);
 			this->Controls->Add(this->propertyGrid1);
 			this->MaximizeBox = false;
-			this->MinimizeBox = false;
 			this->Name = L"ScenePropertyForm";
 			this->Text = L"ScenePropertyForm";
 			this->ResumeLayout(false);

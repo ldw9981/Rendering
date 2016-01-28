@@ -9,9 +9,11 @@ System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::Eve
 	sceneTreeForm->treeView1->NodeMouseClick += gcnew System::Windows::Forms::TreeNodeMouseClickEventHandler(this, &MainForm::sceneTreeForm_treeView1_NodeMouseClick);
 
 	int CaptionHeight = sceneTreeForm->Height - sceneTreeForm->ClientSize.Height;
-	sceneTreeForm->Size = System::Drawing::Size(400, this->ClientSize.Height - CaptionHeight);
-	sceneTreeForm->Show();
+	sceneTreeForm->Size = System::Drawing::Size(334, this->ClientSize.Height/2 - CaptionHeight);
+	
 	sceneTreeForm->Location = System::Drawing::Point(0, 0);
+	sceneTreeForm->Show();
+	
 
 	animationForm->MdiParent = this;
 	animationForm->Show();
@@ -22,6 +24,13 @@ System::Void AssetViewer::MainForm::OnShown( System::Object^ sender, System::Eve
 	viewForm->Shown += gcnew System::EventHandler(this, &MainForm::viewForm_OnShown);
 	viewForm->Show();
 	viewForm->Location = System::Drawing::Point(sceneTreeForm->Size.Width, 0); 
+
+
+	Pop_scenePropertyForm();
+	
+
+	Pop_materialPropertyForm();
+
 	OutputDebugString(L"MainForm::OnShown");
 }
 
@@ -65,9 +74,10 @@ void AssetViewer::MainForm::Pop_scenePropertyForm()
 		return;
 
 	scenePropertyForm = gcnew ScenePropertyForm;
-	scenePropertyForm->Owner = this;
+	scenePropertyForm->MdiParent = this;
 	scenePropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::scenePropertyForm_Closed);
 	scenePropertyForm->Show();
+	scenePropertyForm->Location = System::Drawing::Point(0,sceneTreeForm->Size.Height);
 }
 
 void AssetViewer::MainForm::Pop_materialPropertyForm()
@@ -77,9 +87,10 @@ void AssetViewer::MainForm::Pop_materialPropertyForm()
 		return;
 
 	materialPropertyForm = gcnew MaterialPropertyForm;
-	materialPropertyForm->Owner = this;
+	materialPropertyForm->MdiParent = this;
 	materialPropertyForm->Closed += gcnew System::EventHandler(this, &MainForm::materialPropertyForm_Closed);
 	materialPropertyForm->Show();
+	materialPropertyForm->Location = System::Drawing::Point(animationForm->Location.X,animationForm->Size.Height);
 }
 
 System::Void AssetViewer::MainForm::contextMenuStrip1_ItemClicked( System::Object^ sender, System::Windows::Forms::ToolStripItemClickedEventArgs^ e )
@@ -255,4 +266,12 @@ System::Void AssetViewer::MainForm::cameraSettingsForm_Closed( System::Object^ s
 System::Void AssetViewer::MainForm::Pop_cameraSettingsForm()
 {
 
+}
+
+System::Void AssetViewer::MainForm::scenePropertyToolStripMenuItem1_Click( System::Object^ sender, System::EventArgs^ e )
+{
+	if (scenePropertyForm != nullptr)
+		return;
+
+	Pop_scenePropertyForm();
 }

@@ -48,6 +48,9 @@ void State::Enter()
 		&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
 
+	m_graphicWorld.SetWorldLightDirection(D3DXVECTOR3(0.0f, -1.0f, 1.0f));
+	m_graphicWorld.SetEnableShadow(true);
+
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 
 	/*
@@ -120,8 +123,7 @@ void State::Control()
 				localTM = rot * localTM;
 			}
 		}
-
-		if (g_pInput->GetMouseState().lY != 0)
+		else if (g_pInput->GetMouseState().lY != 0)
 		{
 			if(g_pInput->Mouse_IsCurrDn(0))
 			{

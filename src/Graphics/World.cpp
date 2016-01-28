@@ -219,11 +219,8 @@ void World::Render()
 	Graphics::m_pInstance->SetEffectVector_WorldLightDirection(&D3DXVECTOR4(m_worldLightDirection.x,m_worldLightDirection.y,m_worldLightDirection.z,0.0f));
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
-	
-	if (m_bEnableShadow)
-	{		
-		RenderShadow();		
-	}	
+
+	RenderShadow();		
 	RenderScene();
 
 	if (m_bDebugBound)
@@ -316,33 +313,35 @@ void World::RenderShadow()
 	Graphics::m_pDevice->SetDepthStencilSurface( m_pShadowDepthStencil );
 	Graphics::m_pDevice->Clear( 0, NULL, (D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER), 0xFFFFFFFF, 1.0f, 0 );
 
-	if (!m_renderQueueNormalShadow.m_materialOrder.empty())
-	{	
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-		m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormal,
-			Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
-	}			
-
-
-	if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
-	{	
-		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-		m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinned,
-			Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
-	}			
-
-	if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
+	if (m_bEnableShadow)
 	{
-		m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalInstancing,
-			Graphics::m_pInstance->m_hTShadowNormalInstancingAlphaTest );		
-	}	
+		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
+		{	
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
+			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormal,
+				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
+		}			
 
-	if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
-	{
-		m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedInstancing,
-			Graphics::m_pInstance->m_hTShadowSkinnedInstancingAlphaTest );		
-	}	
 
+		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
+		{	
+			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
+			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinned,
+				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
+		}			
+
+		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
+		{
+			m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalInstancing,
+				Graphics::m_pInstance->m_hTShadowNormalInstancingAlphaTest );		
+		}	
+
+		if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
+		{
+			m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedInstancing,
+				Graphics::m_pInstance->m_hTShadowSkinnedInstancingAlphaTest );		
+		}	
+	}	
 	//////////////////////////////
 	// 2. 그림자 입히기
 	//////////////////////////////

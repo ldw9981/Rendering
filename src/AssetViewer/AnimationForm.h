@@ -112,6 +112,8 @@ namespace AssetViewer {
 			this->buttonCut = (gcnew System::Windows::Forms::Button());
 			this->buttonDel = (gcnew System::Windows::Forms::Button());
 			this->splitContainer1 = (gcnew System::Windows::Forms::SplitContainer());
+			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label1 = (gcnew System::Windows::Forms::Label());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->comboBoxPartial = (gcnew System::Windows::Forms::ComboBox());
@@ -125,8 +127,6 @@ namespace AssetViewer {
 			this->button_Base = (gcnew System::Windows::Forms::Button());
 			this->textBox_PartialWeight = (gcnew System::Windows::Forms::TextBox());
 			this->labelPartialWeight = (gcnew System::Windows::Forms::Label());
-			this->label2 = (gcnew System::Windows::Forms::Label());
-			this->label3 = (gcnew System::Windows::Forms::Label());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->splitContainer1))->BeginInit();
 			this->splitContainer1->Panel1->SuspendLayout();
 			this->splitContainer1->Panel2->SuspendLayout();
@@ -142,13 +142,13 @@ namespace AssetViewer {
 			this->listAnimation->ItemHeight = 12;
 			this->listAnimation->Location = System::Drawing::Point(0, 0);
 			this->listAnimation->Name = L"listAnimation";
-			this->listAnimation->Size = System::Drawing::Size(230, 259);
+			this->listAnimation->Size = System::Drawing::Size(275, 47);
 			this->listAnimation->TabIndex = 0;
 			this->listAnimation->SelectedIndexChanged += gcnew System::EventHandler(this, &AnimationForm::listAnimation_OnSelectedIndexChanged);
 			// 
 			// textStartTime
 			// 
-			this->textStartTime->Location = System::Drawing::Point(121, 223);
+			this->textStartTime->Location = System::Drawing::Point(147, 221);
 			this->textStartTime->Name = L"textStartTime";
 			this->textStartTime->Size = System::Drawing::Size(40, 21);
 			this->textStartTime->TabIndex = 1;
@@ -158,7 +158,7 @@ namespace AssetViewer {
 			// 
 			// textEndTime
 			// 
-			this->textEndTime->Location = System::Drawing::Point(181, 223);
+			this->textEndTime->Location = System::Drawing::Point(226, 223);
 			this->textEndTime->Name = L"textEndTime";
 			this->textEndTime->Size = System::Drawing::Size(40, 21);
 			this->textEndTime->TabIndex = 2;
@@ -176,24 +176,24 @@ namespace AssetViewer {
 			// 
 			// textCutName
 			// 
-			this->textCutName->Location = System::Drawing::Point(14, 248);
+			this->textCutName->Location = System::Drawing::Point(7, 248);
 			this->textCutName->Name = L"textCutName";
-			this->textCutName->Size = System::Drawing::Size(124, 21);
+			this->textCutName->Size = System::Drawing::Size(150, 21);
 			this->textCutName->TabIndex = 5;
 			// 
 			// buttonCut
 			// 
-			this->buttonCut->Location = System::Drawing::Point(144, 248);
+			this->buttonCut->Location = System::Drawing::Point(163, 248);
 			this->buttonCut->Name = L"buttonCut";
-			this->buttonCut->Size = System::Drawing::Size(38, 23);
+			this->buttonCut->Size = System::Drawing::Size(58, 23);
 			this->buttonCut->TabIndex = 6;
-			this->buttonCut->Text = L"Cut";
+			this->buttonCut->Text = L"Cut,Add";
 			this->buttonCut->UseVisualStyleBackColor = true;
 			this->buttonCut->Click += gcnew System::EventHandler(this, &AnimationForm::buttonCut_Click);
 			// 
 			// buttonDel
 			// 
-			this->buttonDel->Location = System::Drawing::Point(182, 248);
+			this->buttonDel->Location = System::Drawing::Point(227, 248);
 			this->buttonDel->Name = L"buttonDel";
 			this->buttonDel->Size = System::Drawing::Size(40, 23);
 			this->buttonDel->TabIndex = 7;
@@ -228,9 +228,27 @@ namespace AssetViewer {
 			// splitContainer1.Panel2
 			// 
 			this->splitContainer1->Panel2->Controls->Add(this->listAnimation);
-			this->splitContainer1->Size = System::Drawing::Size(230, 540);
-			this->splitContainer1->SplitterDistance = 277;
+			this->splitContainer1->Size = System::Drawing::Size(275, 334);
+			this->splitContainer1->SplitterDistance = 283;
 			this->splitContainer1->TabIndex = 8;
+			// 
+			// label3
+			// 
+			this->label3->AutoSize = true;
+			this->label3->Location = System::Drawing::Point(193, 226);
+			this->label3->Name = L"label3";
+			this->label3->Size = System::Drawing::Size(27, 12);
+			this->label3->TabIndex = 17;
+			this->label3->Text = L"End";
+			// 
+			// label2
+			// 
+			this->label2->AutoSize = true;
+			this->label2->Location = System::Drawing::Point(111, 226);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(30, 12);
+			this->label2->TabIndex = 16;
+			this->label2->Text = L"Start";
 			// 
 			// label1
 			// 
@@ -249,10 +267,10 @@ namespace AssetViewer {
 			this->groupBox2->Controls->Add(this->button_Partial);
 			this->groupBox2->Location = System::Drawing::Point(14, 96);
 			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(208, 72);
+			this->groupBox2->Size = System::Drawing::Size(249, 72);
 			this->groupBox2->TabIndex = 14;
 			this->groupBox2->TabStop = false;
-			this->groupBox2->Text = L"Partial";
+			this->groupBox2->Text = L"PartialTest";
 			// 
 			// comboBoxPartial
 			// 
@@ -260,7 +278,7 @@ namespace AssetViewer {
 			this->comboBoxPartial->FormattingEnabled = true;
 			this->comboBoxPartial->Location = System::Drawing::Point(12, 16);
 			this->comboBoxPartial->Name = L"comboBoxPartial";
-			this->comboBoxPartial->Size = System::Drawing::Size(182, 20);
+			this->comboBoxPartial->Size = System::Drawing::Size(231, 20);
 			this->comboBoxPartial->TabIndex = 17;
 			// 
 			// checkBox_partialLoop
@@ -275,7 +293,7 @@ namespace AssetViewer {
 			// 
 			// button_PartialStop
 			// 
-			this->button_PartialStop->Location = System::Drawing::Point(151, 38);
+			this->button_PartialStop->Location = System::Drawing::Point(200, 38);
 			this->button_PartialStop->Name = L"button_PartialStop";
 			this->button_PartialStop->Size = System::Drawing::Size(43, 23);
 			this->button_PartialStop->TabIndex = 13;
@@ -285,7 +303,7 @@ namespace AssetViewer {
 			// 
 			// button_Partial
 			// 
-			this->button_Partial->Location = System::Drawing::Point(99, 38);
+			this->button_Partial->Location = System::Drawing::Point(151, 38);
 			this->button_Partial->Name = L"button_Partial";
 			this->button_Partial->Size = System::Drawing::Size(43, 23);
 			this->button_Partial->TabIndex = 12;
@@ -301,10 +319,10 @@ namespace AssetViewer {
 			this->groupBox1->Controls->Add(this->button_Base);
 			this->groupBox1->Location = System::Drawing::Point(14, 12);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(208, 78);
+			this->groupBox1->Size = System::Drawing::Size(249, 78);
 			this->groupBox1->TabIndex = 13;
 			this->groupBox1->TabStop = false;
-			this->groupBox1->Text = L"Base";
+			this->groupBox1->Text = L"BaseTest";
 			// 
 			// comboBoxBase
 			// 
@@ -312,7 +330,7 @@ namespace AssetViewer {
 			this->comboBoxBase->FormattingEnabled = true;
 			this->comboBoxBase->Location = System::Drawing::Point(7, 20);
 			this->comboBoxBase->Name = L"comboBoxBase";
-			this->comboBoxBase->Size = System::Drawing::Size(187, 20);
+			this->comboBoxBase->Size = System::Drawing::Size(236, 20);
 			this->comboBoxBase->TabIndex = 16;
 			// 
 			// checkBox_baseLoop
@@ -327,7 +345,7 @@ namespace AssetViewer {
 			// 
 			// button_BaseStop
 			// 
-			this->button_BaseStop->Location = System::Drawing::Point(151, 44);
+			this->button_BaseStop->Location = System::Drawing::Point(200, 44);
 			this->button_BaseStop->Name = L"button_BaseStop";
 			this->button_BaseStop->Size = System::Drawing::Size(43, 23);
 			this->button_BaseStop->TabIndex = 12;
@@ -337,7 +355,7 @@ namespace AssetViewer {
 			// 
 			// button_Base
 			// 
-			this->button_Base->Location = System::Drawing::Point(97, 44);
+			this->button_Base->Location = System::Drawing::Point(150, 44);
 			this->button_Base->Name = L"button_Base";
 			this->button_Base->Size = System::Drawing::Size(44, 23);
 			this->button_Base->TabIndex = 11;
@@ -363,29 +381,11 @@ namespace AssetViewer {
 			this->labelPartialWeight->TabIndex = 9;
 			this->labelPartialWeight->Text = L"Partial Blend Weight";
 			// 
-			// label2
-			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(105, 226);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(13, 12);
-			this->label2->TabIndex = 16;
-			this->label2->Text = L"S";
-			// 
-			// label3
-			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(165, 227);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(13, 12);
-			this->label3->TabIndex = 17;
-			this->label3->Text = L"E";
-			// 
 			// AnimationForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(230, 540);
+			this->ClientSize = System::Drawing::Size(275, 334);
 			this->ControlBox = false;
 			this->Controls->Add(this->splitContainer1);
 			this->MaximizeBox = false;

@@ -31,9 +31,9 @@ namespace AssetViewer {
 			viewForm = gcnew ViewForm;
 	        sceneTreeForm = gcnew SceneTreeForm;			
 			animationForm = gcnew AnimationForm;
-			
-			scenePropertyForm = nullptr;
-			materialPropertyForm = nullptr;
+		
+		
+		
 			m_pNode = NULL;
 			m_bShowSkeleton = false;
 		}
@@ -85,6 +85,11 @@ namespace AssetViewer {
 	private: System::Windows::Forms::ToolStripMenuItem^  materialToolStripMenuItem;
 	private: System::Windows::Forms::ToolStripMenuItem^  closeToolStripMenuItem;
 	private: System::Windows::Forms::MenuStrip^  menuStrip1;
+	private: System::Windows::Forms::ToolStripMenuItem^  viewToolStripMenuItem;
+
+
+	private: System::Windows::Forms::ToolStripMenuItem^  materialToolStripMenuItem1;
+	private: System::Windows::Forms::ToolStripMenuItem^  scenePropertyToolStripMenuItem1;
 
 
 
@@ -136,6 +141,9 @@ namespace AssetViewer {
 			this->materialToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->closeToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->menuStrip1 = (gcnew System::Windows::Forms::MenuStrip());
+			this->viewToolStripMenuItem = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->materialToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
+			this->scenePropertyToolStripMenuItem1 = (gcnew System::Windows::Forms::ToolStripMenuItem());
 			this->contextMenuStrip1->SuspendLayout();
 			this->menuStrip1->SuspendLayout();
 			this->SuspendLayout();
@@ -181,7 +189,7 @@ namespace AssetViewer {
 			this->openToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->aSEToolStripMenuItem, 
 				this->assetToolStripMenuItem});
 			this->openToolStripMenuItem->Name = L"openToolStripMenuItem";
-			this->openToolStripMenuItem->Size = System::Drawing::Size(103, 22);
+			this->openToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->openToolStripMenuItem->Text = L"Open";
 			this->openToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::openToolStripMenuItem_Click);
 			// 
@@ -204,7 +212,7 @@ namespace AssetViewer {
 			this->saveToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(4) {this->allToolStripMenuItem, 
 				this->sceneToolStripMenuItem, this->animationToolStripMenuItem, this->materialToolStripMenuItem});
 			this->saveToolStripMenuItem->Name = L"saveToolStripMenuItem";
-			this->saveToolStripMenuItem->Size = System::Drawing::Size(103, 22);
+			this->saveToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->saveToolStripMenuItem->Text = L"Save";
 			this->saveToolStripMenuItem->Click += gcnew System::EventHandler(this, &MainForm::saveToolStripMenuItem_Click);
 			// 
@@ -236,23 +244,46 @@ namespace AssetViewer {
 			// closeToolStripMenuItem
 			// 
 			this->closeToolStripMenuItem->Name = L"closeToolStripMenuItem";
-			this->closeToolStripMenuItem->Size = System::Drawing::Size(103, 22);
+			this->closeToolStripMenuItem->Size = System::Drawing::Size(152, 22);
 			this->closeToolStripMenuItem->Text = L"Close";
 			// 
 			// menuStrip1
 			// 
-			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(1) {this->fileToolStripMenuItem});
+			this->menuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->fileToolStripMenuItem, 
+				this->viewToolStripMenuItem});
 			this->menuStrip1->Location = System::Drawing::Point(0, 0);
 			this->menuStrip1->Name = L"menuStrip1";
-			this->menuStrip1->Size = System::Drawing::Size(1280, 24);
+			this->menuStrip1->Size = System::Drawing::Size(1184, 24);
 			this->menuStrip1->TabIndex = 1;
 			this->menuStrip1->Text = L"menuStrip1";
+			// 
+			// viewToolStripMenuItem
+			// 
+			this->viewToolStripMenuItem->DropDownItems->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(2) {this->materialToolStripMenuItem1, 
+				this->scenePropertyToolStripMenuItem1});
+			this->viewToolStripMenuItem->Name = L"viewToolStripMenuItem";
+			this->viewToolStripMenuItem->Size = System::Drawing::Size(45, 20);
+			this->viewToolStripMenuItem->Text = L"View";
+			// 
+			// materialToolStripMenuItem1
+			// 
+			this->materialToolStripMenuItem1->Name = L"materialToolStripMenuItem1";
+			this->materialToolStripMenuItem1->Size = System::Drawing::Size(175, 22);
+			this->materialToolStripMenuItem1->Text = L"MaterialProperty";
+			this->materialToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MainForm::materialToolStripMenuItem1_Click);
+			// 
+			// scenePropertyToolStripMenuItem1
+			// 
+			this->scenePropertyToolStripMenuItem1->Name = L"scenePropertyToolStripMenuItem1";
+			this->scenePropertyToolStripMenuItem1->Size = System::Drawing::Size(175, 22);
+			this->scenePropertyToolStripMenuItem1->Text = L"SceneProperty";
+			this->scenePropertyToolStripMenuItem1->Click += gcnew System::EventHandler(this, &MainForm::scenePropertyToolStripMenuItem1_Click);
 			// 
 			// MainForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(7, 12);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1280, 720);
+			this->ClientSize = System::Drawing::Size(1184, 762);
 			this->Controls->Add(this->menuStrip1);
 			this->IsMdiContainer = true;
 			this->MainMenuStrip = this->menuStrip1;
@@ -296,5 +327,10 @@ namespace AssetViewer {
 	private: System::Void skeletonShowHideToolStripMenuItem_Click(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void MainForm_Deactivate(System::Object^  sender, System::EventArgs^  e);
 	private: System::Void MainForm_Activated(System::Object^  sender, System::EventArgs^  e);
+private: System::Void animationToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
+		 }
+private: System::Void materialToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e) {
+		 }
+private: System::Void scenePropertyToolStripMenuItem1_Click(System::Object^  sender, System::EventArgs^  e);
 };
 }

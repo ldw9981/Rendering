@@ -21,7 +21,7 @@ namespace Sophia
 Entity::Entity(void)
 {
 	m_strNodeName="Entity";	
-	m_type = TYPE_ROOT;
+	m_type = SCENE_ROOT;
 	m_bShowBone = false;
 	m_pEntityMaterial = NULL;
 }

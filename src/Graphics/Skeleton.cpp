@@ -7,7 +7,7 @@ namespace Sophia
 {
 Skeleton::Skeleton(void)
 {
-	m_type = TYPE_SKELETON;
+	m_type = SCENE_SKELETON;
 	m_bShow = false;
 	m_bIsActiveAnimation = true;
 }

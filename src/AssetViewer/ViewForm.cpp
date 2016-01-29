@@ -31,7 +31,18 @@ System::Void AssetViewer::ViewForm::showHideShadowToolStripMenuItem_Click( Syste
 	if (!m_pState)
 		return;
 
-	m_pState->m_graphicWorld.SetEnableShadow(!m_pState->m_graphicWorld.GetEnableShadow());		
+	if (showHideShadowToolStripMenuItem->Checked)
+	{
+		showHideShadowToolStripMenuItem->Checked = false;
+		m_pState->m_graphicWorld.SetEnableShadow(false);		
+	}
+	else
+	{
+		showHideShadowToolStripMenuItem->Checked = true;
+		m_pState->m_graphicWorld.SetEnableShadow(true);		
+	}
+
+	
 }
 
 System::Void AssetViewer::ViewForm::cameraSettingsToolStripMenuItem_Click( System::Object^ sender, System::EventArgs^ e )
@@ -61,7 +72,7 @@ System::Void AssetViewer::ViewForm::OnApplicationIdle( System::Object^ sender,Sy
 
 	if (cameraSettingForm!=nullptr)
 	{
-		if (m_pState != NULL && this->Focused)
+		if (m_pState != NULL )
 		{
 			cameraSettingForm->UpdateForm(m_pState);
 		}

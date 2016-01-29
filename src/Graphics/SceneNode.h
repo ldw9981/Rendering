@@ -2,6 +2,7 @@
 #include "Foundation/interface.h"
 #include "Graphics/Transformable.h"
 #include "Graphics/Animation.h"
+#include "Foundation/EnumString.h"
 
 namespace Sophia
 {
@@ -19,6 +20,22 @@ class EntityMaterial;
 struct SCENENODEINFO;
 typedef unsigned char SCENETYPE;
 
+
+enum eSceneType 
+{ 
+	SCENE_ROOT,SCENE_NODE,SCENE_MESH,SCENE_SKINNEDMESH,SCENE_SKELETON
+};
+
+Begin_Enum_String( eSceneType )
+{
+	Enum_String(SCENE_ROOT);
+	Enum_String(SCENE_NODE);
+	Enum_String(SCENE_MESH);
+	Enum_String(SCENE_SKINNEDMESH);
+	Enum_String(SCENE_SKELETON);
+}
+End_Enum_String;
+
 class cSceneNode:
 	public IUnknownObject,
 	public IUpdatable,	
@@ -27,7 +44,7 @@ class cSceneNode:
 	public ISerializable
 {
 public:
-	enum TYPE { TYPE_ROOT,TYPE_SCENE,TYPE_MESH,TYPE_SKINNEDMESH,TYPE_SKELETON};
+
 public:
 	cSceneNode*				m_pParentNode;
 	std::vector<SceneAnimation*>	m_vecSceneAnimation;	// Transform 애니메이션 정보
@@ -50,7 +67,7 @@ public:
 	cSceneNode(void);
 	virtual ~cSceneNode(void);
 
-	Sophia::SCENETYPE	GetType() const { return m_type; }
+	const Sophia::SCENETYPE	GetType() { return m_type; }
 	void				SetNodeTM(D3DXMATRIX& val) { m_nodeTM = val; }
 	D3DXMATRIX&			GetNodeTM();		
 	virtual void		UpdateLocalMatrix();		

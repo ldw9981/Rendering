@@ -94,9 +94,11 @@ namespace AssetViewer {
 			// 
 			// showHideShadowToolStripMenuItem
 			// 
+			this->showHideShadowToolStripMenuItem->Checked = true;
+			this->showHideShadowToolStripMenuItem->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->showHideShadowToolStripMenuItem->Name = L"showHideShadowToolStripMenuItem";
 			this->showHideShadowToolStripMenuItem->Size = System::Drawing::Size(202, 22);
-			this->showHideShadowToolStripMenuItem->Text = L"Show/Hide Shadow";
+			this->showHideShadowToolStripMenuItem->Text = L"Show Shadow";
 			this->showHideShadowToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::showHideShadowToolStripMenuItem_Click);
 			// 
 			// resetTransformToolStripMenuItem

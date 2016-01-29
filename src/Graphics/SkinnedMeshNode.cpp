@@ -26,7 +26,7 @@ SkinnedMeshNode::SkinnedMeshNode(void)
 {
 	m_bIsActiveAnimation = true;
 	m_pMatrixPalleteTexture = NULL;
-	m_type = TYPE_SKINNEDMESH;
+	m_type = SCENE_SKINNEDMESH;
 	
 
 }

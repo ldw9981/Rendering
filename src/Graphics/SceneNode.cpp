@@ -31,7 +31,7 @@ cSceneNode::cSceneNode(void)
 
 	m_bIsActiveAnimation = false;
 	m_bShow = true;
-	m_type = TYPE_SCENE;
+	m_type = SCENE_NODE;
 	D3DXMatrixIdentity(&m_nodeTM);
 	m_basePrevAnimationKeyIndex = 0;
 	m_baseAnimationKeyIndex = 0;
@@ -346,13 +346,13 @@ D3DXMATRIX& cSceneNode::GetNodeTM()
 cSceneNode* cSceneNode::CreateNode( SCENETYPE type )
 {
 	cSceneNode* ret = NULL;
-	if(type == TYPE_SCENE)
+	if(type == SCENE_NODE)
 		ret = new cSceneNode;
-	else if(type == TYPE_MESH)
+	else if(type == SCENE_MESH)
 		ret = new cMeshNode;
-	else if(type == TYPE_SKINNEDMESH)
+	else if(type == SCENE_SKINNEDMESH)
 		ret = new SkinnedMeshNode;
-	else if(type == TYPE_SKELETON)
+	else if(type == SCENE_SKELETON)
 		ret = new Skeleton;
 
 	assert(ret!=NULL);

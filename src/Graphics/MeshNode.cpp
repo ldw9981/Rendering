@@ -28,7 +28,7 @@ cMeshNode::cMeshNode(void)
 {	
 	m_pRscIndexBuffer=NULL;
 	m_pRscVetextBuffer=NULL;
-	m_type = TYPE_MESH;
+	m_type = SCENE_MESH;
 	m_primitiveCount=0;
 	m_startIndex=0;
 	m_materialRefIndex=0;

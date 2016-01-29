@@ -25,6 +25,7 @@ void SceneProperty::Read( Sophia::cSceneNode* pNode )
 	parent = gcnew System::String(pNode->GetParentName().c_str());
 	show = pNode->GetShow();
 	
+	type = gcnew System::String( EnumString<Sophia::eSceneType>::From((Sophia::eSceneType)pNode->GetType()).c_str() );
 	animationEnable = pNode->GetIsActiveAnimation();
 
 	D3DXVECTOR3 outScale,outTranslation;

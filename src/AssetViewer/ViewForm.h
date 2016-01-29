@@ -90,27 +90,27 @@ namespace AssetViewer {
 			this->contextMenuStrip1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ToolStripItem^  >(3) {this->showHideShadowToolStripMenuItem, 
 				this->resetTransformToolStripMenuItem, this->cameraSettingsToolStripMenuItem});
 			this->contextMenuStrip1->Name = L"contextMenuStrip1";
-			this->contextMenuStrip1->Size = System::Drawing::Size(182, 92);
+			this->contextMenuStrip1->Size = System::Drawing::Size(203, 92);
 			// 
 			// showHideShadowToolStripMenuItem
 			// 
 			this->showHideShadowToolStripMenuItem->Name = L"showHideShadowToolStripMenuItem";
-			this->showHideShadowToolStripMenuItem->Size = System::Drawing::Size(181, 22);
+			this->showHideShadowToolStripMenuItem->Size = System::Drawing::Size(202, 22);
 			this->showHideShadowToolStripMenuItem->Text = L"Show/Hide Shadow";
 			this->showHideShadowToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::showHideShadowToolStripMenuItem_Click);
 			// 
 			// resetTransformToolStripMenuItem
 			// 
 			this->resetTransformToolStripMenuItem->Name = L"resetTransformToolStripMenuItem";
-			this->resetTransformToolStripMenuItem->Size = System::Drawing::Size(181, 22);
+			this->resetTransformToolStripMenuItem->Size = System::Drawing::Size(202, 22);
 			this->resetTransformToolStripMenuItem->Text = L"Reset Transform";
 			this->resetTransformToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::resetTransformToolStripMenuItem_Click);
 			// 
 			// cameraSettingsToolStripMenuItem
 			// 
 			this->cameraSettingsToolStripMenuItem->Name = L"cameraSettingsToolStripMenuItem";
-			this->cameraSettingsToolStripMenuItem->Size = System::Drawing::Size(181, 22);
-			this->cameraSettingsToolStripMenuItem->Text = L"Camera Settings";
+			this->cameraSettingsToolStripMenuItem->Size = System::Drawing::Size(202, 22);
+			this->cameraSettingsToolStripMenuItem->Text = L"Light - Camera Settings";
 			this->cameraSettingsToolStripMenuItem->Click += gcnew System::EventHandler(this, &ViewForm::cameraSettingsToolStripMenuItem_Click);
 			// 
 			// ViewForm

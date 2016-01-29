@@ -80,7 +80,7 @@ void World::Update( DWORD elapseTime )
 	D3DXVECTOR3 pos;
 	float dist = m_camera.GetNear();
 	m_camera.GetWorldPosition(pos);
-	pos += *m_camera.GetForwardPtr() * dist;
+	pos += *m_camera.GetForward() * dist;
 	m_worldLightLookAt = pos;	
 
 	pos += m_worldLightDirection * dist * -1.0f;

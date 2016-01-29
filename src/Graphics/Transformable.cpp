@@ -43,7 +43,7 @@ void cTransformable::GetLocalPos( D3DXVECTOR3& pos )
 	pos.z = m_matLocal._43;  
 }
 
-const D3DXVECTOR3* cTransformable::GetLocalPosPtr()
+const D3DXVECTOR3* cTransformable::GetLocalPos()
 {
 	return (D3DXVECTOR3*)&m_matLocal._41;
 }
@@ -194,9 +194,21 @@ void cTransformable::GetForward( D3DXVECTOR3& out )
 	out.z = m_matLocal._33;
 }
 
-const D3DXVECTOR3* cTransformable::GetForwardPtr()
+const D3DXVECTOR3* cTransformable::GetForward()
 {
 	return (D3DXVECTOR3*)&m_matWorld._31;
+}
+
+void cTransformable::GetUp( D3DXVECTOR3& out )
+{
+	out.x = m_matLocal._21;
+	out.y = m_matLocal._22;
+	out.z = m_matLocal._23;
+}
+
+const D3DXVECTOR3* cTransformable::GetUp()
+{
+	return (D3DXVECTOR3*)&m_matWorld._21;
 }
 
 }

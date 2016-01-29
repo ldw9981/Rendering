@@ -43,7 +43,7 @@ System::Void AssetViewer::ViewForm::cameraSettingsToolStripMenuItem_Click( Syste
 	cameraSettingForm->Owner = this->MdiParent;	
 	cameraSettingForm->Closed += gcnew System::EventHandler(this, &ViewForm::cameraSettingsForm_Closed);
 	cameraSettingForm->Show();
-	cameraSettingForm->Update(m_pState);
+	cameraSettingForm->UpdateForm(m_pState);
 }
 
 System::Void AssetViewer::ViewForm::cameraSettingsForm_Closed( System::Object^ sender, System::EventArgs^ e )
@@ -63,7 +63,7 @@ System::Void AssetViewer::ViewForm::OnApplicationIdle( System::Object^ sender,Sy
 	{
 		if (m_pState != NULL && this->Focused)
 		{
-			cameraSettingForm->Update(m_pState);
+			cameraSettingForm->UpdateForm(m_pState);
 		}
 	}
 }

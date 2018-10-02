@@ -69,7 +69,9 @@ public:
 	void UpdateMatrixPallete();
 	
 	virtual void RenderInstancing( int instanceSize );
-	virtual void UpdateMatrixInstancing( std::list<cMeshNode*>& list );
+	virtual void UpdateMatrixInstancing( std::vector<cMeshNode*>& list, const D3DLOCKED_RECT& lock);
+
+
 	void ChangeInstancingEnable(bool val);
 protected:
 	virtual void CreateInstancingResource();

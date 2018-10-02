@@ -38,6 +38,7 @@ void TestStateB::Enter()
 	m_pDragon->LoadASE(std::string(strDataPath+"Dragon2.ase").c_str());
 	m_pDragon->Build();	
 	m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	
 
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());

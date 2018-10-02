@@ -9,6 +9,7 @@
 #include "Framework/DebugInfoView.h"
 #include "Foundation/EnvironmentVariable.h"
 #include "Graphics/Graphics.h"
+#include "Graphics/Entity.h"
 
 using namespace Sophia;
 #define PI           3.14159265f
@@ -59,24 +60,24 @@ void cMenuView::Enter()
 	
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	
-	/*
+	
 	m_pZTerrain = m_graphicWorld.CreateTerrain(&D3DXVECTOR3(20.0f,0.5f,20.0f),
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
-	*/
 	
 	
-/*
+	
+
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
 	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
 	m_pTank->LoadMaterial(std::string(strDataPath+"Beautiful Girl.material").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	m_pTank->RotateOnLocal(0,180,0);*/
+	m_pTank->RotateOnLocal(0,180,0);
 	
 
-	/*
+	
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
@@ -85,19 +86,27 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
-	*/
-
 	
 
+	
+	
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
-	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"Dragon.ase").c_str());
+	/*
+	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"Dragon.ase").c_str());		
+	*/
+	m_pAirPlaneBake->LoadScene(std::string(strDataPath + "dragon.scene").c_str());
+	m_pAirPlaneBake->LoadAnimationSet(std::string(strDataPath + "dragon.aniset").c_str());
+	m_pAirPlaneBake->LoadMaterial(std::string(strDataPath + "dragon.material").c_str());
 	m_pAirPlaneBake->Build();
+	m_pAirPlaneBake->ChangeInstanceEnable(true);
+
 	
 	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	
 	Graphics::m_pInstance->SetEntityInstancingMax("leaf",1024);
 	Graphics::m_pInstance->SetEntityInstancingMax("Dragon",1024);
+
 	
 	for (int i=0;i<STRESS_NORMAL;i++)
 	{
@@ -108,7 +117,7 @@ void cMenuView::Enter()
 	
 
 		m_pHouse[i]->Build();
-		m_pHouse[i]->ChangeInstanceEnable(m_instancingNormal);
+		m_pHouse[i]->ChangeInstanceEnable(true);
 //		m_pHouse[i]->PlayBaseAnimation(0);
 		
 		D3DXVECTOR3 pos;
@@ -128,7 +137,7 @@ void cMenuView::Enter()
 		m_pSkinned[i]->LoadMaterial(std::string(strDataPath+"Dragon.material").c_str());
 	
 		m_pSkinned[i]->Build();
-		m_pSkinned[i]->ChangeInstanceEnable(m_instancingSkinned);
+		m_pSkinned[i]->ChangeInstanceEnable(true);
 		m_pSkinned[i]->PlayBaseAnimation(0,true);
 
 		D3DXVECTOR3 pos;
@@ -138,12 +147,12 @@ void cMenuView::Enter()
 		pos.y =  100;
 		m_pSkinned[i]->SetLocalPos(pos);		
 	}
-
+	
 }
 
 void cMenuView::Leave()
 {
-	//m_graphicWorld.DeleteTerrain(m_pZTerrain);
+	m_graphicWorld.DeleteTerrain(m_pZTerrain);
 	
 	for (int i=0;i<STRESS_NORMAL;i++)
 	{

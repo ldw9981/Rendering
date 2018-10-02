@@ -362,7 +362,7 @@ void SkinnedMeshNode::RenderInstancing( int instanceSize )
 
 
 
-void SkinnedMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
+void SkinnedMeshNode::UpdateMatrixInstancing( std::vector<cMeshNode*>& list, const D3DLOCKED_RECT& lock)
 {
 	auto it = list.begin();
 	auto it_end = list.end();
@@ -373,9 +373,6 @@ void SkinnedMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 	DWORD offset_line = 0;
 	DWORD bytesMatrix = sizeof(D3DXMATRIX);
 	DWORD bytesPerLine= bytesMatrix * (m_pMatrixInstancingTexture->GetSize()/4); // 1mat= 4pixel
-
-	D3DLOCKED_RECT lock;	
-	m_pMatrixInstancingTexture->GetD3DTexture()->LockRect(0,&lock,NULL,D3DLOCK_DISCARD);
 
 	for ( ; it!=it_end ; it++)
 	{		
@@ -397,7 +394,6 @@ void SkinnedMeshNode::UpdateMatrixInstancing( std::list<cMeshNode*>& list )
 			}	
 		}	
 	}
-	m_pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
 }
 
 void SkinnedMeshNode::CreateMatrixPallete()

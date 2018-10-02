@@ -101,7 +101,6 @@ public:
 	bool GetShow() const { return m_bShow; }
 	void SetShow(bool val) { m_bShow = val; }
 	
-	void				RenderChildren();
 	void				FreeChildren();
 	
 	cSceneNode&	operator=(const cSceneNode& other);

@@ -20,6 +20,7 @@ namespace Sophia
 
 cRendererQueue::cRendererQueue()
 {
+	
 }
 
 cRendererQueue::~cRendererQueue()
@@ -257,16 +258,19 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
+		MatrixTexture* pMatrixInstancingTexture = pMeshNode->GetMatrixInstancingTexture();			
 
-		if (!pMatrixTexture->GetValid())
+		if (!pMatrixInstancingTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixInstancing(list);					
-			pMatrixTexture->SetValid(true);
+			D3DLOCKED_RECT lock;
+			pMatrixInstancingTexture->GetD3DTexture()->LockRect(0, &lock, NULL, D3DLOCK_DISCARD);
+			pMeshNode->UpdateMatrixInstancing(list, lock);
+			pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
+			pMatrixInstancingTexture->SetValid(true);	//다음 프레임에 다시 계산
 		}
 
-		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
-		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixInstancingTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixInstancingTexture->GetSize());
 		int i = refScene.pMaterial->index_renderer_queue();
 		HR_V(pEffect->SetTechnique(vecTechnique[i]));
 		ChangeMaterial(refScene.pMaterial,false);
@@ -280,7 +284,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 		pEffect->EndPass();
 		pEffect->End();		
 
-		pMatrixTexture->SetValid(false);
+		pMatrixInstancingTexture->SetValid(false);
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
@@ -304,15 +308,20 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
-		if (!pMatrixTexture->GetValid())
+		MatrixTexture* pMatrixInstancingTexture = pMeshNode->GetMatrixInstancingTexture();
+
+
+		if (!pMatrixInstancingTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixInstancing(list);					
-			pMatrixTexture->SetValid(true);
+			D3DLOCKED_RECT lock;
+			pMatrixInstancingTexture->GetD3DTexture()->LockRect(0, &lock, NULL, D3DLOCK_DISCARD);
+			pMeshNode->UpdateMatrixInstancing(list, lock);
+			pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
+			//pMatrixInstancingTexture->SetValid(true);  //그림자용이므로 무효화 하지않음 다음 메쉬는 계산없이 그림
 		}
 
-		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
-		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixInstancingTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixInstancingTexture->GetSize());
 
 		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
@@ -352,17 +361,22 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		auto it_sub = list.begin();
 
 		cMeshNode* pMeshNode = *it_sub;
+	
+		MatrixTexture* pMatrixInstancingTexture = pMeshNode->GetMatrixInstancingTexture();
+		
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
-
-		if (!pMatrixTexture->GetValid())
+		if (!pMatrixInstancingTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixInstancing(list);					
-			pMatrixTexture->SetValid(true);
+			D3DLOCKED_RECT lock;
+			pMatrixInstancingTexture->GetD3DTexture()->LockRect(0, &lock, NULL, D3DLOCK_DISCARD);
+			pMeshNode->UpdateMatrixInstancing(list, lock);
+			pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
+
+			pMatrixInstancingTexture->SetValid(true);	//다음프레임 다시 계산
 		}
 
-		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
-		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixInstancingTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixInstancingTexture->GetSize());
 
 		int i = refScene.pMaterial->index_renderer_queue();
 		HR_V(pEffect->SetTechnique(vecTechnique[i]));
@@ -376,7 +390,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 		pEffect->EndPass();
 		pEffect->End();		
 
-		pMatrixTexture->SetValid(false);
+		pMatrixInstancingTexture->SetValid(false);
 	}
 	Graphics::m_pDevice->SetStreamSourceFreq( 0, 1 );
 	Graphics::m_pDevice->SetStreamSourceFreq( 1, 1 );
@@ -400,15 +414,20 @@ void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaT
 
 		cMeshNode* pMeshNode = *it_sub;
 
-		MatrixTexture* pMatrixTexture = pMeshNode->GetMatrixInstancingTexture();		
-		if (!pMatrixTexture->GetValid())
+
+		MatrixTexture* pMatrixInstancingTexture = pMeshNode->GetMatrixInstancingTexture();		
+
+		if (!pMatrixInstancingTexture->GetValid())
 		{
-			pMeshNode->UpdateMatrixInstancing(list);					
-			pMatrixTexture->SetValid(true);
+			D3DLOCKED_RECT lock;
+			pMatrixInstancingTexture->GetD3DTexture()->LockRect(0, &lock, NULL, D3DLOCK_DISCARD);
+			pMeshNode->UpdateMatrixInstancing(list,lock);					
+			pMatrixInstancingTexture->GetD3DTexture()->UnlockRect(0);
+			//pMatrixInstancingTexture->SetValid(true);	//그림자용이므로 무효화 하지않음
 		}
 
-		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixTexture->GetD3DTexture());
-		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixTexture->GetSize());
+		pEffect->SetTexture("Tex_MatrixInstanceData",pMatrixInstancingTexture->GetD3DTexture());
+		pEffect->SetFloat(Graphics::m_pInstance->m_hfMatrixTextureSize,(float)pMatrixInstancingTexture->GetSize());
 		if (refScene.pMaterial->AlphaTestEnable)
 			pEffect->SetTechnique(hTShadowAlphaTest);
 		else

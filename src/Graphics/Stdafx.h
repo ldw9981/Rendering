@@ -41,5 +41,5 @@
 #include <sstream>
 #include <iostream> 
 
-
+#pragma comment(lib, "legacy_stdio_definitions.lib")
 // TODO: reference additional headers your program requires here

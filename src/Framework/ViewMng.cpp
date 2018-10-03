@@ -49,11 +49,11 @@ cViewMng::~cViewMng(void)
 	//SAFE_DELETE(m_pDebugInfoView);
 }
 
-void cViewMng::ProcessRender()
+void cViewMng::ProcessRender(DWORD elapseTime)
 {
 	if (m_pCurr)
 	{
-		m_pCurr->ProcessRender();
+		m_pCurr->ProcessRender(elapseTime);
 	}
 }
 
@@ -67,11 +67,11 @@ void cViewMng::Control()
 
 
 
-void cViewMng::Render()
+void cViewMng::Render(DWORD elapseTime)
 {
 	if (m_pCurr)
 	{
-		m_pCurr->Render();
+		m_pCurr->Render(elapseTime);
 	}
 }
 

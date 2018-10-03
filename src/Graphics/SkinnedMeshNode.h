@@ -48,7 +48,7 @@ protected:
 	cRscTexture*				m_pMatrixPalleteTexture;
 public:
 	virtual void			Update( DWORD elapseTime );
-	virtual void			Render();
+	virtual void			Render(DWORD elapseTime);
 	virtual void			BuildComposite(Entity* pEntity);
 
 	void					SetBoneRef(std::vector<BONEREFINFO>& vecBoneRef);

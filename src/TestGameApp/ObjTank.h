@@ -18,6 +18,6 @@ public:
 	virtual	void	Uninit();
 
 	virtual void    Control();
-	virtual void	Render();
+	virtual void	Render(DWORD elapseTime);
 
 };

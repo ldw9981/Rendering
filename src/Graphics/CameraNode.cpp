@@ -42,30 +42,31 @@ cCameraNode::~cCameraNode(void)
 /*
 	cScene내부에서 ActiveCamera를 얻어 Render를 호출한다.
 */
-void cCameraNode::Render()
-{			
-	D3DXMatrixInverse(&m_matView,NULL,&m_matWorld);		
+void cCameraNode::Render(DWORD elapseTime)
+{				
 	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmView,&m_matView);
 	Graphics::m_pInstance->GetEffect()->SetVector(Graphics::m_pInstance->m_hvWorldCameraPosition,(D3DXVECTOR4*)&m_matWorld.m[3][0]);
-
-	if (m_bProjectionModified)
-	{
-		D3DXMatrixPerspectiveFovLH(&m_matProjection,m_FOV,m_ScreenWidth/m_ScreenHeight,m_Near,m_Far);
-		Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmProjection,&m_matProjection);
-		m_bProjectionModified = false;
-	}		
-
-	m_matViewProjection = m_matView * m_matProjection;				
+	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmProjection,&m_matProjection);
 	Graphics::m_pInstance->GetEffect()->SetMatrix(Graphics::m_pInstance->m_hmViewProjection,&m_matViewProjection);
 	Graphics::m_pInstance->GetEffect()->CommitChanges();
-
-	m_frustum.Make(m_matViewProjection);
 }
 
 /*
 WorldTM이 
 */
 
+void cCameraNode::Update(DWORD elapse)
+{
+	cSceneNode::Update(elapse);
+	D3DXMatrixInverse(&m_matView, NULL, &m_matWorld);	
+	if (m_bProjectionModified)
+	{
+		D3DXMatrixPerspectiveFovLH(&m_matProjection, m_FOV, m_ScreenWidth / m_ScreenHeight, m_Near, m_Far);		
+		m_bProjectionModified = false;
+	}
+	m_matViewProjection = m_matView * m_matProjection;
+	m_frustum.Make(m_matViewProjection);
+}
 
 
 void cCameraNode::SetLookAt( const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp )

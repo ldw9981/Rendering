@@ -60,16 +60,10 @@ Entity* World::CreateEntity()
 	return pEntity;
 }
 
-void World::ProcessRender()
+void World::ProcessRender(DWORD elapseTime)
 {
-	m_camera.Render();
-	// scene 
-	CullFrustum();
-	GatherRender();
-
-	Render();
-
-
+	m_camera.Render(elapseTime);
+	Render(elapseTime);
 }
 
 void World::Update( DWORD elapseTime )
@@ -86,38 +80,78 @@ void World::Update( DWORD elapseTime )
 	pos += m_worldLightDirection * dist * -1.0f;
 	m_worldLightPosition = pos;
 
+
+	m_listEntityHasAlphaRender.clear();
+	Frustum& frustum = m_camera.GetFrustum();
+	float distFromNear;
+
+
+	m_renderQueueNormalShadow.Clear();
+	m_renderQueueSkinnedShadow.Clear();
+	m_renderQueueNormal.Clear();
+	m_renderQueueSkinned.Clear();
+	m_renderQueueNormalAlphaBlend.Clear();
+	m_renderQueueSkinnedAlphaBlend.Clear();
+	m_listEntityHasAlphaRender.clear();
+
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
-		(*itIn)->Update(elapseTime);
+		Entity* pEntity = *itIn;
+		pEntity->Update(elapseTime);
+
+
+		if (!pEntity->GetShow())
+			continue;
+
+		cCollision::STATE retCS = cCollision::CheckWorldFrustum(frustum, pEntity->GetBoundingSphere(), &distFromNear, 0.0f);
+		if (retCS == cCollision::OUTSIDE)
+			continue;
+
+
+		if (m_bEnableShadow)
+		{
+			// 그림자용은 알파블렌드 상관없이 모은다.그릴때는 알파테스트만 구분한다.
+			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormal);
+			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormalAlphaBlend);
+
+			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinned);
+			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinnedAlphaBlend);
+		}
+
+
+		// 씬은 알파블렌드로 구분하여 모은다.
+		if(!pEntity->m_vecNormal.empty())
+			m_renderQueueNormal.GatherRender(pEntity->m_vecNormal);	// normal instancing 분리
+
+		if (!pEntity->m_vecSkinned.empty())
+			m_renderQueueSkinned.GatherRender(pEntity->m_vecSkinned);
+
+		// 이거 수정해야함 노드별로 거리계산해서 소팅해야 정확함
+		if (!pEntity->m_vecNormalAlphaBlend.empty() || !pEntity->m_vecSkinnedAlphaBlend.empty())
+			m_listEntityHasAlphaRender.push_back(std::make_pair(pEntity, distFromNear));
 	}
+
+	m_listEntityHasAlphaRender.sort(&World::LessDistance);
+	for (auto itIn = m_listEntityHasAlphaRender.begin(); itIn != m_listEntityHasAlphaRender.end(); ++itIn)
+	{
+		Entity* pEntity = itIn->first;
+	
+		if (!pEntity->m_vecNormalAlphaBlend.empty())
+			m_renderQueueNormalAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecNormalAlphaBlend, m_camera.GetWorldPositionPtr());
+
+		if (!pEntity->m_vecSkinnedAlphaBlend.empty())
+			m_renderQueueSkinnedAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecSkinnedAlphaBlend, m_camera.GetWorldPositionPtr());
+	}
+
 
 	for ( auto itIn = m_mapButton.begin() ;itIn!=m_mapButton.end() ; ++itIn )
 	{
 		(*itIn).second->Update(elapseTime);
 	}
-}
 
-void World::CullFrustum()
-{
-	m_listEntityRender.clear();
 	
-	Frustum& frustum = m_camera.GetFrustum();
-	float distFromNear;
-	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
-	{
-		Entity* pEntity = *itIn;
-		if(!pEntity->GetShow())
-			continue;
-
-		cCollision::STATE retCS=cCollision::CheckWorldFrustum(frustum,pEntity->GetBoundingSphere(),&distFromNear,0.0f);
-		if( retCS == cCollision::OUTSIDE)
-			continue;
-
-		m_listEntityRender.push_back(std::make_pair(pEntity,distFromNear));
-	}
-
-	m_listEntityRender.sort(&World::LessDistance);
 }
+
 void World::SetViewPortInfo(UINT x,UINT y,UINT width,UINT height )
 {
 	m_ViewPortInfo.X = x;
@@ -202,7 +236,7 @@ void World::Finalize()
 	SAFE_RELEASE(m_pShadowRenderTarget);
 }
 
-void World::Render()
+void World::Render(DWORD elapseTime)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
 	UINT passes = 0;
@@ -221,18 +255,18 @@ void World::Render()
 	Graphics::m_pInstance->SetEffectMatirx_LightView(&matLightView);
 	Graphics::m_pInstance->SetEffectMatirx_LightProjection(&matLightProjection);
 
-	RenderShadow();		
-	RenderScene();
+	RenderShadow(elapseTime);		
+	RenderScene(elapseTime);
 
 	if (m_bDebugBound)
 	{
-		if (!m_listEntityRender.empty())
+		if (!m_listEntityHasAlphaRender.empty())
 		{
 			pEffect->SetTechnique(Graphics::m_pInstance->m_hTLine);
 			pEffect->Begin(&passes, 0);	
 			pEffect->BeginPass(0);
-			auto itEntityRender = m_listEntityRender.begin();
-			for ( ;itEntityRender != m_listEntityRender.end() ; ++itEntityRender )
+			auto itEntityRender = m_listEntityHasAlphaRender.begin();
+			for ( ;itEntityRender != m_listEntityHasAlphaRender.end() ; ++itEntityRender )
 			{
 				VISIBILITY_ENTITY& item = *itEntityRender;
 				item.first->RenderBound();
@@ -249,7 +283,7 @@ void World::Render()
 		pEffect->BeginPass(0);
 		for ( auto it = m_mapButton.begin();it != m_mapButton.end() ; ++it )
 		{
-			(*it).second->Render();
+			(*it).second->Render(elapseTime);
 		}	
 		pEffect->EndPass();
 		pEffect->End();
@@ -264,40 +298,7 @@ void World::Render()
 	}	
 }
 
-void World::GatherRender()
-{
-	m_renderQueueNormalShadow.Clear();
-	m_renderQueueSkinnedShadow.Clear();
-
-	m_renderQueueNormal.Clear();
-	m_renderQueueSkinned.Clear();
-	m_renderQueueNormalAlphaBlend.Clear();
-	m_renderQueueSkinnedAlphaBlend.Clear();
-
-
-	for ( auto itIn = m_listEntityRender.begin() ;itIn!=m_listEntityRender.end() ; ++itIn )
-	{
-		Entity* pEntity = (*itIn).first;
-		if (m_bEnableShadow)
-		{
-			// 그림자용은 알파블렌드 상관없이 모은다.그릴때는 알파테스트만 구분한다.
-			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormal);
-			m_renderQueueNormalShadow.GatherRender(pEntity->m_vecNormalAlphaBlend);		
-
-			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinned);				
-			m_renderQueueSkinnedShadow.GatherRender(pEntity->m_vecSkinnedAlphaBlend);
-		}
-		
-		// 씬은 알파블렌드로 구분하여 모은다.
-		m_renderQueueNormal.GatherRender(pEntity->m_vecNormal);	// normal instancing 분리
-		m_renderQueueNormalAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecNormalAlphaBlend,m_camera.GetWorldPositionPtr());	
-
-		m_renderQueueSkinned.GatherRender(pEntity->m_vecSkinned);				
-		m_renderQueueSkinnedAlphaBlend.GatherRenderAlphaBlend(pEntity->m_vecSkinnedAlphaBlend,m_camera.GetWorldPositionPtr());			
-	}
-}
-
-void World::RenderShadow()
+void World::RenderShadow(DWORD elapseTime)
 {
 	// 백업후 렌더타켓,스텐실버퍼 변경
 	LPDIRECT3DSURFACE9 pHWBackBuffer = NULL;
@@ -319,7 +320,7 @@ void World::RenderShadow()
 		if (!m_renderQueueNormalShadow.m_materialOrder.empty())
 		{	
 			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowNormal,
+			m_renderQueueNormalShadow.RenderShadowByMaterialOrder(elapseTime,Graphics::m_pInstance->m_hTShadowNormal,
 				Graphics::m_pInstance->m_hTShadowNormalAlphaTest );
 		}			
 
@@ -327,19 +328,19 @@ void World::RenderShadow()
 		if (!m_renderQueueSkinnedShadow.m_materialOrder.empty())
 		{	
 			Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(Graphics::m_pInstance->m_hTShadowSkinned,
+			m_renderQueueSkinnedShadow.RenderShadowByMaterialOrder(elapseTime,Graphics::m_pInstance->m_hTShadowSkinned,
 				Graphics::m_pInstance->m_hTShadowSkinnedAlphaTest );
 		}			
 
 		if (!m_renderQueueNormalShadow.m_sceneOrder.empty())
 		{
-			m_renderQueueNormalShadow.RenderShadowNormalInstancing(Graphics::m_pInstance->m_hTShadowNormalInstancing,
+			m_renderQueueNormalShadow.RenderShadowNormalInstancing(elapseTime,Graphics::m_pInstance->m_hTShadowNormalInstancing,
 				Graphics::m_pInstance->m_hTShadowNormalInstancingAlphaTest );		
 		}	
 
 		if (!m_renderQueueSkinnedShadow.m_sceneOrder.empty())
 		{
-			m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(Graphics::m_pInstance->m_hTShadowSkinnedInstancing,
+			m_renderQueueSkinnedShadow.RenderShadowSkinnedInstancing(elapseTime,Graphics::m_pInstance->m_hTShadowSkinnedInstancing,
 				Graphics::m_pInstance->m_hTShadowSkinnedInstancingAlphaTest );		
 		}	
 	}	
@@ -358,7 +359,7 @@ void World::RenderShadow()
 	pHWDepthStencilBuffer = NULL;
 }
 
-void World::RenderScene()
+void World::RenderScene(DWORD elapseTime)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	pEffect->SetTexture("Tex_Depth", m_pShadowRenderTarget);	
@@ -366,37 +367,37 @@ void World::RenderScene()
 	if (!m_renderQueueNormal.m_materialOrder.empty())
 	{
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
+		m_renderQueueNormal.RenderNotAlphaBlendByMaterialOrder(elapseTime,Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
 	if (!m_renderQueueSkinned.m_materialOrder.empty())
 	{
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);
+		m_renderQueueSkinned.RenderNotAlphaBlendByMaterialOrder(elapseTime,Graphics::m_pInstance->m_vecTechniqueSkinned);
 	}	
 
 	if (!m_renderQueueNormal.m_sceneOrder.empty())
 	{
-		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(Graphics::m_pInstance->m_vecTechniqueNormalInstancing);		
+		m_renderQueueNormal.RenderNotAlphaBlendNormalInstancing(elapseTime,Graphics::m_pInstance->m_vecTechniqueNormalInstancing);		
 	}		
 
 
 	if (!m_renderQueueSkinned.m_sceneOrder.empty())
 	{
-		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
+		m_renderQueueSkinned.RenderNotAlphaBlendSkinnedInstancing(elapseTime,Graphics::m_pInstance->m_vecTechniqueSkinnedInstancing);
 	}		
 
 
 	if (!m_renderQueueNormalAlphaBlend.m_distanceOrder.empty())
 	{
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalVertexDeclaration);
-		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueNormal);
+		m_renderQueueNormalAlphaBlend.RenderAlphaBlendByDistanceOrder(elapseTime,Graphics::m_pInstance->m_vecTechniqueNormal);
 	}
 
 	if (!m_renderQueueSkinnedAlphaBlend.m_distanceOrder.empty())
 	{
 		Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedVertexDeclaration);
-		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(Graphics::m_pInstance->m_vecTechniqueSkinned);		
+		m_renderQueueSkinnedAlphaBlend.RenderAlphaBlendByDistanceOrder(elapseTime,Graphics::m_pInstance->m_vecTechniqueSkinned);		
 	}
 }
 

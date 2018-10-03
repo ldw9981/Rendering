@@ -12,8 +12,8 @@ cGUIBase::~cGUIBase(void)
 {
 }
 
-void cGUIBase::ProcessRender()
+void cGUIBase::ProcessRender(DWORD elapseTime)
 {
-	Render();
+	Render(elapseTime);
 }
 }

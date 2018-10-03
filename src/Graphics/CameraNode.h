@@ -41,7 +41,7 @@ private:
 	
 public:
 
-	virtual void		Render();
+	virtual void		Render(DWORD elapseTime);
 	virtual void		Control();
 
 
@@ -66,6 +66,7 @@ public:
 	bool GetProcessInput() const { return m_bProcessInput; }
 	void SetProcessInput(bool val) { m_bProcessInput = val; }
 	virtual void		UpdateLocalMatrix();
+	virtual void	    Update(DWORD elapse);
 };
 
 }

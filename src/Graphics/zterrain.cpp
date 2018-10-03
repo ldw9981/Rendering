@@ -169,7 +169,7 @@ HRESULT	ZTerrain::_CreateVIB()
 }
 
 /// 화면에 지형을 출력한다.
-void	ZTerrain::Render()
+void	ZTerrain::Render(DWORD elapseTime)
 {	
 	Graphics::m_pDevice->SetFVF( TERRAINVERTEX::FVF );
 	m_pRscVertexBuffer->SetStreamSource(0,sizeof(TERRAINVERTEX));		

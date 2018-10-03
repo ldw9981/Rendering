@@ -112,7 +112,7 @@ void TestStateB::Update( DWORD elapseTime )
 	cView::Update(elapseTime);
 }
 
-void TestStateB::ProcessRender()
+void TestStateB::ProcessRender(DWORD elapseTime)
 {
-	cView::ProcessRender();
+	cView::ProcessRender(elapseTime);
 }

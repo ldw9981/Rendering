@@ -82,9 +82,9 @@ void TestStateA::Update( DWORD elapseTime )
 
 }
 
-void TestStateA::ProcessRender()
+void TestStateA::ProcessRender(DWORD elapseTime)
 {	
-	cView::ProcessRender();		
+	cView::ProcessRender(elapseTime);		
 }
 
 void TestStateA::Control()

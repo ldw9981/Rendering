@@ -55,7 +55,7 @@ void cObjDragon::Control()
 	
 }
 
-void cObjDragon::Render()
+void cObjDragon::Render(DWORD elapseTime)
 {
 
 }

@@ -50,14 +50,14 @@ public:
 	virtual void			Leave();
 
 	// cIRenderable
-	virtual void			ProcessRender();
+	virtual void			ProcessRender(DWORD elapseTime);
 
 	// cIUpdatable
 	virtual void			Update(DWORD elapseTime);
 
 	virtual void			Control();
 
-	virtual void			Render();
+	virtual void			Render(DWORD elapseTime);
 
 	virtual void			Notify(cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);
 

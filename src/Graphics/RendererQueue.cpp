@@ -60,7 +60,7 @@ void cRendererQueue::Clear()
 }
 
 
-void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique)
+void cRendererQueue::RenderAlphaBlendByDistanceOrder(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique)
 {
 	//그릴때 한번에 정렬
 	std::sort(m_distanceOrder.begin(),m_distanceOrder.end(),&GreateDistance);
@@ -80,19 +80,19 @@ void cRendererQueue::RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& ve
 		Material* pCurrMaterial = item.first->GetMaterial();
 		if (pPrevMaterial!= pCurrMaterial && !containerTemp.empty())
 		{
-			SubRenderAlphaBlend(vecTechnique,containerTemp);
+			SubRenderAlphaBlend(elapseTime,vecTechnique,containerTemp);
 			containerTemp.clear();
 		}		
 		containerTemp.push_back(*it);				
 		pPrevMaterial = pCurrMaterial;
 	}
-	SubRenderAlphaBlend(vecTechnique,containerTemp);
+	SubRenderAlphaBlend(elapseTime,vecTechnique,containerTemp);
 
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, false); 	
 	Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false);
 }
 
-void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp )
+void cRendererQueue::SubRenderAlphaBlend(DWORD elapseTime, std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();	
 	UINT passes = 0;		
@@ -109,14 +109,14 @@ void cRendererQueue::SubRenderAlphaBlend( std::vector<D3DXHANDLE>& vecTechnique,
 		ChangeMaterial(pMaterial,false);
 
 		pEffect->BeginPass(0);	
-		(*it).first->Render();
+		(*it).first->Render(elapseTime);
 
 		pEffect->EndPass();
 		pEffect->End();	
 	}
 }
 
-void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique)
+void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique)
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 	
@@ -137,7 +137,7 @@ void cRendererQueue::RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>&
 		MESHPTR_CONTAINER& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
-			(*it_sub)->Render();
+			(*it_sub)->Render(elapseTime);
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -184,7 +184,7 @@ void cRendererQueue::ChangeMaterial(Material* pMaterial ,bool textureOpacityOnly
 
 
 
-void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+void cRendererQueue::RenderShadowByMaterialOrder(DWORD elapseTime, D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	LPD3DXEFFECT pEffect = Graphics::m_pInstance->GetEffect();
 
@@ -207,7 +207,7 @@ void cRendererQueue::RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTes
 		MESHPTR_CONTAINER& vecMesh = it->second;
 		for (auto it_sub = vecMesh.begin() ; it_sub!=vecMesh.end();++it_sub)
 		{
-			(*it_sub)->Render();
+			(*it_sub)->Render(elapseTime);
 		}
 		pEffect->EndPass();
 		pEffect->End();		
@@ -240,7 +240,7 @@ void cRendererQueue::GatherRender(std::vector<cMeshNode*>& vecMesh )
 
 
 
-void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+void cRendererQueue::RenderNotAlphaBlendNormalInstancing(DWORD elapseTime, std::vector<D3DXHANDLE>& vecTechnique )
 {
 	HRESULT hr;
 	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
@@ -291,7 +291,7 @@ void cRendererQueue::RenderNotAlphaBlendNormalInstancing( std::vector<D3DXHANDLE
 	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
-void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+void cRendererQueue::RenderShadowNormalInstancing(DWORD elapseTime, D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	HRESULT hr;
 	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pNormalInstancingVertexDeclaration) );
@@ -344,7 +344,7 @@ void cRendererQueue::RenderShadowNormalInstancing( D3DXHANDLE hTShadowNotAlphaTe
 	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));		
 }
 
-void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDLE>& vecTechnique )
+void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing(DWORD elapseTime, std::vector<D3DXHANDLE>& vecTechnique )
 {
 	HRESULT hr;
 	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );
@@ -397,7 +397,7 @@ void cRendererQueue::RenderNotAlphaBlendSkinnedInstancing( std::vector<D3DXHANDL
 	HR_V(Graphics::m_pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, false));	
 }
 
-void cRendererQueue::RenderShadowSkinnedInstancing( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
+void cRendererQueue::RenderShadowSkinnedInstancing(DWORD elapseTime, D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest )
 {
 	HRESULT hr;
 	HR_V( Graphics::m_pDevice->SetVertexDeclaration(Graphics::m_pInstance->m_pSkinnedInstancingVertexDeclaration) );

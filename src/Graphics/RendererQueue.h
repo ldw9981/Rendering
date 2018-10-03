@@ -48,17 +48,17 @@ public:
 
 	void	Clear();	
 
-	void	RenderShadowByMaterialOrder( D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest );
-	void	RenderShadowNormalInstancing(D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
-	void	RenderShadowSkinnedInstancing(D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
+	void	RenderShadowByMaterialOrder(DWORD elapseTime, D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
+	void	RenderShadowNormalInstancing(DWORD elapseTime,D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
+	void	RenderShadowSkinnedInstancing(DWORD elapseTime,D3DXHANDLE hTShadowNotAlphaTest,D3DXHANDLE hTShadowAlphaTest);
 	
-	void	RenderNotAlphaBlendByMaterialOrder(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderNotAlphaBlendNormalInstancing(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderNotAlphaBlendSkinnedInstancing(std::vector<D3DXHANDLE>& vecTechnique);
-	void	RenderAlphaBlendByDistanceOrder(std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendByMaterialOrder(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendNormalInstancing(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderNotAlphaBlendSkinnedInstancing(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique);
+	void	RenderAlphaBlendByDistanceOrder(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique);
 
 protected:
 	void	ChangeMaterial(Material* pMaterial,bool textureOpacityOnly);
-	void	SubRenderAlphaBlend(std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp );
+	void	SubRenderAlphaBlend(DWORD elapseTime,std::vector<D3DXHANDLE>& vecTechnique,std::vector<MESH_DISTANCE_PAIR>& containerTemp );
 };
 }

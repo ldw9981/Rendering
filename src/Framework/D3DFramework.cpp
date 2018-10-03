@@ -126,7 +126,7 @@ void cD3DFramework::Run()
 		m_AccumFrameTime += m_DeltaFrameTime;			
 		Control();
 		Update(m_DeltaFrameTime);		// Update
-		Render();						// Render
+		Render(m_DeltaFrameTime);						// Render
 		m_PrevFrameTime=m_CurrFrameTime;
 		 		
  	}	
@@ -150,14 +150,14 @@ void cD3DFramework::Update(DWORD elapseTime)
 	}		
 }
 
-void cD3DFramework::Render()
+void cD3DFramework::Render(DWORD elapseTime)
 {
 	Graphics::m_pInstance->Begin();
 
 	std::list<IRenderable*>::iterator it=m_listRenderable.begin();
 	for ( ;it!=m_listRenderable.end() ; ++it )
 	{
-		(*it)->ProcessRender();	
+		(*it)->ProcessRender(elapseTime);	
 	}
 
 	

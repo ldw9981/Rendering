@@ -144,7 +144,7 @@ void cTestView::Update( DWORD elapseTime )
 	cView::Update(elapseTime);
 }
 
-void cTestView::ProcessRender()
+void cTestView::ProcessRender(DWORD elapseTime)
 {
-	cView::ProcessRender();
+	cView::ProcessRender(elapseTime);
 }

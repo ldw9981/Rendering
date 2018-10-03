@@ -106,7 +106,7 @@ public:
 	cSceneNode&	operator=(const cSceneNode& other);
 
 
-	virtual void		Render();
+	virtual void		Render(DWORD elapseTime);
 	virtual void		Update(DWORD elapseTime);
 
 	/*

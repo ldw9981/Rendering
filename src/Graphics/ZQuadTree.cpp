@@ -325,7 +325,7 @@ void ZQuadTree::Update( DWORD elapseTime )
 	}	
 }
 
-void ZQuadTree::Render()
+void ZQuadTree::Render(DWORD elapseTime)
 {
 
 }

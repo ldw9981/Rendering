@@ -39,7 +39,7 @@ protected:
 
 
 public:
-	virtual void			Render();
+	virtual void			Render(DWORD elapseTime);
 	virtual	void			BuildComposite(Entity* pEntity);
 
 

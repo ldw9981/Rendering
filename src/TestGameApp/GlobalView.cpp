@@ -47,7 +47,7 @@ void cGlobalView::Leave()
 
 
 
-void cGlobalView::ProcessRender()
+void cGlobalView::ProcessRender(DWORD elapseTime)
 {	
-	cView::ProcessRender();
+	cView::ProcessRender(elapseTime);
 }

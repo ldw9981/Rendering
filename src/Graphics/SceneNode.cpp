@@ -291,12 +291,12 @@ void cSceneNode::GatherRender(Entity* pEntity,bool bTraversal)
 	}	
 }
 
-void cSceneNode::Render()
+void cSceneNode::Render(DWORD elapseTime)
 {
 	size_t size = m_vecChildNode.size();
 	for (size_t i=0;i<size;i++)
 	{
-		m_vecChildNode[i]->Render();
+		m_vecChildNode[i]->Render(elapseTime);
 	}
 }
 

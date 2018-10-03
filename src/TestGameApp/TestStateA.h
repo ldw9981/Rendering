@@ -21,7 +21,7 @@ public:
 	virtual void Leave();
 
 	virtual void Update(DWORD elapseTime);
-	virtual void ProcessRender();
+	virtual void ProcessRender(DWORD elapseTime);
 	virtual void Control();
 
 	// cINotifiable

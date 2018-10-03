@@ -25,6 +25,6 @@ public:
 	virtual void Enter();
 	virtual void Leave();
 
-	virtual void ProcessRender();
+	virtual void ProcessRender(DWORD elapseTime);
 
 };

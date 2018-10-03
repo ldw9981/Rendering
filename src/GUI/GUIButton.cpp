@@ -56,7 +56,7 @@ void cGUIButton::Control()
 
 }
 
-void cGUIButton::Render()
+void cGUIButton::Render(DWORD elapseTime)
 {
 	Graphics::m_pDevice->SetTexture (0, m_pImage->GetD3DTexture() );
 	Graphics::m_pDevice->SetFVF(FVF_GUIVERTEX);

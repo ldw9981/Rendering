@@ -49,7 +49,7 @@ cMeshNode::~cMeshNode(void)
 	일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
 
-void cMeshNode::Render()
+void cMeshNode::Render(DWORD elapseTime)
 {	
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(NORMAL_VERTEX));
 	m_pRscIndexBuffer->SetIndices();		

@@ -26,7 +26,7 @@ void Framework::Run()
 	m_AccumFrameTime += m_DeltaFrameTime;			
 	Control();
 	Update(m_DeltaFrameTime);		// Update
-	Render();						// Render
+	Render(m_DeltaFrameTime);						// Render
 	m_PrevFrameTime=m_CurrFrameTime;
 	
 }

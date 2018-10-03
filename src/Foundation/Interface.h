@@ -20,14 +20,14 @@ public:
 class IRenderer
 {
 public:
-	virtual void Render()=0;
+	virtual void Render(DWORD elapseTime)=0;
 };
 
 class IRenderable
 {
 public:
 	std::list<IRenderable*>::iterator m_ItRenderable;
-	virtual void ProcessRender()=0;
+	virtual void ProcessRender(DWORD elapseTime)=0;
 };
 
 class IControlable

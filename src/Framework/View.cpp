@@ -116,7 +116,7 @@ void cView::Control()
 	m_ViewState.Control();
 }
 
-void cView::ProcessRender()
+void cView::ProcessRender(DWORD elapseTime)
 {
 	if (m_bHide)
 		return;
@@ -133,16 +133,16 @@ void cView::ProcessRender()
 	std::list<IRenderable*>::iterator it=m_RenderableList.begin();
 	for ( ;it!=m_RenderableList.end() ; ++it )
 	{
-		(*it)->ProcessRender();	
+		(*it)->ProcessRender(elapseTime);	
 	}
 	
 	// state 
-	m_ViewState.ProcessRender();
+	m_ViewState.ProcessRender(elapseTime);
 }
 
 
 
-void cView::Render()
+void cView::Render(DWORD elapseTime)
 {
 
 }

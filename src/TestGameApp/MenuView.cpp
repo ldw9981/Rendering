@@ -206,9 +206,9 @@ void cMenuView::Update( DWORD elapseTime )
 	
 }
 
-void cMenuView::ProcessRender()
+void cMenuView::ProcessRender(DWORD elapseTime)
 {
-	cView::ProcessRender();	
+	cView::ProcessRender(elapseTime);	
 }
 
 void cMenuView::Control()

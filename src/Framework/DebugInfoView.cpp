@@ -58,7 +58,7 @@ void cDebugInfoView::Update( DWORD elapseTime )
 
 }
 
-void cDebugInfoView::ProcessRender()
+void cDebugInfoView::ProcessRender(DWORD elapseTime)
 {
 	//SetViewPort();
 	if (m_bRender)

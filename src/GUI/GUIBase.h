@@ -24,8 +24,8 @@ public:
 	void				SetWorld(World* val) { m_pWorld = val; }
 	INotifiable*		GetMediator() const { return m_pMediator; }
 	void				SetMediator(INotifiable* val) { m_pMediator = val; }
-	virtual void 		ProcessRender();
- 	virtual void 		Render()=0;
+	virtual void 		ProcessRender(DWORD elapseTime);
+ 	virtual void 		Render(DWORD elapseTime)=0;
  	virtual void 		Update(DWORD elapsetime)=0;
  	virtual void 		Control()=0;
 };

@@ -92,9 +92,9 @@ void State::Update( DWORD elapseTime )
 	cView::Update(elapseTime);		
 }
 
-void State::ProcessRender()
+void State::ProcessRender(DWORD elapseTime)
 {
-	cView::ProcessRender();	
+	cView::ProcessRender(elapseTime);	
 }
 
 void State::Control()

@@ -60,7 +60,7 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 
 일반 Object, Bone , Skined Mesh 전부 그리고음.
 */
-void SkinnedMeshNode::Render()
+void SkinnedMeshNode::Render(DWORD elapseTime)
 {	
 	HRESULT hr;
 	m_pRscVetextBuffer->SetStreamSource(0,sizeof(BLEND_VERTEX));

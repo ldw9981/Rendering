@@ -43,7 +43,7 @@ private:
 public:
 	void				SetPos(UINT x,UINT y);
 	void				Create(const char* strImageFile);
-	virtual void		Render();
+	virtual void		Render(DWORD elapseTime);
 	virtual void		Update(DWORD elapsetime);
 	virtual void		Control();
 };

@@ -36,7 +36,7 @@ public:
 	virtual void Control();
 	
 	virtual void Update(DWORD elapseTime);
-	virtual void ProcessRender();
+	virtual void ProcessRender(DWORD elapseTime);
 
 	// cINotifiable
 	virtual void Notify(Sophia::cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);

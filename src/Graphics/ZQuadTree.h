@@ -63,7 +63,7 @@ public:
 	BOOL				CheckInside(cSphere& sphere,float loose=0.0f);
 	
 	BOOL				GetCellIntersection(D3DXVECTOR3& pos);	
-	virtual void		Render();
+	virtual void		Render(DWORD elapseTime);
 };
 }
 #endif // _ZQUADTREE_H_

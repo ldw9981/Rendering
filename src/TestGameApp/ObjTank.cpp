@@ -75,7 +75,7 @@ void cObjTank::Control()
 	SetVelocityRotation(vecRot);
 }
 
-void cObjTank::Render()
+void cObjTank::Render(DWORD elapseTime)
 {
 
 }

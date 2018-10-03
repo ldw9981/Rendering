@@ -29,7 +29,7 @@ public:
 
 	// entity
 	std::list<Entity*>		m_listEntity;
-	std::list<VISIBILITY_ENTITY>		m_listEntityRender;
+	std::list<VISIBILITY_ENTITY>		m_listEntityHasAlphaRender;
 	
 	cRendererQueue			m_renderQueueNormalShadow;	
 	cRendererQueue			m_renderQueueSkinnedShadow;
@@ -71,23 +71,21 @@ public:
 	cGUIFont* CreateFont();
 	void DeleteFont(cGUIFont* pButton);
 
-	virtual void ProcessRender();
+	virtual void ProcessRender(DWORD elapseTime);
 	virtual void Update(DWORD elapseTime);
-	void CullFrustum();
-	void GatherRender();
 
 	void					SetViewPortInfo(UINT x,UINT y,UINT width,UINT height);
 	void					SetViewPortInfo(D3DVIEWPORT9& val) { m_ViewPortInfo = val; }	
 	bool Initialize();
 	void Finalize();
-	void Render();
+	void Render(DWORD elapseTime);
 	bool GetEnableShadow() const { return m_bEnableShadow; }
 	void SetEnableShadow(bool val) { m_bEnableShadow = val; }
 	bool GetDebugShadow() const { return m_bDebugShadow; }
 	void SetDebugShadow(bool val) { m_bDebugShadow = val; }
 
-	void RenderShadow();
-	void RenderScene();
+	void RenderShadow(DWORD elapseTime);
+	void RenderScene(DWORD elapseTime);
 
 	static bool LessDistance(VISIBILITY_ENTITY& a,VISIBILITY_ENTITY& b);
 	const D3DXVECTOR3& GetWorldLightDirection()  { return m_worldLightDirection; }

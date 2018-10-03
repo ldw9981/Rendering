@@ -31,7 +31,7 @@ public:
 
 	virtual void 		Update(DWORD elapseTime);
 
-	virtual void 		ProcessRender();
+	virtual void 		ProcessRender(DWORD elapseTime);
 
 	void				AddDebugString(const char* format, ...);
 	

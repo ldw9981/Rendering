@@ -10,6 +10,9 @@
 #include "Foundation/Trace.h"
 #include "Graphics/Entity.h"
 #include "Math/CollisionDetector.h"
+#include <algorithm>
+#include <execution>
+
 
 namespace Sophia
 {
@@ -54,10 +57,21 @@ World::~World(void)
 
 Entity* World::CreateEntity()
 {
-	Entity* pEntity = new Entity;	
-	m_listEntity.push_back(pEntity);
-	pEntity->m_itEntityList = --m_listEntity.end();	
+	Entity* pEntity = new Entity();	
+	AttachEntity(pEntity);
 	return pEntity;
+}
+
+void World::AttachEntity(Entity * pEntity)
+{
+	m_listEntity.push_back(pEntity);
+	pEntity->m_itEntityList = --m_listEntity.end();
+}
+
+void World::DettachEntity(Entity * pEntity)
+{
+	m_listEntity.erase(pEntity->m_itEntityList);
+	pEntity->m_itEntityList = m_listEntity.end();
 }
 
 void World::ProcessRender(DWORD elapseTime)
@@ -85,6 +99,10 @@ void World::Update( DWORD elapseTime )
 	Frustum& frustum = m_camera.GetFrustum();
 	float distFromNear;
 
+	// Animation,WorldMatrix갱신 병렬처리
+	std::for_each(std::execution::par_unseq, std::begin(m_listEntity), std::end(m_listEntity), [&](Entity* pEntity) {
+		pEntity->Update(elapseTime);
+	});
 
 	m_renderQueueNormalShadow.Clear();
 	m_renderQueueSkinnedShadow.Clear();
@@ -97,9 +115,6 @@ void World::Update( DWORD elapseTime )
 	for ( auto itIn = m_listEntity.begin() ;itIn!=m_listEntity.end() ; ++itIn )
 	{
 		Entity* pEntity = *itIn;
-		pEntity->Update(elapseTime);
-
-
 		if (!pEntity->GetShow())
 			continue;
 
@@ -162,22 +177,21 @@ void World::SetViewPortInfo(UINT x,UINT y,UINT width,UINT height )
 
 void World::DeleteEntity( Entity* pEntity )
 {
-	m_listEntity.erase(pEntity->m_itEntityList);
+	DettachEntity(pEntity);
 	delete pEntity;
 }
 
 ZTerrain* World::CreateTerrain( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, const char* lpTexFilename )
 {
-	ZTerrain* pEntity = new ZTerrain;	
+	ZTerrain* pEntity = new ZTerrain();	
 	pEntity->Create(pvfScale,lpBMPFilename,lpTexFilename);
-	m_listEntity.push_back(pEntity);
-	pEntity->m_itEntityList = --m_listEntity.end();	
+	AttachEntity(pEntity);
 	return pEntity;
 }
 
 void World::DeleteTerrain( ZTerrain* pEntity )
 {
-	m_listEntity.erase(pEntity->m_itEntityList);
+	DettachEntity(pEntity);
 	delete pEntity;
 }
 

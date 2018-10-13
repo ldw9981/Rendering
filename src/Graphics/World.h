@@ -61,6 +61,8 @@ protected:
 public:
 	// create,delete
 	Entity* CreateEntity();
+	void AttachEntity(Entity* pEntity);
+	void DettachEntity(Entity* pEntity);
 	void DeleteEntity(Entity* pEntity);
 	ZTerrain* CreateTerrain( D3DXVECTOR3* pvfScale, const char* lpBMPFilename, const char* lpTexFilename );
 	void DeleteTerrain(ZTerrain* pEntity);

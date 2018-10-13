@@ -83,10 +83,11 @@ void cMenuView::Enter()
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
 	m_pDragon->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 	m_pDragon->Build();
-	m_pDragon->SetLocalPos(D3DXVECTOR3(600,200.0f,0));
+	m_pDragon->SetLocalPos(D3DXVECTOR3(600,400.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
-	
+	m_graphicWorld.DettachEntity(m_pTank);
+	m_pDragon->AttachEntityAtBone("Bone-tail6", m_pTank);
 
 	
 	

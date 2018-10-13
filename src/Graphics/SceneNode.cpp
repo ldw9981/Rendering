@@ -77,6 +77,7 @@ BOOL cSceneNode::IsExistParentName()
 
 void cSceneNode::AttachChildNode( cSceneNode* pItem )
 {
+	pItem->SetParentNode(this);
 	m_vecChildNode.push_back(pItem);
 }
 
@@ -201,7 +202,9 @@ void cSceneNode::DettachChildNode( cSceneNode* pItem )
 		cSceneNode* pNode =*iter;
 		if ( pNode == pItem)
 		{
-			delete pItem;
+			//delete pItem;
+			pItem->SetParentNode(NULL);
+			pItem->SetParentName("");
 			m_vecChildNode.erase(iter);
 			return;
 		}

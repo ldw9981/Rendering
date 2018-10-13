@@ -456,6 +456,33 @@ void Entity::UpdateLocalMatrix()
 
 }
 
+void Entity::AttachEntityAtBone(std::string bone, Entity * pItem)
+{
+	auto result = m_mapBones.find(bone);
+	if (result == m_mapBones.end())
+		return;
+	
+	cSceneNode* pFoundNode = (*result).second;
+	pFoundNode->AttachChildNode(pItem);
+
+	ClearRenderContainer();
+	GatherRender(this, true);
+}
+
+void Entity::DettachEntityAtBone(std::string bone, Entity * pItem)
+{
+	auto result = m_mapBones.find(bone);
+	if (result == m_mapBones.end())
+		return;
+
+	cSceneNode* pFoundNode = (*result).second;
+	pFoundNode->DettachChildNode(pItem);
+
+	ClearRenderContainer();
+	GatherRender(this, true);	
+}
+
+
 void Entity::PlayPartialAnimation( int index,bool loop,DWORD skipStartTime/*=0*/,DWORD earlyEndTime/*=0*/ )
 {
 	ENTITY_ANIMATION_DESCRIPTION desc;

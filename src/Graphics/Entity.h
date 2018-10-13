@@ -53,7 +53,8 @@ public:
 	virtual void PopAnimation();
 	virtual void EraseAnimation(int index);
 	virtual void UpdateLocalMatrix();
-	
+	void AttachEntityAtBone(std::string bone,Entity* pItem);
+	void DettachEntityAtBone(std::string bone, Entity* pItem);
 	
 
 	bool LoadASE(const char* fileName);

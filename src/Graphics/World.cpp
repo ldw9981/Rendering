@@ -53,6 +53,12 @@ World::World(void)
 
 World::~World(void)
 {
+	for (auto it = m_listEntity.begin() ;  it != m_listEntity.end() ; ++it)
+	{
+		Entity* pEntity = *it;
+		delete pEntity;
+	}
+	m_listEntity.clear();
 }
 
 Entity* World::CreateEntity()

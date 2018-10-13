@@ -83,6 +83,15 @@ BOOL TestGameApp::OnWM_General( MSG& msg )
 	return FALSE;
 }
 
+void TestGameApp::Control()
+{
+	cD3DFramework::Control();
+	if (m_pInput->IsEscapePressed())
+	{
+		m_bQuitLoop = true;
+	}
+}
+
 
 
 

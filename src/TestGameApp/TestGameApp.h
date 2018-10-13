@@ -16,4 +16,5 @@ public:
 	virtual BOOL OnWM_Keyboard(MSG& msg);
 	virtual BOOL OnWM_Mouse(MSG& msg);
 	virtual BOOL OnWM_General(MSG& msg);
+	virtual void Control();
 };

@@ -152,32 +152,7 @@ void cMenuView::Enter()
 }
 
 void cMenuView::Leave()
-{
-	m_graphicWorld.DeleteTerrain(m_pZTerrain);
-	
-	for (int i=0;i<STRESS_NORMAL;i++)
-	{
-		if (m_pHouse[i])
-			m_graphicWorld.DeleteEntity(m_pHouse[i]);
-	}
-
-	for (int i=0;i<STRESS_SKINNED;i++)
-	{
-		if (m_pSkinned[i])
-			m_graphicWorld.DeleteEntity(m_pSkinned[i]);
-	}
-	
-	if (m_pTank)
-		m_graphicWorld.DeleteEntity(m_pTank);
-	
-	if (m_pDragon)
-		m_graphicWorld.DeleteEntity(m_pDragon);
-	
-	if (m_pAirPlaneBake)
-		m_graphicWorld.DeleteEntity(m_pAirPlaneBake);
-
-	
-	
+{	
 	cView::Leave();
 }
 

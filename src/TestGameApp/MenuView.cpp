@@ -300,7 +300,7 @@ void cMenuView::Control(DWORD elapseTime)
 	{
 		rotation.x = (float)g_pInput->GetMouseState().lY  * (float)elapseTime ;
 	}
-	else if (g_pInput->GetMouseState().lX != 0)
+	if (g_pInput->GetMouseState().lX != 0)
 	{
 		rotation.y = (float)g_pInput->GetMouseState().lX * (float)elapseTime ;
 	}

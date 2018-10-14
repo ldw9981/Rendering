@@ -83,6 +83,6 @@ public:
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender(DWORD elapseTime);
 	virtual void Render(DWORD elapseTime);
-	virtual void Control();
+	virtual void Control(DWORD elapseTime);
 };
 }

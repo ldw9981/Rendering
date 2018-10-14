@@ -33,7 +33,7 @@ public:
 
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender(DWORD elapseTime);
-	virtual void Control();
+	virtual void Control(DWORD elapseTime);
 
 	void OpenASE(const char* path);
 	void OpenAsset(const char* path);

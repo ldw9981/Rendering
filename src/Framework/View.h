@@ -55,7 +55,7 @@ public:
 	// cIUpdatable
 	virtual void			Update(DWORD elapseTime);
 
-	virtual void			Control();
+	virtual void			Control(DWORD elapseTime);
 
 	virtual void			Render(DWORD elapseTime);
 

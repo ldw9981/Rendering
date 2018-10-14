@@ -103,7 +103,7 @@ void cView::Update( DWORD elapseTime )
 	m_ViewState.Update(elapseTime);
 }
 
-void cView::Control()
+void cView::Control(DWORD elapseTime)
 {
 	if (m_bHide)
 		return;
@@ -111,9 +111,9 @@ void cView::Control()
 	std::list<IControlable*>::iterator it_control=m_ControlableList.begin();
 	for ( ;it_control!=m_ControlableList.end() ; ++it_control )
 	{
-		(*it_control)->Control();
+		(*it_control)->Control(elapseTime);
 	}	
-	m_ViewState.Control();
+	m_ViewState.Control(elapseTime);
 }
 
 void cView::ProcessRender(DWORD elapseTime)

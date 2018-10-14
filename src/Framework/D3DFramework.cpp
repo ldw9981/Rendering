@@ -124,7 +124,7 @@ void cD3DFramework::Run()
 		m_CurrFrameTime=GetTickCount();		
 		m_DeltaFrameTime = m_CurrFrameTime - m_PrevFrameTime;
 		m_AccumFrameTime += m_DeltaFrameTime;			
-		Control();
+		Control(m_DeltaFrameTime);
 		Update(m_DeltaFrameTime);		// Update
 		Render(m_DeltaFrameTime);						// Render
 		m_PrevFrameTime=m_CurrFrameTime;
@@ -132,12 +132,12 @@ void cD3DFramework::Run()
  	}	
 }
 
-void cD3DFramework::Control()
+void cD3DFramework::Control(DWORD elapseTime)
 {
 	std::list<IControlable*>::iterator it_control=m_listControlable.begin();
 	for ( ;it_control!=m_listControlable.end() ; ++it_control )
 	{
-		(*it_control)->Control();
+		(*it_control)->Control(elapseTime);
 	}
 }
 

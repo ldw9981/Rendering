@@ -27,6 +27,6 @@ public:
 	virtual void 		ProcessRender(DWORD elapseTime);
  	virtual void 		Render(DWORD elapseTime)=0;
  	virtual void 		Update(DWORD elapsetime)=0;
- 	virtual void 		Control()=0;
+ 	virtual void 		Control(DWORD elapseTime)=0;
 };
 }

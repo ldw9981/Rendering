@@ -27,7 +27,7 @@ public:
 	static cDebugInfoView* GetInstance() { return m_pInstance;}
 	virtual void 		Enter(void* arg);
 	virtual void 		Leave();
-	virtual void 		Control();
+	virtual void 		Control(DWORD elapseTime);
 
 	virtual void 		Update(DWORD elapseTime);
 

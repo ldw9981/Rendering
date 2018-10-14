@@ -83,9 +83,9 @@ BOOL TestGameApp::OnWM_General( MSG& msg )
 	return FALSE;
 }
 
-void TestGameApp::Control()
+void TestGameApp::Control(DWORD elapseTime)
 {
-	cD3DFramework::Control();
+	cD3DFramework::Control(elapseTime);
 	if (m_pInput->IsEscapePressed())
 	{
 		m_bQuitLoop = true;

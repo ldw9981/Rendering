@@ -87,7 +87,7 @@ void TestStateA::ProcessRender(DWORD elapseTime)
 	cView::ProcessRender(elapseTime);		
 }
 
-void TestStateA::Control()
+void TestStateA::Control(DWORD elapseTime)
 {
 	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
@@ -127,7 +127,7 @@ void TestStateA::Control()
 	{
 		vecPos.x = 200.0f;
 	}	
-	m_graphicWorld.m_camera.SetVelocityPosition(vecPos);	
+	//m_graphicWorld.m_camera.SetVelocityPosition(vecPos);	
 
 	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
 	if (g_pInput->IsCurrDn(DIK_Q))
@@ -147,7 +147,7 @@ void TestStateA::Control()
 	{
 		vecRot.x = 45.0f;
 	}	
-	m_graphicWorld.m_camera.SetVelocityRotation(vecRot);
+	//m_graphicWorld.m_camera.SetVelocityRotation(vecRot);
 
 }
 

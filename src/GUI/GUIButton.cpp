@@ -51,7 +51,7 @@ void cGUIButton::Update( DWORD elapsetime )
 	}	
 }
 
-void cGUIButton::Control()
+void cGUIButton::Control(DWORD elapseTime)
 {
 
 }

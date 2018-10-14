@@ -15,11 +15,6 @@ cTransformable::cTransformable( void )
 
 //	m_bModifiedMatLocal = TRUE;
 //	m_bModifiedMatWorld = TRUE;
-	m_velPosPerSec = D3DXVECTOR3(0.0f,0.0f,0.0f);
-	m_velRotPerSec = D3DXVECTOR3(0.0f,0.0f,0.0f);
-
-	m_bNoVelocityPos = true;
-	m_bNoVelocityRot = true;
 }
 
 cTransformable::~cTransformable( void )
@@ -70,7 +65,7 @@ D3DXVECTOR3* cTransformable::GetWorldPositionPtr()
 }
 
 
-void cTransformable::MoveOnLocal( float deltaX,float deltaY,float deltaZ )
+void cTransformable::TranslateLocal( float deltaX,float deltaY,float deltaZ )
 {
 	D3DXMATRIX	m_matTranslation;
 	D3DXMatrixTranslation(&m_matTranslation,deltaX,deltaY,deltaZ);
@@ -93,92 +88,6 @@ void cTransformable::SetWorldPos( D3DXVECTOR3& pos )
 	m_matWorld._42 =  pos.y; 
 	m_matWorld._43 =  pos.z; 
 
-}
-
-/*
-	속도 계산은 게임용루트에서만 작동하게한다.
-*/
-/*
-void cTransformable::Update( DWORD dwElapseMS )
-{
-	float fElapseSec = float(dwElapseMS) / 1000.0f;
-
-	if (!m_bNoVelocityPos)
-	{
-		D3DXMatrixIdentity(&m_matVelocityPos);
-		D3DXMatrixTranslation( &m_matVelocityPos, m_velPosPerSec.x * fElapseSec, m_velPosPerSec.y * fElapseSec, m_velPosPerSec.z * fElapseSec );			
-		m_matLocal = m_matVelocityPos * m_matLocal;			
-	}
-
-	if (!m_bNoVelocityRot)
-	{
-		D3DXMatrixIdentity(&m_matVelocityRot);
-		D3DXMatrixRotationYawPitchRoll( &m_matVelocityRot, m_velRotPerSec.y * fElapseSec, m_velRotPerSec.x * fElapseSec, m_velRotPerSec.z * fElapseSec );	
-		m_matLocal = m_matVelocityRot * m_matLocal;	
-	}	
-}
-*/
-
-void cTransformable::SetVelocityPosition( float x,float y,float z )
-{
-	m_velPosPerSec.x = x;
-	m_velPosPerSec.y = y;
-	m_velPosPerSec.z = z;
-
-	if ((x == 0.0f)&&(y == 0.0f)&&(z == 0.0f))
-	{
-		m_bNoVelocityPos = true;
-	}
-	else
-	{
-		m_bNoVelocityPos = false;
-	}
-}
-
-void cTransformable::SetVelocityPosition( D3DXVECTOR3& pos )
-{
-	m_velPosPerSec = pos;
-
-	if ((pos.x == 0.0f)&&(pos.y == 0.0f)&&(pos.z == 0.0f))
-	{
-		m_bNoVelocityPos = true;
-	}
-	else
-	{
-		m_bNoVelocityPos = false;
-	}
-}
-
-void cTransformable::SetVelocityRotation( float angleX,float angleY,float angleZ )
-{
-	m_velRotPerSec.x = D3DXToRadian(angleX);
-	m_velRotPerSec.y = D3DXToRadian(angleY);
-	m_velRotPerSec.z = D3DXToRadian(angleZ);	
-
-	if ((angleX == 0.0f)&&(angleY == 0.0f)&&(angleZ == 0.0f))
-	{
-		m_bNoVelocityRot = true;
-	}
-	else
-	{
-		m_bNoVelocityRot = false;
-	}
-}
-
-void cTransformable::SetVelocityRotation( D3DXVECTOR3& rot )
-{
-	m_velRotPerSec.x = D3DXToRadian(rot.x);
-	m_velRotPerSec.y = D3DXToRadian(rot.y);
-	m_velRotPerSec.z = D3DXToRadian(rot.z);	
-	
-	if ((rot.x == 0.0f)&&(rot.y == 0.0f)&&(rot.z == 0.0f))
-	{
-		m_bNoVelocityRot = true;
-	}
-	else
-	{
-		m_bNoVelocityRot = false;
-	}
 }
 
 void cTransformable::SetLocalTM( const D3DXMATRIX& val )

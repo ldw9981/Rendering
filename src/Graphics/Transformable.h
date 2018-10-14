@@ -18,20 +18,10 @@ public:
 	
 //	BOOL					m_bModifiedMatLocal;
 //	BOOL					m_bModifiedMatWorld;
-
-	bool					m_bNoVelocityPos;
-	bool					m_bNoVelocityRot;
-	D3DXVECTOR3				m_velPosPerSec;
-
-	D3DXVECTOR3				m_velRotPerSec;
-	D3DXVECTOR3				m_velSclPerSec;
-public:
+	public:
 	cTransformable(void);
 	~cTransformable(void);
 public:
-//	BOOL					GetWorldTMModified() const { return m_bModifiedMatWorld; }
-//	void					SetWorldTMModified(BOOL val) { m_bModifiedMatWorld = val; }
-
 	void					SetWorldTM(const D3DXMATRIX& val) { m_matWorld = val; }
 	D3DXMATRIX&				GetWorldTM() { return m_matWorld; }
 	virtual D3DXMATRIX*		GetWorldMatrixPtr()	{ return &m_matWorld;  }
@@ -56,16 +46,8 @@ public:
 	void					SetWorldPos( D3DXVECTOR3& pos );
 	virtual	 D3DXVECTOR3*	GetWorldPositionPtr();
 	
-	void					MoveOnLocal( float deltaX,float deltaY,float deltaZ );
-	// 회전 행렬 리턴
+	void					TranslateLocal( float deltaX,float deltaY,float deltaZ );
 	void					RotateOnLocal( float angleX,float angleY,float angleZ );
-
-	D3DXVECTOR3				GetVelPosPerSec()  { return m_velPosPerSec; }
-	D3DXVECTOR3				GetVelRotPerSec()  { return m_velRotPerSec; }
-	void					SetVelocityPosition( float x,float y,float z );
-	void					SetVelocityPosition( D3DXVECTOR3& pos );
-	void					SetVelocityRotation( float x,float y,float z );
-	void					SetVelocityRotation( D3DXVECTOR3& rot );
 };
 
 }

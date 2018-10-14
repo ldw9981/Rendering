@@ -36,14 +36,12 @@ void TestStateB::Enter()
 	
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadASE(std::string(strDataPath+"Dragon2.ase").c_str());
-	m_pDragon->Build();	
-	m_pDragon->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	m_pDragon->Build();		
 	
 
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"AirPlaneBake.ase").c_str());
 	m_pAirPlaneBake->Build();
-	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 
 	
 	
@@ -56,7 +54,7 @@ void TestStateB::Leave()
 	cView::Leave();
 }
 
-void TestStateB::Control()
+void TestStateB::Control(DWORD elapseTime)
 {
 	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
@@ -81,29 +79,29 @@ void TestStateB::Control()
 
 	if (g_pInput->IsCurrDn(DIK_W))
 	{
-		m_graphicWorld.m_camera.SetVelocityPosition(0.0f,0.0f,200.0f);
+		//m_graphicWorld.m_camera.SetVelocityPosition(0.0f,0.0f,200.0f);
 	}
 	else if (g_pInput->IsCurrDn(DIK_S))
 	{
-		m_graphicWorld.m_camera.SetVelocityPosition(0.0f,0.0f,-200.0f);
+		//m_graphicWorld.m_camera.SetVelocityPosition(0.0f,0.0f,-200.0f);
 	}	
 
 
 	if (g_pInput->IsCurrDn(DIK_A))
 	{
-		m_graphicWorld.m_camera.SetVelocityRotation(0.0f,-45.0f,0.0f);
+		//m_graphicWorld.m_camera.SetVelocityRotation(0.0f,-45.0f,0.0f);
 	}
 	else if (g_pInput->IsCurrDn(DIK_D))
 	{
-		m_graphicWorld.m_camera.SetVelocityRotation(0.0f,45.0f,0.0f);
+		//m_graphicWorld.m_camera.SetVelocityRotation(0.0f,45.0f,0.0f);
 	}
 	if (g_pInput->IsCurrDn(DIK_E))
 	{
-		m_graphicWorld.m_camera.SetVelocityRotation(-45.0f,0.0f,0.0f);
+		//m_graphicWorld.m_camera.SetVelocityRotation(-45.0f,0.0f,0.0f);
 	}
 	else if (g_pInput->IsCurrDn(DIK_C))
 	{
-		m_graphicWorld.m_camera.SetVelocityRotation(45.0f,0.0f,0.0f);
+		//m_graphicWorld.m_camera.SetVelocityRotation(45.0f,0.0f,0.0f);
 	}	
 }
 

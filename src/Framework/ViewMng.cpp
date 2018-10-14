@@ -57,11 +57,11 @@ void cViewMng::ProcessRender(DWORD elapseTime)
 	}
 }
 
-void cViewMng::Control()
+void cViewMng::Control(DWORD elapseTime)
 {
 	if (m_pCurr)
 	{
-		m_pCurr->Control();
+		m_pCurr->Control(elapseTime);
 	}
 }
 

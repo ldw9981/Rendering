@@ -27,7 +27,7 @@ void cObjTank::Uninit()
 
 
 
-void cObjTank::Control()
+void cObjTank::Control(DWORD elapseTime)
 {
 	D3DXVECTOR3 vecPos(0.0f,0.0f,0.0f);
 	D3DXVECTOR3 vecRot(0.0f,0.0f,0.0f);
@@ -71,8 +71,8 @@ void cObjTank::Control()
 
 	}	
 
-	SetVelocityPosition(vecPos);	
-	SetVelocityRotation(vecRot);
+	//SetVelocityPosition(vecPos);	
+	//SetVelocityRotation(vecRot);
 }
 
 void cObjTank::Render(DWORD elapseTime)

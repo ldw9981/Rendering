@@ -106,7 +106,7 @@ public:
 	virtual void 			Finalize();
 
 	//cD3DFramework
-	virtual void			Control();
+	virtual void			Control(DWORD elapseTime);
 	virtual void 			Update(DWORD elapseTime);
 	virtual void 			Render(DWORD elapseTime);
 

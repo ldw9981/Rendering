@@ -13,8 +13,7 @@ class cLine;
 class cSphere;
 class cRendererQueue;
 class cCameraNode :
-	public cSceneNode,
-	public IControlable
+	public cSceneNode
 {
 public:
 	cCameraNode();
@@ -33,18 +32,10 @@ private:
 	float				m_Far;
 	float				m_ScreenWidth;
 	float				m_ScreenHeight;
-	
-	bool				m_bProcessInput;
-	bool				m_bProjectionModified;	
-	
-	Frustum				m_frustum;
-	
+	bool				m_bProjectionModified;		
+	Frustum				m_frustum;	
 public:
-
 	virtual void		Render(DWORD elapseTime);
-	virtual void		Control();
-
-
 	void				SetLookAt(const D3DXVECTOR3 * pEye,const D3DXVECTOR3 * pAt,const D3DXVECTOR3 * pUp);
 
 	// Make Projection Matrix
@@ -63,9 +54,6 @@ public:
 	Frustum&			GetFrustum()  { return m_frustum; }
 	float GetFOV() const { return m_FOV; }
 
-	bool GetProcessInput() const { return m_bProcessInput; }
-	void SetProcessInput(bool val) { m_bProcessInput = val; }
-	virtual void		UpdateLocalMatrix();
 	virtual void	    Update(DWORD elapse);
 };
 

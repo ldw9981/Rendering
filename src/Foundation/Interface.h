@@ -34,7 +34,7 @@ class IControlable
 {
 public:
 	std::list<IControlable*>::iterator m_ItControlable;
-	virtual void Control()=0;
+	virtual void Control(DWORD elapseTime)=0;
 };
 
 class IUpdatable

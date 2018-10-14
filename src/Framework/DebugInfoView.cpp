@@ -36,7 +36,7 @@ void cDebugInfoView::Leave()
 	m_graphicWorld.DeleteFont(m_pFont);
 }
 
-void cDebugInfoView::Control()
+void cDebugInfoView::Control(DWORD elapseTime)
 {
 	if (g_pInput->IsTurnDn(DIK_I))
 	{

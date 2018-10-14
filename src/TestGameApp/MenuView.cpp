@@ -50,13 +50,15 @@ cMenuView::~cMenuView(void)
 void cMenuView::Enter()
 {
 	cView::Enter();
-	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,30000.0f,
+	m_pInputTarget = &m_graphicWorld.m_camera;
+	m_graphicWorld.m_camera.SetPerspective(FOV,1.0f,100000.0f,
 		(float)g_pApp->GetRequestRectWidth(),(float)g_pApp->GetRequestRectHeight());
-	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 1500.0f, -2500.0f),
-		&D3DXVECTOR3(0.0f, 0.0f,2000.0f),
+	m_graphicWorld.m_camera.SetLookAt(&D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		&D3DXVECTOR3(0.0f, 0.0f,1.0f),
 		&D3DXVECTOR3(0.0f, 1.0f, 0.0f));	
-	m_graphicWorld.SetWorldLightDirection(D3DXVECTOR3(0.0f,-0.5f,1.0f));
+	m_graphicWorld.m_camera.TranslateLocal(0.0f, 300.0f, -2000.0f);
 
+	m_graphicWorld.SetWorldLightDirection(D3DXVECTOR3(0.0f,-0.5f,1.0f));
 	
 	std::string strDataPath=EnvironmentVariable::GetInstance().GetString("DataPath");
 	
@@ -65,16 +67,22 @@ void cMenuView::Enter()
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
 	
-	
+	m_pTank = m_graphicWorld.CreateEntity();
+	m_pTank->LoadScene(std::string(strDataPath + "TigerTank.scene").c_str());
+	m_pTank->LoadAnimationSet(std::string(strDataPath + "TigerTank.aniset").c_str());
+	m_pTank->LoadMaterial(std::string(strDataPath + "TigerTank.material").c_str());
+	m_pTank->Build();
+	m_pTank->SetLocalPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));
+	m_pTank->RotateOnLocal(0, 180, 0);	
 	
 
-	m_pTank = m_graphicWorld.CreateEntity();
-	m_pTank->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
-	m_pTank->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
-	m_pTank->LoadMaterial(std::string(strDataPath+"Beautiful Girl.material").c_str());
-	m_pTank->Build();
-	m_pTank->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
-	m_pTank->RotateOnLocal(0,180,0);
+	m_pGirl = m_graphicWorld.CreateEntity();
+	m_pGirl->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
+	m_pGirl->LoadAnimationSet(std::string(strDataPath+"Beautiful Girl.aniset").c_str());
+	m_pGirl->LoadMaterial(std::string(strDataPath+"Beautiful Girl.material").c_str());
+	m_pGirl->Build();
+	m_pGirl->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
+	m_pGirl->RotateOnLocal(0,180,0);
 	
 
 	
@@ -83,7 +91,7 @@ void cMenuView::Enter()
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
 	m_pDragon->LoadMaterial(std::string(strDataPath+"dragon.material").c_str());
 	m_pDragon->Build();
-	m_pDragon->SetLocalPos(D3DXVECTOR3(600,400.0f,0));
+	m_pDragon->SetLocalPos(D3DXVECTOR3(0,0.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
 	m_graphicWorld.DettachEntity(m_pTank);
@@ -95,14 +103,10 @@ void cMenuView::Enter()
 	/*
 	m_pAirPlaneBake->LoadASE(std::string(strDataPath+"Dragon.ase").c_str());		
 	*/
-	m_pAirPlaneBake->LoadScene(std::string(strDataPath + "dragon.scene").c_str());
-	m_pAirPlaneBake->LoadAnimationSet(std::string(strDataPath + "dragon.aniset").c_str());
-	m_pAirPlaneBake->LoadMaterial(std::string(strDataPath + "dragon.material").c_str());
-	m_pAirPlaneBake->Build();
-	m_pAirPlaneBake->ChangeInstanceEnable(true);
-
-	
-	m_pAirPlaneBake->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
+	m_pAirPlaneBake->LoadScene(std::string(strDataPath + "AirplaneBake.scene").c_str());
+	m_pAirPlaneBake->LoadAnimationSet(std::string(strDataPath + "AirplaneBake.aniset").c_str());
+	m_pAirPlaneBake->LoadMaterial(std::string(strDataPath + "AirplaneBake.material").c_str());
+	m_pAirPlaneBake->Build();	
 	m_pAirPlaneBake->SetLocalPos(D3DXVECTOR3(-300.0f,100.0f,-100.0f));
 	
 	Graphics::m_pInstance->SetEntityInstancingMax("leaf",1024);
@@ -122,8 +126,8 @@ void cMenuView::Enter()
 //		m_pHouse[i]->PlayBaseAnimation(0);
 		
 		D3DXVECTOR3 pos;
-		pos.x = i% 10 *200.0f - 1000.0f;		
-		pos.z = i/10 *200.0f; 
+		pos.x = i% 10 *200.0f ;		
+		pos.z = i/10 *200.0f + 4000.0f;
 
 		pos.y =  100;
 		m_pHouse[i]->SetLocalPos(pos);		
@@ -139,14 +143,15 @@ void cMenuView::Enter()
 	
 		m_pSkinned[i]->Build();
 		m_pSkinned[i]->ChangeInstanceEnable(true);
-		m_pSkinned[i]->PlayBaseAnimation(0,true);
+		m_pSkinned[i]->PlayBaseAnimation(0,true,0,0,0, rand()%1000 );
 
 		D3DXVECTOR3 pos;
-		pos.x = i% 10 *200.0f - 1000.0f;		
-		pos.z = i/10 *200.0f;
+		pos.x = i% 20 *250.0f - 1000.0f;		
+		pos.z = i/20 *250.0f;
 
 		pos.y =  100;
 		m_pSkinned[i]->SetLocalPos(pos);		
+		m_pSkinned[i]->RotateOnLocal(0, 180, 0);
 	}
 	
 }
@@ -159,6 +164,10 @@ void cMenuView::Leave()
 void cMenuView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 
+}
+
+void cMenuView::ControlInputTarget(DWORD elapseTime)
+{
 }
 
 void cMenuView::Update( DWORD elapseTime )
@@ -187,23 +196,19 @@ void cMenuView::ProcessRender(DWORD elapseTime)
 	cView::ProcessRender(elapseTime);	
 }
 
-void cMenuView::Control()
+void cMenuView::Control(DWORD elapseTime)
 {
-	cView::Control();	
+	cView::Control(elapseTime);	
 	
 	if (g_pInput->IsTurnDn(DIK_TAB))
 	{
-		if(m_graphicWorld.m_camera.GetProcessInput())
+		if (m_pInputTarget != m_pDragon)
 		{
-			m_graphicWorld.m_camera.SetProcessInput(false);
-		//	if(m_pTank)
-		//		m_pTank->m_bControl=TRUE;
+			m_pInputTarget = m_pDragon;
 		}
 		else
 		{
-			m_graphicWorld.m_camera.SetProcessInput(true);
-		//	if(m_pTank)
-		//		m_pTank->m_bControl=FALSE;			
+			m_pInputTarget = &m_graphicWorld.m_camera;
 		}
 	}
 
@@ -259,14 +264,48 @@ void cMenuView::Control()
 		}		
 	}
 	
-	if (g_pInput->GetMouseState().lZ != 0)
+	float speed = 1.0f;
+	D3DXVECTOR3 translation(0.0f,0.0f,0.0f);
+	if (g_pInput->IsCurrDn(DIK_W) || g_pInput->IsCurrDn(DIK_UP))
 	{
-
-		int iz = *(int*)&g_pInput->GetMouseState().lZ;
-		iz /= abs(iz);
-		D3DXVECTOR3 temp;
-		m_graphicWorld.m_camera.GetLocalPos(temp);
-		temp.z += (float)(iz) * 100;		
-		m_graphicWorld.m_camera.SetLocalPos(temp);
+		translation.z = speed * elapseTime;
 	}
+	else if (g_pInput->IsCurrDn(DIK_S) || g_pInput->IsCurrDn(DIK_DOWN))
+	{
+		translation.z = -speed * elapseTime;
+	}
+	if (g_pInput->IsCurrDn(DIK_A) || g_pInput->IsCurrDn(DIK_LEFT))
+	{
+		translation.x = -speed * elapseTime;
+	}
+	else if (g_pInput->IsCurrDn(DIK_D) || g_pInput->IsCurrDn(DIK_RIGHT))
+	{
+		translation.x = speed * elapseTime;
+	}
+	if (g_pInput->IsCurrDn(DIK_Q))
+	{
+		translation.y = speed * elapseTime;
+	}
+	else if (g_pInput->IsCurrDn(DIK_E))
+	{
+		translation.y = -speed * elapseTime;
+	}
+	if (translation.x != 0.0f || translation.y != 0.0f || translation.z != 0.0f)
+	{
+		m_pInputTarget->TranslateLocal(translation.x, translation.y, translation.z);
+	}
+
+	D3DXVECTOR3 rotation(0.0f, 0.0f, 0.0f);
+	if (g_pInput->GetMouseState().lY != 0)
+	{
+		rotation.x = (float)g_pInput->GetMouseState().lY  * (float)elapseTime ;
+	}
+	else if (g_pInput->GetMouseState().lX != 0)
+	{
+		rotation.y = (float)g_pInput->GetMouseState().lX * (float)elapseTime ;
+	}
+	if (rotation.x != 0.0f || rotation.y != 0.0f )
+	{
+		m_pInputTarget->RotateOnLocal(rotation.x*0.001f, rotation.y*0.001f, rotation.z);
+	}	
 }

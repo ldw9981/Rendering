@@ -17,7 +17,7 @@ public:
 	virtual	void	Init();
 	virtual	void	Uninit();
 
-	virtual void    Control();
+	virtual void    Control(DWORD elapseTime);
 	virtual void	Render(DWORD elapseTime);
 
 };

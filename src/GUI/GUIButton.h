@@ -45,7 +45,7 @@ public:
 	void				Create(const char* strImageFile);
 	virtual void		Render(DWORD elapseTime);
 	virtual void		Update(DWORD elapsetime);
-	virtual void		Control();
+	virtual void		Control(DWORD elapseTime);
 };
 
 }

@@ -97,9 +97,9 @@ void State::ProcessRender(DWORD elapseTime)
 	cView::ProcessRender(elapseTime);	
 }
 
-void State::Control()
+void State::Control(DWORD elapseTime)
 {
-	cView::Control();		
+	cView::Control(elapseTime);		
 	
 
 	if (g_pInput->IsTurnDn(DIK_F12))

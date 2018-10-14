@@ -33,7 +33,7 @@ public:
 	virtual void Enter();
 	virtual void Leave();
 	// cIControlable
-	virtual void Control();
+	virtual void Control(DWORD elapseTime);
 	
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender(DWORD elapseTime);

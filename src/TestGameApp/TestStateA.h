@@ -22,7 +22,7 @@ public:
 
 	virtual void Update(DWORD elapseTime);
 	virtual void ProcessRender(DWORD elapseTime);
-	virtual void Control();
+	virtual void Control(DWORD elapseTime);
 
 	// cINotifiable
 	virtual void Notify(Sophia::cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam);

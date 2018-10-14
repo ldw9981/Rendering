@@ -28,7 +28,7 @@ void cObjDragon::Uninit()
 }
 
 
-void cObjDragon::Control()
+void cObjDragon::Control(DWORD elapseTime)
 {
 	if (!m_bControl)
 	{
@@ -37,20 +37,20 @@ void cObjDragon::Control()
 
 	if (g_pInput->IsCurrDn('W'))
 	{
-		SetVelocityPosition(0.0f,0.0f,100.0f);
+		//SetVelocityPosition(0.0f,0.0f,100.0f);
 	}
 	else if (g_pInput->IsCurrDn('S'))
 	{
-		SetVelocityPosition(0.0f,0.0f,-100.0f);
+		//SetVelocityPosition(0.0f,0.0f,-100.0f);
 	}	
 
 	if (g_pInput->IsCurrDn('A'))
 	{
-		SetVelocityRotation(0.0f,10.0f,0.0f);
+		//SetVelocityRotation(0.0f,10.0f,0.0f);
 	}
 	else if (g_pInput->IsCurrDn('D'))
 	{
-		SetVelocityRotation(0.0f,-10.0f,0.0f);
+		//SetVelocityRotation(0.0f,-10.0f,0.0f);
 	}
 	
 }

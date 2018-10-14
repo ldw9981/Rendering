@@ -53,7 +53,6 @@ void cTestView::Enter()
 	m_pP38 = m_graphicWorld.CreateEntity();	
 	m_pP38->LoadASE(std::string(strDataPath+"Light Map.ase").c_str());	
 	m_pP38->Build();
-	m_pP38->SetVelocityRotation(D3DXVECTOR3(0.0f,-45,0.0f));
 	m_pP38->SetLocalPos(D3DXVECTOR3(0.0f,300.0f,-100.0f));
 
 	m_pTestStateA = new TestStateA;
@@ -90,9 +89,9 @@ void cTestView::Leave()
 	cView::Leave();
 }
 
-void cTestView::Control()
+void cTestView::Control(DWORD elapseTime)
 {	
-	cView::Control();
+	cView::Control(elapseTime);
 
 	if (g_pInput->IsTurnDn(DIK_SPACE))
 	{
@@ -107,14 +106,13 @@ void cTestView::Control()
 		Sophia::Graphics::m_pInstance->m_bDebugBound = !Sophia::Graphics::m_pInstance->m_bDebugBound;
 	}
 	
-	m_graphicWorld.m_camera.Control();
+
 }
 
 void cTestView::Notify( cGUIBase* pSource,DWORD msg,DWORD lParam,DWORD wParam )
 {
 	if (pSource== m_pGlobalButtonScene->m_pBtNextScene)
-	{
-		m_graphicWorld.m_camera.SetProcessInput(false);
+	{	
 
 		TestGameApp* p = (TestGameApp*)g_pApp;
 		

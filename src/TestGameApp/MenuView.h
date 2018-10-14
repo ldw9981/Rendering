@@ -23,6 +23,7 @@ private:
 	Sophia::ZTerrain*	m_pZTerrain;
 	BOOL		m_bControlCamera;
 
+	Sophia::Entity*			m_pLightMap;
 	Sophia::Entity*			m_pDragon;
 	Sophia::Entity*			m_pAirPlaneBake;
 	Sophia::Entity*			m_pHouse[STRESS_NORMAL];

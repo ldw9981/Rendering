@@ -72,9 +72,7 @@ void cMenuView::Enter()
 	m_pTank->LoadAnimationSet(std::string(strDataPath + "TigerTank.aniset").c_str());
 	m_pTank->LoadMaterial(std::string(strDataPath + "TigerTank.material").c_str());
 	m_pTank->Build();
-	m_pTank->SetLocalPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));
-	m_pTank->RotateOnLocal(0, 180, 0);	
-	
+	m_pTank->SetLocalPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));	
 
 	m_pGirl = m_graphicWorld.CreateEntity();
 	m_pGirl->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());
@@ -84,8 +82,14 @@ void cMenuView::Enter()
 	m_pGirl->SetLocalPos(D3DXVECTOR3(0.0f,0.0f,0.0f));
 	m_pGirl->RotateOnLocal(0,180,0);
 	
-
+	m_pLightMap = m_graphicWorld.CreateEntity();
+	m_pLightMap->LoadScene(std::string(strDataPath + "Light Map.scene").c_str());
+	m_pLightMap->LoadAnimationSet(std::string(strDataPath + "Light Map.aniset").c_str());
+	m_pLightMap->LoadMaterial(std::string(strDataPath + "Light Map.material").c_str());
+	m_pLightMap->Build();
+	m_pLightMap->SetLocalPos(D3DXVECTOR3(400.0f, 0.0f, 0.0f));
 	
+
 	m_pDragon = m_graphicWorld.CreateEntity();
 	m_pDragon->LoadScene(std::string(strDataPath+"dragon.scene").c_str());
 	m_pDragon->LoadAnimationSet(std::string(strDataPath+"dragon.aniset").c_str());
@@ -94,9 +98,6 @@ void cMenuView::Enter()
 	m_pDragon->SetLocalPos(D3DXVECTOR3(0,0.0f,0));
 	m_pDragon->RotateOnLocal(0,180,0);
 	m_pDragon->PlayBaseAnimation(0,true);
-	m_graphicWorld.DettachEntity(m_pTank);
-	m_pDragon->AttachEntityAtBone("Bone-tail6", m_pTank);
-
 	
 	
 	m_pAirPlaneBake = m_graphicWorld.CreateEntity();

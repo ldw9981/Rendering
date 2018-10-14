@@ -106,10 +106,17 @@ void World::Update( DWORD elapseTime )
 	float distFromNear;
 
 	// Animation,WorldMatrix갱신 병렬처리
+	
 	std::for_each(std::execution::par_unseq, std::begin(m_listEntity), std::end(m_listEntity), [&](Entity* pEntity) {
 		pEntity->Update(elapseTime);
 	});
-
+	/*
+	for (auto itIn = m_listEntity.begin(); itIn != m_listEntity.end(); ++itIn)
+	{
+		Entity* pEntity = *itIn;
+		pEntity->Update(elapseTime);
+	}
+	*/
 	m_renderQueueNormalShadow.Clear();
 	m_renderQueueSkinnedShadow.Clear();
 	m_renderQueueNormal.Clear();

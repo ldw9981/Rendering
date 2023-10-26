@@ -67,12 +67,14 @@ void cMenuView::Enter()
 		std::string(strDataPath+"map129.bmp").c_str(),
 		std::string(strDataPath+"ground.bmp").c_str());
 	
+	/*
 	m_pTank = m_graphicWorld.CreateEntity();
 	m_pTank->LoadScene(std::string(strDataPath + "TigerTank.scene").c_str());
 	m_pTank->LoadAnimationSet(std::string(strDataPath + "TigerTank.aniset").c_str());
 	m_pTank->LoadMaterial(std::string(strDataPath + "TigerTank.material").c_str());
 	m_pTank->Build();
 	m_pTank->SetLocalPos(D3DXVECTOR3(200.0f, 0.0f, 0.0f));	
+	*/
 
 	m_pGirl = m_graphicWorld.CreateEntity();
 	m_pGirl->LoadScene(std::string(strDataPath+"Beautiful Girl.scene").c_str());

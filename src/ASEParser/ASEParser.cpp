@@ -673,7 +673,7 @@ BOOL cASEParser::Parsing_GeoObject()
 
 								BONEREFINFO NewItem;
 								NewItem.strNodeName=GetString();
-								NewItem.pNode=NULL;
+								NewItem.pBoneSceneNode=NULL;
 								vecBoneRef.push_back(NewItem);
 
 								if (!FindToken(TOKEND_BLOCK_END))

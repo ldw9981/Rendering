@@ -47,11 +47,11 @@ void SkinnedMeshNode::LinkToBone(Entity* pEntity)
 	{
 		BONEREFINFO& refItem=m_vecBoneRef[iBoneRef];
 
-		refItem.pNode = pEntity->FindNode(refItem.strNodeName);	
-		assert(refItem.pNode!=NULL);	
+		refItem.pBoneSceneNode = pEntity->FindNode(refItem.strNodeName);	
+		assert(refItem.pBoneSceneNode!=NULL);	
 		// 찾지 못하는경우가 있어서는 안됨 블렌트 버택스에 boneIndex가 들어가있으므로		
-		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&refItem.pNode->GetNodeTM());
-		refItem.SkinOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse		
+		D3DXMatrixInverse(&tmBoneWorldReferenceInv,NULL,&refItem.pBoneSceneNode->GetNodeTM());
+		refItem.SkinnedMeshOffset = GetNodeTM() * tmBoneWorldReferenceInv;	// LocalTM = WorldTM * Parent.WorldTM.Inverse		
 	}
 
 }
@@ -311,7 +311,7 @@ void SkinnedMeshNode::UpdateMatrixPallete()
 		pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
 		BONEREFINFO& refItem=m_vecBoneRef[boneIndex];
 		// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-		D3DXMatrixMultiply(pDst,&refItem.SkinOffset,&refItem.pNode->m_matWorld);	
+		D3DXMatrixMultiply(pDst,&refItem.SkinnedMeshOffset,&refItem.pBoneSceneNode->m_matWorld);	
 		offset_bytes += bytesMatrix;		
 	}	
 
@@ -384,7 +384,7 @@ void SkinnedMeshNode::UpdateMatrixInstancing( std::vector<cMeshNode*>& list, con
 			pDst = (D3DXMATRIX*)((LPBYTE)lock.pBits + offset_line*lock.Pitch + offset_bytes);						
 			BONEREFINFO& refItem=refArrBone[boneIndex];
 			// = refItem.SkinOffset * refItem.pNode->GetWorldTM();	// WorldTM = LocalTM * Parent.WorldTM
-			D3DXMatrixMultiply(pDst,&refItem.SkinOffset,&refItem.pNode->m_matWorld);		
+			D3DXMatrixMultiply(pDst,&refItem.SkinnedMeshOffset,&refItem.pBoneSceneNode->m_matWorld);		
 			
 			offset_bytes += bytesMatrix;		
 			if (offset_bytes >= bytesPerLine)

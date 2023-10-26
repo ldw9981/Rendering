@@ -10,14 +10,16 @@ class cRscTexture;
 
 struct BONEREFINFO
 {
-	D3DXMATRIX	SkinOffset;	
-	cSceneNode* pNode;		//본은 무조건 메쉬이다	
+	// BoneSceneNode 기준 좌표계에서의 SkinnedMesh의 Transform 즉 Relative Transform(Local)이다.
+	// SkinnedMesh가 그릴때 사용할 최종 WorldTransform = Relative Transform(Local) * 해당 BoneNode의 WorldTransform
+	D3DXMATRIX	SkinnedMeshOffset;		
+	cSceneNode* pBoneSceneNode;			
 	std::string strNodeName;
 
 	BONEREFINFO()
 	{
-		pNode=NULL;
-		D3DXMatrixIdentity(&SkinOffset);
+		pBoneSceneNode=NULL;
+		D3DXMatrixIdentity(&SkinnedMeshOffset);
 	}
 };
 
